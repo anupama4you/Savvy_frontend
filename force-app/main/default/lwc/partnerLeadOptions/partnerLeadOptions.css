@@ -1,0 +1,38 @@
+.my-options-group {
+  display: flex;
+  flex-direction: column;
+  /* border: 1px solid #eaeaea; */
+}
+
+.my-options-group button {
+  flex-grow: 1;
+  width: 100%;
+  justify-content: start;
+  border-radius: 5px;
+  padding: 10px 10px 10px 25px;
+  margin: 0px;
+  /* border-bottom: 1px solid #eaeaea; */
+}
+
+.my-options-group button:last-child {
+  /* border-bottom: 0px solid #eaeaea; */
+  border-bottom: unset;
+}
+
+.my-options-group button lightning-icon {
+  margin-right: 25px;
+}
+
+.my-options-group .my-option-icon {
+  --sds-c-icon-color-foreground-default: var(--sds-c-button-text-color, var(--lwc-brandAccessible,#196A99));
+}
+
+.my-options-group button .my-button-label {
+  font-size: 0.9rem;
+  font-weight: 700;
+}
+
+.my-options-group button:hover,
+.my-options-group button:focus {
+  background-color: #fafafa;
+}

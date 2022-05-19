@@ -1,0 +1,150 @@
+<template>
+  <template if:true={showModal}>
+    <section
+      role="dialog"
+      tabindex="-1"
+      aria-labelledby="modal-heading-01"
+      aria-modal="true"
+      aria-describedby="modal-content-id-1"
+      class="slds-modal slds-fade-in-open"
+    >
+      <template if:true={showSpinner}>
+        <lightning-spinner alternative-text="processing..." size="large">
+        </lightning-spinner>
+      </template>
+      <div class="slds-modal__container">
+        <header class="slds-modal__header">
+          <button
+            class="
+              slds-button slds-button_icon
+              slds-modal__close
+              slds-button_icon-inverse
+            "
+            title="Close"
+            onclick={handleClose}
+          >
+            <lightning-icon
+              icon-name="utility:close"
+              alternative-text="close"
+              variant="inverse"
+            ></lightning-icon>
+            <span class="slds-assistive-text">Close</span>
+          </button>
+          <h2 id="modal-heading-01" class="slds-modal__title slds-hyphenate">
+            Broker Support for Formal Approval: [{processStage}]
+          </h2>
+        </header>
+        <div
+          class="slds-modal__content slds-p-around_medium"
+          id="modal-content-id-1"
+        >
+          <template if:true={displayIntro}>
+            <p>Would you like to send this through to broker support?</p>
+          </template>
+          <template if:true={displaySubmission}>
+            <p>
+              Formal approval Submission for
+              <span class="opportunity-name"> {oppName}</span>
+            </p>
+            <div class="slds-form" role="list">
+              <lightning-layout>
+                <lightning-messages> </lightning-messages>
+              </lightning-layout>
+              <lightning-layout class="slds-form__row">
+                <lightning-textarea 
+                  name="lenderComments" 
+                  label="Lender Comments"
+                  data-id="lender-comments-field"
+                  required 
+                  value="" 
+                  placeholder="compose your comment" 
+                  maxlength="500" 
+                  message-when-too-long="A maximum of 500 characters are allowed." 
+                  message-when-value-missing="An empty comment cannot be saved." 
+                  class="slds-form__item"
+                  onchange={handleLenderCommentsChange}
+                ></lightning-textarea>
+              </lightning-layout>
+              <lightning-layout class="slds-form__row">
+                <lightning-textarea 
+                  name="brokerComments" 
+                  label="Broker Support Comments"
+                  data-id="broker-comments-field"
+                  required 
+                  value="" 
+                  placeholder="compose your comment" 
+                  maxlength="500" 
+                  message-when-too-long="A maximum of 500 characters are allowed." 
+                  message-when-value-missing="An empty comment cannot be saved." 
+                  class="slds-form__item"
+                  onchange={handleBrokerCommentsChange}
+                ></lightning-textarea>
+              </lightning-layout>
+            </div>
+          </template>
+          <template if:true={displayResults}>
+            <p>
+              Formal Submission for
+              <span class="opportunity-name"> {oppName}</span>
+            </p>
+            <p>
+              <!-- Validation Errors -->
+              <c-partner-approval-messages
+                if:true={displayValidationResults}
+                results={appResult}
+                show-modal={showApprovalMessages}
+                onclose={closeApprovalDialog}
+              ></c-partner-approval-messages>
+              <!-- Submission error -->
+              <c-partner-approval-message-item
+                if:true={displayResultErrors}
+                title="Errors"
+                messages={submissionResults.errors}
+                icon-name="utility:error"
+              ></c-partner-approval-message-item>
+              <!-- Confirmation message -->
+              <c-partner-approval-message-item
+                if:true={displaySuccessResult}
+                title="Opportunity submitted for Formal approval!"
+                icon-name="utility:connected_apps"
+                variant="success"
+              ></c-partner-approval-message-item>
+            </p>
+          </template>
+        </div>
+        <footer class="slds-modal__footer">
+          <!-- Confirmation -->
+          <lightning-button
+            if:true={displayIntro}
+            class="slds-button slds-m-left_x-small"
+            type="button"
+            label="Yes"
+            onclick={handleYes}
+            variant="brand"
+          >
+          </lightning-button>
+          <!-- Submission -->
+          <lightning-button
+            if:true={displaySubmission}
+            class="slds-button slds-m-left_x-small"
+            type="button"
+            label="Submit"
+            onclick={handleSubmit}
+            variant="brand"
+            icon-name="utility:share_file"
+          >
+          </lightning-button>
+          <!-- Close / Cancel -->
+          <lightning-button
+            class="slds-button slds-m-left_x-small"
+            type="button"
+            label={closeLabel}
+            onclick={handleClose}
+          >
+          </lightning-button>
+        </footer>
+      </div>
+    </section>
+    <div class="slds-backdrop slds-backdrop_open"></div>
+  </template>
+</template>

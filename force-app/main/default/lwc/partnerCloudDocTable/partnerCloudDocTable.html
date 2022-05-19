@@ -1,0 +1,180 @@
+<template>
+  <div>
+    <!-- <lightning-datatable
+                key-field="id"
+                data={docs}
+                show-row-number-column
+                row-number-offset={rowOffset}
+                suppress-bottom-bar
+                columns={columns}
+                hide-checkbox-column
+                onrowaction={handleRowAction}
+                column-widths-mode="auto"
+                >
+        </lightning-datatable> -->
+    <template if:true={showSpinner}>
+      <lightning-spinner
+        alternative-text="processing..."
+        size="large"
+      >
+      </lightning-spinner>
+    </template>
+    <c-custom-lightning-datatable
+      key-field="id"
+      data={docs}
+      row-number-offset={rowOffset}
+      suppress-bottom-bar
+      columns={columns}
+      hide-checkbox-column
+      onrowaction={handleRowAction}
+      column-widths-mode="auto"
+    >
+    </c-custom-lightning-datatable>
+    <template if:true={showEditModal}>
+      <section
+        role="dialog"
+        tabindex="-1"
+        aria-labelledby="modal-heading-01"
+        aria-modal="true"
+        aria-describedby="modal-content-id-1"
+        class="slds-modal slds-fade-in-open"
+      >
+        <template if:true={showPopupSpinner}>
+          <lightning-spinner alternative-text="processing..." size="large" variant="brand"></lightning-spinner>
+        </template>
+        <div class="slds-modal__container">
+          <header class="slds-modal__header">
+            <button
+              class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse"
+              title="Close"
+              onclick={handleEditClose}
+            >
+              <lightning-icon
+                icon-name="utility:close"
+                alternative-text="close"
+              ></lightning-icon>
+              <span class="slds-assistive-text">Close</span>
+            </button>
+            <h2 id="modal-heading-01" class="slds-modal__title slds-hyphenate">
+              Edit Cloud Document
+            </h2>
+          </header>
+          <lightning-record-edit-form
+            record-id={docSelected.Id}
+            object-api-name="Cloud_Documents__c"
+            onsubmit={handleEditSubmit}
+            onsuccess={handleEditSuccess}
+          >
+            <div
+              class="slds-modal__content slds-p-around_medium"
+              id="modal-content-id-1"
+            >
+              <lightning-layout>
+                <lightning-messages> </lightning-messages>
+                <lightning-output-field field-name="Name">
+                </lightning-output-field>
+                <lightning-input-field field-name="Send_To_Lender__c">
+                </lightning-input-field>
+              </lightning-layout>
+              <lightning-layout>
+                <lightning-input-field field-name="Document_Type__c" required>
+                </lightning-input-field>
+              </lightning-layout>
+              <p>&nbsp;</p>
+              <p>&nbsp;</p>
+              <p>&nbsp;</p>
+              <p>&nbsp;</p>
+              <p>&nbsp;</p>
+              <p>&nbsp;</p>
+              <p>&nbsp;</p>
+              <p>&nbsp;</p>
+              <p>&nbsp;</p>
+              <p>&nbsp;</p>
+              <p>&nbsp;</p>
+              <p>&nbsp;</p>
+              <p>&nbsp;</p>
+              <p>&nbsp;</p>
+              <p>&nbsp;</p>
+              <p>&nbsp;</p>
+              <p>&nbsp;</p>
+              <p>&nbsp;</p>
+              <p>&nbsp;</p>
+            </div>
+            <footer class="slds-modal__footer">
+              <lightning-button
+                class="slds-button slds-m-left_x-small"
+                type="button"
+                label="Cancel"
+                onclick={handleEditClose}
+              >
+              </lightning-button>
+              <lightning-button
+                variant="brand"
+                type="submit"
+                label="Save"
+                class="slds-button"
+              >
+              </lightning-button>
+            </footer>
+          </lightning-record-edit-form>
+        </div>
+      </section>
+      <div class="slds-backdrop slds-backdrop_open"></div>
+    </template>
+    <template if:true={showDeleteModal}>
+      <section
+        role="dialog"
+        tabindex="-1"
+        aria-labelledby="modal-heading-01"
+        aria-modal="true"
+        aria-describedby="modal-content-id-1"
+        class="slds-modal slds-fade-in-open"
+      >
+        <div class="slds-modal__container">
+          <header class="slds-modal__header">
+            <button
+              class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse"
+              title="Close"
+              onclick={handleDeleteNo}
+            >
+              <lightning-icon
+                icon-name="utility:close"
+                alternative-text="close"
+              ></lightning-icon>
+              <span class="slds-assistive-text">Close</span>
+            </button>
+            <h2 class="slds-modal__title slds-hyphenate">
+              Confirmation
+            </h2>
+          </header>
+          <div
+            class="slds-modal__content slds-p-around_medium"
+          >
+            <p>
+              Are you sure you want to delete the file [ <strong>{docSelected.Name}</strong> ]?
+            </p>
+            <p>
+              <strong>Caution:</strong> once a file is deleted, it can't be restored.
+            </p>
+          </div>
+          <footer class="slds-modal__footer">
+            <lightning-button
+              class="slds-button slds-m-left_x-small"
+              type="button"
+              label="No"
+              onclick={handleDeleteNo}
+            >
+            </lightning-button>
+            <lightning-button
+              variant="brand"
+              label="Yes"
+              class="slds-button"
+              onclick={handleDeleteYes}
+            ></lightning-button>
+          </footer>
+        </div>
+      </section>
+      <div class="slds-backdrop slds-backdrop_open"></div>
+    </template>
+  </div>
+</template>

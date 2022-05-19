@@ -1,0 +1,5 @@
+<aura:component>
+  <div class="c-container">
+    Comparison tools - Results!
+  </div>
+</aura:component>

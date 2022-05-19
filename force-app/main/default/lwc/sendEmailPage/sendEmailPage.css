@@ -1,0 +1,23 @@
+.THIS .slds-rich-text-editor {
+    height: 500px;
+}
+
+.email-body-content .slds-rich-text-editor__output p {
+  margin: 0 0 10px 0;
+}
+
+:host {
+  --sds-c-textarea-sizing-min-height: 250px;
+}
+
+.slds-box {
+  padding: 0 10px 5px 10px;
+}
+
+.form-content {
+  padding-right: 25px;
+}
+
+.upload-comp {
+  display: inline-flex;
+}

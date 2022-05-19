@@ -1,0 +1,94 @@
+<template>
+  <template if:true={showModal}>
+    <template if:true={showSpinner}>
+      <lightning-spinner alternative-text="processing..." size="large">
+      </lightning-spinner>
+    </template>
+    <section
+      role="dialog"
+      tabindex="-1"
+      aria-labelledby="modal-heading-01"
+      aria-modal="true"
+      aria-describedby="modal-content-id-1"
+      class="slds-modal slds-fade-in-open"
+    >
+      <div class="slds-modal__container">
+        <header class="slds-modal__header">
+          <button
+            class="
+              slds-button slds-button_icon
+              slds-modal__close
+              slds-button_icon-inverse
+            "
+            title="Close"
+            onclick={handleCloseDialog}
+          >
+            <lightning-icon
+              icon-name="utility:close"
+              alternative-text="close"
+              variant="inverse"
+            ></lightning-icon>
+            <span class="slds-assistive-text">Close</span>
+          </button>
+          <h2 id="modal-heading-01" class="slds-modal__title slds-hyphenate">
+            Lender API Integration:
+          </h2>
+        </header>
+        <div
+          class="slds-modal__content slds-p-around_medium"
+          id="modal-content-id-1"
+        >
+          <template if:true={displayIntro}>
+            <p>
+              API is available for
+              <span class="lender-name"> {lenderLabel}</span>, would
+              you like to send this through?
+            </p>
+          </template>
+          <template if:true={displayResults}>
+            <p>
+              Lender API processing for
+              <span class="opportunity-name"> {oppName}</span>
+            </p>
+            <p>
+              <!-- Confirmation message -->
+              <c-partner-approval-message-item
+                if:true={displaySuccessResult}
+                title={successLabel}
+                icon-name="utility:connected_apps"
+                variant="success"
+              ></c-partner-approval-message-item>
+              <template if:true={displayResultMessages}>
+                <hr class="hr-separator"/>
+                <!-- Validation Messages -->
+                <c-partner-approval-messages
+                  results={result}
+                ></c-partner-approval-messages>
+              </template>
+            </p>
+          </template>
+        </div>
+        <footer class="slds-modal__footer">
+          <lightning-button
+            if:false={displayResults}
+            class="slds-button slds-m-left_x-small"
+            type="button"
+            label="Yes"
+            onclick={handleYes}
+            variant="brand"
+          >
+          </lightning-button>
+          <!-- Close / Cancel -->
+          <lightning-button
+            class="slds-button slds-m-left_x-small"
+            type="button"
+            label={closeLabel}
+            onclick={handleClose}
+          >
+          </lightning-button>
+        </footer>
+      </div>
+    </section>
+    <div class="slds-backdrop slds-backdrop_open"></div>
+  </template>
+</template>

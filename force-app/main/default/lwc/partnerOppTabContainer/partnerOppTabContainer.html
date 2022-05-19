@@ -1,0 +1,20 @@
+<template>
+  <lightning-tabset>
+    <lightning-tab label="Details">
+      <lightning-record-form
+        record-id={recordId}
+        object-api-name={objectApiName}
+        layout-type="Full"
+        columns="2"
+        density="comfy"
+        mode="readonly"
+      ></lightning-record-form>
+    </lightning-tab>
+    <lightning-tab label="Related">
+      Related list!
+    </lightning-tab>
+    <lightning-tab label="Application">
+      Application form!
+    </lightning-tab>
+  </lightning-tabset>
+</template>

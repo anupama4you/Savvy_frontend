@@ -1,0 +1,12 @@
+<template>
+    <lightning-card title="Upload Company Logo" icon-name="custom:custom19">
+        <lightning-formatted-text value="Please upload your company Logo here "></lightning-formatted-text>
+        <lightning-file-upload type="file" 
+                    name="fileUploader" 
+                    accept={acceptedFormats} 
+                    label="Attachment" 
+                    onuploadfinished={handleUploadFinished}>
+                </lightning-file-upload>
+    </lightning-card>
+    
+</template>

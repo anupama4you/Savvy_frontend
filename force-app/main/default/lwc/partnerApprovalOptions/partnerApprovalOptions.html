@@ -1,0 +1,81 @@
+<template>
+  <template if:true={showSpinner}>
+    <lightning-spinner alternative-text="processing..." size="large">
+    </lightning-spinner>
+  </template>
+  <div class="my-options-group slds-align_absolute-center">
+    <button
+      class="slds-button slds-button_neutral"
+      onclick={handleApprovalClick}
+      disabled={disablePAButton}
+    >
+      <span class="my-button-label">Submit for approval</span>
+    </button>
+    <button
+      if:true={showFAButton}
+      class="slds-button slds-button_neutral"
+      onclick={handleFormalApprovalClick}
+      disabled={disableFAButton}
+    >
+      <span class="my-button-label">Submit for Formal Approval</span>
+    </button>
+    <button
+      class="slds-button slds-button_neutral"
+      onclick={handleSettleClick}
+      disabled={disableSettledButton}
+    >
+      <span class="my-button-label">Settled</span>
+    </button>
+  </div>
+  <c-partner-approval-message-dialog
+    results={appResult}
+    show-modal={showApprovalMessages}
+    onclose={closeApprovalDialog}
+  ></c-partner-approval-message-dialog>
+  <!-- ------------------- -->
+  <!-- Lender API Services -->
+  <!-- ------------------- -->
+  <c-partner-approval-lender-api-confirmation
+    record-id={recordId}
+    show-modal={showApiConfirmation}
+    opp-name={oppName}
+    oncontinue={handlerApiNo}
+    onclose={handlerApiClose}
+    lender-settings={lenderSettings}
+  ></c-partner-approval-lender-api-confirmation>
+  <!-- ------------ -->
+  <!-- Pre-Approval -->
+  <!-- ------------ -->
+  <c-partner-approval-broker-support
+    record-id={recordId}
+    opp-name={oppName}
+    show-modal={showBrokerSupport}
+    onclose={handlerBrokerSupportNo}
+    oncancel={handlerBrokerSupportCancel}
+    onyes={handlerBrokerSupportYes}
+    lender-settings={lenderSettings}
+    has-lender-api={displayAPIConfirmation}
+  ></c-partner-approval-broker-support>
+  <!-- --------------- -->
+  <!-- Formal Approval -->
+  <!-- --------------- -->
+  <c-partner-approval-formal-submission
+    record-id={recordId}
+    opp-name={oppName}
+    show-modal={displayFormalApproval}
+    onclose={handlerFormalClose}
+    lender-settings={lenderSettings}
+    has-lender-api={displayAPIConfirmation}
+  ></c-partner-approval-formal-submission>
+  <!-- ---------- -->
+  <!-- Settlement -->
+  <!-- ---------- -->
+  <c-partner-approval-settlement
+    record-id={recordId}
+    opp-name={oppName}
+    show-modal={displaySettlementConfirmation}
+    onclose={handlerSettlementClose}
+    onyes={handlerSettlementYes}
+    lender-settings={lenderSettings}
+  ></c-partner-approval-settlement>
+</template>

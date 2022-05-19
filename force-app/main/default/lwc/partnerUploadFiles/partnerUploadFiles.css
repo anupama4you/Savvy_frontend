@@ -1,0 +1,16 @@
+:host .THIS .slds-file-selector{
+    display: flex;
+}
+:host .THIS .slds-file-selector__dropzone{
+    height: 110px;
+    width: -webkit-fill-available;
+    display: flex;
+    align-items: center;
+    align-content: center;
+    justify-content: center;
+    margin: auto;
+}
+
+:host .THIS .slds-file-selector__dropzone .slds-file-selector__text{ /*the right label*/
+    font-size: 100%;
+}

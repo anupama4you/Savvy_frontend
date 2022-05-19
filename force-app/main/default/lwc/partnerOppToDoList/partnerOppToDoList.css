@@ -1,0 +1,53 @@
+.my-todo-list {
+  padding: 0 0 0 10px;
+  display: flex;
+  flex-direction: column;
+}
+
+.my-todo-list .main-container {
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 0 30px 0;
+  flex: 1 1 auto;
+  padding-left: 30px;
+}
+
+.my-todo-list .main-container:not(:last-child) {
+  border-left: 1px solid rgba(255,255,255,0.8);
+}
+
+.my-todo-list-title {
+  margin-bottom: 30px;
+}
+
+.my-todo-list .right-icon svg.slds-icon,
+.my-todo-list-title svg.slds-icon {
+    fill: rgba(255,255,255,1);
+}
+
+.my-todo-list-title span.title-label {
+  color: rgba(255,255,255,1);
+  font-weight: 800;
+  letter-spacing: 0.02rem;
+}
+
+.my-todo-list-title .title-icon {
+  float: left;
+  margin-top: -3px;
+  margin-right: 16px;
+}
+
+.change-lender-button {
+  font-size: 0.7rem;
+  padding: 5px 12px 7px 12px;
+  line-height: 1rem;
+  margin-top: -30px;
+} 
+
+.change-lender-button:hover {
+  background-color: rgb(255, 255, 255,0.85);
+} 
+
+/* .extra-option {
+  padding: 0 0 20px 30px !important;
+} */

@@ -1,0 +1,75 @@
+<template>
+  <template if:true={hasRecords}>
+    <table
+      class="slds-table slds-table_bordered slds-table_striped my-table"
+    >
+      <thead>
+        <tr class="slds-line-height_reset">
+          <th class="" scope="col">
+              <div class="slds-truncate" title="Opportunity Name">
+                Opportunity Name
+              </div>
+          </th>
+          <th class="" scope="col">
+            <div class="slds-grid slds-grid_align-center">
+              <div class="slds-truncate" title="Comm">Comm</div>
+            </div>
+          </th>
+          <th class="" scope="col">
+            <div class="slds-grid slds-grid_align-center">
+              <div class="slds-truncate" title="NAF">NAF</div>
+            </div>
+          </th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr
+          class="slds-hint-parent"
+          for:each={oppList}
+          for:item="row"
+          key={row.key}
+        >
+          <td data-label="Opportunity Name" scope="row">
+            <div class="slds-truncate" title="Cloudhub">
+              <lightning-formatted-url value={row.OppLink} tooltip={row.Name} label={row.OppLabel}></lightning-formatted-url>
+              <br/><lightning-formatted-phone disabled value={row.Mobile_Number__c} class="phone-cell"></lightning-formatted-phone>
+              <br/><lightning-formatted-date-time 
+                      value={row.LastModifiedDate} 
+                      year="2-digit" 
+                      month="2-digit" 
+                      day="2-digit" 
+                      hour="numeric"
+                      minute="numeric"
+                      weekday="short">
+                  </lightning-formatted-date-time>
+            </div>
+          </td>
+          <td data-label="Comm">
+            <span class="slds-grid slds-grid_align-end money-cell"
+              ><div class="slds-truncate">
+                <lightning-formatted-number
+                  value={row.Total_Commission__c}
+                  format-style="currency"
+                  currency-code="AUD"
+                ></lightning-formatted-number></div
+            ></span>
+          </td>
+          <td data-label="NAF">
+            <span class="slds-grid slds-grid_align-end money-cell"
+              ><div class="slds-truncate">
+                <lightning-formatted-number
+                  value={row.NAF_Net_Amount_Financed__c}
+                  format-style="currency"
+                  currency-code="AUD"
+                  currency-display-as="symbol"
+                ></lightning-formatted-number></div
+            ></span>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </template>
+  <template if:false={hasRecords}>
+    No records.
+  </template>
+</template>

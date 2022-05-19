@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<LightningComponentBundle xmlns="http://soap.sforce.com/2006/04/metadata">
+  <apiVersion>51.0</apiVersion>
+  <masterLabel>Partner Open Cloud Document (Auto)</masterLabel>
+  <description>Automatically open a cloud document record</description>
+  <isExposed>true</isExposed>
+  <targets>
+    <target>lightning__RecordPage</target>
+    <target>lightningCommunity__Page</target>
+    <target>lightningCommunity__Default</target>
+  </targets>
+  <targetConfigs>
+    <targetConfig targets="lightningCommunity__Default">
+      <property name="recordId" type="String" label="Record Id" description="Automatically bind the page's record id to the component variable, the value should be {!recordId}" />
+    </targetConfig>
+  </targetConfigs>
+</LightningComponentBundle>

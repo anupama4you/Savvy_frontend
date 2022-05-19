@@ -1,0 +1,329 @@
+<template>
+    <template if:true={renderNow}>
+        <lightning-card title="">
+            <div class="slds-box slds-theme_alert-texture slds-theme_error " if:true={checkForErrors}>
+                <template for:each={vedalWrapper.errorList} for:item="error" key={vedalWrapper.some}>
+                    <p key={vedalWrapper.some}>{error}</p>
+                </template>
+            </div>
+            <div class="slds-box slds-theme_alert-texture slds-theme_warning " if:true={checkForWarnings}>
+                <template for:each={vedalWrapper.warningList} for:item="warning" key={vedalWrapper.some}>
+                    <p key={vedalWrapper.some}>{warning}</p>
+                </template>
+            </div>
+            <div class="slds-section slds-is-open" style="margin-top:1rem;">
+                <h3 class="slds-section__title" style="background-color: #f3f2f2;">
+                    <button aria-controls="expando-unique-id" aria-expanded="true"
+                        class="slds-button slds-section__title-action" style="background-color: #f3f2f2;">
+                        <lightning-icon icon-name="utility:chevrondown"  alternative-text="Settings" title="Settings" size="small" if:true={sectionsExpandMap.clientDetails} data-section = "clientDetails" onclick={handleSectionExpansion}></lightning-icon>
+                        <lightning-icon icon-name="utility:chevronright"  alternative-text="Settings" title="Settings" size="small" if:false={sectionsExpandMap.clientDetails} data-section = "clientDetails" onclick={handleSectionExpansion}></lightning-icon>
+                        <span class="slds-truncate" title="Client Details">Client Details</span>
+                    </button>
+                </h3>
+                <div aria-hidden="false" class="slds-section__content" id="expando-unique-id" if:true={sectionsExpandMap.clientDetails}>
+                    <lightning-layout multiple-rows="true">
+                        <lightning-layout-item size="6" padding="around-medium">
+                            <lightning-input disabled value={vedalWrapper.currentTally}
+                                label="Total Enquiries Completed"></lightning-input>
+                        </lightning-layout-item>
+                        <lightning-layout-item size="6" padding="around-medium">
+                            <lightning-combobox options={permissionTypeOption}
+                                value={vedalWrapper.selectedPermissionType} label="Permission Type"
+                                data-field="selectedPermissionType" onchange={handleOnChange}></lightning-combobox>
+                        </lightning-layout-item>
+                        <lightning-layout-item size="6" padding="around-medium">
+                            <lightning-input value={vedalWrapper.clientRef} label="Client Reference"
+                                data-field="clientRef" onchange={handleOnChange} disabled> 
+                            </lightning-input>
+                        </lightning-layout-item>
+                        <lightning-layout-item size="6" padding="around-medium">
+                            <lightning-combobox value={vedalWrapper.selectedProductDataLevel} options={productDataLevel}
+                                data-field="selectedProductDataLevel" label="Product Data Level"
+                                onchange={handleOnChange}></lightning-combobox>
+                        </lightning-layout-item>
+                        <lightning-layout-item size="6" padding="around-medium">
+                            <lightning-combobox value={vedalWrapper.titleStr} options={titleOptions}
+                                data-field="titleStr" label="Title" onchange={handleOnChange}></lightning-combobox>
+                        </lightning-layout-item>
+                        <lightning-layout-item size="6" padding="around-medium">
+                            <lightning-input value={vedalWrapper.fname} data-field="fname" label="First Name"
+                                onchange={handleOnChange}>
+                            </lightning-input>
+                        </lightning-layout-item>
+                        <lightning-layout-item size="6" padding="around-medium">
+                            <lightning-input value={vedalWrapper.oname} data-field="oname" label="Middle Name"
+                                onchange={handleOnChange}>
+                            </lightning-input>
+                        </lightning-layout-item>
+                        <lightning-layout-item size="6" padding="around-medium">
+                            <lightning-input value={vedalWrapper.lname} data-field="lname" label="Last Name"
+                                onchange={handleOnChange}>
+                            </lightning-input>
+                        </lightning-layout-item>
+                        <lightning-layout-item size="6" padding="around-medium">
+                            <lightning-input value={vedalWrapper.dLicense} data-field="dLicense"
+                                label="Driver's License Number" maxlength="9"
+                                message-when-range-overflow="Driver's License number should not be more than 9 characters">
+                            </lightning-input>
+                        </lightning-layout-item>
+                        <lightning-layout-item size="6" padding="around-medium">
+                            <lightning-input type="date" value={vedalWrapper.dateOfBirth} data-field="dateOfBirth"
+                                label="Date of Birth" required message-when-value-missing="Please specify Date of Birth"
+                                onchange={handleOnChange}></lightning-input>
+                        </lightning-layout-item>
+                        <lightning-layout-item size="6" padding="around-medium">
+                            <lightning-combobox value={vedalWrapper.genderCode} options={genderOptions}
+                                data-field="genderCode" label="Gender" onchange={handleOnChange}></lightning-combobox>
+                        </lightning-layout-item>
+
+                    </lightning-layout>
+                </div>
+            </div>
+            <lightning-layout multiple-rows="true">
+                    <lightning-layout-item size="12" if:true={transactionInProgress}>
+                            <lightning-spinner size="medium" alternative-text="Please wait"></lightning-spinner>
+                        </lightning-layout-item>
+            </lightning-layout>
+            <div class="slds-section slds-is-open">
+                <h3 class="slds-section__title" style="background-color: #f3f2f2;">
+                    <button aria-controls="expando-unique-id" aria-expanded="true"
+                        class="slds-button slds-section__title-action" style="background-color: #f3f2f2;">
+                        <lightning-icon icon-name="utility:chevrondown"  alternative-text="Settings" title="Settings" size="small" if:true={sectionsExpandMap.currentResedentialAddress} data-section = "currentResedentialAddress" onclick={handleSectionExpansion}></lightning-icon>
+                        <lightning-icon icon-name="utility:chevronright"  alternative-text="Settings" title="Settings" size="small" if:false={sectionsExpandMap.currentResedentialAddress} data-section = "currentResedentialAddress" onclick={handleSectionExpansion}></lightning-icon>
+                        <span class="slds-truncate" title="Current or Last Known Residential Address">Current or Last
+                            Known
+                            Residential Address</span>
+                    </button>
+                </h3>
+                <div aria-hidden="false" class="slds-section__content" if:true={sectionsExpandMap.currentResedentialAddress}>
+                    <lightning-layout multiple-rows="true">
+                        <lightning-layout-item size="6" padding="around-medium">
+                            <lightning-input value={vedalWrapper.cUnitNum} data-field="cUnitNum" label="Unit Number"
+                                onchange={handleOnChange}>
+                            </lightning-input>
+                        </lightning-layout-item>
+                        <lightning-layout-item size="6" padding="around-medium">
+                            <lightning-input value={vedalWrapper.cStreetNum} data-field="cStreetNum"
+                                label="Street Number" required
+                                message-when-value-missing="Please specify Current Address Street Number."
+                                onchange={handleOnChange}>
+                            </lightning-input>
+                        </lightning-layout-item>
+                        <lightning-layout-item size="6" padding="around-medium">
+                            <lightning-input value={vedalWrapper.cStreetName} data-field="cStreetName"
+                                label="Street Name" required
+                                message-when-value-missing="Please specify Current Address Street Name."
+                                onchange={handleOnChange}>
+                            </lightning-input>
+                        </lightning-layout-item>
+                        <lightning-layout-item size="6" padding="around-medium">
+                            <lightning-combobox value={vedalWrapper.cStreetType} options={streetTypeOptions}
+                                data-field="cStreetType" label="Street Type" required
+                                message-when-value-missing="Please specify Current Address Street Type."
+                                onchange={handleOnChange}></lightning-combobox>
+                        </lightning-layout-item>
+                        <lightning-layout-item size="6" padding="around-medium">
+                            <lightning-input value={vedalWrapper.cSuburb} data-field="cSuburb" label="Suburb"
+                                onchange={handleOnChange}>
+                            </lightning-input>
+                        </lightning-layout-item>
+                        <lightning-layout-item size="6" padding="around-medium">
+                            <lightning-combobox value={vedalWrapper.cState} options={stateOptions} data-field="cState"
+                                label="State" required
+                                message-when-value-missing="Please specify Current Address State."
+                                onchange={handleOnChange}></lightning-combobox>
+                        </lightning-layout-item>
+                        <lightning-layout-item size="6" padding="around-medium">
+                            <lightning-input value={vedalWrapper.cPostCode} data-field="cPostCode" label="Post Code">
+                            </lightning-input>
+                        </lightning-layout-item>
+                        <lightning-layout-item size="6" padding="around-medium">
+                            <lightning-combobox value={vedalWrapper.cCountryCode} options={countryOptions}
+                                data-field="cCountryCode" label="Country" onchange={handleOnChange}>
+                            </lightning-combobox>
+                        </lightning-layout-item>
+                    </lightning-layout>
+                </div>
+            </div>
+            <div class="slds-section slds-is-open">
+                <h3 class="slds-section__title" style="background-color: #f3f2f2;">
+                    <button aria-controls="expando-unique-id" aria-expanded="true"
+                        class="slds-button slds-section__title-action" style="background-color: #f3f2f2;">
+                        <lightning-icon icon-name="utility:chevrondown"  alternative-text="Settings" title="Settings" size="small" if:true={sectionsExpandMap.previousResedentialAddress} data-section = "previousResedentialAddress" onclick={handleSectionExpansion}></lightning-icon>
+                        <lightning-icon icon-name="utility:chevronright"  alternative-text="Settings" title="Settings" size="small" if:false={sectionsExpandMap.previousResedentialAddress} data-section = "previousResedentialAddress" onclick={handleSectionExpansion}></lightning-icon>
+                        <span class="slds-truncate" title="Previous Residential Address">Previous Residential
+                            Address</span>
+                    </button>
+                </h3>
+                <div aria-hidden="false" class="slds-section__content" if:true={sectionsExpandMap.previousResedentialAddress}>
+                    <lightning-layout multiple-rows="true">
+                        <lightning-layout-item size="6" padding="around-medium">
+                            <lightning-input value={vedalWrapper.pUnitNum} data-field="pUnitNum" label="Unit Number"
+                                onchange={handleOnChange}>
+                            </lightning-input>
+                        </lightning-layout-item>
+                        <lightning-layout-item size="6" padding="around-medium">
+                            <lightning-input value={vedalWrapper.pStreetNum} data-field="pStreetNum"
+                                label="Street Number" onchange={handleOnChange}>
+                            </lightning-input>
+                        </lightning-layout-item>
+                        <lightning-layout-item size="6" padding="around-medium">
+                            <lightning-input value={vedalWrapper.pStreetName} data-field="pStreetName"
+                                label="Street Name" onchange={handleOnChange}>
+                            </lightning-input>
+                        </lightning-layout-item>
+                        <lightning-layout-item size="6" padding="around-medium">
+                            <lightning-combobox value={vedalWrapper.pStreetType} options={streetTypeOptions}
+                                data-field="pStreetType" label="Street Type" onchange={handleOnChange}>
+                            </lightning-combobox>
+                        </lightning-layout-item>
+                        <lightning-layout-item size="6" padding="around-medium">
+                            <lightning-input value={vedalWrapper.pSuburb} data-field="pSuburb" label="Suburb"
+                                onchange={handleOnChange}>
+                            </lightning-input>
+                        </lightning-layout-item>
+                        <lightning-layout-item size="6" padding="around-medium">
+                            <lightning-combobox value={vedalWrapper.pState} options={streetTypeOptions}
+                                data-field="pState" label="State" onchange={handleOnChange}></lightning-combobox>
+                        </lightning-layout-item>
+                        <lightning-layout-item size="6" padding="around-medium">
+                            <lightning-input value={vedalWrapper.pPostCode} data-field="pPostCode" label="Post Code"
+                                onchange={handleOnChange}>
+                            </lightning-input>
+                        </lightning-layout-item>
+                        <lightning-layout-item size="6" padding="around-medium">
+                            <lightning-combobox value={vedalWrapper.pCountryCode} options={countryOptions}
+                                data-field="pCountryCode" label="Country" onchange={handleOnChange}>
+                            </lightning-combobox>
+                        </lightning-layout-item>
+                    </lightning-layout>
+                </div>
+            </div>
+            <div class="slds-section slds-is-open">
+                <h3 class="slds-section__title" style="background-color: #f3f2f2;">
+                    <button aria-controls="expando-unique-id" aria-expanded="true"
+                        class="slds-button slds-section__title-action" style="background-color: #f3f2f2;">
+                        <lightning-icon icon-name="utility:chevrondown"  alternative-text="Settings" title="Settings" size="small" if:true={sectionsExpandMap.employment} data-section = "employment" onclick={handleSectionExpansion}></lightning-icon>
+                        <lightning-icon icon-name="utility:chevronright"  alternative-text="Settings" title="Settings" size="small" if:false={sectionsExpandMap.employment} data-section = "employment" onclick={handleSectionExpansion}></lightning-icon>
+                        <span class="slds-truncate" title="Employment">Employment</span>
+                    </button>
+                </h3>
+                <div aria-hidden="false" class="slds-section__content" if:true={sectionsExpandMap.employment}>
+                    <lightning-layout multiple-rows="true">
+                        <lightning-layout-item size="6" padding="around-medium">
+                            <lightning-input value={vedalWrapper.cEmployer} data-field="cEmployer"
+                                label="Current Employer Name" onchange={handleOnChange}></lightning-input>
+                        </lightning-layout-item>
+                    </lightning-layout>
+                </div>
+            </div>
+            <div class="slds-section slds-is-open" >
+                <h3 class="slds-section__title" style="background-color: #f3f2f2;">
+                    <button aria-controls="expando-unique-id" aria-expanded="true"
+                        class="slds-button slds-section__title-action" style="background-color: #f3f2f2;">
+                        <lightning-icon icon-name="utility:chevrondown"  alternative-text="Settings" title="Settings" size="small" if:true={sectionsExpandMap.enquiry} data-section = "enquiry" onclick={handleSectionExpansion}></lightning-icon>
+                        <lightning-icon icon-name="utility:chevronright"  alternative-text="Settings" title="Settings" size="small" if:false={sectionsExpandMap.enquiry} data-section = "enquiry" onclick={handleSectionExpansion}></lightning-icon>
+                        <span class="slds-truncate" title="Enquiry">Enquiry</span>
+                    </button>
+                </h3>
+                <div aria-hidden="false" class="slds-section__content" if:true={sectionsExpandMap.enquiry}>
+                    <lightning-layout multiple-rows="true">
+                        <lightning-layout-item size="6" padding="around-medium">
+                            <lightning-combobox value={vedalWrapper.atCode} options={atOptions} data-field="atCode"
+                                label="Account Type" onchange={handleOnChange}></lightning-combobox>
+                        </lightning-layout-item>
+                        <lightning-layout-item size="6" padding="around-medium">
+                            <lightning-combobox value={vedalWrapper.currencyCode} options={currencyOptions}
+                                data-field="currencyCode" label="Select Currency" onchange={handleOnChange}>
+                            </lightning-combobox>
+                        </lightning-layout-item>
+                        <lightning-layout-item size="6" padding="around-medium">
+                            <lightning-input value={vedalWrapper.isCR} data-field="isCR" label="Is Credit Review"
+                                type="checkbox" onchange={handleOnChange}></lightning-input>
+                        </lightning-layout-item>
+                        <lightning-layout-item size="6" padding="around-medium">
+                            <lightning-input value={vedalWrapper.enquiryAmt} data-field="enquiryAmt"
+                                label="Enquiry Amount" onchange={handleOnChange}>
+                            </lightning-input>
+                        </lightning-layout-item>
+                        <lightning-layout-item size="6" padding="around-medium">
+                            <lightning-combobox value={vedalWrapper.relationshipCode} options={relationshipOptions}
+                                data-field="relationshipCode" label="Relationship" onchange={handleOnChange}>
+                            </lightning-combobox>
+                        </lightning-layout-item>
+                        <lightning-layout-item size="6" padding="around-medium">
+                            <lightning-input value={vedalWrapper.enquiryCR} data-field="enquiryCR"
+                                label="Enquiry Client Reference" onchange={handleOnChange}></lightning-input>
+                        </lightning-layout-item>
+                    </lightning-layout>
+                </div>
+            </div>
+            <div class="slds-section slds-is-open" if:true={vedalWrapper.displayServiceInfo}>
+                <h3 class="slds-section__title" style="background-color: #f3f2f2;">
+                    <button aria-controls="expando-unique-id" aria-expanded="true"
+                        class="slds-button slds-section__title-action" style="background-color: #f3f2f2;">
+                        <lightning-icon icon-name="utility:chevrondown"  alternative-text="Settings" title="Settings" size="small" if:true={sectionsExpandMap.serviceResult1} data-section = "serviceResult1" onclick={handleSectionExpansion}></lightning-icon>
+                        <lightning-icon icon-name="utility:chevronright"  alternative-text="Settings" title="Settings" size="small" if:false={sectionsExpandMap.serviceResult1} data-section = "serviceResult1" onclick={handleSectionExpansion}></lightning-icon>
+                        <span class="slds-truncate" title="Service Result #1">Service Result #1</span>
+                    </button>
+                </h3>
+                <div aria-hidden="false" class="slds-section__content" if:true={sectionsExpandMap.serviceResult1}>
+                    <lightning-layout multiple-rows="true">
+                        <lightning-layout-item size="12">
+                            <lightning-textarea label="Request 1" value={vedalWrapper.sfReq1} data-field="sfReq1"
+                                onchange={handleOnChange}>
+
+                            </lightning-textarea>
+                        </lightning-layout-item>
+                        <lightning-layout-item size="12">
+                            <lightning-textarea label="Response 1" value={vedalWrapper.eqRes1} data-field="eqRes1"
+                                onchange={handleOnChange}>
+
+                            </lightning-textarea>
+                        </lightning-layout-item>
+                    </lightning-layout>
+                </div>
+            </div>
+            <div class="slds-section slds-is-open" if:true={vedalWrapper.displayServiceInfo}>
+                <h3 class="slds-section__title " style="background-color: #f3f2f2;">
+                    <button aria-controls="expando-unique-id" aria-expanded="true"
+                        class="slds-button slds-section__title-action" style="background-color: #f3f2f2;">
+                        <lightning-icon icon-name="utility:chevrondown"  alternative-text="Settings" title="Settings" size="small" if:true={sectionsExpandMap.serviceResult2} data-section = "serviceResult2" onclick={handleSectionExpansion}></lightning-icon>
+                        <lightning-icon icon-name="utility:chevronright"  alternative-text="Settings" title="Settings" size="small" if:false={sectionsExpandMap.serviceResult2} data-section = "serviceResult2" onclick={handleSectionExpansion}></lightning-icon>
+                        <span class="slds-truncate" title="Service Result #2">Service Result #2</span>
+                    </button>
+                </h3>
+                <div aria-hidden="false" class="slds-section__content" if:true={sectionsExpandMap.serviceResult2}>
+                    <lightning-layout multiple-rows="true">
+                        <lightning-layout-item size="12">
+                            <lightning-textarea label="Request 2" value={vedalWrapper.sfReq2} data-field="sfReq2"
+                                onchange={handleOnChange}>
+
+                            </lightning-textarea>
+                        </lightning-layout-item>
+                        <lightning-layout-item size="12">
+                            <lightning-textarea label="Response 2" value={vedalWrapper.eqRes2} data-field="eqRes2"
+                                onchange={handleOnChange}>
+
+                            </lightning-textarea>
+                        </lightning-layout-item>
+                    </lightning-layout>
+                </div>
+            </div>
+            <div slot="footer" class="slds-align_absolute-center slds-box slds-theme_shade"
+                style="background-color: #f3f2f2;">
+                <lightning-button label="Cancel" style="margin-right:1rem;" onclick={redirectToOpportunity}>
+                </lightning-button>
+                <lightning-button label="Submit" variant="brand" onclick={submitEnq}></lightning-button>
+            </div>
+        </lightning-card>
+    </template>
+    <template if:false={renderNow}>
+        <div style="position: relative">
+            <lightning-spinner size="medium" alternative-text="fetching data">
+
+            </lightning-spinner>
+        </div>
+    </template>
+
+</template>

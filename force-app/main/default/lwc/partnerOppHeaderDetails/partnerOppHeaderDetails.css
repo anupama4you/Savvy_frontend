@@ -1,0 +1,16 @@
+/* .my-page-header {
+  padding: 0px 20px;
+}
+
+.my-page-header .slds-form-element__label {
+  display: none;
+}
+
+.my-page-header .slds-page-header__detail-row {
+  padding: 0px 20px 10px;
+} */
+
+.my-page-header {
+  background: rgb(255, 255, 255,0.95);
+  border-radius: 4px 4px 0px 0px;
+}

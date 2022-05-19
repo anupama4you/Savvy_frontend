@@ -1,0 +1,33 @@
+.my-options-group {
+  display: flex;
+  flex-direction: column;
+}
+
+.my-options-group button {
+  flex-grow: 1;
+  width: 100%;
+  justify-content: center;
+  border-radius: 5px;
+  padding: 8px;
+  margin: 0px 0px 18px 0px;
+}
+
+.my-options-group button lightning-icon {
+  margin-right: 25px;
+  /* var(--sds-c-button-text-color, var(--lwc-brandAccessible,rgb(213, 30, 16))) */
+}
+
+.my-options-group .my-option-icon {
+  --sds-c-icon-color-foreground-default: var(--sds-c-button-text-color, var(--lwc-brandAccessible,#196A99));
+}
+
+.my-options-group button .my-button-label {
+  font-size: 0.78rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.02rem;
+}
+
+.my-options-group button:hover {
+  background-color: #fafafa;
+}

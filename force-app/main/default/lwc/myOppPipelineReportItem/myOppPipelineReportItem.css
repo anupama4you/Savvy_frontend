@@ -1,0 +1,29 @@
+.slds-table thead th {
+  font-weight: 800;
+  padding: 5px 0;
+}
+
+.slds-table th, .slds-table td {
+  padding: 2px 0;
+}
+
+.slds-table td lightning-formatted-url a {
+  font-weight: 600;
+}
+
+.slds-table lightning-formatted-phone span {
+  font-size: 0.78rem;
+}
+
+.my-table {
+  border-top-color: transparent;
+  border-bottom-color: transparent;
+}
+
+.money-cell {
+  font-size: 0.75rem;
+}
+
+.phone-cell {
+  font-size: 0.75rem;
+}

@@ -1,0 +1,323 @@
+<template>
+  <template if:true={displayComp}>
+    <lightning-record-view-form
+      record-id={recordId}
+      object-api-name="Custom_Opportunity__c"
+    >
+      <!-- <div class="my-page-header slds-page-header_record-home">
+        <div class="slds-page-header__row">
+          <div class="slds-page-header__col-title">
+            <div class="slds-media">
+              <div class="slds-media__figure">
+                <a href={oppUrl}
+                  ><lightning-icon
+                    icon-name="custom:custom41"
+                    title="Opportunity"
+                  ></lightning-icon
+                ></a>
+              </div>
+              <div class="slds-media__body">
+                <a href={oppUrl}>
+                  <div class="slds-page-header__name">
+                    <div class="slds-page-header__name-title">
+                      <h1>
+                        <span>Opportunity</span>
+                        <span
+                          class="slds-page-header__title slds-truncate"
+                          title={oppName}
+                          >{oppName}</span
+                        >
+                      </h1>
+                    </div>
+                  </div>
+                </a>
+              </div>
+            </div>
+          </div>
+          <div class="slds-page-header__col-actions">
+            <div class="slds-page-header__controls">
+              <div class="slds-page-header__control"></div>
+              <div class="slds-page-header__control"></div>
+            </div>
+          </div>
+        </div>
+        <div class="slds-page-header__row slds-page-header__row_gutters">
+          <div class="slds-page-header__col-details">
+            <ul class="slds-page-header__detail-row">
+              <li class="slds-page-header__detail-block">
+                <div class="slds-text-title slds-truncate" title="Name">
+                  Name
+                </div>
+                <div class="slds-truncate" title="Name">
+                  {fullName}
+                </div>
+              </li>
+              <li class="slds-page-header__detail-block">
+                <div class="slds-text-title slds-truncate" title="Lender">
+                  Lender
+                </div>
+                <div class="slds-truncate" title="Lender">
+                  {lender}
+                </div>
+              </li>
+              <li class="slds-page-header__detail-block">
+                <div class="slds-text-title slds-truncate" title="Commision">
+                  Commission
+                </div>
+                <div class="slds-truncate" title="Commission">
+                  {comm}
+                </div>
+              </li>
+              <li class="slds-page-header__detail-block">
+                <div class="slds-text-title slds-truncate" title="Mobile">
+                  Mobile
+                </div>
+                <div class="slds-truncate" title="Mobile">
+                  <lightning-formatted-phone
+                    value={mobile}
+                  ></lightning-formatted-phone>
+                </div>
+              </li>
+              <li class="slds-page-header__detail-block">
+                <div class="slds-text-title slds-truncate" title="Email">
+                  Email
+                </div>
+                <div class="slds-truncate" title="Email">
+                  <lightning-formatted-email
+                    value={email}
+                  ></lightning-formatted-email>
+                </div>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div> -->
+
+      <div class="my-page-header slds-page-header slds-page-header_record-home">
+        <div class="slds-page-header__row">
+          <div class="slds-page-header__col-title">
+            <div class="slds-media">
+              <div class="slds-media__figure">
+                <a href={oppUrl}
+                  ><lightning-icon
+                    icon-name="custom:custom41"
+                    title="Opportunity"
+                  ></lightning-icon
+                ></a>
+              </div>
+              <div class="slds-media__body">
+                 <a href={oppUrl}>
+                  <div class="slds-page-header__name">
+                    <div class="slds-page-header__name-title">
+                      <h1>
+                        <span>Opportunity</span>
+                        <span
+                          class="slds-page-header__title slds-truncate"
+                          title={oppName}
+                          >{oppName}</span
+                        >
+                      </h1>
+                    </div>
+                  </div>
+                </a>
+              </div>
+            </div>
+          </div>
+          <div class="slds-page-header__col-actions">
+            <div class="slds-page-header__controls">
+              <!-- 
+              <div class="slds-page-header__control">
+                <button
+                  class="slds-button slds-button_neutral slds-button_stateful slds-not-selected"
+                  aria-live="assertive"
+                  aria-pressed="false"
+                >
+                  <span class="slds-text-not-selected">
+                    <svg
+                      class="slds-button__icon slds-button__icon_small slds-button__icon_left"
+                      aria-hidden="true"
+                    >
+                      <use
+                        xlink:href="/assets/icons/utility-sprite/svg/symbols.svg#add"
+                      ></use></svg
+                    >Follow</span
+                  >
+                  <span class="slds-text-selected">
+                    <svg
+                      class="slds-button__icon slds-button__icon_small slds-button__icon_left"
+                      aria-hidden="true"
+                    >
+                      <use
+                        xlink:href="/assets/icons/utility-sprite/svg/symbols.svg#check"
+                      ></use></svg
+                    >Following</span
+                  >
+                  <span class="slds-text-selected-focus">
+                    <svg
+                      class="slds-button__icon slds-button__icon_small slds-button__icon_left"
+                      aria-hidden="true"
+                    >
+                      <use
+                        xlink:href="/assets/icons/utility-sprite/svg/symbols.svg#close"
+                      ></use></svg
+                    >Unfollow</span
+                  >
+                </button>
+              </div>
+               -->
+              <div class="slds-page-header__control">
+                <ul class="slds-button-group-list">
+                  <!-- <li>
+                    <button class="slds-button slds-button_neutral">
+                      Edit
+                    </button>
+                  </li> -->
+                  <!-- <li>
+                    <button class="slds-button slds-button_neutral">
+                      Delete
+                    </button>
+                  </li> -->
+                  <li if:true={showCloneBtn}>
+                    <lightning-button label="Clone" title="Clone the current opportunity" onclick={handleCloneClick} class="slds-m-left_x-small"></lightning-button>
+                  </li>
+                  <!-- <li>
+                    <div
+                      class="slds-dropdown-trigger slds-dropdown-trigger_click"
+                    >
+                      <button
+                        class="slds-button slds-button_icon slds-button_icon-border-filled"
+                        aria-haspopup="true"
+                        title="More Actions"
+                      >
+                        <svg class="slds-button__icon" aria-hidden="true">
+                          <use
+                            xlink:href="/assets/icons/utility-sprite/svg/symbols.svg#down"
+                          ></use>
+                        </svg>
+                        <span class="slds-assistive-text">More Actions</span>
+                      </button>
+                    </div>
+                  </li> -->
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="slds-page-header__row slds-page-header__row_gutters">
+          <div class="slds-page-header__col-details">
+            <ul class="slds-page-header__detail-row">
+              <li class="slds-page-header__detail-block">
+                <div class="slds-text-title slds-truncate" title="Field 1">
+                  Name
+                </div>
+                <div
+                  class="slds-truncate"
+                  title="Description that demonstrates truncation with a long text field."
+                >{fullName}</div>
+              </li>
+              <li class="slds-page-header__detail-block">
+                <div class="slds-text-title slds-truncate" title="Field 1">
+                  Lender
+                </div>
+                <div
+                  class="slds-truncate"
+                  title="Description that demonstrates truncation with a long text field."
+                >{lender}</div>
+              </li>
+              <li class="slds-page-header__detail-block">
+                <div class="slds-text-title slds-truncate" title="Field 1">
+                  Commission
+                </div>
+                <div
+                  class="slds-truncate"
+                  title="Description that demonstrates truncation with a long text field."
+                >{comm}</div>
+              </li>
+              <li class="slds-page-header__detail-block">
+                <div class="slds-text-title slds-truncate" title="Field 3">
+                  Mobile
+                </div>
+                <div class="slds-truncate" title="Hyperlink">
+                  <lightning-formatted-phone
+                    value={mobile}
+                  ></lightning-formatted-phone>
+                </div>
+              </li>
+              <li class="slds-page-header__detail-block">
+                <div class="slds-text-title slds-truncate" title="Field 4">
+                  Email
+                </div>
+                <div
+                  class="slds-truncate"
+                  title="Description (2-line truncation—must use JS to truncate)."
+                >
+                  <lightning-formatted-email
+                    value={email}
+                  ></lightning-formatted-email>
+                </div>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </lightning-record-view-form>
+    <template if:true={showSpinner}>
+      <lightning-spinner alternative-text="Loading" size="large" variant="brand" ></lightning-spinner>
+    </template>
+    <!-- Confirmation -->
+    <template if:true={showCloneModal}>
+      <section
+        role="dialog"
+        tabindex="-1"
+        aria-labelledby="modal-heading-01"
+        aria-modal="true"
+        aria-describedby="modal-content-id-1"
+        class="slds-modal slds-fade-in-open"
+      >
+        <div class="slds-modal__container">
+          <header class="slds-modal__header">
+            <button
+              class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse"
+              title="Close"
+              onclick={handleCloneClose}
+            >
+              <lightning-icon
+                icon-name="utility:close"
+                alternative-text="close"
+                variant="inverse"
+              ></lightning-icon>
+              <span class="slds-assistive-text">Close</span>
+            </button>
+            <h2 id="modal-heading-01" class="slds-modal__title slds-hyphenate">
+              Clone opportunity: {oppName}
+            </h2>
+          </header>
+          <div
+            class="slds-modal__content slds-p-around_medium"
+            id="modal-content-id-1"
+          >
+           <p>Are you sure to clone this opportunity?</p>
+          </div>
+          <footer class="slds-modal__footer">
+            <lightning-button
+              class="slds-button slds-m-left_x-small"
+              type="button"
+              label="No"
+              onclick={handleCloneClose}
+            >
+            </lightning-button>
+            <lightning-button
+              class="slds-button slds-m-left_x-small"
+              variant="brand"
+              type="button"
+              label="Yes"
+              onclick={handleCloneYesClick}
+            >
+            </lightning-button>
+          </footer>
+        </div>
+      </section>
+      <div class="slds-backdrop slds-backdrop_open"></div>
+    </template>
+  </template>
+</template>

@@ -1,0 +1,55 @@
+.THIS .cTable.slds-table_fixed-layout tbody {
+    transform: none !important;
+}
+.THIS .cTable thead th {
+    background-color:#f9f9fa;
+    min-height: 1.3rem;
+}
+.THIS .cTable tbody td {
+    padding-top: .25rem;
+    padding-bottom: .25rem;
+}
+.THIS .cTable .slds-th__action {
+    padding: .5rem;
+    height: 1.75rem;
+}
+.THIS .ctInput {
+    width: 100%;
+    height: 1.5rem;
+    min-height: 1.5rem;
+    line-height: 1.5rem;
+}
+.THIS .ctInput .slds-input {
+    height: 1.5rem;
+    min-height: 1.5rem;
+    line-height: 1.5rem;
+}
+.THIS .ctInput .slds-select { 
+    min-height: 1rem !important; 
+    height: 1.5rem; 
+    padding-left:.3rem !important; 
+    padding-right:1.2rem !important;
+}
+.THIS .ctInput .slds-select_container::before { 
+    border-bottom: 0 !important; 
+}
+.THIS .ctInput .slds-form-element__label {
+    display: none;
+}
+.THIS .ctFooter.slds-modal__footer {
+    padding: .5rem;
+    text-align: center;
+}
+.THIS .slds-datepicker table {
+    table-layout: fixed;
+    width: 300px;
+}
+.THIS .slds-datepicker .slds-day{
+    width: auto !important;
+    min-width: auto !important;
+    height: auto !important;
+    line-height: inherit !important;
+}
+.THIS .slds-shrink-none {
+    margin-top: 5px;
+}

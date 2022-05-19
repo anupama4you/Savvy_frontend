@@ -1,0 +1,217 @@
+<aura:component implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickAction" access="global" >
+    <div class="slds-form slds-p-around_large" role="list" style="background-color: white;">
+        
+        <div class="slds-grid slds-wrap" >
+        
+        <div class="slds-col slds-size_1-of-3 slds-align_absolute-center slds-p-around_medium  " style="text-align:left; font-size: 16px;" >
+            <strong>Client Details:</strong>
+        </div>
+        
+       
+            
+        <div class="slds-col slds-size_1-of-3 slds-align_absolute-center slds-p-around_medium " style="text-align:left; font-size: 16px;" >
+            <strong>Finance Details:</strong>
+        </div>
+            
+           
+        </div>
+        
+        <div class="slds-form__row">
+            <div class="slds-form__item" role="listitem">
+                <div class="slds-form-element slds-form-element_horizontal slds-is-editing">
+                    <label class="slds-form-element__label" for="horizontal-form-element-id-01">Date:</label>
+                    <div class="slds-form-element__control">
+                        <input type="date" id="horizontal-form-element-id-01" readonly="" class="slds-input"  />
+                    </div>
+                </div>
+            </div>
+            <div class="slds-form__item" role="listitem">
+               <div class="slds-form-element slds-form-element_horizontal slds-is-editing">
+                    <label class="slds-form-element__label" for="horizontal-form-element-id-01">Date:</label>
+                    <div class="slds-form-element__control">
+                        <input type="date" id="horizontal-form-element-id-01" readonly="" class="slds-input"  />
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+         <div class="slds-form__row">
+            <div class="slds-form__item" role="listitem">
+                <div class="slds-form-element slds-form-element_horizontal slds-is-editing">
+                    <label class="slds-form-element__label" for="horizontal-form-element-id-01">First Name1</label>
+                    <div class="slds-form-element__control">
+                        <input type="text" id="horizontal-form-element-id-01" readonly="" class="slds-input"  />
+                    </div>
+                </div>
+            </div>
+            <div class="slds-form__item" role="listitem">
+               <div class="slds-form-element slds-form-element_horizontal slds-is-editing">
+                    <label class="slds-form-element__label" for="horizontal-form-element-id-01">Lender approved with</label>
+                    <div class="slds-form-element__control">
+                        <input type="text" id="horizontal-form-element-id-01" readonly="" class="slds-input"  />
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+         <div class="slds-form__row">
+            <div class="slds-form__item" role="listitem">
+                <div class="slds-form-element slds-form-element_horizontal slds-is-editing">
+                    <label class="slds-form-element__label" for="horizontal-form-element-id-01">Last Name 1 </label>
+                    <div class="slds-form-element__control">
+                        <input type="text" id="horizontal-form-element-id-01" readonly="" class="slds-input"  />
+                    </div>
+                </div>
+            </div>
+            <div class="slds-form__item" role="listitem">
+               <div class="slds-form-element slds-form-element_horizontal slds-is-editing">
+                    <label class="slds-form-element__label" for="horizontal-form-element-id-01">Lender Pre-Approved Amount:</label>
+                    <div class="slds-form-element__control">
+                        <input type="text" id="horizontal-form-element-id-01" readonly="" class="slds-input"  required="true"/>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="slds-form__row">
+            <div class="slds-form__item" role="listitem">
+                <div class="slds-form-element slds-form-element_horizontal slds-is-editing">
+                    <label class="slds-form-element__label" for="horizontal-form-element-id-01">Client Address </label>
+                    <div class="slds-form-element__control">
+                        <input type="text" id="horizontal-form-element-id-01" readonly="" class="slds-input"  />
+                    </div>
+                </div>
+            </div>
+            <div class="slds-form__item" role="listitem">
+               <div class="slds-form-element slds-form-element_horizontal slds-is-editing">
+                    <label class="slds-form-element__label" for="horizontal-form-element-id-01">Lender Pre-Approved Maximum Age of Vehicle:</label>
+                    <div class="slds-form-element__control">
+                        <input type="text" id="horizontal-form-element-id-01" readonly="" class="slds-input"  required="true"/>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="slds-form__row">
+            <div class="slds-form__item" role="listitem">
+                <div class="slds-form-element slds-form-element_horizontal slds-is-editing">
+                    <label class="slds-form-element__label" for="horizontal-form-element-id-01">Mobile Number</label>
+                    <div class="slds-form-element__control">
+                        <input type="text" id="horizontal-form-element-id-01" readonly="" class="slds-input"  />
+                    </div>
+                </div>
+            </div>
+            <div class="slds-form__item" role="listitem">
+               <div class="slds-form-element slds-form-element_horizontal slds-is-editing">
+                    <label class="slds-form-element__label" for="horizontal-form-element-id-01">Client Deposit Amount Required:</label>
+                    <div class="slds-form-element__control">
+                        <input type="text" id="horizontal-form-element-id-01" readonly="" class="slds-input"  required="true"/>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="slds-form__row">
+            <div class="slds-form__item" role="listitem">
+                <div class="slds-form-element slds-form-element_horizontal slds-is-editing">
+                    <label class="slds-form-element__label" for="horizontal-form-element-id-01">Home Phone Number</label>
+                    <div class="slds-form-element__control">
+                        <input type="text" id="horizontal-form-element-id-01" readonly="" class="slds-input"  />
+                    </div>
+                </div>
+            </div>
+            <div class="slds-form__item" role="listitem">
+               <div class="slds-form-element slds-form-element_horizontal slds-is-editing">
+                    <label class="slds-form-element__label" for="horizontal-form-element-id-01">Client Budget (Range):</label>
+                    <div class="slds-form-element__control">
+                        <input type="text" id="horizontal-form-element-id-01" readonly="" class="slds-input"  required="true"/>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="slds-form__row">
+            <div class="slds-form__item" role="listitem">
+                <div class="slds-form-element slds-form-element_horizontal slds-is-editing">
+                    <label class="slds-form-element__label" for="horizontal-form-element-id-01">Work Phone Number</label>
+                    <div class="slds-form-element__control">
+                        <input type="text" id="horizontal-form-element-id-01" readonly="" class="slds-input"  />
+                    </div>
+                </div>
+            </div>
+            <div class="slds-form__item" role="listitem">
+               <div class="slds-form-element slds-form-element_horizontal slds-is-editing">
+                    <label class="slds-form-element__label" for="horizontal-form-element-id-01">Payout Details for Trade-in:</label>
+                    <div class="slds-form-element__control">
+                        <input type="text" id="horizontal-form-element-id-01" readonly="" class="slds-input"  required="true"/>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="slds-form__row">
+            <div class="slds-form__item" role="listitem">
+                <div class="slds-form-element slds-form-element_horizontal slds-is-editing">
+                    <label class="slds-form-element__label" for="horizontal-form-element-id-01">Email</label>
+                    <div class="slds-form-element__control">
+                        <input type="text" id="horizontal-form-element-id-01" readonly="" class="slds-input"  />
+                    </div>
+                </div>
+            </div>
+            <div class="slds-form__item" role="listitem">
+               <div class="slds-form-element slds-form-element_horizontal slds-is-editing">
+                    <label class="slds-form-element__label" for="horizontal-form-element-id-01">Trade In Details:</label>
+                    <div class="slds-form-element__control">
+                        <input type="text" id="horizontal-form-element-id-01" readonly="" class="slds-input"  required="true"/>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <hr></hr>
+        
+        <div class="slds-form__row">
+            <div class="slds-form__item" role="listitem">
+                <div class="slds-form-element slds-form-element_horizontal slds-is-editing">
+                    <label class="slds-form-element__label" for="horizontal-form-element-id-01">New/Used:</label>
+                    <div class="slds-form-element__control">
+                        <input type="text" id="horizontal-form-element-id-01" readonly="" class="slds-input"  />
+                    </div>
+                </div>
+            </div>
+            <div class="slds-form__item" role="listitem">
+               <div class="slds-form-element slds-form-element_horizontal slds-is-editing">
+                    <label class="slds-form-element__label" for="horizontal-form-element-id-01">Notes </label>
+                    <div class="slds-form-element__control">
+                        <input type="text" id="horizontal-form-element-id-01" readonly="" class="slds-input"  required="true"/>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="slds-form__row">
+            <div class="slds-form__item" role="listitem">
+                <div class="slds-form-element slds-form-element_horizontal slds-is-editing">
+                    <label class="slds-form-element__label" for="horizontal-form-element-id-01">Vehicle Details (if known):</label>
+                    <div class="slds-form-element__control">
+                        <input type="text" id="horizontal-form-element-id-01" readonly="" class="slds-input"  />
+                    </div>
+                </div>
+            </div>
+            <div class="slds-form__item" role="listitem">
+               <div class="slds-form-element slds-form-element_horizontal slds-is-editing">
+                    <label class="slds-form-element__label" for="horizontal-form-element-id-01"></label>
+                    <div class="slds-form-element__control">
+                      <!--  <input type="text" id="horizontal-form-element-id-01" readonly="" class="slds-input"  required="true"/> -->
+                    </div>
+                </div>
+            </div>
+        </div>
+        <br/>
+        <center>
+        <button class="slds-button slds-button_brand">Submit</button>
+        <button class="slds-button slds-button_brand">Return</button>
+            </center>
+        
+    </div>
+</aura:component>

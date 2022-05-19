@@ -1,0 +1,157 @@
+<template>
+    <div class="slds-page-header" style="background-color: #f3f2f2;">
+        <div class="slds-page-header__row">
+            <div class="slds-page-header__col-title">
+                <div class="slds-media">
+                    <div class="slds-media__figure">
+                        <span class="slds-icon_container slds-icon-standard-opportunity" title="opportunity">
+                            <!-- <svg class="slds-icon slds-page-header__icon" aria-hidden="true">
+                                <use xlink:href="/assets/icons/standard-sprite/svg/symbols.svg#opportunity"></use>
+                            </svg> -->
+                            <span class="slds-assistive-text">Vehicle Direct Referral Form</span>
+                        </span>
+                    </div>
+                    <div class="slds-media__body">
+                        <div class="slds-page-header__name">
+                            <div class="slds-page-header__name-title">
+                                <h1>
+                                    <span class="slds-page-header__title slds-truncate"
+                                        title="Vehicle Direct Referral Form">Vehicle Direct Referral Form</span>
+                                </h1>
+                            </div>
+                        </div>
+                        
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <lightning-card title="">
+        <lightning-layout multiple-rows="true">
+            <lightning-layout-item size="12" if:false={renderNow}>
+                <div style="position:relative">
+                <lightning-spinner size="medium" alternative-text="fetching data" style="position: absolute"></lightning-spinner>
+                </div>
+            </lightning-layout-item>
+            <lightning-layout-item size="12" if:false={checkForLoadingAndErrors}>
+                <div class="slds-box slds-theme_error slds-theme_alert-texture">
+                    {errorMessage}
+                </div>
+            </lightning-layout-item>
+        </lightning-layout>
+        <lightning-layout multiple-rows="true" if:true={checkForLoadingAndErrors}>
+             <lightning-layout-item size="6"> 
+                <lightning-layout multiple-rows="true">
+                    <lightning-layout-item size="12">
+                        <p class="slds-text-align_center"><strong>Client Details:</strong></p>
+                    </lightning-layout-item>
+                    <!-- <lightning-layout-item size="12">
+                        <p><strong>Date: currentDate</strong></p>
+                    </lightning-layout-item> -->
+                    <lightning-layout-item size="12" padding="around-medium">
+                        <lightning-input type="text" label="First Name 1: " value={opportunity.First_Name__c} data-field="First_Name__c" onchange={handleOnChange}>
+                        </lightning-input>
+                    </lightning-layout-item>
+                    <lightning-layout-item size="12" padding="around-medium">
+                        <lightning-input type="text" label="Last Name 1: " value={opportunity.Last_Name__c} data-field="Last_Name__c" onchange={handleOnChange}>
+                        </lightning-input>
+                    </lightning-layout-item>
+                    <lightning-layout-item size="12" padding="around-medium" if:true={checkIfThereAreTwoApplicants}>
+                        <lightning-input type="text" label="First Name 2: "
+                            value={opportunity.Second_Applicant_First_Name__c}  data-field="Second_Applicant_First_Name__c" onchange={handleOnChange}>
+                        </lightning-input>
+                    </lightning-layout-item>
+                    <lightning-layout-item if:true={transactionInProgress}>
+                        <lightning-spinner size="medium" alternative-text="Please wait"></lightning-spinner>
+                    </lightning-layout-item>
+                    <lightning-layout-item size="12" padding="around-medium" if:true={checkIfThereAreTwoApplicants}>
+                        <lightning-input type="text" label="Last Name 2:  "
+                            value={opportunity.Second_Applicant_Last_Name__c} data-field="Second_Applicant_Last_Name__c" onchange={handleOnChange}>
+                        </lightning-input>
+                    </lightning-layout-item>
+                    <lightning-layout-item size="12" padding="around-medium">
+                        <lightning-input label="Mobile Number: " value={opportunity.Mobile_Number__c} data-field="Mobile_Number__c" onchange={handleOnChange}>
+                        </lightning-input>
+                    </lightning-layout-item>
+                    <lightning-layout-item size="12" padding="around-medium">
+                        <lightning-input label="Home Phone Number: " type="tel" value={opportunity.Home_Phone__c} data-field="Home_Phone__c" onchange={handleOnChange}>
+                        </lightning-input>
+                    </lightning-layout-item>
+                    <lightning-layout-item size="12" padding="around-medium">
+                        <lightning-input label="Work Phone Number: " type="tel" value={opportunity.Work_Phone__c} data-field="Work_Phone__c" onchange={handleOnChange}>
+                        </lightning-input>
+                    </lightning-layout-item>
+                    <lightning-layout-item size="12" padding="around-medium">
+                        <lightning-input label="Email: " type="email"  value={opportunity.Email_Address__c} data-field="Email_Address__c" onchange={handleOnChange}> </lightning-input>
+                    </lightning-layout-item>
+                </lightning-layout> 
+
+             </lightning-layout-item>
+            <lightning-layout-item size="6" large-device-size="6" small-device-size="6" medium-device-size="6">
+                <lightning-layout multiple-rows="true">
+                    <lightning-layout-item size="12" >
+                        <p class="slds-text-align_center"><strong>Finance Details:</strong></p>
+                    </lightning-layout-item>
+                    <!-- <lightning-layout-item size="12">
+                        <p class="slds-text-align_center"><strong>Date: currentDate</strong></p>
+                    </lightning-layout-item> -->
+                    <lightning-layout-item size="12" padding="around-medium">
+                        <lightning-input label="Lender approved with: " value={opportunity.Lender_Approved__c} data-field="Lender_Approved__c" onchange={handleOnChange}>
+                        </lightning-input>
+                    </lightning-layout-item>
+                    <lightning-layout-item size="12" padding="around-medium">
+                        <lightning-input label="Lender Pre-Approved Amount: " value={opportunity.Pre_Approved_Amount__c}
+                            required data-field="Pre_Approved_Amount__c" onchange={handleOnChange}> </lightning-input>
+                    </lightning-layout-item>
+                    <lightning-layout-item size="12" padding="around-medium">
+                        <lightning-input label="Lender Pre-Approved Maximum Age of Vehicle: "
+                            value={opportunity.Pre_Approved_Vehicle_Age__c} required data-field="Pre_Approved_Vehicle_Age__c" onchange={handleOnChange}> </lightning-input>
+                    </lightning-layout-item>
+                    <lightning-layout-item size="12" padding="around-medium">
+                        <lightning-input label="Client Deposit Amount Required: "
+                            value={opportunity.Required_Client_Deposit__c} required data-field="Required_Client_Deposit__c" onchange={handleOnChange}> </lightning-input>
+                    </lightning-layout-item>
+                    <lightning-layout-item size="12" padding="around-medium">
+                        <lightning-input label="Client Budget (Range): " value={opportunity.Client_Budget__c} required data-field="Client_Budget__c" onchange={handleOnChange}>
+                        </lightning-input>
+                    </lightning-layout-item>
+                    <lightning-layout-item size="12" padding="around-medium">
+                        <lightning-input label="Payout Details for Trade-in: " value={opportunity.Payout_Details__c} data-field="Payout_Details__c" onchange={handleOnChange}>
+                        </lightning-input>
+                    </lightning-layout-item>
+                    <lightning-layout-item size="12" padding="around-medium">
+                        <lightning-input label="Trade In Details:  " value={opportunity.Trade_in_Details__c} data-field="Trade_in_Details__c" onchange={handleOnChange}>
+                        </lightning-input>
+                    </lightning-layout-item>
+                </lightning-layout>
+
+            </lightning-layout-item> 
+        </lightning-layout>
+
+        <div class="slds-section slds-is-open" if:true={checkForLoadingAndErrors}>
+            <h3 class="slds-section__title slds-theme_shade" style="background-color: #f3f2f2;">
+                    <span class="slds-truncate slds-p-horizontal_small" title="Vehicle Details (indicative):">Vehicle Details (indicative):</span>
+            </h3>
+            <div aria-hidden="false" class="slds-section__content" id="expando-unique-id">
+                <lightning-layout multiple-rows="true">
+                    <lightning-layout-item size="6" padding="around-medium">
+                        <lightning-combobox options={vehicleStatusCombobox} value={opportunity.New_Used__c} data-field="New_Used__c" onchange={handleOnChange} label="New/Used"></lightning-combobox>
+                    </lightning-layout-item>
+                    <lightning-layout-item size="6" ></lightning-layout-item>
+                    <lightning-layout-item size="6" padding="around-medium">
+                            <lightning-input label="Vehicle Details (if known): " value={opportunity.Vehicle_Details__c} data-field="Vehicle_Details__c" onchange={handleOnChange}></lightning-input>
+                    </lightning-layout-item>
+                    <lightning-layout-item size="6"></lightning-layout-item>
+                    <lightning-layout-item size="6" padding="around-medium">
+                            <lightning-textarea label="Notes: " required value={opportunity.VD_Notes__c} data-field="VD_Notes__c" onchange={handleOnChange}></lightning-textarea>
+                    </lightning-layout-item>
+                </lightning-layout>
+            </div>
+        </div>
+        <div slot="footer" class="slds-align_absolute-center slds-box slds-theme_shade" style="background-color: #f3f2f2;">
+            <lightning-button label="Cancel" style="margin-right:1rem;" disabled={checkForButtonDisable} onclick={redirectToOpportunity}></lightning-button>
+            <lightning-button label="Save" variant="brand" disabled={checkForButtonDisable} onclick={handleSave}></lightning-button>             
+        </div>
+    </lightning-card>
+
+</template>

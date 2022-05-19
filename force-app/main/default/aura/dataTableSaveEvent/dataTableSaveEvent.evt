@@ -1,0 +1,4 @@
+<aura:event type="COMPONENT" description="Event template">
+    <aura:attribute name="tableAuraId" type="String" />
+    <aura:attribute name="recordsString" type="String" /> <!-- Records JSON String -->
+</aura:event>

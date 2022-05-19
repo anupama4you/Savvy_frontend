@@ -1,0 +1,54 @@
+.top-options-group .top-options-group-row:not(:last-child) {
+    margin-bottom: 16px;
+  }
+  
+  .top-options-group-row {
+    display: flex;
+  }
+  
+  .top-options-group button,
+  .top-options-group a {
+    flex-grow: 1;
+    width: 100%;
+    justify-content: center;
+    border-radius: 4px;
+    padding: 5px 10px 5px 10px;
+    margin: 0px;
+    border-bottom: 1px solid #eaeaea;
+  }
+  
+  .top-icon-button {
+    display: flex;
+    flex-direction: column;
+    background-color: #fff;
+  }
+  
+  .top-icon-button:hover {
+    background-color: rgba(255, 255, 255, 0.95);
+  }
+  
+  .top-icon-button span {
+    font-size: 0.6rem;
+    font-weight: 700;
+  }
+  .top-options-group .my-option-icon {
+    --sds-c-icon-color-foreground-default: var(--sds-c-button-text-color, var(--lwc-brandAccessible,#196A99));
+  }
+  
+  .equifax-icon {
+      width: 50px;
+      height: 10px;
+      margin-top: 12px;
+      margin-bottom: 2px;
+  }
+  
+  .vd-icon {
+      width: 50px;
+      height: 10px;
+      margin-top: 12px;
+      margin-bottom: 2px;
+  }
+  
+  hr {
+    border: 1px solid #0D74CD;
+  }

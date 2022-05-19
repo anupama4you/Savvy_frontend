@@ -1,0 +1,91 @@
+<template>
+    <div class="top-options-group">
+      <div class="top-options-group-row slds-grid">
+        <div class="slds-col slds-size_1-of-3 slds-p-horizontal_x-small">
+          <a class="slds-button slds-button_neutral top-icon-button"  data-component="emailComponent" onclick={raiseSelectedComponentEvent}>
+            <lightning-icon
+              icon-name="utility:email"
+              alternative-text="Send Email"
+              title="Send email"
+              size="small"
+              class="my-option-icon"
+            >
+            </lightning-icon>
+            <span class="my-button-label slds-truncate">Email</span>
+          </a>
+        </div>
+        <div class="slds-col slds-size_1-of-3 slds-p-horizontal_x-small">
+          <a class="slds-button slds-button_neutral top-icon-button"  data-component="Send_SMS__c" onclick={handleRedirection}>
+            <lightning-icon
+              icon-name="utility:sms"
+              alternative-text="Send SMS"
+              title="Send SMS"
+              size="small"
+              class="my-option-icon"
+            >
+            </lightning-icon>
+            <span class="my-button-label slds-truncate">SMS</span>
+          </a>
+        </div>
+        <div class="slds-col slds-size_1-of-3 slds-p-horizontal_x-small">
+          <button class="slds-button slds-button_neutral top-icon-button" onclick={handleNewTaskClick}>
+          <lightning-icon
+            icon-name="utility:task"
+            alternative-text="New Task"
+            title="New Task"
+            size="small"
+            class="my-option-icon"
+          >
+          </lightning-icon>
+          <span class="my-button-label slds-truncate">New Task</span>
+        </button>
+        </div>
+      </div>
+      <div class="top-options-group-row slds-grid">
+        <div class="slds-col slds-size_1-of-3 slds-p-horizontal_x-small">
+          <a class="slds-button slds-button_neutral top-icon-button"  data-component="vedaComponent" onclick={raiseSelectedComponentEvent}>
+            <span class="my-option-icon slds-icon_container slds-icon-utility-announcement" title="Equifax">
+              <svg class="equifax-icon slds-icon" aria-hidden="true">
+              <use xlink:href={equifaxIcon}></use>
+              </svg>
+              <span class="slds-assistive-text">Description of icon when needed</span>
+            </span>
+            <span class="my-button-label slds-truncate">Equifax</span>
+          </a>
+        </div>
+        <div class="slds-col slds-size_1-of-3 slds-p-horizontal_x-small">
+          <a class="slds-button slds-button_neutral top-icon-button" data-component="uploadComponent" onclick={raiseSelectedComponentEvent}>
+            <lightning-icon
+              icon-name="utility:attach"
+              alternative-text="Upload"
+              title="Upload"
+              size="small"
+              class="my-option-icon"
+            >
+            </lightning-icon>
+            <span class="my-button-label slds-truncate">Upload</span>
+          </a>
+        </div>
+        <div class="slds-col slds-size_1-of-3 slds-p-horizontal_x-small">
+          <a class="slds-button slds-button_neutral top-icon-button" data-component="vehicleDirectComponent" onclick={raiseSelectedComponentEvent}>
+            <span class="my-option-icon slds-icon_container slds-icon-utility-announcement" title="Vehicles Direct">
+              <svg class="vd-icon slds-icon" aria-hidden="true">
+              <use xlink:href={vdIcon}></use>
+              </svg>
+              <span class="slds-assistive-text">Description of icon when needed</span>
+            </span>
+            <span class="my-button-label slds-truncate">Vehicle Direct</span>
+          </a>
+        </div>
+      </div>
+    </div>
+    <hr/>
+    <c-partner-opp-to-do-list record-id={recordId} quoting={quoting}></c-partner-opp-to-do-list>
+    <br/>
+    <c-partner-approval-options record-id={recordId} quoting={quoting} opp={record}></c-partner-approval-options>
+    <c-partner-new-task-form
+      record-id={recordId}
+      show-modal={showNewTaskForm} 
+      onclose={closeNewTaskForm}
+    ></c-partner-new-task-form>
+  </template>

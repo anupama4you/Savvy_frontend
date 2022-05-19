@@ -1,0 +1,86 @@
+<template>
+    <lightning-card >
+    <div class="slds-grid slds-gutters slds-p-around_small form-content">
+      <div class="slds-col slds-size_2-of-3 ">
+        <lightning-card title="Send Email To all Contacts" icon-name="custom:custom23">
+          <div class="slds-grid">
+            <div class="slds-col">
+              <lightning-combobox name="template" label="Email Template" placeholder="Choose Email Template" value={templateValue} onchange={handleTemplateChange} options={templateOptions}>
+              </lightning-combobox>
+            </div>
+          </div>
+          <div class="slds-grid">
+            <div class="slds-col">
+              <lightning-input type="email" value={toAddress} label="To" name="to" onchange={handleChangeEvent} disabled="true">
+              </lightning-input>
+            </div>
+            <div class="slds-col">
+              <lightning-input type="email" value={additionalToAddress} label="Additional To" name="additionalTo" onchange={handleChangeEvent}>
+              </lightning-input>
+            </div>
+          </div>
+          <div class="slds-grid">
+            <div class="slds-col">
+              <lightning-input type="email" value={ccAddress} label="CC" name="cc" onchange={handleChangeEvent}>
+              </lightning-input>
+            </div>
+            <div class="slds-col">
+              <lightning-input type="email" value={bccAddress} label="BCC" name="bcc" onchange={handleChangeEvent}>
+              </lightning-input>
+            </div>
+          </div>
+          <div class="slds-grid">
+            <div class="slds-col">
+              <lightning-input type="Text" value={subject} label="Subject" name="subject" onchange={handleChangeEvent}>
+              </lightning-input>
+            </div>
+          </div>
+          <br/>
+          <div class="slds-grid">
+            <div class="slds-col">
+              <div class="email-body-content">
+                <lightning-input-rich-text value={emailBody} name="body" onchange={handleChangeEvent}>
+                </lightning-input-rich-text>
+              </div>
+            </div>
+          </div>
+          <br/>
+          <div class="slds-grid">
+            <div class="slds-col slds-size_2-of-12">
+              <lightning-button variant="success" label="Send Email" title="Send Email" onclick={handleSendClick} class="slds-m-left_x-small"></lightning-button>
+            </div>
+            <div class="slds-col slds-size_5-of-12">
+              <lightning-input type="file" accept=".xlsx, .xls, .csv, .png, .doc, .docx, .pdf" label="Attachment" onchange={openfileUpload} class="upload-comp"></lightning-input>
+            </div>
+            <div class="slds-col slds-size_5-of-12">
+              <template if:true={fileData}>
+                <span>
+                  File: <b>{fileData.filename}</b>
+                </span>
+              </template>
+            </div>
+          </div>
+        </lightning-card>
+      </div>
+      <div class="slds-col slds-size_1-of-3 slds-box">
+        <lightning-card title="Select Document" icon-name="utility:file">
+          <template if:true={documentList}>
+            <div class="slds-scrollable_y" style="height:540px;">
+              <table>
+                <template for:each={documentList} for:item="record">
+                  <tr key={record.documentName} >
+                    <td>
+                      <lightning-input type=checkbox label={record.documentName} name={record.documentName} value={record.flag} onchange={getCheckedValue}></lightning-input>
+                    </td>
+                  </tr>
+                </template>
+              </table>
+            </div>
+            <br/>
+            <lightning-button variant="success" label="Add to template" title="Add to template" onclick={saveToOpp} class="slds-m-left_x-small"></lightning-button>
+          </template>
+        </lightning-card>
+      </div>
+    </div>
+  </lightning-card>
+</template>

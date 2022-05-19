@@ -1,0 +1,39 @@
+<template>
+  <article class="slds-tile">
+    <!-- file upload section -->
+    <lightning-card
+      variant="Narrow"
+      title="Cloud Documents"
+      style="width: 30rem;"
+      icon-name="standard:work_type"
+    >
+      <div style="margin-left: 5%;">
+        <template if:true={showSpinner}>
+          <lightning-spinner
+            alternative-text="Uploading file(s)......"
+            size="large"
+          >
+          </lightning-spinner>
+        </template>
+        <div>
+          <lightning-input
+            label=""
+            name="file to uploder"
+            onchange={handleFileChange}
+            type="file"
+            multiple
+          ></lightning-input>
+        </div>
+      </div>
+      <br /><br />
+      <!--displaying uploaded files-->
+      <template if:true={tableData}>
+        <c-partner-cloud-doc-table
+          docs={tableData}
+          onupdaterecord={onUpdateRecord}
+          ondeleterecord={onDeleteRecord}
+        ></c-partner-cloud-doc-table>
+      </template>
+    </lightning-card>
+  </article>
+</template>

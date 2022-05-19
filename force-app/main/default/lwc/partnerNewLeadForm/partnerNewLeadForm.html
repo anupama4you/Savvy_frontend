@@ -1,0 +1,112 @@
+<template>
+  <template if:true={showModal}>
+    <section
+      role="dialog"
+      tabindex="-1"
+      aria-labelledby="modal-heading-01"
+      aria-modal="true"
+      aria-describedby="modal-content-id-1"
+      class="slds-modal slds-fade-in-open"
+    >
+      <template if:true={showSpinner}>
+        <lightning-spinner alternative-text="Loading" size="large" variant="brand" ></lightning-spinner>
+      </template>
+      <div class="slds-modal__container">
+        <header class="slds-modal__header">
+          <button
+            class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse"
+            title="Close"
+            onclick={handleClose}
+          >
+            <lightning-icon
+              icon-name="utility:close"
+              alternative-text="close"
+            ></lightning-icon>
+            <span class="slds-assistive-text">Close</span>
+          </button>
+          <h2 id="modal-heading-01" class="slds-modal__title slds-hyphenate">
+            New Lead
+          </h2>
+        </header>
+        <lightning-record-edit-form
+          object-api-name="Lead__c"
+          onsubmit={handleSubmit}
+          onsuccess={handleSuccess}
+        >
+          <div
+            class="slds-modal__content slds-p-around_medium"
+            id="modal-content-id-1"
+          >
+            <lightning-layout>
+              <lightning-messages> </lightning-messages>
+              <lightning-input-field field-name="Loan_Type__c" required>
+              </lightning-input-field>
+              <lightning-input-field field-name="Finance_Amount__c" required>
+              </lightning-input-field>
+            </lightning-layout>
+            <lightning-layout pull-to-boundary="medium">
+              <lightning-layout-item flexibility="auto" padding="horizontal-medium">
+                <lightning-input-field field-name="Employment_Status__c" required>
+                </lightning-input-field>
+              </lightning-layout-item>
+              <lightning-layout-item flexibility="auto" padding="horizontal-medium">
+                <lightning-combobox
+                  name="Credit_History__c"
+                  label="Credit History"
+                  value={creditHistory}
+                  options={creditHistoryOptions}
+                  onchange={handleChange}
+                ></lightning-combobox>
+              </lightning-layout-item>
+            </lightning-layout>
+            <lightning-layout>
+              <lightning-input-field field-name="First_Name__c">
+              </lightning-input-field>
+              <lightning-input-field field-name="Last_Name__c">
+              </lightning-input-field>
+            </lightning-layout>
+            <lightning-layout>
+              <lightning-input-field field-name="Email_Address__c" required>
+              </lightning-input-field>
+            </lightning-layout>
+            <lightning-layout>
+              <lightning-input-field field-name="Mobile_Number__c" required>
+              </lightning-input-field>
+              <lightning-input-field field-name="Postcode__c">
+              </lightning-input-field>
+            </lightning-layout>
+          </div>
+          <footer class="slds-modal__footer">
+            <lightning-button
+              class="slds-button slds-m-left_x-small"
+              type="button"
+              label="Cancel"
+              onclick={handleClose}
+            >
+            </lightning-button>
+            <lightning-button
+              variant="brand"
+              type="submit"
+              label="Save and Convert to Opportunity"
+              class="slds-button"
+              onclick={storeButtonName}
+              data-name="mySaveConButton"
+            >
+            </lightning-button>
+            
+            <lightning-button
+              variant="brand"
+              label="Save"
+              class="slds-button"
+              type="submit"
+              onclick={storeButtonName}
+              data-name="mySaveButton"
+            >
+            </lightning-button>
+          </footer>
+        </lightning-record-edit-form>
+      </div>
+    </section>
+    <div class="slds-backdrop slds-backdrop_open"></div>
+  </template>
+</template>

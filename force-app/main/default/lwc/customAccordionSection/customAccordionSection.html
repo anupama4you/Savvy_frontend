@@ -1,0 +1,27 @@
+<template>
+  <li class="slds-accordion__list-item">
+    <section class={sectionClass}>
+      <div class="slds-accordion__summary">
+        <h2 class="slds-accordion__summary-heading">
+          <button
+            class="slds-button slds-accordion__summary-action"
+            aria-controls="referenceId-42"
+            aria-expanded={open}
+            title={label}
+            onclick={handleClick}
+          >
+            <lightning-icon
+              icon-name="utility:chevrondown"
+              class="slds-accordion__summary-action-icon slds-button__icon slds-button__icon_left"
+              size="x-small"
+            ></lightning-icon>
+            <span class="slds-accordion__summary-content">{label}</span>
+          </button>
+        </h2>
+      </div>
+      <div class="slds-accordion__content" id="referenceId-42">
+        <slot></slot>
+      </div>
+    </section>
+  </li>
+</template>

@@ -1,0 +1,18 @@
+:host {
+  --sds-c-accordion-heading-font-size: 0.8rem;
+  /* --sds-c-accordion-summary-color-background: #e3e3e3; */
+}
+.slds-card__body {
+  margin-bottom: 0px;
+}
+/* .opp-pipeline-accordion ul c-custom-accordion-section.accordion__list-item {
+    border-top-width: var(--sds-c-accordion-sizing-border, var(--lwc-borderWidthThin,1px));
+    border-top-style: solid;
+    border-top-color: var(--sds-c-accordion-color-border, var(--lwc-colorBorder,#D4D4D4));
+} */
+
+/* .opp-pipeline-accordion ul accordion__list-item {
+    border-top-width: var(--sds-c-accordion-sizing-border, var(--lwc-borderWidthThin,1px));
+    border-top-style: solid;
+    border-top-color: var(--sds-c-accordion-color-border, var(--lwc-colorBorder,#D4D4D4));
+} */

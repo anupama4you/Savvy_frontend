@@ -1,0 +1,144 @@
+<aura:component controller = "CloudDocumentController">
+    <aura:attribute name="auraId" type="String"/>
+    <aura:attribute name="data" type="Object"/>
+    <aura:attribute name="columns" type="List"/>
+    <aura:attribute name="sortBy" type="String"/>
+    <aura:attribute name="sortDirection" type="String"/>
+    <aura:attribute name="showRowNumberColumn" type="Boolean" default="false"/>
+    <aura:attribute name="dataCache" type="Object"/>
+    <aura:attribute name="tableData" type="Object"/>
+    <aura:attribute name="tableDataOriginal" type="Object"/>
+    <aura:attribute name="updatedTableData" type="Object"/>
+    <aura:attribute name="modifiedRecords" type="List"/>
+    <aura:attribute name="isEditModeOn" type="Boolean" default="false"/>
+    <aura:attribute name="isLoading" type="Boolean" default="false"/>
+    <aura:attribute name="error" type="String" default=""/>
+    <aura:attribute name="startOffset" type="String" />
+    <aura:attribute name="buttonClicked" type="String" />
+    <aura:attribute name="buttonsDisabled" type="Boolean" />
+    <aura:attribute name="parentLoadRec" type="Aura.Component"/>
+    
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+    <aura:registerEvent name="dataTableSaveEvent" type="c:dataTableSaveEvent"/> <!-- EDITABLE TABLE SAVE COMP EVENT -->
+    <aura:registerEvent name="dataTableRowActionEvent" type="c:dataTableRowActionEvent"/> <!-- ROW ACTION COMP EVENT -->
+    
+    <aura:method name="finishSaving" action="{!c.finishSaving}" description="Update table and clode edit mode">
+        <aura:attribute name="result" type="String" />
+        <aura:attribute name="data" type="Object" />
+        <aura:attribute name="message" type="String" default=""/>
+    </aura:method>
+    
+    <aura:method name="refreshTable" action="{!c.refreshTable}" description="Refresh table method">
+        <aura:attribute name="refreshedData" type="Object" />
+    </aura:method>
+    
+    <div class="slds-table_edit_container slds-is-relative">
+        <aura:if isTrue="{!v.isLoading}">
+            <lightning:spinner alternativeText="Loading" />
+        </aura:if>
+        <table aria-multiselectable="true" class="cTable slds-table slds-no-cell-focus slds-table_bordered slds-table_edit slds-table_fixed-layout slds-table_resizable-cols" role="grid">
+            <thead>
+                <tr class="slds-line-height_reset">
+                    <aura:if isTrue="{!v.showRowNumberColumn}">
+                        <th scope="col" style="width:50px;max-width:60px;text-align:center;">#</th>
+                    </aura:if>
+                    <aura:iteration items="{!v.columns}" var="col">
+                        <th name="{!col.sortBy}" aria-label="{!col.label}" aria-sort="none" class="{!col.thClassName}" scope="col" style="{!col.style}">
+                            <span class="{!!col.sortable ? 'slds-truncate slds-p-horizontal_x-small' : 'slds-hide'}" title="{!col.label}">{!col.label}</span>
+                            <a class="{!col.sortable ? 'slds-th__action slds-text-link_reset' : 'slds-hide'}" href="javascript:void(0);" role="button" tabindex="0" onclick="{!c.sortTable}">
+                                <span class="slds-assistive-text">Sort by: {!col.label}</span>
+                                <div class="slds-grid slds-grid_vertical-align-center slds-has-flexi-truncate" title="{!'Sorty by: '+col.label}">
+                                    <span class="slds-truncate" title="{!col.label}">{!col.label}</span>
+                                    <span class="slds-icon_container slds-icon-utility-arrowdown">
+                                        <lightning:icon iconName="{!v.sortDirection=='asc'?'utility:arrowup':'utility:arrowdown'}" size="xx-small" 
+                                                        class="{!v.sortBy==col.sortBy? 'slds-m-left_x-small':'slds-is-sortable__icon'}" />
+                                    </span>
+                                </div>
+                            </a>
+                            <div class="{!col.resizable ? 'slds-resizable' : 'slds-hide' }" onmousedown="{!c.calculateWidth}">
+                                <input type="range" min="50" max="1000" class="slds-resizable__input slds-assistive-text" tabindex="-1"/>
+                                <span class="slds-resizable__handle" ondrag="{!c.setNewWidth}" style="will-change: transform;">
+                                    <span class=""></span>
+                                </span>
+                            </div>
+                        </th>
+                    </aura:iteration>
+                </tr>
+            </thead>
+            <tbody>                
+                <aura:iteration items="{!v.tableData}" var="row" indexVar="rowIndex">
+                    <tr aria-selected="false" class="slds-hint-parent">
+                        <aura:if isTrue="{!v.showRowNumberColumn}">
+                            <td scope="col" style="width:50px;max-width:60px;text-align:center;">{!rowIndex+1}</td>
+                        </aura:if>
+                        <aura:iteration items="{!row.fields}" var="field" indexVar="fieldIndex">
+                            <td class="{!field.tdClassName}" role="gridcell">
+                                <span class="slds-grid slds-grid_align-spread">
+                                    <aura:if isTrue="{!field.mode == 'view'}">
+                                        <aura:if isTrue="{!field.type == 'link'}">
+                                            <a class="slds-truncate" id="{!rowIndex+'-'+fieldIndex}" href="{!field.value}" title="{!field.title}" target="{!field.target}">{!field.label}</a>
+                                        </aura:if>
+                                        <aura:if isTrue="{!field.type == 'link-action'}">
+                                            <a class="slds-truncate" id="{!rowIndex+'-'+fieldIndex+'-'+field.actionName}" title="{!field.title}" onclick="{!c.onRowAction}">{!field.label}</a>
+                                        </aura:if>
+                                        <aura:if isTrue="{!field.type == 'date'}">
+                                            <lightning:formattedDateTime class="slds-truncate" value="{!field.value}" year="numeric" month="numeric" day="numeric" timeZone="UTC"/>
+                                        </aura:if>
+                                        
+                                        <aura:if isTrue="{!field.type == 'button-icon'}">
+                                            <lightning:button label="Download" iconName="utility:download" iconPosition="left" onclick="{!c.openDocRec}" name="{!rowIndex+'-'+fieldIndex}" value="{!field.value}" />
+                                        </aura:if>
+                                        
+                                        <aura:if isTrue="{!field.type == 'button-iconDel'}">
+                                            <lightning:button aura:id="{!field.value}" iconName="utility:delete" iconPosition="left" name="{!rowIndex+'-'+fieldIndex}" value="{!field.value}" onclick="{!c.deleteDocc}"/>
+                                        </aura:if>
+                                        
+                                        <aura:if isTrue="{!field.type == 'number'}">
+                                            <lightning:formattedNumber class="slds-truncate" value="{!field.value}" style="{!field.formatter}" currencyCode="{!field.currencyCode}" 
+                                                                       minimumFractionDigits="{!field.minimumFractionDigits}" maximumFractionDigits="{!field.maximumFractionDigits}"/>
+                                        </aura:if>
+                                        <aura:if isTrue="{!!field.isViewSpecialType}">
+                                            <span class="slds-truncate" title="{!field.value}">{!field.value}</span>
+                                        </aura:if>
+                                        <aura:if isTrue="{!field.editable}">
+                                            <lightning:buttonIcon iconName="utility:edit" variant="bare" name="{!rowIndex+'-'+fieldIndex}" onclick="{!c.editField}" alternativeText="{! 'Edit: '+field.value}" class="slds-cell-edit__button slds-m-left_x-small" iconClass="slds-button__icon_hint slds-button__icon_edit"/>
+                                        </aura:if>
+                                        <aura:set attribute="else"> <!--EDIT MODE-->
+                                            <aura:if isTrue="{!field.isEditSpecialType}">
+                                                <aura:if isTrue="{!field.type == 'picklist'}">
+                                                    <lightning:select label="Hidden" variant="label-hidden" class="slds-truncate ctInput" name="{!rowIndex+'-'+fieldIndex}" value="{!field.value}" onchange="{!c.onInputChange}">
+                                                        <aura:iteration items="{!field.selectOptions}" var="pl">
+                                                            <option value="{!pl.value}">{!pl.label}</option>
+                                                        </aura:iteration>
+                                                    </lightning:select>
+                                                </aura:if>
+                                                <aura:set attribute="else">
+                                                    <lightning:input name="{!rowIndex+'-'+fieldIndex}" type="{!field.type}" value="{!field.value}" variant="label-hidden" onchange="{!c.onInputChange}" class="ctInput"
+                                                                     formatter="{!field.formatter}"/>
+                                                </aura:set>
+                                            </aura:if>
+                                        </aura:set>
+                                    </aura:if>
+                                </span>
+                            </td>
+                        </aura:iteration>
+                    </tr>
+                </aura:iteration>
+            </tbody>
+        </table>
+        <aura:if isTrue="{!v.tableData.length == 0}">
+            <div class="slds-p-left_x-small slds-p-vertical_xx-small slds-border_bottom">
+                No records found to display!
+            </div>
+        </aura:if>
+        <aura:if isTrue="{!v.isEditModeOn}">
+            <div class="ctFooter slds-modal__footer">
+                <div class="slds-text-color_error slds-p-bottom_small" style="{!v.error?'display:block':'display:none'}">{!v.error}</div>
+                <div class="slds-grid slds-grid_align-center">
+                    <lightning:button label="Cancel" onclick="{!c.closeEditMode}" />
+                    <lightning:button label="Save" variant="brand" onclick="{!c.saveRecords}" />                 
+                </div>
+            </div>
+        </aura:if>        
+    </div>
+</aura:component>

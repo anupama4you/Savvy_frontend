@@ -1,0 +1,12 @@
+<aura:component implements="forceCommunity:availableForAllPageTypes,flexipage:availableForAllPageTypes" access="global">
+  <div class="c-container">
+    <lightning:layout>
+      <lightning:layoutItem size="2">
+          <c:filterFormComTools/>
+      </lightning:layoutItem>
+      <lightning:layoutItem size="10">
+          <c:ComparisonToolsResults />
+      </lightning:layoutItem>
+    </lightning:layout>
+  </div>
+</aura:component>

@@ -1,0 +1,56 @@
+<template>
+    <lightning-card icon-name="standard:proposition" class="slds-icon_small" title="Lead Inbox" style="margin-top: 10%;">
+       <div class="slds-m-left_small">
+   <div  class="slds-m-top_medium slds-m-bottom_x-large" style="height:400px;">
+       <template if:true={leads}>
+            <template for:each={leads} for:item="lead">   
+                <lightning-tile key={lead.Id} label={lead.Name} href={lead.href} type="media">   
+                    <lightning-icon slot="media" icon-name="standard:lead" alternative-text="lead" size="small"></lightning-icon>
+                    <div class="mainDiv">
+                        <div class="leftDiv">
+                            <dl key={lead.Id} class="slds-dl_horizontal">
+                                <dt class="slds-dl_horizontal__detail slds-tile__meta dtClass">
+                                    <p class="slds-truncate" title="Name">{lead.name}</p>
+                                </dt>
+                                
+                                <dt class="slds-dl_horizontal__detail slds-tile__meta dtClass">
+                                    <p class="slds-truncate" title="Salesforce">{lead.Owner.Alias} &nbsp;&nbsp;&nbsp; &#8226; &nbsp;<lightning-formatted-phone value={lead.Mobile_Number__c}></lightning-formatted-phone>&nbsp; &#8226;</p>
+                                </dt>
+                                <dt class="slds-dl_horizontal__detail slds-tile__meta dtClass">
+                                    <p class="slds-truncate" title="email"><lightning-formatted-email value={lead.Email_Address__c} hide-icon></lightning-formatted-email></p>
+                                </dt>
+                            </dl>
+                        </div>
+                        <div class="rightDiv">
+                            <lightning-button
+                                        variant="brand"
+                                        label="Accept"
+                                        class="slds-button btn-padding"
+                                        onclick={updateContact}
+                                        data-record-id={lead.Id}>
+                                    </lightning-button>
+                        </div>
+                    </div>
+                </lightning-tile>
+                <div class="borderClass" key={lead.Id}></div>
+            </template> 
+            <br/>
+            <div class="slds-m-right_small">
+                <a onclick={handleListViewNavigation}> View All Unassigned Leads</a>
+            </div> 
+       </template>
+       <template if:false={leads}>
+           <p>Unlock Leads from Australia's largest Asset Finance Lead Generator </p>
+           <br/>
+           <lightning-button variant="brand"
+           label="Enquire"
+           class="slds-button"
+           onclick={enquireHandler}
+           >
+       </lightning-button>
+       </template>
+       
+   </div>
+</div>
+</lightning-card>
+</template>

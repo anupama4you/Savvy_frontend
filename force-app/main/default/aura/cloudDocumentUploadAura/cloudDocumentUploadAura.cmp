@@ -1,0 +1,62 @@
+<aura:component
+    implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickAction"
+    controller="CloudDocumentController" access="global">
+    <aura:attribute name="data" type="Object" />
+    <aura:attribute name="columns" type="List" />
+    <aura:attribute name="isLoading" type="Boolean" default="false" />
+    <aura:attribute name="recordId" type="String" access="global" />
+
+    <aura:attribute name="filetype" type="List" default="['.png', '.jpg', '.jpeg', '.pdf']" />
+    <aura:attribute name="multiple" type="Boolean" default="true" />
+    <aura:attribute name="disabled" type="Boolean" default="true" />
+    <aura:attribute name="isupload" type="Boolean" default="false" />
+    <aura:method name="loadParentRec" action="{!c.doInit}" access="public"></aura:method>
+
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+    <aura:handler name="dataTableSaveEvent" event="c:dataTableSaveEvent" action="{!c.saveTableRecords}" />
+
+    <div class="slds-page-header">
+        <div class="slds-page-header__row">
+            <div class="slds-page-header__col-title">
+                <div class="slds-media">
+                    <div class="slds-media__figure">
+                        <span class="slds-icon_container slds-icon-action-add_file">
+                            <lightning:icon iconName="action:add_file" alternativeText="upload" title="upload"
+                                size="x-small" />
+                        </span>
+                    </div>
+                    <div class="slds-media__body">
+                        <div class="slds-page-header__name">
+                            <div class="slds-page-header__name-title">
+                                <h1>
+                                    <span>Upload</span>
+                                    <span class="slds-page-header__title slds-truncate" title="Recently Viewed">Cloud
+                                        Document</span>
+                                </h1>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div style="background:white;">
+        <div class="slds-p-left_x-small slds-p-right_x-small slds-p-bottom_small">
+            <div class="slds-p-bottom_x-small">
+                <lightning:fileUpload name="fileUploader" multiple="true" accept="{!v.filetype}"
+                    recordId="{!v.recordId}" aura:id="multifileUpload" onuploadfinished="{!c.handleUploadFinished}" />
+            </div>
+            <aura:if isTrue="{!v.data.length > 0}">
+                <c:dataTable aura:id="datatableId" auraId="datatableId" parentLoadRec="{!this}" columns="{!v.columns}"
+                    data="{!v.data}" showRowNumberColumn="true" />
+            </aura:if>
+        </div>
+    </div>
+
+    <aura:if isTrue="{!v.isLoading}">
+        <div style="position:relative">
+            <lightning:spinner alternativeText="Loading.." variant="brand" style="position:absolute" />
+        </div>
+    </aura:if>
+</aura:component>

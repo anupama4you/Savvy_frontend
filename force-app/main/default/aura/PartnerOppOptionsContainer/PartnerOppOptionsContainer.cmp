@@ -1,0 +1,44 @@
+<aura:component implements="forceCommunity:availableForAllPageTypes,force:hasRecordId" access="global">
+    <!--Attributes-->
+    <aura:attribute name="recordId" type="String" access="global" />
+    <aura:attribute name="renderNow" type="Boolean" default="false" />
+    <aura:attribute name="selCmp" type="String" access="global" />
+
+    <!--Handlers -->
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+    <lightning:layout multipleRows="true" class="opt-container">
+        <aura:if isTrue="{!v.renderNow}">
+            <lightning:layoutItem size="2" padding="around-small">
+                <c:partnerOppOptionsClone recordId="{!v.recordId}" oncmpselect="{!c.handleComponentSelect}" />
+            </lightning:layoutItem>
+            <lightning:layoutItem size="10" padding="around-small">
+                <lightning:layout multipleRows="true">
+                    <lightning:layoutItem size="12" padding="around-medium">
+                        <c:partnerOppHeaderDetails recordId="{!v.recordId}" />
+                    </lightning:layoutItem>
+                    <aura:if isTrue="{!v.selCmp == 'uploadComponent'}">
+                        <lightning:layoutItem size="12" padding="around-medium">
+                            <c:cloudDocumentUploadAura recordId="{!v.recordId}" />
+                        </lightning:layoutItem>
+                    </aura:if>
+                    <aura:if isTrue="{!v.selCmp == 'vehicleDirectComponent'}">
+                        <lightning:layoutItem size="12" padding="around-medium">
+                            <c:vehicleDirectComponent recordId="{!v.recordId}" />
+                        </lightning:layoutItem>
+                    </aura:if>
+                    <aura:if isTrue="{!v.selCmp == 'emailComponent'}">
+                        <lightning:layoutItem size="12" padding="around-medium">
+                            <c:sendEmailPage recordId="{!v.recordId}" />
+                        </lightning:layoutItem>
+                    </aura:if>
+                    <aura:if isTrue="{!v.selCmp == 'vedaComponent'}">
+                        <lightning:layoutItem size="12" padding="around-medium">
+                            <c:vedaEnquiryComponent recordId="{!v.recordId}" />
+                        </lightning:layoutItem>
+                    </aura:if>
+                </lightning:layout>
+            </lightning:layoutItem>
+        </aura:if>
+    </lightning:layout>
+
+</aura:component>

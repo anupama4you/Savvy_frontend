@@ -1,0 +1,530 @@
+<template>
+  
+  
+        
+
+  <!-- "Asset Details - LTV for {{!opp.Name}}" -->
+    <lightning-card  title={Name}>
+        <lightning-button label="Save Asset Details" slot="actions"></lightning-button>
+        <header slot="title" class="slds-page-header slds-page-header_record-home">
+          <template if:true={currentOpportunity}>
+            <template for:each={currentOpportunity} for:item="customOpp">
+                <p key={customOpp.Id}>Asset Details - LTV for {customOpp.Name}</p>
+            </template>
+        </template>
+          
+        </header>
+
+
+        <!-- <lightning-card > -->
+            <div class="slds-grid slds-gutters slds-p-around_small form-content">
+                <!-- left column -->
+                <div class="slds-col slds-size_1-of-3 ">
+
+                    <!-- ||||- -->
+                    <article class="slds-card">
+                        <div class="slds-card__header slds-grid">
+                          <header class="slds-media slds-media_center slds-has-flexi-truncate">
+                            <div class="slds-media__figure">
+                              <span class="slds-icon_container slds-icon-standard-account" title="account">
+                                <svg class="slds-icon slds-icon_small" aria-hidden="true">
+                                  <use xlink:href="/assets/icons/standard-sprite/svg/symbols.svg#account"></use>
+                                </svg>
+                                <span class="slds-assistive-text">account</span>
+                              </span>
+                            </div>
+                            <div class="slds-media__body">
+                              <h2 class="slds-card__header-title">
+                                <a href="#" class="slds-card__header-link slds-truncate" title="Asset">
+                                  <span>Asset</span>
+                                </a>
+                              </h2>
+                            </div>
+                          </header>
+                        </div>
+                        <div class="slds-card__body slds-card__body_inner">
+                            <lightning-combobox name="assetType" label="Asset Type" onchange={loadNewUsedYearOptions} value={assetType} options={assetTypes}></lightning-combobox>
+                            <div class="slds-form__row">
+                                <lightning-radio-group name="newOrUsed"
+                                    label="New / Used"
+                                    options={newOrUsedOptions}
+                                    value={newUsed}
+                                    type="radio" required></lightning-radio-group></div>
+                                <lightning-combobox type="text" label="Year of Vehicle" placeholder="--None--" options={yearSelect}></lightning-combobox>
+                            <div class="slds-media__figure">
+                              <span class="slds-icon_container slds-icon-standard-account" title="account">
+                                <svg class="slds-icon slds-icon_small" aria-hidden="true">
+                                  <use xlink:href="/assets/icons/standard-sprite/svg/symbols.svg#account"></use>
+                                </svg>
+                                <span class="slds-assistive-text">Details</span>
+                              </span>
+                            </div>
+                            <div class="slds-media__body">
+                              <h2 class="slds-card__header-title">
+                                <a href="#" class="slds-card__header-link slds-truncate" title="Details">
+                                  <span>Details</span>
+                                </a>
+                              </h2>
+                            </div>
+                          </header>
+                        </div>
+                        <div class="slds-card__body slds-card__body_inner">
+                            <lightning-combobox name="assetType" label="Make" required></lightning-combobox>
+                            <lightning-combobox name="assetType" label="Model" required></lightning-combobox>
+                            <lightning-combobox name="assetType" label="Variant" required></lightning-combobox>
+                            <lightning-combobox name="assetType" label="Series" required></lightning-combobox>
+                        </div>
+
+                        <!-- matching records element -->
+                        <article class="slds-card">
+                            <div class="slds-card__header slds-grid">
+                              <div class="slds-card__body slds-card__body_inner">
+                                <table  width="100%">
+                                    <tr>
+                                        <td colspan="2" style="background: #0099d0;
+                                        color: #ffffff !important;
+                                        padding: 5px 10px 5px 15px;
+                                        font-weight: bold;">
+                                            <span>2020 AUDI A3 30 TFSI SPORTBACK (1.0 TFSI) 8V MY19 5D HATCHBACK 999 cc TDFI 1.0L T3 7AST</span>                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td colspan="2">
+                                            <!-- <apex:outputText value="OLDER LIGHT COMMERCIAL" rendered="{!q.Model__r.Type_Source__c = 'OLC'}"/>
+                                            <apex:outputText value="OLDER CARS" rendered="{!q.Model__r.Type_Source__c = 'OCG'}"/>
+                                            <apex:outputText value="LIGHT COMMERCIAL VEHICLES" rendered="{!q.Model__r.Type_Source__c = 'CVG'}"/>
+                                            <apex:outputText value="PASSENGER VEHICLES" rendered="{!q.Model__r.Type_Source__c = 'PVG'}"/> -->
+
+                                            <!-- <apex:outputText value="OLDER LIGHT COMMERCIAL" rendered="{!q.Type_Source__c = 'OLC'}" />
+                                            <apex:outputText value="OLDER CARS" rendered="{!q.Type_Source__c = 'OCG'}" />
+                                            <apex:outputText value="LIGHT COMMERCIAL VEHICLES" rendered="{!q.Type_Source__c = 'CVG'}" />
+                                            <apex:outputText value="PASSENGER VEHICLES" rendered="{!q.Type_Source__c = 'PVG'}" /> -->
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            Date Rel: Jan-20
+                                        </td>
+                                        <td>
+                                            NVIC: 03UU20
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            RRP: $36,600.00
+                                        </td>
+                                        <td>
+                                            Trade L: $24,500.00
+                                        </td>
+                                    </tr>
+                                    <td>
+                                        Trade: $28,600.00
+                                    </td>
+                                    <td>
+                                        Retail: $34,400.00
+                                    </td>
+                                    <tr>
+                                        <td style="color: red;">
+                                            5000 Km
+                                        </td>
+                                        <td align="right">
+                                            <lightning-button label="Select" title="Select" ></lightning-button>
+                                        </td>
+                                    </tr>
+                                </table>
+                                    
+                              </div>
+                            </div>
+                          </article>
+
+                        <!-- matching records element end-->
+
+                        <footer class="slds-card__footer"></footer>
+                      </article>
+                      <!-- ||||- -->
+
+                       <!-- ||||- -->
+                    <article class="slds-card">
+                        <div class="slds-card__header slds-grid">
+                          <header class="slds-media slds-media_center slds-has-flexi-truncate">
+                            <div class="slds-media__figure">
+                              <span class="slds-icon_container slds-icon-standard-account" title="account">
+                                <svg class="slds-icon slds-icon_small" aria-hidden="true">
+                                  <use xlink:href="/assets/icons/standard-sprite/svg/symbols.svg#account"></use>
+                                </svg>
+                                <span class="slds-assistive-text">Redbook Details</span>
+                              </span>
+                            </div>
+                            <div class="slds-media__body">
+                              <h2 class="slds-card__header-title">
+                                <a href="#" class="slds-card__header-link slds-truncate" title="Redbook Details">
+                                  <span>Redbook Details</span>
+                                </a>
+                              </h2>
+                            </div>
+                          </header>
+                        </div>
+                        <div class="slds-card__body slds-card__body_inner">
+                            <lightning-combobox name="assetType" label="Family" required></lightning-combobox>
+                            <lightning-combobox name="assetType" label="Badge" required></lightning-combobox>
+                            <lightning-combobox name="assetType" label="Variant" required></lightning-combobox>
+                            <lightning-input name="assetType" label="Redbook Key" disabled></lightning-input>
+                        </div>
+                        <footer class="slds-card__footer"></footer>
+                      </article>
+                      <!-- ||||- -->
+
+                       <!-- ||||- -->
+                    <article class="slds-card">
+                        <div class="slds-card__header slds-grid">
+                        <header class="slds-media slds-media_center slds-has-flexi-truncate">
+                            <div class="slds-media__figure">
+                            <span class="slds-icon_container slds-icon-standard-account" title="account">
+                                <svg class="slds-icon slds-icon_small" aria-hidden="true">
+                                <use xlink:href="/assets/icons/standard-sprite/svg/symbols.svg#account"></use>
+                                </svg>
+                                <span class="slds-assistive-text">Factory Options</span>
+                            </span>
+                            </div>
+                            <div class="slds-media__body">
+                            <h2 class="slds-card__header-title">
+                                <a href="#" class="slds-card__header-link slds-truncate" title="Factory Options">
+                                <span>Factory Options</span>
+                                </a>
+                            </h2>
+                            </div>
+                        </header>
+                        </div>
+                        <div class="slds-card__body slds-card__body_inner">
+                            <lightning-input type="toggle" label="Factory Options" name="factoryOptions"></lightning-input>
+                        </div>
+                        <footer class="slds-card__footer"></footer>
+                      </article>
+                      <!-- ||||- -->
+
+                      <!-- ||||- -->
+                    <article class="slds-card">
+                        <div class="slds-card__header slds-grid">
+                        <header class="slds-media slds-media_center slds-has-flexi-truncate">
+                            <div class="slds-media__figure">
+                            <span class="slds-icon_container slds-icon-standard-account" title="account">
+                                <svg class="slds-icon slds-icon_small" aria-hidden="true">
+                                <use xlink:href="/assets/icons/standard-sprite/svg/symbols.svg#account"></use>
+                                </svg>
+                                <span class="slds-assistive-text">Estimation</span>
+                            </span>
+                            </div>
+                            <div class="slds-media__body">
+                            <h2 class="slds-card__header-title">
+                                <a href="#" class="slds-card__header-link slds-truncate" title="Estimation">
+                                <span>Estimation</span>
+                                </a>
+                            </h2>
+                            </div>
+                        </header>
+                        </div>
+                        <div class="slds-card__body slds-card__body_inner">
+                            <table class="slds-table slds-table_cell-buffer slds-table_bordered slds-table_striped" cellpadding="5">
+                                <tr>
+                                    <td width="20%">
+                                        <!-- <lightning-spinner alternative-text="Loading" size="small"></lightning-spinner>&nbsp; -->
+                                    </td>
+                                    <td width="20%">RRP</td>
+                                    <td width="20%">
+                                        Trade Low 
+                                    </td>
+                                    <td width="20%">
+                                        Trade 
+                                    </td>
+                                    <td width="20%">  
+                                        Retail
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>Glass's Value</td>
+                                    <td>
+                                        <h3>
+                                            $0.00 
+                                        </h3>&nbsp;
+                                    </td>
+                                    <td>
+                                        <h3>
+                                            $0.00 
+                                        </h3>&nbsp;
+                                    </td>
+                                    <td>
+                                        <h3>
+                                            $0.00 
+                                        </h3>&nbsp;
+                                    </td>
+                                    <td>
+                                        <h3>
+                                            $0.00 
+                                        </h3>&nbsp;
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>KM Adjustment</td>
+                                    <td>&nbsp;</td>
+                                    <td>
+                                        <h3>
+                                            $0.00 
+                                        </h3>&nbsp;
+                                    </td>
+                                    <td>
+                                        <h3>
+                                            $0.00 
+                                        </h3>&nbsp;
+                                    </td>
+                                    <td>
+                                        <h3>
+                                            $0.00 
+                                        </h3>&nbsp;
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>Value of Options</td>
+                                    <td>
+                                        <h3>
+                                            $0.00 
+                                        </h3>&nbsp;
+                                    </td>
+                                    <td><h3>
+                                        $0.00 </h3>&nbsp;
+                                    </td>
+                                    <td><h3>
+                                        $0.00 </h3>&nbsp;</td>
+                                    <td><h3>
+                                        $0.00 </h3>&nbsp;</td>
+                                </tr>
+                                <tr>
+                                    <td>Adjusted Values</td>
+                                    <td>
+                                        $0.00 &nbsp;
+                                    </td>
+                                    <td>$0.00 &nbsp;
+                                    </td>
+                                    <td>$0.00 &nbsp;
+                                    </td>
+                                    <td>$0.00 &nbsp;
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+                        <footer class="slds-card__footer"></footer>
+                      </article>
+                      <!-- ||||- -->
+                </div>
+
+                <!-- right column -->
+                <div class="slds-col slds-size_2-of-3 ">
+
+                    <!-- ||||- -->
+                    <article class="slds-card">
+                        <div class="slds-card__header slds-grid">
+                        <header class="slds-media slds-media_center slds-has-flexi-truncate">
+                            <div class="slds-media__figure">
+                            <span class="slds-icon_container slds-icon-standard-account" title="account">
+                                <svg class="slds-icon slds-icon_small" aria-hidden="true">
+                                <use xlink:href="/assets/icons/standard-sprite/svg/symbols.svg#account"></use>
+                                </svg>
+                                <span class="slds-assistive-text">LTV</span>
+                            </span>
+                            </div>
+                            <div class="slds-media__body">
+                            <h2 class="slds-card__header-title">
+                                
+                                <span>LTV</span>
+                              
+                            </h2>
+                            </div>
+                        </header>
+                        </div>
+                        <div class="slds-card__body slds-card__body_inner">
+                            <div class="slds-grid slds-gutters slds-p-around_small form-content">
+                                <div class="slds-col">
+                                    <lightning-combobox name="assetType" label="Lenders" required></lightning-combobox>
+                                    <lightning-input type="number" name="assetType" label="Car Price" required></lightning-input>
+                                    <lightning-input type="number" name="assetType" label="Warranty"></lightning-input>
+                                    <lightning-input type="number" name="assetType" label="Actual KM"></lightning-input>
+                                    <lightning-input name="assetType" label="RRP" value="$0.00" disabled></lightning-input>
+                                  </div>
+                                  <div class="slds-col">
+                                    <lightning-combobox name="assetType" label="Type Loan" options={newOrUsedOptions2} required></lightning-combobox>
+                                    <lightning-input type="number" name="assetType" label="	Deposit/Trade in"></lightning-input>
+                                    <lightning-input type="number" name="assetType" label="GAP"></lightning-input>
+                                    <lightning-input type="number" name="assetType" label="Average KM"></lightning-input>
+                                    <lightning-input name="assetType" label="NAF" value="$40,000.00" disabled></lightning-input>
+                                  </div>
+                                  <div class="slds-col">
+                                    <lightning-combobox name="assetType" label="New/Used" disabled></lightning-combobox>
+                                    <lightning-input type="number" name="assetType" label="Fees" required></lightning-input>
+                                    <lightning-input type="number" name="assetType" label="LPI"></lightning-input>
+                                    <lightning-combobox type="number" value="--None--" name="assetType" label="Purchase Type"></lightning-combobox>
+                                    <lightning-input field-name="assetType"  label="Estimated LVR" value="$40,000.00" disabled></lightning-input>
+                                  </div>
+                                  <div class="slds-col">
+                                    <lightning-input  label="Estimated LVR" value="0" disabled></lightning-input>
+                                    <lightning-input type="number" name="assetType" label="LTI" value="0"></lightning-input>
+                                  </div>
+                            </div>
+                        </div>
+                        <footer class="slds-card__footer"></footer>
+                      </article>
+                      <!-- ||||- -->
+
+                      <!-- ||||- -->
+                    <article class="slds-card">
+                        <div class="slds-card__header slds-grid">
+                        <header class="slds-media slds-media_center slds-has-flexi-truncate">
+                            <div class="slds-media__figure">
+                            <span class="slds-icon_container slds-icon-standard-account" title="account">
+                                <svg class="slds-icon slds-icon_small" aria-hidden="true">
+                                <use xlink:href="/assets/icons/standard-sprite/svg/symbols.svg#account"></use>
+                                </svg>
+                                <span class="slds-assistive-text">Vendor Details (Only mandatory at Formal Approval stage)</span>
+                            </span>
+                            </div>
+                            <div class="slds-media__body">
+                            <h2 class="slds-card__header-title">
+                                <a href="#" class="slds-card__header-link slds-truncate" title="Vendor Details (Only mandatory at Formal Approval stage)">
+                                <span>Vendor Details (Only mandatory at Formal Approval stage)</span>
+                                </a>
+                            </h2>
+                            </div>
+                        </header>
+                        </div>
+                        <div class="slds-card__body slds-card__body_inner">
+                            <div class="slds-grid slds-gutters slds-p-around_small form-content">
+                                <div class="slds-col">
+                                    <lightning-combobox name="assetType" label="Dealer Type" value="--None--"></lightning-combobox>
+                                    <lightning-input name="assetType" label="Name"></lightning-input>
+                                    <lightning-input type="tel" name="assetType" label="Phone"></lightning-input>
+                                    <lightning-input name="assetType" label="Street Number" required></lightning-input>
+                                    <lightning-input name="assetType" label="Suburb" required></lightning-input>
+                                  </div>
+                                  <div class="slds-col">
+                                    <lightning-input name="assetType" label="Contact Person"></lightning-input>
+                                    <lightning-input type="tel" name="assetType" label="Mobile"></lightning-input>
+                                    <lightning-input name="assetType" label="Street Address" required></lightning-input>
+                                    <lightning-input type="number" name="assetType" label="Postcode" required></lightning-input>
+                                  </div>
+                                  <div class="slds-col">
+                                    <lightning-input name="assetType" label="Email"></lightning-input>
+                                    <lightning-input name="assetType" label="Unit Number"></lightning-input>
+                                    <lightning-combobox name="assetType" label="Street Type" value="--Select a Street Type--"></lightning-combobox>
+                                    <lightning-combobox name="assetType" label="State" value="--None--"></lightning-combobox>
+                                  </div>
+                            </div>
+                        </div>
+                        <footer class="slds-card__footer"></footer>
+                      </article>
+                      <!-- ||||- -->
+
+                      <!-- ||||- -->
+                    <article class="slds-card">
+                        <div class="slds-card__header slds-grid">
+                        <header class="slds-media slds-media_center slds-has-flexi-truncate">
+                            <div class="slds-media__figure">
+                            <span class="slds-icon_container slds-icon-standard-account" title="account">
+                                <svg class="slds-icon slds-icon_small" aria-hidden="true">
+                                <use xlink:href="/assets/icons/standard-sprite/svg/symbols.svg#account"></use>
+                                </svg>
+                                <span class="slds-assistive-text">Vehicle Identification (settlements to complete)</span>
+                            </span>
+                            </div>
+                            <div class="slds-media__body">
+                            <h2 class="slds-card__header-title">
+                                <a href="#" class="slds-card__header-link slds-truncate" title="Vehicle Identification (settlements to complete)">
+                                <span>Vehicle Identification (settlements to complete)</span>
+                                </a>
+                            </h2>
+                            </div>
+                        </header>
+                        </div>
+                        <div class="slds-card__body slds-card__body_inner">
+                            <div class="slds-grid slds-gutters slds-p-around_small form-content">
+                                <div class="slds-col">
+                                    <lightning-input name="assetType" label="Rego No."></lightning-input>
+                                    <lightning-input name="assetType" label="Request Proxy Id." disabled></lightning-input>
+                                  </div>
+                                  <div class="slds-col">
+                                    <lightning-combobox name="assetType" label="State" value="--None--"></lightning-combobox>
+                                    <lightning-input name="assetType" label="Last Update" disabled></lightning-input>
+                                  </div>
+                                  <div class="slds-col">
+                                    <lightning-input name="assetType" label="VIN"></lightning-input>
+                                    <lightning-input name="assetType" label="PPSR Request No." disabled></lightning-input>
+                                  </div>
+                                  <div class="slds-col">
+                                    <lightning-input name="assetType" label="Engine No"></lightning-input>
+                                    <lightning-input name="assetType" label="Note" disabled></lightning-input>
+                                  </div>
+                                  <div class="slds-col">
+                                    <lightning-input name="assetType" label="Colour"></lightning-input>
+                                  </div>
+                            </div>
+                        </div>
+                        <footer class="slds-card__footer"></footer>
+                      </article>
+                      <!-- ||||- -->
+
+
+                       <!-- ||||- -->
+                    <article class="slds-card">
+                        <div class="slds-card__header slds-grid">
+                        <header class="slds-media slds-media_center slds-has-flexi-truncate">
+                            <div class="slds-media__figure">
+                            <span class="slds-icon_container slds-icon-standard-account" title="account">
+                                <svg class="slds-icon slds-icon_small" aria-hidden="true">
+                                <use xlink:href="/assets/icons/standard-sprite/svg/symbols.svg#account"></use>
+                                </svg>
+                                <span class="slds-assistive-text">Vehicle Details</span>
+                            </span>
+                            </div>
+                            <div class="slds-media__body">
+                            <h2 class="slds-card__header-title">
+                                <a href="#" class="slds-card__header-link slds-truncate" title="Vehicle Details">
+                                <span>LTV</span>
+                                </a>
+                            </h2>
+                            </div>
+                        </header>
+                        </div>
+                        <div class="slds-card__body slds-card__body_inner">
+                                <div class="slds-grid slds-gutters slds-p-around_small form-content">
+                                    <div class="slds-col">
+                                        <lightning-input name="assetType" label="Make" disabled></lightning-input>
+                                        <lightning-input name="assetType" label="GlassCode" disabled></lightning-input>
+                                        <lightning-input name="assetType" label="Variant" disabled></lightning-input>
+                                        <lightning-input name="assetType" label="Class" disabled></lightning-input>
+                                        <lightning-input name="assetType" label="Transmition" disabled></lightning-input>
+                                      </div>
+                                      <div class="slds-col">
+                                        <lightning-input name="assetType" label="Year" disabled></lightning-input>
+                                        <lightning-input name="assetType" label="Family" disabled></lightning-input>
+                                        <lightning-input name="assetType" label="Style / Body" disabled></lightning-input>
+                                        <lightning-input name="assetType" label="Engine" disabled></lightning-input>
+                                        <lightning-input name="assetType" label="Size" disabled></lightning-input>
+                                      </div>
+                                      <div class="slds-col">
+                                        <lightning-input name="assetType" label="NVIC" disabled></lightning-input>
+                                        <lightning-input name="assetType" label="Release Date" disabled></lightning-input>
+                                        <lightning-input name="assetType" label="Series" disabled></lightning-input>
+                                        <lightning-input name="assetType" label="CC" disabled></lightning-input>
+                                        <lightning-input name="assetType" label="Cylinders" disabled></lightning-input>
+                                      </div>
+                                      
+                                </div>
+                            </div>
+                        <footer class="slds-card__footer"><b>Standard Features</b></footer>
+                      </article>
+                      <!-- ||||- -->
+
+                      
+                      
+                </div>
+            </div>
+        <!-- </lightning-card> -->
+
+    </lightning-card>
+</template>

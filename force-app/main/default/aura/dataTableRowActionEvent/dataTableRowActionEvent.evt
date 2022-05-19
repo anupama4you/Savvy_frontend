@@ -1,0 +1,4 @@
+<aura:event type="COMPONENT" description="Event template">
+    <aura:attribute name="actionName" type="String" />
+    <aura:attribute name="rowData" type="Object" /> <!-- sObject record -->
+</aura:event>

@@ -1,0 +1,26 @@
+.labelItem{
+    font-size: 1em;
+}
+.leftDiv{
+    float:left;
+    position: relative;
+    width: 62%;
+}
+.rightDiv{
+    float: right;
+    position:relative;
+    width:37%;
+    margin-top:-10px;
+}
+.mainDiv{
+    width:100%;
+    font-family:var(--lwc-fontFamily,Lato);
+}
+.dtClass{
+    margin-bottom:5px;
+}
+.borderClass{
+    width:94%; 
+    border-bottom: 1px solid #ddd;
+    margin:4% 0 4% 0;
+}

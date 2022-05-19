@@ -1,0 +1,15 @@
+<template>
+    <lightning-card title="Recent items" icon-name="custom:custom63">
+        <div class="slds-m-around_medium">
+            <template if:true={myRecords}>
+                <lightning-datatable
+                    key-field="Id"
+                    data={myRecords.data}
+                    columns={columns}
+                    hide-checkbox-column=true
+                >
+                </lightning-datatable>
+            </template>
+        </div>
+    </lightning-card>
+</template>

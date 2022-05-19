@@ -1,0 +1,58 @@
+<aura:component implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickAction" controller="PartnerCommunityController" access="global" >
+    <!-- attributes -->
+    <aura:attribute name="filetype" type="List" default="['.png', '.jpg', '.jpeg']" />
+    <aura:attribute name="multiple" type="Boolean" default="true" />
+    <aura:attribute name="disabled" type="Boolean" default="true" />
+    <aura:attribute name="recordId" type="String" />
+    <aura:attribute name="data" type="Cloud_Documents__c[]"/>
+    <aura:attribute name="columns" type="List"/>
+    <aura:attribute name="errors" type="Object" default="[]"/>
+    <aura:attribute name="draftValues" type="Object" default="[]"/>
+	
+    <!-- handlers-->
+    <aura:handler name="init" value="{! this }" action="{! c.init }"/>
+    
+    <div class="slds-page-header">
+        <div class="slds-page-header__row">
+            <div class="slds-page-header__col-title">
+                <div class="slds-media">
+                    <div class="slds-media__figure">
+                        <span class="slds-icon_container slds-icon-action-add_file">
+                            <lightning:icon iconName="action:add_file" alternativeText="upload" title="upload" size="x-small" />
+                        </span>
+                    </div>
+                    <div class="slds-media__body">
+                        <div class="slds-page-header__name">
+                            <div class="slds-page-header__name-title">
+                                <h1>
+                                    <span>Upload</span>
+                                    <span class="slds-page-header__title slds-truncate" title="Recently Viewed">Cloud Document</span>
+                                </h1>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="slds-box" style="background:white;">
+    	<lightning:fileUpload name="fileUploader" multiple="true" accept="{!v.filetype}" 
+                              recordId="{!v.recordId}" aura:id="multifileUpload"
+                              onuploadfinished="{!c.handleUploadFinished}" />
+        
+        <!--  -->
+        <div class="slds-p-around_medium">
+        	<lightning:datatable
+                aura:id="doctTable"
+                columns="{!v.columns}"
+                data="{!v.data}"
+                keyField="Id"
+                draftValues="{!v.draftValues}"
+                errors="{!v.errors}"
+                hideCheckboxColumn="true"
+                onsave="{!c.handleSaveEdition}"
+            />
+    	</div>
+    </div>
+</aura:component>

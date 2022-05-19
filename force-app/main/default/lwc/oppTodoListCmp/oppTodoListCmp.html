@@ -1,0 +1,30 @@
+<template>
+    <div style="min-width: 225px; border-right: 1px solid #e7e7e7; background:#e7e7e7;">
+        <lightning-layout>
+            <lightning-layout-item>
+                <lightning-vertical-navigation selected-item={selectedItem} onselect={handleSelect} class="navigation">
+                    <lightning-vertical-navigation-section label="TO DO LIST">
+                        <lightning-vertical-navigation-item label="Application Form" name="Application_Form"></lightning-vertical-navigation-item>
+                        <lightning-vertical-navigation-item label="Comparison Tool" name="Comparison_Tool"></lightning-vertical-navigation-item>
+                        <lightning-vertical-navigation-item label="Quote - Select Lender" name="Quote_Select_Lender"></lightning-vertical-navigation-item>
+                        <lightning-vertical-navigation-item label="YTD/Income Calculator" name="YTD_Income_Calculator"></lightning-vertical-navigation-item>
+                        <lightning-vertical-navigation-item label="Servicing Calculator" name="Servicing_Calculator"></lightning-vertical-navigation-item>
+                        <lightning-vertical-navigation-item label="Asset Details" name="Asset_Details"></lightning-vertical-navigation-item>
+                       <!--<lightning-vertical-navigation-item-badge label="Recently Updated" name="reports_updated" badge-count={updatedCount}></lightning-vertical-navigation-item-badge>--> 
+                    </lightning-vertical-navigation-section>
+                </lightning-vertical-navigation>
+            </lightning-layout-item>
+
+                   
+                    
+
+        </lightning-layout>
+
+    <lightning-layout>
+        <lightning-layout-item padding="around-medium">
+            <p>You Are Viewing: {currentContent} </p>
+        </lightning-layout-item>
+        </lightning-layout>
+
+    </div>
+</template>

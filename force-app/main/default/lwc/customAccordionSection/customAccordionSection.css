@@ -1,0 +1,8 @@
+.slds-is-open div.slds-accordion__summary {
+  background-color: #ededed;
+}
+.slds-accordion__list-item:first-child {
+  border-top-width: var(--sds-c-accordion-sizing-border, var(--lwc-borderWidthThin,1px));
+  border-top-style: solid;
+  border-top-color: var(--sds-c-accordion-color-border, var(--lwc-colorBorder,#D4D4D4));
+}

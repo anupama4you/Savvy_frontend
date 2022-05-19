@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<LightningComponentBundle xmlns="http://soap.sforce.com/2006/04/metadata">
+    <apiVersion>51.0</apiVersion>
+    <masterLabel>Partner Recent Items</masterLabel>
+    <description>List the most recent items/objects viwed by an user</description>
+    <isExposed>true</isExposed>
+    <targets>
+        <target>lightning__AppPage</target>
+        <target>lightningCommunity__Page</target>
+        <target>lightningCommunity__Default</target>
+    </targets>
+    <targetConfigs>
+      <targetConfig targets="lightningCommunity__Default">
+        <property name="numRecords" label="Number of Records" type="Integer" default="5"/>
+      </targetConfig>
+    </targetConfigs>
+</LightningComponentBundle>

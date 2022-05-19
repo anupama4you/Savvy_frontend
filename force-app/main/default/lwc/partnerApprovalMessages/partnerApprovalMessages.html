@@ -1,0 +1,51 @@
+<template>
+  <!-- Errors -->
+  <template if:true={displayErrorMessages}>
+    <c-partner-approval-message-item
+      title="Errors"
+      messages={listErrorMessages}
+      icon-name="utility:error"
+    ></c-partner-approval-message-item>
+  </template>
+  <!-- Asset Details -->
+  <template if:true={displayAssetMessages}>
+    <c-partner-approval-message-item
+      title="Asset Details"
+      messages={listAssetMessages}
+      icon-name="utility:color_swatch"
+    ></c-partner-approval-message-item>
+  </template>
+  <!-- Quoting -->
+  <template if:true={displayQuoteMessages}>
+    <c-partner-approval-message-item
+      title="Quotation"
+      messages={listQuoteMessages}
+      icon-name="utility:matrix"
+    ></c-partner-approval-message-item>
+  </template>
+  <!-- Documents -->
+  <template if:true={displayDocMessages}>
+    <c-partner-approval-message-item
+      title="Required documents"
+      messages={listDocMessages}
+      icon-name="utility:display_text"
+    ></c-partner-approval-message-item>
+  </template>
+  <!-- Other Messages -->
+  <template if:true={displayOtherMessages}>
+    <c-partner-approval-message-item
+      title="Other validations"
+      messages={listOtherMessages}
+      icon-name="utility:picklist_type"
+    ></c-partner-approval-message-item>
+  </template>
+  <!-- Warnings -->
+  <template if:true={displayWarningMessages}>
+    <c-partner-approval-message-item
+      title="Warnings"
+      messages={listWarningMessages}
+      icon-name="utility:warning"
+      variant="warning"
+    ></c-partner-approval-message-item>
+  </template>
+</template>
