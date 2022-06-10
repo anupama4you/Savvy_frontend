@@ -1,4 +1,7 @@
 <template>
+
+  <lightning-spinner if:false={rendered} size="small" alternative-text="loading..." variant="brand" ></lightning-spinner>
+    <template if:true={rendered}>
   
   
         
@@ -45,12 +48,21 @@
                         <div class="slds-card__body slds-card__body_inner">
                             <lightning-combobox name="assetType" label="Asset Type" onchange={loadNewUsedYearOptions} value={assetType} options={assetTypes}></lightning-combobox>
                             <div class="slds-form__row">
-                                <lightning-radio-group name="newOrUsed"
+                                <lightning-radio-group 
+                                    name="newUsed"
                                     label="New / Used"
                                     options={newOrUsedOptions}
+                                    onchange={loadNewUsedYearOptions}
                                     value={newUsed}
                                     type="radio" required></lightning-radio-group></div>
-                                <lightning-combobox type="text" label="Year of Vehicle" placeholder="--None--" options={yearSelect}></lightning-combobox>
+                                <lightning-combobox type="text" name="year" label="Year of Vehicle" value={year} onchange={loadLenderMakeOptions} options={yearSelect} required></lightning-combobox>
+                              </div>
+                              </article>
+                              <!-- ||||- -->
+                            
+                    <!-- ||||- -->
+                    <article class="slds-card" hidden={detailsIsVisible}>
+                      <div class="slds-card__header slds-grid">
                             <div class="slds-media__figure">
                               <span class="slds-icon_container slds-icon-standard-account" title="account">
                                 <svg class="slds-icon slds-icon_small" aria-hidden="true">
@@ -66,14 +78,15 @@
                                 </a>
                               </h2>
                             </div>
-                          </header>
                         </div>
                         <div class="slds-card__body slds-card__body_inner">
-                            <lightning-combobox name="assetType" label="Make" required></lightning-combobox>
+                            <lightning-combobox name="make" options={makeSelect} value={make} label="Make" required></lightning-combobox>
                             <lightning-combobox name="assetType" label="Model" required></lightning-combobox>
                             <lightning-combobox name="assetType" label="Variant" required></lightning-combobox>
                             <lightning-combobox name="assetType" label="Series" required></lightning-combobox>
                         </div>
+                        </article>
+                        <!-- ||||- -->
 
                         <!-- matching records element -->
                         <article class="slds-card">
@@ -342,14 +355,14 @@
                         <div class="slds-card__body slds-card__body_inner">
                             <div class="slds-grid slds-gutters slds-p-around_small form-content">
                                 <div class="slds-col">
-                                    <lightning-combobox name="assetType" label="Lenders" required></lightning-combobox>
+                                    <lightning-combobox name="lender" label="Lenders" value={lender} options={lenderOptions} required></lightning-combobox>
                                     <lightning-input type="number" name="assetType" label="Car Price" required></lightning-input>
                                     <lightning-input type="number" name="assetType" label="Warranty"></lightning-input>
                                     <lightning-input type="number" name="assetType" label="Actual KM"></lightning-input>
                                     <lightning-input name="assetType" label="RRP" value="$0.00" disabled></lightning-input>
                                   </div>
                                   <div class="slds-col">
-                                    <lightning-combobox name="assetType" label="Type Loan" options={newOrUsedOptions2} required></lightning-combobox>
+                                    <lightning-combobox name="assetType" label="Type Loan" value={typeLoan} options={typeLoanOptions} required></lightning-combobox>
                                     <lightning-input type="number" name="assetType" label="	Deposit/Trade in"></lightning-input>
                                     <lightning-input type="number" name="assetType" label="GAP"></lightning-input>
                                     <lightning-input type="number" name="assetType" label="Average KM"></lightning-input>
@@ -412,7 +425,7 @@
                                     <lightning-input name="assetType" label="Email"></lightning-input>
                                     <lightning-input name="assetType" label="Unit Number"></lightning-input>
                                     <lightning-combobox name="assetType" label="Street Type" value="--Select a Street Type--"></lightning-combobox>
-                                    <lightning-combobox name="assetType" label="State" value="--None--"></lightning-combobox>
+                                    <lightning-combobox name="assetType" label="State" value={state} options={getStatesOptions} ></lightning-combobox>
                                   </div>
                             </div>
                         </div>
@@ -527,4 +540,6 @@
         <!-- </lightning-card> -->
 
     </lightning-card>
+
+    </template>
 </template>
