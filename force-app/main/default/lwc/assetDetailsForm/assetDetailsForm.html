@@ -1,21 +1,13 @@
 <template>
 
-  <lightning-spinner if:false={rendered} size="small" alternative-text="loading..." variant="brand" ></lightning-spinner>
-    <template if:true={rendered}>
-  
-  
-        
+  <lightning-spinner if:false={displayComp} size="small" alternative-text="loading..." variant="brand" ></lightning-spinner>
+    <template if:true={displayComp}>
 
   <!-- "Asset Details - LTV for {{!opp.Name}}" -->
-    <lightning-card  title={Name}>
+    <lightning-card>
         <lightning-button label="Save Asset Details" slot="actions"></lightning-button>
         <header slot="title" class="slds-page-header slds-page-header_record-home">
-          <template if:true={currentOpportunity}>
-            <template for:each={currentOpportunity} for:item="customOpp">
-                <p key={customOpp.Id}>Asset Details - LTV for {customOpp.Name}</p>
-            </template>
-        </template>
-          
+             <p>Asset Details - LTV for {opp.Name}</p>  
         </header>
 
 
@@ -80,25 +72,155 @@
                             </div>
                         </div>
                         <div class="slds-card__body slds-card__body_inner">
-                            <lightning-combobox name="make" options={makeSelect} value={make} label="Make" required></lightning-combobox>
-                            <lightning-combobox name="assetType" label="Model" required></lightning-combobox>
-                            <lightning-combobox name="assetType" label="Variant" required></lightning-combobox>
-                            <lightning-combobox name="assetType" label="Series" required></lightning-combobox>
+                            <lightning-combobox name="make" label="Make" value={make} options={makeSelect} onchange={loadMakeModelOrFamilyOptions}  required></lightning-combobox>
+                            <lightning-combobox name="model" label="Model" value={model} options={modelSelect} onchange={loadModelVariantOptions}  required></lightning-combobox>
+                            <lightning-combobox name="variant" label="Variant" value={variantDesc} options={variantSelect} onchange={loadVariantSeriesOptions} required></lightning-combobox>
+                            <lightning-combobox name="series" label="Series" value={series} options={seriesSelect} onchange={setSeries} required></lightning-combobox>
                         </div>
                         </article>
                         <!-- ||||- -->
 
                         <!-- matching records element -->
-                        <article class="slds-card">
-                            <div class="slds-card__header slds-grid">
-                              <div class="slds-card__body slds-card__body_inner">
+                       
+                              <article class="slds-card">
+                                  <div class="slds-card__header slds-grid">
+                                    <div class="slds-card__body slds-card__body_inner">
+                                      <!-- <template if:true={carsList}> -->
+
+                                      <!-- isDetailed == 0 -->
+                                      <template if:true={IsDetail0}>
+                                        <template if:true={carsList}>
+                                        <template for:each={carsList} for:item="q">
+                                            Matching Records: {carListLen}
+                                            <table  width="100%" key={q.Id}>
+                                                <tr>
+                                                    <td colspan="2" style="background: #0099d0;
+                                                    color: #ffffff !important;
+                                                    padding: 5px 10px 5px 15px;
+                                                    font-weight: bold;">
+                                                        <span>{q.Year__c} {glassMake.Name} {q.Family__c} {q.Description__c} {q.Series__c} {q.Style__c} {q.CC__c} cc {q.Engine__c} {q.Size__c} {q.Cylinders__c} {q.Transmission__c}</span>                                        </td>
+                                                </tr>
+                                                <tr>
+                                                    <td colspan="2">
+                                                        <!-- <apex:outputText value="OLDER LIGHT COMMERCIAL" rendered="{!q.Model__r.Type_Source__c = 'OLC'}"/>
+                                                        <apex:outputText value="OLDER CARS" rendered="{!q.Model__r.Type_Source__c = 'OCG'}"/>
+                                                        <apex:outputText value="LIGHT COMMERCIAL VEHICLES" rendered="{!q.Model__r.Type_Source__c = 'CVG'}"/>
+                                                        <apex:outputText value="PASSENGER VEHICLES" rendered="{!q.Model__r.Type_Source__c = 'PVG'}"/> -->
+
+                                                        <output if:true={isOlderLightCommercial} >OLDER LIGHT COMMERCIAL</output>
+                                                        <output if:true={isOlderCars}>OLDER CARS</output>
+                                                        <output if:true={isLightCommercialVehicles} >LIGHT COMMERCIAL VEHICLES</output>
+                                                        <output if:true={isPassengerVehicles} >PASSENGER VEHICLES</output>
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td>
+                                                        Date Rel: {q.Release_Date__c}
+                                                    </td>
+                                                    <td>
+                                                        NVIC: {q.NVIC__c}
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td>
+                                                        RRP: {q.New_Price__c}
+                                                    </td>
+                                                    <td>
+                                                        Trade L: {q.Trade_Low_Price__c}
+                                                    </td>
+                                                </tr>
+                                                <td>
+                                                    Trade: {q.Trade_Price__c}
+                                                </td>
+                                                <td>
+                                                    Retail: {q.Retail_Price__c}
+                                                </td>
+                                                <tr>
+                                                    <td style="color: red;">
+                                                      {q.Average_Kms__c}000 Km
+                                                    </td>
+                                                    <td align="right">
+                                                        <lightning-button name="SelectBtn" value={q.Code__c} label="Select" title="Select" onclick={loadVariantFactoryOptions} ></lightning-button>
+                                                    </td>
+                                                </tr>
+                                            </table>
+                                            </template>
+                                    </template>
+                                  </template>
+      
+                                  <!-- isDetailed == 2 -->
+                                  <template if:true={IsDetail2}>
+
+                                    <template if:true={glassVariant}>
+                                     
+
+                                        <table  width="100%" >
+                                            <tr>
+                                                <td colspan="2" style="background: #0099d0;
+                                                color: #ffffff !important;
+                                                padding: 5px 10px 5px 15px;
+                                                font-weight: bold;">
+                                                    <span>{glassVariant.Year__c} {glassMake.Name} {glassVariant.Family__c} {glassVariant.Description__c} {glassVariant.Series__c} {glassVariant.Style__c} {glassVariant.CC__c} cc {glassVariant.Engine__c} {glassVariant.Size__c} {glassVariant.Cylinders__c} {glassVariant.Transmission__c}</span>                                        </td>
+                                            </tr>
+                                            <tr>
+                                                <td colspan="2">
+                                                    <!-- <apex:outputText value="OLDER LIGHT COMMERCIAL" rendered="{!q.Model__r.Type_Source__c = 'OLC'}"/>
+                                                    <apex:outputText value="OLDER CARS" rendered="{!q.Model__r.Type_Source__c = 'OCG'}"/>
+                                                    <apex:outputText value="LIGHT COMMERCIAL VEHICLES" rendered="{!q.Model__r.Type_Source__c = 'CVG'}"/>
+                                                    <apex:outputText value="PASSENGER VEHICLES" rendered="{!q.Model__r.Type_Source__c = 'PVG'}"/> -->
+
+                                                    <output if:true={isOlderLightCommercial} >OLDER LIGHT COMMERCIAL</output>
+                                                    <output if:true={isOlderCars}>OLDER CARS</output>
+                                                    <output if:true={isLightCommercialVehicles} >LIGHT COMMERCIAL VEHICLES</output>
+                                                    <output if:true={isPassengerVehicles} >PASSENGER VEHICLES</output>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td>
+                                                    Date Rel: {glassVariant.Release_Date__c}
+                                                </td>
+                                                <td>
+                                                    NVIC: {glassVariant.NVIC__c}
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td>
+                                                    RRP: {variantNewPrice}
+                                                </td>
+                                                <td>
+                                                    Trade L: {glassVariant.Trade_Low_Price__c}
+                                                </td>
+                                            </tr>
+                                            <td>
+                                                Trade: {glassVariant.Trade_Price__c}
+                                            </td>
+                                            <td>
+                                                Retail: {glassVariant.Retail_Price__c}
+                                            </td>
+                                            <tr>
+                                                <td style="color: red;">
+                                                  {glassVariant.Average_Kms__c}000 Km
+                                                </td>
+                                                <td align="right">
+                                                    <lightning-button name="backToList1" label="List" title="Select" onclick={loadVariantFactoryOptions} ></lightning-button>
+                                                </td>
+                                            </tr>
+                                        </table>
+                                        </template>
+                              </template>
+
+                              <!-- isDetailed == 3 -->
+                              <template if:true={IsDetail3}>
+
+                                <template if:true={glassVariant}>
+
                                 <table  width="100%">
                                     <tr>
                                         <td colspan="2" style="background: #0099d0;
                                         color: #ffffff !important;
                                         padding: 5px 10px 5px 15px;
                                         font-weight: bold;">
-                                            <span>2020 AUDI A3 30 TFSI SPORTBACK (1.0 TFSI) 8V MY19 5D HATCHBACK 999 cc TDFI 1.0L T3 7AST</span>                                        </td>
+                                            <span>{glassVariant.Year__c} {glassMake.Name} {glassVariant.Family__c} {glassVariant.Description__c} {glassVariant.Series__c} {glassVariant.Style__c} {glassVariant.CC__c} cc {glassVariant.Engine__c} {glassVariant.Size__c} {glassVariant.Cylinders__c} {glassVariant.Transmission__c}</span>                                        </td>
                                     </tr>
                                     <tr>
                                         <td colspan="2">
@@ -107,55 +229,60 @@
                                             <apex:outputText value="LIGHT COMMERCIAL VEHICLES" rendered="{!q.Model__r.Type_Source__c = 'CVG'}"/>
                                             <apex:outputText value="PASSENGER VEHICLES" rendered="{!q.Model__r.Type_Source__c = 'PVG'}"/> -->
 
-                                            <!-- <apex:outputText value="OLDER LIGHT COMMERCIAL" rendered="{!q.Type_Source__c = 'OLC'}" />
-                                            <apex:outputText value="OLDER CARS" rendered="{!q.Type_Source__c = 'OCG'}" />
-                                            <apex:outputText value="LIGHT COMMERCIAL VEHICLES" rendered="{!q.Type_Source__c = 'CVG'}" />
-                                            <apex:outputText value="PASSENGER VEHICLES" rendered="{!q.Type_Source__c = 'PVG'}" /> -->
+                                            <output if:true={isOlderLightCommercial} >OLDER LIGHT COMMERCIAL</output>
+                                            <output if:true={isOlderCars}>OLDER CARS</output>
+                                            <output if:true={isLightCommercialVehicles} >LIGHT COMMERCIAL VEHICLES</output>
+                                            <output if:true={isPassengerVehicles} >PASSENGER VEHICLES</output>
                                         </td>
                                     </tr>
                                     <tr>
                                         <td>
-                                            Date Rel: Jan-20
+                                            Date Rel: {glassVariant.Release_Date__c}
                                         </td>
                                         <td>
-                                            NVIC: 03UU20
+                                            NVIC: {glassVariant.NVIC__c}
                                         </td>
                                     </tr>
                                     <tr>
                                         <td>
-                                            RRP: $36,600.00
+                                            RRP: {variantNewPrice}
                                         </td>
                                         <td>
-                                            Trade L: $24,500.00
+                                            Trade L: {glassVariant.Trade_Low_Price__c}
                                         </td>
                                     </tr>
                                     <td>
-                                        Trade: $28,600.00
+                                        Trade: {glassVariant.Trade_Price__c}
                                     </td>
                                     <td>
-                                        Retail: $34,400.00
+                                        Retail: {glassVariant.Retail_Price__c}
                                     </td>
                                     <tr>
                                         <td style="color: red;">
-                                            5000 Km
+                                          {glassVariant.Average_Kms__c}000 Km
                                         </td>
                                         <td align="right">
-                                            <lightning-button label="Select" title="Select" ></lightning-button>
+                                            <lightning-button name="backToList1" label="List" title="Select" onclick={loadVariantFactoryOptions}></lightning-button>
                                         </td>
                                     </tr>
                                 </table>
-                                    
-                              </div>
-                            </div>
-                          </article>
+                                </template>
+                             </template>
+                             <!-- </template> -->
+                                          
+                                    </div>
+                                  </div>
+                                </article>
+                       
 
                         <!-- matching records element end-->
 
                         <footer class="slds-card__footer"></footer>
-                      </article>
+      
                       <!-- ||||- -->
 
                        <!-- ||||- -->
+                    <template if:true={displayRedbookForm}>
                     <article class="slds-card">
                         <div class="slds-card__header slds-grid">
                           <header class="slds-media slds-media_center slds-has-flexi-truncate">
@@ -176,17 +303,24 @@
                             </div>
                           </header>
                         </div>
+                        <template if:true={oppty.data}>
+                            <div class="slds-m-around_medium">
+                                <p>{Name}</p>
+                            </div>
+                        </template>
                         <div class="slds-card__body slds-card__body_inner">
-                            <lightning-combobox name="assetType" label="Family" required></lightning-combobox>
-                            <lightning-combobox name="assetType" label="Badge" required></lightning-combobox>
-                            <lightning-combobox name="assetType" label="Variant" required></lightning-combobox>
-                            <lightning-input name="assetType" label="Redbook Key" disabled></lightning-input>
+                            <lightning-combobox name="family" label="Family" value={family} options={familySelect} onchange={loadFamilyBadgeOptions} required></lightning-combobox>
+                            <lightning-combobox name="assetType" label="Badge" value={badgeRedbook} options={badgeSelectRedbook} onchange={loadBadgeVariantOptions} required></lightning-combobox>
+                            <lightning-combobox name="assetType" label="Variant" value={variantRedbook} options={variantSelectRedbook} onchange={getVehicleKey} required></lightning-combobox>
+                            <lightning-input name="assetType" label="Redbook Key" value={toName} disabled></lightning-input>
                         </div>
                         <footer class="slds-card__footer"></footer>
                       </article>
+                    </template>
                       <!-- ||||- -->
 
                        <!-- ||||- -->
+                       <!-- <template if:true={assetOptionsSelect}> -->
                     <article class="slds-card">
                         <div class="slds-card__header slds-grid">
                         <header class="slds-media slds-media_center slds-has-flexi-truncate">
@@ -208,10 +342,16 @@
                         </header>
                         </div>
                         <div class="slds-card__body slds-card__body_inner">
-                            <lightning-input type="toggle" label="Factory Options" name="factoryOptions"></lightning-input>
+                            <!-- <lightning-input type="toggle" label="Factory Options" name="factoryOptions"></lightning-input> -->
+                            <lightning-checkbox-group name="Checkbox Group"
+                                options={assetOptionsSelect}
+                                value={assetOptions}
+                                onchange={calculateFactoryOptions}>
+                            </lightning-checkbox-group>
                         </div>
                         <footer class="slds-card__footer"></footer>
                       </article>
+                    <!-- </template> -->
                       <!-- ||||- -->
 
                       <!-- ||||- -->
@@ -256,22 +396,22 @@
                                     <td>Glass's Value</td>
                                     <td>
                                         <h3>
-                                            $0.00 
+                                            {variantNewPrice}
                                         </h3>&nbsp;
                                     </td>
                                     <td>
                                         <h3>
-                                            $0.00 
+                                            {tradeLowGlassValue}
                                         </h3>&nbsp;
                                     </td>
                                     <td>
                                         <h3>
-                                            $0.00 
+                                            {tradeGlassValue}
                                         </h3>&nbsp;
                                     </td>
                                     <td>
                                         <h3>
-                                            $0.00 
+                                            {retailGlassValue}
                                         </h3>&nbsp;
                                     </td>
                                 </tr>
@@ -280,17 +420,17 @@
                                     <td>&nbsp;</td>
                                     <td>
                                         <h3>
-                                            $0.00 
+                                            {totalTradeLowPriceKms} 
                                         </h3>&nbsp;
                                     </td>
                                     <td>
                                         <h3>
-                                            $0.00 
+                                           {totalTradePriceKms}
                                         </h3>&nbsp;
                                     </td>
                                     <td>
                                         <h3>
-                                            $0.00 
+                                            {totalRetailPriceKms}
                                         </h3>&nbsp;
                                     </td>
                                 </tr>
@@ -298,27 +438,27 @@
                                     <td>Value of Options</td>
                                     <td>
                                         <h3>
-                                            $0.00 
+                                            {totalPriceOptions} 
                                         </h3>&nbsp;
                                     </td>
                                     <td><h3>
-                                        $0.00 </h3>&nbsp;
+                                        {totalTradeLowPriceOptions} </h3>&nbsp;
                                     </td>
                                     <td><h3>
-                                        $0.00 </h3>&nbsp;</td>
+                                        {totalTradePriceOptions} </h3>&nbsp;</td>
                                     <td><h3>
-                                        $0.00 </h3>&nbsp;</td>
+                                        {totalRetailPriceOptions} </h3>&nbsp;</td>
                                 </tr>
                                 <tr>
                                     <td>Adjusted Values</td>
                                     <td>
-                                        $0.00 &nbsp;
+                                        {totalEstimated} &nbsp;
                                     </td>
-                                    <td>$0.00 &nbsp;
+                                    <td>{tradeLowAdjustedValue} &nbsp;
                                     </td>
-                                    <td>$0.00 &nbsp;
+                                    <td>{tradeAdjustedValue} &nbsp;
                                     </td>
-                                    <td>$0.00 &nbsp;
+                                    <td>{reatilAdjustedValue} &nbsp;
                                     </td>
                                 </tr>
                             </table>
@@ -355,29 +495,30 @@
                         <div class="slds-card__body slds-card__body_inner">
                             <div class="slds-grid slds-gutters slds-p-around_small form-content">
                                 <div class="slds-col">
-                                    <lightning-combobox name="lender" label="Lenders" value={lender} options={lenderOptions} required></lightning-combobox>
-                                    <lightning-input type="number" name="assetType" label="Car Price" required></lightning-input>
-                                    <lightning-input type="number" name="assetType" label="Warranty"></lightning-input>
-                                    <lightning-input type="number" name="assetType" label="Actual KM"></lightning-input>
-                                    <lightning-input name="assetType" label="RRP" value="$0.00" disabled></lightning-input>
+                                    <lightning-combobox name="lender" label="Lenders" value={lender} onchange={putFeesValue} options={lenderOptions} required></lightning-combobox>
+                                    <lightning-input type="number" name="carPrice" label={carLabelPriceSuff} value={carPrice} formatter="currency" step="0.01" required></lightning-input>
+                                    <lightning-input type="number" name="warranty" placeholder="$" label="Warranty" value={warranty} step="0.01"></lightning-input>
+                                    <lightning-input type="number" name="calculateKmsAdjustment" label="Actual KM" onchange={calculateKmsAdjustment} value={actualKms}></lightning-input>
+                                    <lightning-input name="RRP" label={ltvValueLabel} value={ltvValue} formatter="currency" step="0.01"  disabled></lightning-input>
                                   </div>
                                   <div class="slds-col">
-                                    <lightning-combobox name="assetType" label="Type Loan" value={typeLoan} options={typeLoanOptions} required></lightning-combobox>
-                                    <lightning-input type="number" name="assetType" label="	Deposit/Trade in"></lightning-input>
-                                    <lightning-input type="number" name="assetType" label="GAP"></lightning-input>
-                                    <lightning-input type="number" name="assetType" label="Average KM"></lightning-input>
-                                    <lightning-input name="assetType" label="NAF" value="$40,000.00" disabled></lightning-input>
+                                    <lightning-combobox name="typeLoan" label="Type Loan" value={typeLoan} options={typeLoanOptions} onchange={putFeesValue} required></lightning-combobox>
+                                    <lightning-input type="number" name="deposit" label="	Deposit/Trade in" formatter="currency" step="0.01" value={deposit}></lightning-input>
+                                    <lightning-input type="number" name="gap" label="GAP" value={gap}  step="0.01"></lightning-input>
+                                    <lightning-input type="number" name="averageKM" label="Average KM" value={averageKM}></lightning-input>
+                                    <lightning-input name="NAF" label="NAF" value={ltvNAFValue} formatter="currency" step="0.01" disabled></lightning-input>
                                   </div>
                                   <div class="slds-col">
-                                    <lightning-combobox name="assetType" label="New/Used" disabled></lightning-combobox>
-                                    <lightning-input type="number" name="assetType" label="Fees" required></lightning-input>
-                                    <lightning-input type="number" name="assetType" label="LPI"></lightning-input>
-                                    <lightning-combobox type="number" value="--None--" name="assetType" label="Purchase Type"></lightning-combobox>
-                                    <lightning-input field-name="assetType"  label="Estimated LVR" value="$40,000.00" disabled></lightning-input>
+                                    <lightning-input name="newUsed" label="New/Used" value={newUsed} disabled></lightning-input>
+                                    <lightning-input type="number" name="fees" label="Fees" value={fees} formatter="currency" step="0.01" required></lightning-input>
+                                    <lightning-input type="number" name="lpi" label="LPI" value={lpi}  step="0.01"></lightning-input>
+                                    <lightning-input type="text" name="purchaseType" label="Purchase Type" value={opp.Purchase_Type__c} onchange={selectedPurchaseType}></lightning-input>
+                                    <lightning-input name="LVR" label={ltvLvrLabel} value={ltvLvrValue} formatter="percent" step="0.01" disabled></lightning-input>
                                   </div>
                                   <div class="slds-col">
-                                    <lightning-input  label="Estimated LVR" value="0" disabled></lightning-input>
-                                    <lightning-input type="number" name="assetType" label="LTI" value="0"></lightning-input>
+                                    <lightning-input  label={carPriceLabel} value={ltvCarAge} disabled></lightning-input>
+                                    <output> <p><lightning-formatted-number value={ltvFeeValue} format-style="currency" currency-code="USD" currency-display-as="symbol"></lightning-formatted-number></p></output>
+                                    <lightning-input label="LTI" value={lti} step="0.01" disabled></lightning-input>
                                   </div>
                             </div>
                         </div>
@@ -409,23 +550,23 @@
                         <div class="slds-card__body slds-card__body_inner">
                             <div class="slds-grid slds-gutters slds-p-around_small form-content">
                                 <div class="slds-col">
-                                    <lightning-combobox name="assetType" label="Dealer Type" value="--None--"></lightning-combobox>
-                                    <lightning-input name="assetType" label="Name"></lightning-input>
-                                    <lightning-input type="tel" name="assetType" label="Phone"></lightning-input>
-                                    <lightning-input name="assetType" label="Street Number" required></lightning-input>
-                                    <lightning-input name="assetType" label="Suburb" required></lightning-input>
+                                    <lightning-input name="assetType" label="Dealer Type" value={opp.Dealer_Type__c}></lightning-input>
+                                    <lightning-input name="assetType" label="Name" value={opp.Dealer_Name__c}></lightning-input>
+                                    <lightning-input type="tel" name="assetType" label="Phone" value={opp.Dealer_Phone_Number__c}></lightning-input>
+                                    <lightning-input name="assetType" label="Street Number" value={opp.Dealer_Street_Number__c} required></lightning-input>
+                                    <lightning-input name="assetType" label="Suburb" value={opp.Dealer_Suburb__c} required></lightning-input>
                                   </div>
                                   <div class="slds-col">
-                                    <lightning-input name="assetType" label="Contact Person"></lightning-input>
-                                    <lightning-input type="tel" name="assetType" label="Mobile"></lightning-input>
-                                    <lightning-input name="assetType" label="Street Address" required></lightning-input>
-                                    <lightning-input type="number" name="assetType" label="Postcode" required></lightning-input>
+                                    <lightning-input name="assetType" label="Contact Person" value={opp.Dealer_Contact_Name__c}></lightning-input>
+                                    <lightning-input type="tel" name="assetType" label="Mobile" value={opp.Dealer_Mobile__c}></lightning-input>
+                                    <lightning-input name="assetType" label="Street Address" value={opp.Dealer_Address__c} required></lightning-input>
+                                    <lightning-input type="number" name="assetType" label="Postcode" value={opp.Dealer_Postcode__c} required></lightning-input>
                                   </div>
                                   <div class="slds-col">
-                                    <lightning-input name="assetType" label="Email"></lightning-input>
-                                    <lightning-input name="assetType" label="Unit Number"></lightning-input>
-                                    <lightning-combobox name="assetType" label="Street Type" value="--Select a Street Type--"></lightning-combobox>
-                                    <lightning-combobox name="assetType" label="State" value={state} options={getStatesOptions} ></lightning-combobox>
+                                    <lightning-input name="assetType" label="Email" value={opp.Dealer_Email__c}></lightning-input>
+                                    <lightning-input name="assetType" label="Unit Number" value={opp.Dealer_Unit_Number__c}></lightning-input>
+                                    <lightning-combobox name="assetType" label="Street Type" options={streetTypeOptions_} value={opp.Dealer_Street_Type__c}></lightning-combobox>
+                                    <lightning-combobox name="assetType" label="State" value={opp.Dealer_State__c} options={statesOptions} ></lightning-combobox>
                                   </div>
                             </div>
                         </div>
@@ -457,25 +598,39 @@
                         <div class="slds-card__body slds-card__body_inner">
                             <div class="slds-grid slds-gutters slds-p-around_small form-content">
                                 <div class="slds-col">
-                                    <lightning-input name="assetType" label="Rego No."></lightning-input>
-                                    <lightning-input name="assetType" label="Request Proxy Id." disabled></lightning-input>
+                                    <lightning-input name="regoNo" label="Rego No." value={rego}></lightning-input>
                                   </div>
                                   <div class="slds-col">
-                                    <lightning-combobox name="assetType" label="State" value="--None--"></lightning-combobox>
-                                    <lightning-input name="assetType" label="Last Update" disabled></lightning-input>
+                                    <lightning-combobox name="assetType" label="State" value={regoState} options={statesOptions}></lightning-combobox>
                                   </div>
                                   <div class="slds-col">
-                                    <lightning-input name="assetType" label="VIN"></lightning-input>
-                                    <lightning-input name="assetType" label="PPSR Request No." disabled></lightning-input>
+                                    <lightning-input name="assetType" label="VIN" value={vin}></lightning-input>
                                   </div>
                                   <div class="slds-col">
-                                    <lightning-input name="assetType" label="Engine No"></lightning-input>
-                                    <lightning-input name="assetType" label="Note" disabled></lightning-input>
+                                    <lightning-input name="assetType" label="Engine No" value={engine}></lightning-input>
                                   </div>
                                   <div class="slds-col">
-                                    <lightning-input name="assetType" label="Colour"></lightning-input>
+                                    <lightning-input name="assetType" label="Colour" value={colour}></lightning-input>
                                   </div>
                             </div>
+                            <template if:true={isSearchCertificateNumber}>
+                            <div class="slds-grid slds-gutters slds-p-around_small form-content">
+                                <div class="slds-col">
+                                    <lightning-input name="assetType" label="Request Proxy Id." value={opp.Application_AssetDetail__r.PPSR_Proxy_Id__c} disabled></lightning-input>
+                                  </div>
+                                  <div class="slds-col">
+                                    <lightning-input name="assetType" label="Last Update" value={opp.Application_AssetDetail__r.PPSR_Proxy_Last_Update__c} disabled></lightning-input>
+                                  </div>
+                                  <div class="slds-col">
+                                    <lightning-input name="assetType" label="PPSR Request No." value={opp.Application_AssetDetail__r.Search_Certificate_Number__c} disabled></lightning-input>
+                                  </div>
+                                  <div class="slds-col">
+                                    <lightning-input name="assetType" label="Note" value={opp.Application_AssetDetail__r.PPSR_Proxy_Message__c} disabled></lightning-input>
+                                  </div>
+                                  <div class="slds-col">
+                                  </div>
+                            </div>
+                            </template>
                         </div>
                         <footer class="slds-card__footer"></footer>
                       </article>
@@ -483,6 +638,7 @@
 
 
                        <!-- ||||- -->
+                    <template if:true={isVehicleDetails}>
                     <article class="slds-card">
                         <div class="slds-card__header slds-grid">
                         <header class="slds-media slds-media_center slds-has-flexi-truncate">
@@ -506,31 +662,43 @@
                         <div class="slds-card__body slds-card__body_inner">
                                 <div class="slds-grid slds-gutters slds-p-around_small form-content">
                                     <div class="slds-col">
-                                        <lightning-input name="assetType" label="Make" disabled></lightning-input>
-                                        <lightning-input name="assetType" label="GlassCode" disabled></lightning-input>
-                                        <lightning-input name="assetType" label="Variant" disabled></lightning-input>
-                                        <lightning-input name="assetType" label="Class" disabled></lightning-input>
-                                        <lightning-input name="assetType" label="Transmition" disabled></lightning-input>
+                                            
+                                        <lightning-input name="assetType" label="Make" value={makeObject.Name} disabled></lightning-input>
+                                        <lightning-input name="assetType" label="GlassCode" value={variantObject.Code__c} disabled></lightning-input>
+                                        <lightning-input name="assetType" label="Variant" value={variantObject.Description__c} disabled></lightning-input>
+                                        <lightning-input name="assetType" label="Class" value={displayClass} disabled></lightning-input>
+                                        <lightning-input name="assetType" label="Transmition" value={variantObject.Transmission__c} disabled></lightning-input>
                                       </div>
                                       <div class="slds-col">
-                                        <lightning-input name="assetType" label="Year" disabled></lightning-input>
-                                        <lightning-input name="assetType" label="Family" disabled></lightning-input>
-                                        <lightning-input name="assetType" label="Style / Body" disabled></lightning-input>
-                                        <lightning-input name="assetType" label="Engine" disabled></lightning-input>
-                                        <lightning-input name="assetType" label="Size" disabled></lightning-input>
+                                        <lightning-input name="assetType" label="Year" value={variantObject.Year__c} disabled></lightning-input>
+                                        <lightning-input name="assetType" label="Family" value={variantObject.Family__c} disabled></lightning-input>
+                                        <lightning-input name="assetType" label="Style / Body" value={variantObject.Style__c} disabled></lightning-input>
+                                        <lightning-input name="assetType" label="Engine" value={variantObject.Engine__c} disabled></lightning-input>
+                                        <lightning-input name="assetType" label="Size" value={variantObject.Size__c} disabled></lightning-input>
                                       </div>
                                       <div class="slds-col">
-                                        <lightning-input name="assetType" label="NVIC" disabled></lightning-input>
-                                        <lightning-input name="assetType" label="Release Date" disabled></lightning-input>
-                                        <lightning-input name="assetType" label="Series" disabled></lightning-input>
-                                        <lightning-input name="assetType" label="CC" disabled></lightning-input>
-                                        <lightning-input name="assetType" label="Cylinders" disabled></lightning-input>
+                                        <lightning-input name="assetType" label="NVIC" value={variantObject.NVIC__c} disabled></lightning-input>
+                                        <lightning-input name="assetType" label="Release Date" value={variantObject.Release_Date__c} disabled></lightning-input>
+                                        <lightning-input name="assetType" label="Series" value={variantObject.Series__c} disabled></lightning-input>
+                                        <lightning-input name="assetType" label="CC" value={variantObject.CC__c} disabled></lightning-input>
+                                        <lightning-input name="assetType" label="Cylinders" value={variantObject.Cylinders__c} disabled></lightning-input>
                                       </div>
                                       
                                 </div>
                             </div>
-                        <footer class="slds-card__footer"><b>Standard Features</b></footer>
                       </article>
+                      <div class="slds-m-left_medium">
+                        <template if:true={assetStandardFeautersData}>
+                            <b>Standard Features</b><br>
+                            <template for:each={assetStandardFeautersData} for:item="feature">
+                                <p key={feature}>
+                                    [{feature.code}] {feature.name}
+                                </p>
+                            </template>
+                        </template>
+                        
+                    </div>
+                    </template>
                       <!-- ||||- -->
 
                       
