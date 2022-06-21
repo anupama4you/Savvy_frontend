@@ -24,7 +24,9 @@ import getVehicle from '@salesforce/apex/assetDetailsFormController.getVehicle';
 import getStreetTypeOptions from '@salesforce/apex/assetDetailsFormController.getStreetTypeOptions';
 import getCodeModel from '@salesforce/apex/assetDetailsFormController.getCodeModel';
 import getStatesOptions from '@salesforce/apex/assetDetailsFormController.getStatesOptions';
-import getApplicationQuoting from '@salesforce/apex/QuotingToolHelper.getApplicationQuoting';
+import getApplicationQuoting from '@salesforce/apex/assetDetailsFormController.getApplicationQuoting';
+import insertAssetDetails from '@salesforce/apex/assetDetailsFormController.insertAssetDetails';
+import isUserIdSettlementTeam from '@salesforce/apex/assetDetailsFormController.isUserIdSettlementTeam';
 // import  getYears  from '@salesforce/apex/GlassServicesHelper.getYears';
 
 // FIELDS :::
@@ -98,11 +100,17 @@ export default class GlassServiceEstimatorPage extends LightningElement {
     @wire(getCustomOpportunities, {recordId: '$recordId'}) wiredRecord({error, data}){
         if(data){
             console.log('wiredMethod:::'+JSON.stringify(data));
-            this.currentOpp = data;
             this.opp = data;
             console.log('OPPPPPPPP:::', data)
-            console.log('Dealer state:::', this.opp.Dealer_State__c)
             this.loadSavedData();
+
+            var aad = {}
+            if(this.opp.Application_AssetDetail__r != null){
+                aad = this.opp.Application_AssetDetail__r;
+                console.log('ANUPAMA-YES::', aad)
+            }else{
+                console.log('ANUPAMA-NO::', aad)
+            }
 
             this.displayComp = true;
         }else{
@@ -123,6 +131,7 @@ export default class GlassServiceEstimatorPage extends LightningElement {
         this.loadNewUsedYearOptions1();  
         this.loadStreetTypeOptions();
         this.loadStatesOptions();
+        this.loadPurchaseTypeOptions();
     
         this.test = ''
         console.log('Detail::::', this.isDetail)
@@ -141,6 +150,17 @@ export default class GlassServiceEstimatorPage extends LightningElement {
         return fn;
     }
     
+    get isAssetCompleted(){
+        if(this.assetType == 'Car' && this.newUsed != null && this.year != null){
+            return false;
+        }else{
+            return true;
+        }
+    }
+
+    get isUserSettlementTeam() {
+        return isUserIdSettlementTeam({userId : this.recordId});
+    }
 
     initialization(){
         this.assetType = 'Car';
@@ -176,9 +196,10 @@ export default class GlassServiceEstimatorPage extends LightningElement {
         this.totalTradeLowPriceOptions = 0.0;
         this.totalTradePriceOptions = 0.0;
         this.totalRetailPriceOptions = 0.0;
+        this.showOptions = true;
 
         // dummy values
-        this.actualKms = 100000
+        // this.actualKms = 100000
 
         // retrieving existing data from DB
         // loadSavedData();
@@ -212,8 +233,8 @@ export default class GlassServiceEstimatorPage extends LightningElement {
     variantSelect = null;
     variantNewPrice = 0.0;
     actualKms = 0;
-    assetOptionsData = new Map();
-    assetOptions;
+    assetOptionsData;
+    assetOptions = [];
     totalPriceOptions = 0.0;
     totalEstimated = 0.0;   
     totalTradeLowPriceOptions = 0.0;
@@ -239,7 +260,7 @@ export default class GlassServiceEstimatorPage extends LightningElement {
     quotingFees = 0;
     isRefinanceMacq;
     state;
-    assetOptionsSelect;
+    assetOptionsSelect ;
     assetStandardFeautersData;
     lender;
     variantOptionsMap;
@@ -276,26 +297,29 @@ export default class GlassServiceEstimatorPage extends LightningElement {
     colour;
     regoState;
     statesOptions;
+    purchaseTypes;
+    purchaseType;
+    dealerType;
+    dealerName;
+    dealerPhoneNo;
+    dealerStreetNo;
+    dealerSuburb;
+    dealerContactName;
+    dealerMobile;
+    dealerAddress;
+    dealerPostCode;
+    dealerEmail;
+    dealerUnitNo;
+    dealerStreetType;
+    dealerState;
+    contractNumber;
+    showOptions;
 
     test;
     
     @track rendered = false;
 
-    // @wire(getGlassCarsSize, {param : this.carParameters}) wiredRecord({error, data}){
-    //     if(data){   
-    //         console.log('car size:::',JSON.stringify(data));
-    //         // this.currentOpp = data;
-    //         // this.state = data.Dealer_State__c;
-    //         // console.log("state:::"+this.state);
-    //         // console.log(this.currentOpp);
-    //     }else{
-    //         this.error = error;
-    //         console.error(error)
-    //     }
-    // }
-
-
-    getCarsList(){
+    getCarsList(setBtn){
 
         console.log("check variables got values:::", this.make , this.model, this.variantDesc , this.series)
 
@@ -322,6 +346,14 @@ export default class GlassServiceEstimatorPage extends LightningElement {
                 this.glassMake = result.glassMakeRec;
                 this.makeObj = result.glassMakeRec;
                 this.glassVariant = result.glassVariant;
+
+                if(setBtn){
+                    this.IsDetail0 = true;
+                    this.IsDetail2 = false;
+                    this.IsDetail3 = false;
+                }
+
+                console.log('CarList:::', result.glassVariantObj)
                 // this.isDetail = true;
             })
             .catch((error) => {
@@ -346,6 +378,17 @@ export default class GlassServiceEstimatorPage extends LightningElement {
         });
     }
     
+    loadPurchaseTypeOptions(){
+        // getPicklistValues()
+        // .then((result) => {
+        //     console.log('loadPurchaseTypeOptions::::', result)
+        //     this.purchaseTypes = Object.entries(result).map(([value,label]) => ({ value, label }));
+        // })
+        // .catch((error) => {
+        //     console.log(error);
+        //     this.error = error;
+        // });
+    }
 
     getVariantFactoryOptions(load){
 
@@ -378,7 +421,15 @@ export default class GlassServiceEstimatorPage extends LightningElement {
                 this.assetOptionsData = result.assetStandardFeautersData.assetOptionsData; 
                 this.assetOptionsSelect = Object.entries(result.assetStandardFeautersData.assetOptionsSelect).map(([value,label]) => ({ value, label }));
 
-                console.log('assetOptionsSelect:::', this.assetOptionsSelect)
+                if(this.assetOptionsSelect != null){
+                    console.log('show options:;', this.showOptions)
+                    this.showOptions = true;
+                }
+
+                // this.assetOptionsSelect = result.assetStandardFeautersData.assetOptionsSelect;
+
+                console.log('assetOptionsSelect:::', result.assetStandardFeautersData.assetOptionsSelect)
+                console.log('assetOptions:::', this.assetOptions)
 
                 this.assetStandardFeautersData = result.assetStandardFeautersData.assetStandardFeautersData; 
 
@@ -438,7 +489,11 @@ export default class GlassServiceEstimatorPage extends LightningElement {
         // }
     }
 
-    loadFamilyBadgeOptions() {
+    loadFamilyBadgeOptions(e) {
+        if(e && e.target && e.target.value){
+            this.family = e.target.value;
+        }
+
         this.clearFamilyBadge();
         if (this.family != null) {
             console.log('loadFamilyBadgeOptions: Family ' + this.family);
@@ -447,7 +502,11 @@ export default class GlassServiceEstimatorPage extends LightningElement {
         }
     }
 
-    loadBadgeVariantOptions(){
+    loadBadgeVariantOptions(e){
+        if(e && e.target && e.target.value){
+            this.badgeRedbook = e.target.value;
+        }
+
         this.clearBadgeVariant();
         if (this.badgeRedbook != null) {
             this.getBadgeVariantsSelectOptions();
@@ -473,7 +532,11 @@ export default class GlassServiceEstimatorPage extends LightningElement {
         });  
     }
 
-    getVehicleKey(){
+    getVehicleKey(e){
+        if(e && e.target && e.target.value){
+            this.variantRedbook = e.target.value;
+        }
+
         if(this.variantRedbook != null){
             getVehicle({code: this.variantRedbook})
             .then((result) => {
@@ -486,10 +549,14 @@ export default class GlassServiceEstimatorPage extends LightningElement {
         }
     }
 
-    calculateFactoryOptions(e) {
+    calculateFactoryOptions(event) {
+        console.log('button assetoptions::', this.assetOptions)
 
-        if(e && e.target)
-            this.assetOptions = JSON.parse(e.target.value);
+        if(event && event.detail){
+            this.assetOptions = event.detail.value ;
+        }
+
+        console.log('button assetoptions::', this.assetOptions)
         this.calculateEstimation();
     }
 
@@ -524,6 +591,7 @@ export default class GlassServiceEstimatorPage extends LightningElement {
     }
 
     calculateUsedOptions() {
+        console.log('calculateUsedOptions-PARA::::', this.assetOptions, this.year);
         const x = calculateUsedOptions({ options: this.assetOptions, year: this.year })
             .then((result) => {
                 console.log('calculateUsedOptions::::',result);
@@ -538,7 +606,7 @@ export default class GlassServiceEstimatorPage extends LightningElement {
     }
 
     getFamilyBadgeSelectOptionsRedbook() {
-        getFamilyBadgeSelectOptionsRedbook({ family: this.family, makeRedbook: this.makeRedbook, year: this.year, lender: this.lender })
+        getFamilyBadgeSelectOptionsRedbook({ code: this.family, make: this.makeRedbook, year: this.year, lender: this.lender })
             .then((result) => {
                 console.log('getFamilyBadgeSelectOptionsRedbook::::',result);
                 this.badgeSelectRedbook = Object.entries(result).map(([value,label]) => ({ value, label }));
@@ -553,21 +621,23 @@ export default class GlassServiceEstimatorPage extends LightningElement {
     loadVariantFactoryOptions(event){
 
         if(event && event.target && event.target.name == 'backToList1'){
-            console.log('trigger list')
-            // this.IsDetail0 = true;
+            this.IsDetail0 = true;
+            this.IsDetail2 = false;
+            this.IsDetail3 = false;
             this.isDetail = 0;
             if(event && event.target && event.target.value){
                 this.variant = event.target.value;
             }
-            this.getVariantFactoryOptions();
-            // this.IsDetail2 = false;
-            // this.IsDetail3 = false;
             console.log('car List', this.carsList)
         }else{
             if(event && event.target && event.target.value){
                 this.variant = event.target.value;
             }
             this.getVariantFactoryOptions();
+            this.IsDetail0 = false;
+            this.IsDetail2 = true;
+            this.IsDetail3 = false;
+            this.isDetail = 2;
         }
 
     }
@@ -613,7 +683,8 @@ export default class GlassServiceEstimatorPage extends LightningElement {
             this.listCars();
     }
 
-    make() {
+    loadMake() {
+        console.log('make function triggered!')
         var carParameter = {
             year : this.year,
             make : this.make,
@@ -640,17 +711,22 @@ export default class GlassServiceEstimatorPage extends LightningElement {
         if(event.target.name == 'typeLoan')
             this.typeLoan = event.target.value;
         
-        this.make();
-        this.fees = this.ltvFeeValue();
+        this.loadMake();
+        this.fees = this.ltvFeeValue;
     }
 
     get isSearchCertificateNumber(){
-        if(this.currentOpp && this.currentOpp.Application_AssetDetail__r.Search_Certificate_Number__c == ''){
-            console.log('isSearchCertificateNumber::', 'ppsr_sent');
+        if(this.opp && this.opp.Application_AssetDetail__r){
+            if(this.opp.Application_AssetDetail__r.Search_Certificate_Number__c == ''){
+                console.log('isSearchCertificateNumber::', 'ppsr_sent');
+                return false;
+            }else{
+                console.log('isSearchCertificateNumber::', 'ppsr_sent');
+                return true;
+            }
         }else{
-            console.log('isSearchCertificateNumber::', 'ppsr_ok');
+            return false;
         }
-        return true;
     }
 
     get isVehicleDetails(){
@@ -661,52 +737,50 @@ export default class GlassServiceEstimatorPage extends LightningElement {
         }
     }
 
+    get dyanamicSection(){
+        if(this.assetType == 'Car'){
+            return true;
+        }else{
+            return false;
+        }
+    }
 
-    // get displayRedbookForm(){
-    //     let r = false;
-    //     validateRedBookLenders({lender: this.lender})
-    //         .then((result) => {
-    //             console.log('displayRedbookForm:::', result)
-    //             r = result;
-    //             return r;
-    //         });
-
-    // }
-
-    // get IsDetail0(){
-
-    //     if(this.isDetail == 0){
-    //         return true;
-    //     }else{
-    //         return false;
-    //     }
-    // }
-
-
-    // get IsDetail2(){
-    //     if(this.isDetail == 2){
-    //         this.IsDetail0 = false;
-    //         return true;
-    //     }else{
-    //         return false;
-    //     }
-    // }
-
-    // get IsDetail3(){
-    //     if(this.isDetail == 3){
-    //         return true;
-    //     }else{
-    //         return false;
-    //     }
-    // }
-
-    get AverageKMs(){
-        return 
+    get isDetailsTexts(){
+        if(this.assetType == 'Car'){
+            return true;
+        }else{
+            return false;
+        }
     }
 
     get CarsSizeFunc(){
         console.log('Car Object',this.CarObj);
         return 0; 
+    }
+
+    get purchaseTypeOptions() {
+        return [
+            { label: '--None--', value: '' },
+            { label: 'Dealer', value: 'Dealer' },
+            { label: 'Dealer - Vehicles Direct', value: 'ANZ' },
+            { label: 'Private', value: 'APF' },
+            { label: 'Private Sale - Verimoto', value: 'BOQ' },
+            { label: 'Priavate with ABN', value: 'Finance 1' },
+            { label: 'Refinance', value: 'Finance Now' },
+            { label: 'Refinance Macquarie', value: 'Firstmac' },
+            { label: 'Sales and Leaseback', value: 'Green Light' }
+        ];
+    }
+
+    get dealerTypeOptions() {
+        return [
+            { label: '--None--', value: '' },
+            { label: 'Independent Dealer - Cars', value: 'Independent Dealer - Cars' },
+            { label: 'Franchised Dealer - Cars', value: 'Franchised Dealer - Cars' },
+            { label: 'Leisure Dealer', value: 'Leisure Dealer' },
+            { label: 'Equipment Dealer', value: 'Equipment Dealer' },
+            { label: 'Other', value: 'Other' }
+        ];
     }
 
     calculateAdjustmentFunc(){
@@ -846,8 +920,8 @@ export default class GlassServiceEstimatorPage extends LightningElement {
             this.series = event.target.value;
         }
 
-        this.isTable1 = true;
-        this.getCarsList();
+        this.isDetail = 0;
+        this.getCarsList(true);
     }
 
 
@@ -999,6 +1073,7 @@ export default class GlassServiceEstimatorPage extends LightningElement {
 
     get typeLoanOptions(){
         return [
+            { label: '--None--', value: '' },
             { label: 'Consumer', value: 'Consumer' },
             { label: 'Commercial', value: 'Commercial' },
             { label: 'Chattel Mortgage', value: 'Chattel Mortgage' },
@@ -1019,19 +1094,36 @@ export default class GlassServiceEstimatorPage extends LightningElement {
     }
 
     loadNewUsedYearOptions(event) {
+        if(this.assetOptions != null){
+                this.assetOptions = [];
+            }
+            this.assetOptionsSelect = null;
+        //    this.showOptions = false;
 
         if(event.target.name == 'assetType'){
             this.assetType = event.target.value;
+        //     if(this.assetOptions != null){
+        //         this.assetOptions = [];
+        //     }
+        //    this.showOptions = false;
         }
 
         if(event.target.name == 'newUsed'){
             this.newUsed = event.target.value;
+            // if(this.assetOptions != null){
+            //     this.assetOptions = [];
+            // }
+            // this.assetOptionsSelect = [];
         }
 
         console.log('loadNewUsedYearOptions... ' + this.newUsed + ' >> ' + this.assetType);
 
         this.clearNewUsedYear();
         this.clearMake();
+
+        if(this.carList != null){
+            this.carList = null;
+        }
 
         if (this.newUsed != null) {
             this.getYears();
@@ -1077,11 +1169,11 @@ export default class GlassServiceEstimatorPage extends LightningElement {
     clearVariantFactoryOptions() {
         this.variantNewPrice = 0.0;
         this.actualKms = 0;
-        this.assetOptionsData = null;
-        if (this.assetOptions != null) {
-            this.assetOptions = null;
-        }
-        this.assetOptionsSelect = null;
+        // this.assetOptionsData = null;
+        // if (this.assetOptions != null) {
+        //     this.assetOptions = [];
+        // }
+        // this.assetOptionsSelect = null;
         this.assetStandardFeautersData = null;
         this.variantOptionsMap = null;
         this.calculateEstimation();
@@ -1090,10 +1182,18 @@ export default class GlassServiceEstimatorPage extends LightningElement {
     calculateEstimation() {
         console.log('Calculate estimation:::');
 
-        console.log('asset Options Data:::', this.assetOptionsData);
-        console.log('asset Options :::', this.assetOptions);
+        var totalPriceOptions = 0.0;
+        var totalEstimated = 0.0;
+        var totalTradeLowPriceOptions = 0.0;
+        var totalTradePriceOptions = 0.0;
+        var totalRetailPriceOptions = 0.0;
 
+        
         if (this.assetOptionsData != null && this.assetOptions != null) {
+
+            console.log('asset Options Data 1:::', this.assetOptionsData);
+            console.log('asset Options  1:::', this.assetOptions);
+
 
             let total = 0;
             for(let i = 0; i < this.assetOptions.length; i++){ 
@@ -1111,30 +1211,37 @@ export default class GlassServiceEstimatorPage extends LightningElement {
                 })
             }
 
-            this.totalPriceOptions = total;
-            console.log('Total Price Options::', this.totalPriceOptions)
+            totalPriceOptions = total;
+            console.log('Total Price Options::', totalPriceOptions)
 
             if ('new' == this.newUsed || 'demo' == this.newUsed) {
               if (this.variantObj.Retail_Price__c != null && this.variantObj.Retail_Price__c > 0) {
                 //value = value * .8;
                 //value = value.setScale(-2);
-                this.totalRetailPriceOptions += this.totalPriceOptions;
-                this.totalTradePriceOptions += (this.totalPriceOptions * .5);
-                this.totalTradeLowPriceOptions += (this.totalPriceOptions * .3);
+                totalRetailPriceOptions += totalPriceOptions;
+                totalTradePriceOptions += (totalPriceOptions * .5);
+                totalTradeLowPriceOptions += (totalPriceOptions * .3);
               }
             } else if ('used' == this.newUsed) {
                 Promise.resolve(this.calculateUsedOptions()).then(value => {
+                    console.log('totalRetailPriceOptions1::', value)
                     if(value){
                         console.log('totalRetailPriceOptions1::', value)
-                        this.totalRetailPriceOptions += value;
-                        this.totalTradePriceOptions += (value * 0.5);
-                        this.totalTradeLowPriceOptions += (value * 0.3);
-                        console.log('totalRetailPriceOptions1::', this.totalRetailPriceOptions)
+                        totalRetailPriceOptions += value;
+                        totalTradePriceOptions += (value * 0.5);
+                        totalTradeLowPriceOptions += (value * 0.3);
+                        console.log('totalRetailPriceOptions1::', totalRetailPriceOptions)
                     }else{
-                        this.totalRetailPriceOptions += 0;
-                        this.totalTradePriceOptions += 0;
-                        this.totalTradeLowPriceOptions += 0;
+                        totalRetailPriceOptions += 0;
+                        totalTradePriceOptions += 0;
+                        totalTradeLowPriceOptions += 0;
                     }
+
+                    console.log('****TEST-->>', totalRetailPriceOptions)
+
+                    this.totalRetailPriceOptions = totalRetailPriceOptions;
+                    this.totalTradePriceOptions = totalTradePriceOptions;
+                    this.totalTradeLowPriceOptions = totalTradeLowPriceOptions;
     
                 }).catch(err => {
                     this.error = err;
@@ -1143,11 +1250,24 @@ export default class GlassServiceEstimatorPage extends LightningElement {
                 
             }    
         }
+       
+        totalEstimated = this.variantNewPrice + totalPriceOptions;
+
+        this.totalPriceOptions = totalPriceOptions;
+        this.totalEstimated = totalEstimated;
+        this.totalTradeLowPriceOptions = totalTradeLowPriceOptions;
+        this.totalTradePriceOptions = totalTradePriceOptions;
+        this.totalRetailPriceOptions = totalRetailPriceOptions;
+
         this.calculateKmsAdjustment();
-        this.totalEstimated = this.variantNewPrice + this.totalPriceOptions;
     }
 
     calculateKmsAdjustment(event) {
+
+        var totalRetailPriceKms = 0;
+        var totalTradePriceKms = 0;
+        var totalTradeLowPriceKms = 0;
+        
 
         console.log('calculateKmsAdjustment:::')
 
@@ -1155,23 +1275,30 @@ export default class GlassServiceEstimatorPage extends LightningElement {
             if(event.target.name == 'calculateKmsAdjustment'){
                 this.actualKms = event.target.value;
             }
-        }
+        }else{
         
-        if ('used' == this.newUsed.toLowerCase() && this.variantObj != null && this.actualKms > 0 && 'AFS' != this.lender) {
+            if ('used' == this.newUsed.toLowerCase() && this.variantObj != null && this.actualKms > 0 && 'AFS' != this.lender) {
 
-            Promise.resolve(this.calculateAdjustmentFunc()).then(value => {
-                if(value){
-                   this.totalRetailPriceKms = value;
-                   console.log('totalRetailPriceKms::', this.totalRetailPriceKms)
-                }
-                if (this.totalRetailPriceKms != 0) {
-                    this.totalTradePriceKms = this.totalRetailPriceKms * 0.5;
-                    this.totalTradeLowPriceKms = this.totalRetailPriceKms * 0.3;
-                }
-            }).catch(err => {
-            console.log(err);
-            });
-           
+                Promise.resolve(this.calculateAdjustmentFunc()).then(value => {
+                    if(value){
+                    totalRetailPriceKms = value;
+                    console.log('totalRetailPriceKms::', totalRetailPriceKms)
+                    }
+                    if (totalRetailPriceKms != 0) {
+                        totalTradePriceKms = totalRetailPriceKms * 0.5;
+                        totalTradeLowPriceKms = totalRetailPriceKms * 0.3;
+                    }
+                    this.totalRetailPriceKms = totalRetailPriceKms;
+                    this.totalTradePriceKms = totalTradePriceKms;
+                    this.totalTradeLowPriceKms = totalTradeLowPriceKms;
+                }).catch(err => {
+                console.log(err);
+                });
+            
+            }
+            this.totalRetailPriceKms = totalRetailPriceKms;
+            this.totalTradePriceKms = totalTradePriceKms;
+            this.totalTradeLowPriceKms = totalTradeLowPriceKms;
         }
     }
 
@@ -1180,13 +1307,14 @@ export default class GlassServiceEstimatorPage extends LightningElement {
     }
 
     selectedPurchaseType(event){
-        this.opp.Purchase_Type__c = event.target.value;
+        if(event && event.target && event.target)
+            this.purchaseType = event.target.value;
 
         this.isRefinanceMacq = false;
-        if ('Refinance_Macq' == this.oppty.Purchase_Type__c.toLowerCase()){
+        if ('Refinance_Macq' == this.purchaseType){
             this.isRefinanceMacq = true;
         }else{
-            this.oppty.Contract_Number__c = '';
+            this.contractNumber = '';
         }
     }
 
@@ -1230,18 +1358,6 @@ export default class GlassServiceEstimatorPage extends LightningElement {
         this.clearVariantFactoryOptions();
     }
 
-    clearVariantFactoryOptions() {
-        this.variantNewPrice = 0.0;
-        this.actualKms = 0;
-        this.assetOptionsData = null;
-        if (this.assetOptions != null) {
-            this.assetOptions = null;
-        }
-        this.assetOptionsSelect = null;
-        this.assetStandardFeautersData = null;
-        this.variantOptionsMap = new Map();
-        this.calculateEstimation();
-    }
 
     clearMakeFamily() {
         this.model = null;
@@ -1280,18 +1396,27 @@ export default class GlassServiceEstimatorPage extends LightningElement {
             this.listCars();
     }
 
+    checkCarList(){
+        this.getCarsList();
+    }
+
     clearMake() {
         this.makeObj = null;
+        this.makeObject = intitialMakeObj;
     }
 
     listCars(){
 
-        console.log('listcars', this.series)
-
         if(this.series != null){
             this.isDetail = 0;
+            this.IsDetail0 = true;
+            this.IsDetail2 = false;
+            this.IsDetail3 = false;
         }else{
             this.isDetail = 1;
+            this.IsDetail0 = false;
+            this.IsDetail2 = false;
+            this.IsDetail3 = false;
             this.clearModel();
             this.clearVariant();
             this.clearVariantFactoryOptions();    
@@ -1304,6 +1429,7 @@ export default class GlassServiceEstimatorPage extends LightningElement {
 
     clearVariant() {
         this.variantObj = null;
+        this.variantObject = initialVariantObject;
     }
 
     // getters :::::::
@@ -1353,7 +1479,8 @@ export default class GlassServiceEstimatorPage extends LightningElement {
     } 
 
     get ltvFeeValue() {
-        return this.quotingFees;
+        let quFee = this.quotingFees;
+        return (quFee);
     }   
 
     // pending.....
@@ -1416,41 +1543,52 @@ export default class GlassServiceEstimatorPage extends LightningElement {
     get ltvNAFValue() {
         let r = 0;
         // this.LtvFeeValue;
-        r += this.fees;
+        if(this.fees != null){
+            r += parseFloat(this.fees)
+        }
+
+        console.log('LtvNAFValue', r)
         if (this.warranty != null) {
-            r += this.warranty;
-        }
-        if (this.gap != null) {
-            r += this.gap;
-        }
-        if (('ANZ' != this.lender) && ('Liberty' != this.lender)) {
-            if (this.lpi != null) {
-                r += this.lpi;
-            }
-            if (this.lti != null) {
-                r += this.lti;
-            }
-        }
-        if (this.carPrice != null) {
-            r += this.carPrice;
-        }
-        if (this.deposit != null) {
-            r -= this.deposit;
+            r += parseFloat(this.warranty);
         }
         console.log('LtvNAFValue', r)
-        return r;
+        if (this.gap != null) {
+            r += parseFloat(this.gap);
+        }
+        console.log('LtvNAFValue', r)
+        if (('ANZ' != this.lender) && ('Liberty' != this.lender)) {
+            if (this.lpi != null) {
+                r += parseFloat(this.lpi);
+            }
+            if (this.lti != null) {
+                r += parseFloat(this.lti);
+            }
+        }
+        console.log('LtvNAFValue', r)
+        if (this.carPrice != null) {
+            r += parseFloat( this.carPrice);
+        }
+        console.log('LtvNAFValue', r)
+        if (this.deposit != null) {
+            r -= parseFloat(this.deposit);
+        }
+        console.log('LtvNAFValue', r)
+        console.log('LtvNAFValue', r)
+
+        return parseFloat(r);
+     
     }
 
     get ltvLvrValue() {
         let value = this.ltvValue;
         let naf = this.ltvNAFValue;
         if (value != 0) {
-            let r = (naf/value) * 100;
-            //System.debug('getLtvLvrValue >> ' + r);
+            let r = (naf/value);
+            console.log('getLtvLvrValue >> ' + r);
             return r;
             // return r.setScale(0, System.RoundingMode.DOWN);
         } else {
-            return 0.0;
+            return 0;
         }
     }
 
@@ -1469,18 +1607,114 @@ export default class GlassServiceEstimatorPage extends LightningElement {
         return this.isvalidateRedBookLenders;
     }
 
-    loadLists(){
+    carPriceChange(e){
+        this.carPrice = e.target.value;
+    }
 
+    warrantyChange(e){
+        this.warranty = e.target.value;
+    }
+
+    depositChange(e){
+        this.deposit = e.target.value;
+    }
+
+    gapChange(e){
+        this.gap = e.target.value;
+    }
+
+    averageKMChange(e){
+        this.averageKM = e.target.value;
+    }
+
+    feesChange(e){
+        this.fees = e.target.value;
+    }
+
+    lpiChange(e){
+        this.lpi = e.target.value;
+    }
+
+    dealerTypeChange(e){
+        this.dealerType = e.target.value;
+    }
+
+    dealerNameChange(e){
+        this.dealerName = e.target.value;
+    }
+
+    dealerPhoneNoChange(e){
+        this.dealerPhoneNo = e.target.value;
+    }
+
+    dealerStreetNoChange(e){
+        this.dealerStreetNo = e.target.value;
+    }
+
+    dealerSuburbChange(e){
+        this.dealerSuburb = e.target.value;
+    }
+
+    dealerContactNameChange(e){
+        this.dealerContactName = e.target.value;
+    }
+
+    dealerMobileNoChange(e){
+        this.dealerMobile = e.target.value;
+    }
+
+    dealerAddressChange(e){
+        this.dealerAddress = e.target.value;
+    }
+
+    dealerPostalCodeChange(e){
+        this.dealerPostCode = e.target.value;
+    }
+
+    dealerEmailChange(e){
+        this.dealerEmail = e.target.value;
+    }
+
+    dealerUnitNoChange(e){
+        this.dealerUnitNo = e.target.value;
+    }
+
+    dealerStreetTypeChange(e){
+        this.dealerStreetType = e.target.value;
+    }
+
+    dealerStateChange(e){
+        this.dealerState = e.target.value;
+    }
+
+    regoNoChange(e){
+        this.rego = e.target.value;
+    }
+
+    stateChange(e){
+        this.regoState = e.target.value;
+    }
+
+    VinChange(e){
+        this.vin = e.target.value;
+    }
+
+    engineChange(e){
+        this.engine = e.target.value;
+    }
+
+    colourChange(e){
+        this.colour = e.target.value;
     }
 
     // load saved data
     loadSavedData(){
         console.log('Load saved Data:::::');
-        console.log(this.currentOpp)
+        console.log(JSON.stringify( this.opp))
 
-        if(this.currentOpp.Application_AssetDetail__c != null){
+        if(this.opp.Application_AssetDetail__c != null){
             var aad = {};
-            aad = this.currentOpp.Application_AssetDetail__r;
+            aad = this.opp.Application_AssetDetail__r;
             console.log('AAD::::', aad);
 
             this.assetType = aad.Type__c;
@@ -1508,8 +1742,8 @@ export default class GlassServiceEstimatorPage extends LightningElement {
                 }
 
                 if(aad.Factory_Options__c != null){
-                    console.log('Factory options::::',aad.Factory_Options__c)
                     this.assetOptions = JSON.parse(aad.Factory_Options__c);
+                    console.log('Factory options::::', this.assetOptions)
                 }
 
                 this.calculateFactoryOptions();
@@ -1532,9 +1766,10 @@ export default class GlassServiceEstimatorPage extends LightningElement {
             this.lpi = aad.LPI__c;
             this.fees =  aad.Fees__c;
 
-            if (aad.Actual_KM__c != null) {
-                this.actualKms = parseInt(aad.Actual_KM__c);
-            }
+            // if (aad.Actual_KM__c != null) {
+                console.log(aad.Actual_KM__c)
+                this.actualKms = aad.Actual_KM__c;
+            // }
 
             this.rego = aad.Rego__c;
             this.vin = aad.VIN__c;
@@ -1547,33 +1782,501 @@ export default class GlassServiceEstimatorPage extends LightningElement {
                 make : this.make,
                 family : this.model,
                 variant : this.variantDesc,
-                series : this.series,
+                serie : this.series,
                 IdCar : this.variant
             }
 
-            getCodeModel({ wrapper: carParameter })
-            .then((result) => {
-                this.model = result;
-            })
-            .catch((error) => {
-                console.log(error);
-                this.error = error;
-            }); 
+            this.purchaseType = this.opp.Purchase_Type__c;
+            this.dealerAddress = this.opp.Dealer_Address__c;
+            this.dealerContactName = this.opp.Dealer_Contact_Name__c;
+            this.dealerEmail = this.opp.Dealer_Email__c;
+            this.dealerMobile = this.opp.Dealer_Mobile__c;
+            this.dealerName = this.opp.Dealer_Name__c;
+            this.dealerPhoneNo = this.opp.Dealer_Phone_Number__c; 
+
+            console.log('parameters:::', carParameter)
+
+            // unecessary snippet ---//
+            // getCodeModel({ param : carParameter })
+            // .then((result) => {
+            //     console.log('get code model:::', result)
+            //     this.model = result;
+            // })
+            // .catch((error) => {
+            //     console.log(error);
+            //     this.error = error;
+            // }); 
      
         }
 
         //Load from Quoting tool
-        // getApplicationQuoting(this.currentOpp.Id, this.currentOpp.Application__c)
-        // .then((d) => {
-        //     console.log('getApplicationQuoting::', d)
-        // })
-        // .catch((error) => {
-        //     console.log(error);
-        //     this.error = error;
-        // });
-
-
+        getApplicationQuoting({oppId: this.opp.Id, appId: this.opp.Application__c})
+        .then((d) => {
+            console.log('getApplicationQuoting::::', d)
+            if (d != null) {
+                if (d.Name =='ANZ') {
+                    this.lender = 'ANZ';
+                } else if (d.Name =='Macquarie') {
+                    this.lender = 'Macquarie';
+                } else if (d.Name =='Pepper MV') {
+                    this.lender = 'Pepper';
+                } else if (d.Name =='Liberty') {
+                    this.lender = 'Liberty';
+                } else if (d.Name =='Finance') {
+                    this.lender = 'Finance 1';
+                } else if (d.Name =='Money') {
+                    this.lender = 'Money 3';
+                } else if (d.Name =='Yamaha') {
+                    this.lender = 'Yamaha';
+                } else if (d.Name =='Metro') {
+                    this.lender = 'Metro';
+                } else if (d.Name =='Latitude') {
+                    this.lender = 'Latitude';
+                } else if (d.Name =='AFS') {
+                    this.lender = 'AFS';
+                } else if (d.Name =='Green') {
+                    this.lender = 'Green Light';
+                } else if (d.Name =='Plenti' || d.Name =='RateSetter') {
+                    this.lender = 'Plenti';
+                } else if (d.Name =='Wisr') {
+                    this.lender = 'Wisr';
+                } else {
+                    this.lender = d.Name;
+                }
+                //Type loan
+                if ('Consumer Loan' == d.Loan_Product__c) {
+                    this.typeLoan = 'Consumer';
+                } else if (d.Loan_Product__c != null) {
+                    if (d.Loan_Product__c =='Lease') {
+                        this.typeLoan = 'Leasing';
+                    } else if (d.Loan_Product__c =='Chattel') {
+                        this.typeLoan = 'Chattel Mortgage';
+                    }
+                }
+                
+                this.carPrice = d.Vehicle_Price__c;
+                // this.deposit = 0;
+                // this.warranty = 0;
+                // this.gap = 0;
+                // this.lpi = 0;
+                // this.lti = 0;
+                if (d.Net_Deposit__c != null) {
+                    this.deposit += d.Net_Deposit__c;
+                }
+                if ('A' == d.Insurance_Warranty_Acceptance__c) {
+                    this.warranty = d.Insurance_Warranty_Retail_Price__c;
+                } else if ('A' ==d.Insurance_NWC_Acceptance__c) {
+                    this.warranty = d.Insurance_NWC_Retail_Price__c;
+                }
+                if ('A' ==d.Insurance_GAP_Acceptance__c) {
+                    this.gap = d.Insurance_GAP_Retail_Price__c;
+                } else if ('A' ==d.Insurance_VEI_Acceptance__c) {
+                    this.gap = d.Insurance_VEI_Retail_Price__c;
+                }
+                if ('A' ==d.Insurance_LTI_Acceptance__c) {
+                    this.lti = d.Insurance_LTI_Retail_Price__c;
+                }
+                if ('A' ==d.Insurance_LPI_Acceptance__c) {
+                    this.lpi = d.Insurance_LPI_Retail_Price__c;
+                } else if ('A' ==d.Insurance_AIC_Acceptance__c) {
+                    this.lpi = d.Insurance_AIC_Retail_Price__c;
+                }
+    
+                // this.quotingFees = 0;
+                if (d.Application_Fee__c != null) {
+                    this.quotingFees += d.Application_Fee__c;
+                }
+                
+                if ('Liberty' ==this.lender) {
+                    if (d.Registration_Fee__c != null) {
+                        this.quotingFees += d.Registration_Fee__c;
+                    }
+                } else {
+                    if (d.DOF__c != null) {
+                        this.quotingFees += d.DOF__c;
+                    }
+                }
+                
+                if ('Money 3' ==this.lender) {
+                    if ('Asset Finance' == d.Customer_Profile__c) {
+                        if (d.Risk_Fee__c != null) {
+                            this.quotingFees += d.Risk_Fee__c;
+                        }
+                    }
+                }
+                
+                if ('Finance 1' ==this.lender) {
+                    if (d.Risk_Fee__c != null) {
+                        this.quotingFees += d.Risk_Fee__c;
+                    }
+                }
+                
+                if (d.PPSR__c != null) {
+                    this.quotingFees += d.PPSR__c;
+                }
+                if ('Latitude' == d.Name ||
+                    d.Name.startsWith('AFS')) {
+                    if (d.Registration_Fee__c != null) {
+                        this.quotingFees += d.Registration_Fee__c;
+                    }
+                }
+            }
+            
+            this.selectedPurchaseType();
+            this.calculateKmsAdjustment();
+        })
+        .catch((error) => {
+            console.log(error);
+            this.error = error;
+        })
     }
 
+    //  SHOW toast
+    showToast(type, message) {
+        const event = new ShowToastEvent({
+            title: type,
+            message: message,
+                variant: type,
+        });
+        this.dispatchEvent(event);
+    }
+ 
 
+    isPdfReadyToGenerate(prefixFile) {
+        let isOk = true;
+        // return isOk;
+        if (prefixFile != null) {
+            if (this.opp.Application__c == null) {
+                this.showToast('warning','Please create an Application form before saving for any appoval process.');
+                isOk = false;
+            }
+            if(prefixFile.includes('FORMAL_APPROVAL')) {
+                let t = ' in Vendor Details section before saving for Formal Approval.';
+                if (this.opp.Dealer_Name__c == null){
+                    this.showToast('warning','Please fill a Vendor Name'+t);
+                    isOk = false;       
+                }
+                if (this.opp.Dealer_Email__c == null){
+                    this.showToast('warning','Please fill an Email'+t);
+                    isOk = false;       
+                }
+                if (this.opp.Dealer_Address__c == null){
+                    this.showToast('warning','Please fill an Address'+t);
+                    isOk = false;       
+                }
+                if (this.opp.Dealer_Contact_Name__c == null){
+                    this.showToast('warning','Please fill a Contact Name'+t);
+                    isOk = false;       
+                }
+                if (this.opp.Dealer_Phone_Number__c == null){
+                    this.showToast('warning','Please fill a Phone Number'+t);
+                    isOk = false;       
+                }
+                
+                if (this.opp.Dealer_Suburb__c == null){
+                    this.showToast('warning','Please fill a Suburb'+t);
+                    isOk = false;       
+                }
+                if (this.opp.Dealer_Postcode__c == null){
+                    this.showToast('warning','Please fill an Address'+t);
+                    isOk = false;       
+                }
+                if (this.opp.Dealer_State__c == null) {
+                    this.showToast('warning','Please fill a State'+t);
+                    isOk = false;       
+                }
+                if (this.opp.Dealer_Type__c == null){
+                    this.showToast('warning','Please fill a Dealer Type'+t);
+                    isOk = false;       
+                }
+            }
+        }
+        if (this.assetType == 'Car') {
+            if (this.variantObj == null) {
+                this.showToast('warning','Please select a variant of the car model before generating the Pdf.');
+                isOk = false;
+            }
+        } else {
+            if (this.year == null) {
+                this.showToast('warning','Please select a year before generating the Pdf.');
+                isOk = false;
+            }
+            if (this.makeOVehicle == null || this.modelOVehicle == null || this.variantOVehicle == null || this.seriesOVehicle == null) {
+                this.showToast('warning','Please fill all detail fields before generating the Pdf.');
+                isOk = false;
+            }
+        }
+        if (this.lender == null) {
+            this.showToast('warning','Please select a Lender in LTV section before generating the Pdf.');
+            isOk = false;
+        }
+        if (this.typeLoan == null) {
+            this.showToast('warning','Please select a Type Loan in LTV section before generating the Pdf.');
+            isOk = false;
+        }
+        if (this.carPrice == null || this.carPrice == 0) {
+            this.showToast('warning','Please fill a car price in LTV section before generating the Pdf.');
+            isOk = false;
+        }
+        if (this.ltvNAFValue == 0) {
+            this.showToast('warning','Please adjust your values, NAF must be greater than 0 in LTV section.');
+            isOk = false;
+        }
+        if (this.fees == 0) {
+            this.showToast('warning','Please fill a value for Fees in LTV section before generating the Pdf.');
+            isOk = false;
+        }
+        if (this.opp.Purchase_Type__c == null){
+            this.showToast('warning','Please select a Purchase Type in LTV section');
+            isOk = false;       
+        }
+        if ((this.opp.Purchase_Type__c!=null && 'Refinance_Macq'== this.opp.Purchase_Type__c) && (this.opp.Contract_Number__c == null || this.opp.Contract_Number__c == null)){
+            this.showToast('warning','Please fill a contract number in LTV section');
+            isOk = false;       
+        }
+        if ('used' == this.newUsed) {
+            if ((this.actualKms == null) && ('ANZ' != this.lender)) {
+                this.showToast('warning','Please fill Actual Km field before generating the Pdf (or type 0 in case that it isn\'t required).');
+                isOk = false;
+            }
+        }
+        return isOk;
+    }
+
+    savePdf () {
+        this.saveEstimationPdf('');
+    }
+
+    savePreApproval () {
+        this.saveEstimationPdf('PRE_APPROVAL_');
+    }
+    
+    saveAmendment () {
+        this.saveEstimationPdf('AMENDMENT_');
+    }
+    
+    saveFormalApproval () {
+        this.saveEstimationPdf('FORMAL_APPROVAL_');
+    }
+
+    saveEstimationPdf(prefixFile){
+        // PageReference pdf = null;
+        const allVariables = {};
+        let aad = {};
+        let oppLocal = {};
+        let aad1 = {};
+        let dto = {};
+        let pdf = 1;
+
+        console.log('running0....', JSON.stringify(aad))
+
+        if(this.isPdfReadyToGenerate(prefixFile)){
+            
+            try{
+                oppLocal = JSON.parse(JSON.stringify(this.opp));
+            if(this.opp.Application_AssetDetail__c != null){
+                aad = JSON.parse(JSON.stringify(this.opp.Application_AssetDetail__r))  ;
+                // console.log('aad1::', aad)
+            }
+
+            console.log('running0....', aad)
+
+            dto.assetType = this.assetType;
+            aad.Type__c = this.assetType;
+            if('Car' == this.assetType){
+                dto.variantObj = this.variantObj;
+                dto.modelTypeSource = this.variantObj ? this.variantObj.Type_Source__c : null;
+                dto.model = this.variantObj ? this.variantObj.Family__c : null;
+                dto.make = this.makeObj ? this.makeObj.Name : null;
+
+                console.log('running1-1-1....', dto)
+                let tmpOptions = '';
+
+                if(this.assetOptions != null){
+
+                    for(let i = 0; i < this.assetOptions.length; i++){ 
+                    
+                        let assetOpts = this.assetOptions;
+                        let assetData = this.assetOptionsData;
+
+                        console.log('running1-2....', assetOpts)
+                        console.log('running1-2....', assetData)
+
+                        Object.keys(assetData)
+                        .forEach(function eachkey(key){
+                            if(key == assetOpts[i]){
+                                console.log('opts::', key)
+                                if(tmpOptions != ''){
+                                    tmpOptions += ', ';
+                                }
+                                tmpOptions += assetData[key][0].name + ' (' + assetData[key][0].value + ')';
+                            }
+                        })
+
+                    }
+                }
+                console.log('running1-2....', dto)
+                dto.options = tmpOptions;
+                dto.totalPriceOptions = this.totalPriceOptions;
+                dto.totalTradeLowPriceOptions = this.totalTradeLowPriceOptions;
+                dto.totalTradePriceOptions = this.totalTradePriceOptions;
+                dto.totalRetailPriceOptions = this.totalRetailPriceOptions;
+                dto.totalTradeLowPriceKms = this.totalTradeLowPriceKms;
+                dto.totalTradePriceKms = this.totalTradePriceKms;
+                dto.totalRetailPriceKms = this.totalRetailPriceKms;
+
+
+                aad.Make__c = this.make;
+                aad.Model__c = this.model;
+                aad.Variant__c = this.variant;
+                aad.Variant_Desc__c = this.variantDesc;
+
+                if (this.vehicleObj != null) {
+                    aad.Redbook_Key__c = this.vehicleObj.Name;
+                    dto.redbookKey = aad.Redbook_Key__c;
+                }
+                console.log('running1-3....', aad)
+                if (this.assetOptions != null || this.assetOptions != []) {
+                    aad.Factory_Options__c =  JSON.stringify(this.assetOptions);
+                } else {
+                    aad.Factory_Options__c = null;
+                }
+                console.log('running1-3....', aad)
+                aad.Series__c = this.series;
+
+                console.log('running1....', aad)
+        
+            }else{
+                dto.makeOVehicle = this.makeOVehicle;
+                dto.modelOVehicle = this.modelOVehicle;
+                dto.variantOVehicle = this.variantOVehicle;
+                dto.seriesOVehicle = this.seriesOVehicle;
+                dto.year = this.year;
+                aad.Make__c = this.makeOVehicle;
+                aad.Model__c = this.modelOVehicle;
+                aad.Variant__c = this.variantOVehicle;
+                aad.Series__c = this.seriesOVehicle;
+                aad.Factory_Options__c = null;
+            }
+            dto.newUsed = this.newUsed;
+            aad.Condition__c = this.newUsed;
+            aad.Year__c = parseInt(this.year);
+            //LTV
+            dto.lender = this.lender;
+            dto.typeLoan = this.typeLoan;
+            dto.carPrice = '$' + this.carPrice;
+            dto.deposit = '$' + this.deposit;
+            dto.warranty = '$' + this.warranty;
+            dto.gap = '$' + this.gap;
+            dto.lpi = '$' + this.lpi;
+            dto.lti = '$' + this.lti;
+            dto.carAge = this.ltvCarAge.toString();
+            dto.fees = '$' + this.fees;
+            dto.realFees = this.ltvFeeValue;
+
+            console.log('running2....', dto)
+
+            // continue after break
+            dto.ltvLabel = this.ltvValueLabel;
+            dto.ltvValue = '$' + this.ltvValue;
+            dto.naf = '$' + this.ltvNAFValue;
+            dto.lvrLabel = this.ltvLvrLabel;
+            dto.lvrValue = this.ltvLvrValue + '%';            
+            dto.actualKms = this.actualKms;
+            dto.purchaseType = this.purchaseType;
+            dto.contractNumber = this.contractNumber;
+            dto.vendorName = this.dealerName;
+            dto.vendorEmail = this.dealerEmail;
+            dto.vendorAddress = this.dealerAddress;
+            dto.vendorContact = this.dealerContactName;
+            dto.vendorPhone = this.dealerPhoneNo;
+            dto.vendorMobile = this.dealerMobile;
+            dto.rego = this.rego;
+            dto.vin = this.vin;
+            dto.engine = this.engine;
+            dto.colour = this.colour;
+            dto.regoState = this.regoState;
+
+            console.log('running2-1....', dto)
+
+            // pdf.getParameters().put('id',Opp.Id);
+
+            aad.Lender__c = this.lender;
+            aad.Type_Loan__c = this.typeLoan;
+            aad.Price__c = this.carPrice;
+            aad.Deposit__c = this.deposit;
+            aad.Warranty__c = this.warranty;
+            aad.GAP__c = this.gap;
+            aad.LPI__c = this.lpi;
+            aad.LTI__c = this.lti;
+            aad.Fees__c = this.fees;
+            aad.Actual_KM__c = this.actualKms;
+            console.log('updated Object', aad)
+            aad.NAF__c = this.ltvNAFValue;
+            aad.LVR__c = Math.round(this.ltvLvrValue * 100) / 100;
+            aad.RRP__c = this.ltvValue;
+            aad.Rego__c = this.rego;
+            aad.VIN__c = this.vin;
+            aad.Engine_No__c = this.engine;
+            aad.Colour__c = this.colour;
+            aad.Rego_State__c = this.regoState;
+
+            oppLocal.New_Used__c = dto.newUsed.toUpperCase();
+            oppLocal.Purchase_Type__c = this.purchaseType;
+            oppLocal.Contract_Number__c = this.contractNumber;
+            oppLocal.Dealer_Phone_Number__c = this.dealerPhoneNo;
+            oppLocal.Dealer_Street_Number__c = this.dealerStreetNo;
+            oppLocal.Dealer_Suburb__c = this.dealerSuburb;
+            oppLocal.Dealer_Contact_Name__c = this.dealerContactName;
+            oppLocal.Dealer_Mobile__c = this.dealerMobile;
+            oppLocal.Dealer_Address__c = this.dealerAddress;
+            oppLocal.Dealer_Postcode__c = this.dealerPostCode;
+            oppLocal.Dealer_Email__c = this.dealerEmail;
+            oppLocal.Dealer_Unit_Number__c = this.dealerUnitNo;
+            oppLocal.Dealer_Street_Type__c = this.dealerStreetType;
+            oppLocal.Dealer_State__c = this.dealerState;
+            oppLocal.Dealer_Type__c = this.dealerType;
+            oppLocal.Dealer_Name__c = this.dealerName;
+            
+
+            console.log('AAD....', aad)
+            console.log('DTO....', dto)
+            console.log('OPP-LOCAL....', oppLocal)
+            console.log('Prefix file....', prefixFile)
+
+            if(pdf != null){
+                        // console.log('insertAssetDetails>>>', aad, oppLocal, dto, prefixFile)
+                        insertAssetDetails({ appAssetDetails : aad, oppt : oppLocal, dto: dto, prefixFile : prefixFile })
+                        .then((result) => {
+                            console.log('insertAssetDetails:::', result)
+                            if(result == 'success'){
+                                this.showToast('success','Assest Details PDF saved successfully.')
+                            }else{
+                                this.showToast('error',result)
+                            }
+                        })
+                        .catch((error) => {
+                            this.showToast('error', error.message)
+                            console.log(error);
+                            this.error = error;
+                        });     
+                    
+                    // QuotingToolHelper.attachPdfFile(Opp.Id, prefixName, pdf, isSaveCloud);
+                    
+            }
+
+           
+        }catch(e){
+            console.log('erererer',e)
+            var errMsg = e.getMessage();
+            if (errMsg.includes('UNABLE_TO_LOCK_ROW')) {
+                this.showToast('warning','Some data could not be saved properly. Please reload this page and try to save your data again.');
+            }
+            this.showToast('error', e.stack);
+            // ApexPages.addMessage(new ApexPages.Message(ApexPages.Severity.ERROR, e.getStackTraceString()));
+        }
+        // }
+
+    }
+    }
 }
