@@ -1,4 +1,29 @@
 <template>
+  <!-- <template if:true={warnings}>
+  <div class="slds-notify slds-notify_alert slds-alert_error" role="alert">
+    <span class="slds-assistive-text">error</span>
+    <span class="slds-icon_container slds-icon-utility-error slds-m-right_x-small" title="Description of icon when needed">
+    <svg class="slds-icon slds-icon_x-small" aria-hidden="true">
+    <use xlink:href="/assets/icons/utility-sprite/svg/symbols.svg#error"></use>
+    </svg>
+    </span>
+    <h2>
+      <ul>
+    <template for:each={warnings} for:item="w">
+      <li key={w}> {w} </li>
+    </template>
+    </ul>
+    </h2>
+    <div class="slds-notify__close">
+    <button class="slds-button slds-button_icon slds-button_icon-small slds-button_icon-inverse" title="Close">
+    <svg class="slds-button__icon" aria-hidden="true">
+    <use xlink:href="/assets/icons/utility-sprite/svg/symbols.svg#close"></use>
+    </svg>
+    <span class="slds-assistive-text">Close</span>
+    </button>
+    </div>
+    </div>
+    </template> -->
 
   <lightning-spinner if:false={displayComp} size="small" alternative-text="loading..." variant="brand" ></lightning-spinner>
     <template if:true={displayComp}>
@@ -66,16 +91,14 @@
                             <div class="slds-media__figure">
                               <span class="slds-icon_container slds-icon-standard-account" title="account">
                                 <svg class="slds-icon slds-icon_small" aria-hidden="true">
-                                  <use xlink:href="/assets/icons/standard-sprite/svg/symbols.svg#account"></use>
+                                  <use xlink:href="/../contentassets/standard-sprite/svg/symbols.svg"></use>
                                 </svg>
                                 <span class="slds-assistive-text">account</span>
                               </span>
                             </div>
                             <div class="slds-media__body">
                               <h2 class="slds-card__header-title">
-                                <a href="#" class="slds-card__header-link slds-truncate" title="Asset">
                                   <span>Asset</span>
-                                </a>
                               </h2>
                             </div>
                           </header>
@@ -89,8 +112,9 @@
                                     options={newOrUsedOptions}
                                     onchange={loadNewUsedYearOptions}
                                     value={newUsed}
-                                    type="radio" required></lightning-radio-group></div>
-                                <lightning-combobox type="text" name="year" label="Year of Vehicle" value={year} onchange={loadLenderMakeOptions} options={yearSelect} required></lightning-combobox>
+                                    type="radio"
+                                    class="validate" required></lightning-radio-group></div>
+                                <lightning-combobox type="text" name="year" label="Year of Vehicle" value={year} onchange={loadLenderMakeOptions} options={yearSelect} class="validate"  required></lightning-combobox>
                               </div>
                               </article>
                               <!-- ||||- -->
@@ -108,25 +132,25 @@
                             </div>
                             <div class="slds-media__body">
                               <h2 class="slds-card__header-title">
-                                <a href="#" class="slds-card__header-link slds-truncate" title="Details">
+                               
                                   <span>Details</span>
-                                </a>
+                            
                               </h2>
                             </div>
                         </div>
                         <div class="slds-card__body slds-card__body_inner">
                         <template if:true={dyanamicSection}>
-                            <lightning-combobox name="make" label="Make" value={make} options={makeSelect} onchange={loadMakeModelOrFamilyOptions}  disabled={isAssetCompleted}  required></lightning-combobox>
-                            <lightning-combobox name="model" label="Model" value={model} options={modelSelect} onchange={loadModelVariantOptions} disabled={isAssetCompleted}  required></lightning-combobox>
-                            <lightning-combobox name="variant" label="Variant" value={variantDesc} options={variantSelect} onchange={loadVariantSeriesOptions}  disabled={isAssetCompleted} required></lightning-combobox>
-                            <lightning-combobox name="series" label="Series" value={series} options={seriesSelect} onchange={setSeries} disabled={isAssetCompleted}  required></lightning-combobox>
+                            <lightning-combobox name="make" label="Make" value={make} options={makeSelect} onchange={loadMakeModelOrFamilyOptions}  disabled={isAssetCompleted1}  class="validate"  required></lightning-combobox>
+                            <lightning-combobox name="model" label="Model" value={model} options={modelSelect} onchange={loadModelVariantOptions} disabled={isAssetCompleted2}  class="validate"  required></lightning-combobox>
+                            <lightning-combobox name="variant" label="Variant" value={variantDesc} options={variantSelect} onchange={loadVariantSeriesOptions}  disabled={isAssetCompleted3} class="validate"  required></lightning-combobox>
+                            <lightning-combobox name="series" label="Series" value={series} options={seriesSelect} onchange={setSeries} disabled={isAssetCompleted4}  class="validate"  required></lightning-combobox>
                         </template>
 
                         <template if:false={dyanamicSection}>
-                            <lightning-input name="make" label="Make" value={make}  onchange={loadMakeModelOrFamilyOptions}  required></lightning-input>
-                            <lightning-input name="model" label="Model" value={model}  onchange={loadModelVariantOptions}   required></lightning-input>
-                            <lightning-input name="variant" label="Variant" value={variantDesc}  onchange={loadVariantSeriesOptions}   required></lightning-input>
-                            <lightning-input  name="series" label="Series" value={series}  onchange={setSeries}  required></lightning-input>
+                            <lightning-input name="make" label="Make" value={make}  onchange={loadMakeModelOrFamilyOptions}  class="validate"  required></lightning-input>
+                            <lightning-input name="model" label="Model" value={model}  onchange={loadModelVariantOptions}   class="validate"  required></lightning-input>
+                            <lightning-input name="variant" label="Variant" value={variantDesc}  onchange={loadVariantSeriesOptions}   class="validate"  required></lightning-input>
+                            <lightning-input  name="series" label="Series" value={series}  onchange={setSeries}  class="validate"  required></lightning-input>
                         </template>
 
                         </div>
@@ -377,7 +401,7 @@
                             </div>
                         </template>
                         <div class="slds-card__body slds-card__body_inner">
-                            <lightning-combobox name="family" label="Family" value={family} options={familySelect} onchange={loadFamilyBadgeOptions} required></lightning-combobox>
+                            <lightning-combobox name="family" label="Family" value={family} options={familySelect} onchange={loadFamilyBadgeOptions} class="validate"  required></lightning-combobox>
                             <lightning-combobox name="assetType" label="Badge" value={badgeRedbook} options={badgeSelectRedbook} onchange={loadBadgeVariantOptions}></lightning-combobox>
                             <lightning-combobox name="assetType" label="Variant" value={variantRedbook} options={variantSelectRedbook} onchange={getVehicleKey}></lightning-combobox>
                             <lightning-input name="assetType" label="Redbook Key" value={toName} disabled></lightning-input>
@@ -403,9 +427,8 @@
                             </div>
                             <div class="slds-media__body">
                             <h2 class="slds-card__header-title">
-                                <a href="#" class="slds-card__header-link slds-truncate" title="Factory Options">
                                 <span>Factory Options</span>
-                                </a>
+                      
                             </h2>
                             </div>
                         </header>
@@ -441,9 +464,8 @@
                             </div>
                             <div class="slds-media__body">
                             <h2 class="slds-card__header-title">
-                                <a href="#" class="slds-card__header-link slds-truncate" title="Estimation">
                                 <span>Estimation</span>
-                                </a>
+                               
                             </h2>
                             </div>
                         </header>
@@ -579,14 +601,14 @@
                         <div class="slds-card__body slds-card__body_inner">
                             <div class="slds-grid slds-gutters slds-p-around_small form-content">
                                 <div class="slds-col">
-                                    <lightning-combobox name="lender" label="Lenders" value={lender} onchange={putFeesValue} options={lenderOptions} required></lightning-combobox>
-                                    <lightning-input type="number" name="carPrice" label={carLabelPriceSuff} value={carPrice} onchange={carPriceChange} formatter="currency" step="0.01" required></lightning-input>
+                                    <lightning-combobox name="lender" label="Lenders" value={lender} onchange={putFeesValue} options={lenderOptions} class="validate"  required></lightning-combobox>
+                                    <lightning-input type="number" name="carPrice" label={carLabelPriceSuff} value={carPrice} onchange={carPriceChange} formatter="currency" step="0.01" class="validate"  required></lightning-input>
                                     <lightning-input type="number" name="warranty" placeholder="$" label="Warranty" value={warranty} onchange={warrantyChange} step="0.01"></lightning-input>
                                     <lightning-input type="number" name="calculateKmsAdjustment" label="Actual KM" onchange={calculateKmsAdjustment} value={actualKms}></lightning-input>
                                     <lightning-input type="number" name="RRP" label={ltvValueLabel} value={ltvValue} formatter="currency" step="0.01"  disabled></lightning-input>
                                   </div>
                                   <div class="slds-col">
-                                    <lightning-combobox name="typeLoan" label="Type Loan" value={typeLoan} options={typeLoanOptions} onchange={putFeesValue} required></lightning-combobox>
+                                    <lightning-combobox name="typeLoan" label="Type Loan" value={typeLoan} options={typeLoanOptions} onchange={putFeesValueTypeLoan} class="validate"  required></lightning-combobox>
                                     <lightning-input type="number" name="deposit" label="	Deposit/Trade in" onchange={depositChange} formatter="currency" step="0.01" value={deposit}></lightning-input>
                                     <lightning-input type="number" name="gap" label="GAP" value={gap} onchange={gapChange} step="0.01"></lightning-input>
                                     <lightning-input type="number" name="averageKM" label="Average KM" value={averageKM} onchange={averageKMChange}></lightning-input>
@@ -594,9 +616,9 @@
                                   </div>
                                   <div class="slds-col">
                                     <lightning-input name="newUsed" label="New/Used" value={newUsed} disabled></lightning-input>
-                                    <lightning-input type="number" name="fees" label="Fees" value={fees} onchange={feesChange} formatter="currency" step="0.01" required></lightning-input>
+                                    <lightning-input type="number" name="fees" label="Fees" value={fees} onchange={feesChange} formatter="currency" step="0.01" class="validate"  required></lightning-input>
                                     <lightning-input type="number" name="lpi" label="LPI" value={lpi} onchange={lpiChange} step="0.01"></lightning-input>
-                                    <lightning-combobox type="text" name="purchaseType" label="Purchase Type" value={opp.Purchase_Type__c} options={purchaseTypeOptions} onchange={selectedPurchaseType}></lightning-combobox>
+                                    <lightning-combobox type="text" name="Purchase_Type__c" label="Purchase Type" value={customOpp.Purchase_Type__c} options={purchaseTypeOptions} onchange={selectedPurchaseType}></lightning-combobox>
                                     <lightning-input type="number" name="LVR" label={ltvLvrLabel} value={ltvLvrValue} formatter="percent" step="1"  disabled></lightning-input>
                                   </div>
                                   <div class="slds-col">
@@ -626,9 +648,8 @@
                             </div>
                             <div class="slds-media__body">
                             <h2 class="slds-card__header-title">
-                                <a href="#" class="slds-card__header-link slds-truncate" title="Vendor Details (Only mandatory at Formal Approval stage)">
                                 <span>Vendor Details (Only mandatory at Formal Approval stage)</span>
-                                </a>
+                             
                             </h2>
                             </div>
                         </header>
@@ -639,14 +660,14 @@
                                     <lightning-combobox name="assetType" label="Dealer Type" value={opp.Dealer_Type__c} options={dealerTypeOptions} onchange={dealerTypeChange}></lightning-combobox>
                                     <lightning-input name="assetType" label="Name" value={opp.Dealer_Name__c} onchange={dealerNameChange}></lightning-input>
                                     <lightning-input type="tel" name="assetType" label="Phone" value={opp.Dealer_Phone_Number__c} onchange={dealerPhoneNoChange}></lightning-input>
-                                    <lightning-input name="assetType" label="Street Number" value={opp.Dealer_Street_Number__c} onchange={dealerStreetNoChange} required></lightning-input>
-                                    <lightning-input name="assetType" label="Suburb" value={opp.Dealer_Suburb__c} onchange={dealerSuburbChange} required></lightning-input>
+                                    <lightning-input name="assetType" label="Street Number" value={opp.Dealer_Street_Number__c} onchange={dealerStreetNoChange} class="validate"  required></lightning-input>
+                                    <lightning-input name="assetType" label="Suburb" value={opp.Dealer_Suburb__c} onchange={dealerSuburbChange} class="validate"  required></lightning-input>
                                   </div>
                                   <div class="slds-col">
                                     <lightning-input name="assetType" label="Contact Person" value={opp.Dealer_Contact_Name__c} onchange={dealerContactNameChange}></lightning-input>
                                     <lightning-input type="tel" name="assetType" label="Mobile" value={opp.Dealer_Mobile__c} onchange={dealerMobileNoChange}></lightning-input>
-                                    <lightning-input name="assetType" label="Street Address" value={opp.Dealer_Address__c} onchange={dealerAddressChange} required></lightning-input>
-                                    <lightning-input type="number" name="assetType" label="Postcode" value={opp.Dealer_Postcode__c} onchange={dealerPostalCodeChange} required></lightning-input>
+                                    <lightning-input name="assetType" label="Street Address" value={opp.Dealer_Address__c} onchange={dealerAddressChange} class="validate"  required></lightning-input>
+                                    <lightning-input type="number" name="assetType" label="Postcode" value={opp.Dealer_Postcode__c} onchange={dealerPostalCodeChange} class="validate"  required></lightning-input>
                                   </div>
                                   <div class="slds-col">
                                     <lightning-input name="assetType" label="Email" value={opp.Dealer_Email__c} onchange={dealerEmailChange}></lightning-input>
@@ -674,9 +695,8 @@
                             </div>
                             <div class="slds-media__body">
                             <h2 class="slds-card__header-title">
-                                <a href="#" class="slds-card__header-link slds-truncate" title="Vehicle Identification (settlements to complete)">
                                 <span>Vehicle Identification (settlements to complete)</span>
-                                </a>
+                                
                             </h2>
                             </div>
                         </header>
@@ -699,24 +719,24 @@
                                     <lightning-input name="assetType" label="Colour" value={colour} onchange={colourChange}></lightning-input>
                                   </div>
                             </div>
-                            <template if:true={isSearchCertificateNumber}>
+                            <!-- <template if:true={isSearchCertificateNumber}> -->
                             <div class="slds-grid slds-gutters slds-p-around_small form-content">
                                 <div class="slds-col">
-                                    <lightning-input name="assetType" label="Request Proxy Id." value={opp.Application_AssetDetail__r.PPSR_Proxy_Id__c} disabled></lightning-input>
+                                    <lightning-input name="PPSR_Proxy_Id__c" label="Request Proxy Id." value={opp.Application_AssetDetail__r.PPSR_Proxy_Id__c} onchange={certificateChange} disabled={isSearchCertificateNumber}></lightning-input>
                                   </div>
                                   <div class="slds-col">
-                                    <lightning-input name="assetType" label="Last Update" value={opp.Application_AssetDetail__r.PPSR_Proxy_Last_Update__c} disabled></lightning-input>
+                                    <lightning-input name="PPSR_Proxy_Last_Update__c" label="Last Update" value={opp.Application_AssetDetail__r.PPSR_Proxy_Last_Update__c} onchange={certificateChange} disabled={isSearchCertificateNumber}></lightning-input>
                                   </div>
                                   <div class="slds-col">
-                                    <lightning-input name="assetType" label="PPSR Request No." value={opp.Application_AssetDetail__r.Search_Certificate_Number__c} disabled></lightning-input>
+                                    <lightning-input name="Search_Certificate_Number__c" label="PPSR Request No." value={opp.Application_AssetDetail__r.Search_Certificate_Number__c} onchange={certificateChange} disabled={isSearchCertificateNumber}></lightning-input>
                                   </div>
                                   <div class="slds-col">
-                                    <lightning-input name="assetType" label="Note" value={opp.Application_AssetDetail__r.PPSR_Proxy_Message__c} disabled></lightning-input>
+                                    <lightning-input name="PPSR_Proxy_Message__c" label="Note" value={opp.Application_AssetDetail__r.PPSR_Proxy_Message__c} onchange={certificateChange} disabled={isSearchCertificateNumber}></lightning-input>
                                   </div>
                                   <div class="slds-col">
                                   </div>
                             </div>
-                            </template>
+                            <!-- </template> -->
                         </div>
                         <footer class="slds-card__footer"></footer>
                       </article>
@@ -738,9 +758,8 @@
                             </div>
                             <div class="slds-media__body">
                             <h2 class="slds-card__header-title">
-                                <a href="#" class="slds-card__header-link slds-truncate" title="Vehicle Details">
                                 <span>LTV</span>
-                                </a>
+                              
                             </h2>
                             </div>
                         </header>
@@ -776,11 +795,15 @@
                       <div class="slds-m-left_medium">
                         <template if:true={assetStandardFeautersData}>
                             <b>Standard Features</b><br>
-                            <template for:each={assetStandardFeautersData} for:item="feature">
-                                <p key={feature}>
-                                    [{feature.code}] {feature.name}
-                                </p>
-                            </template>
+                          <div class="c-container">
+                            <lightning-layout vertical-align="stretch" multiple-rows="true" class="x-large">
+                                <template for:each={assetStandardFeautersData} for:item="feature">
+                                  <lightning-layout-item key={feature} size="6">
+                                    <div class="custom-box"> [{feature.code}] {feature.name}</div>
+                                  </lightning-layout-item>
+                                </template>
+                            </lightning-layout>
+                          </div>
                         </template>
                         
                     </div>
