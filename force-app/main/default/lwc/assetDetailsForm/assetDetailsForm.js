@@ -102,20 +102,20 @@ export default class GlassServiceEstimatorPage extends LightningElement {
     @wire(getCustomOpportunities, {recordId: '$recordId'}) wiredRecord({error, data}){
         if(data){
             console.log('wiredMethod:::'+JSON.stringify(data));
-            this.opp = data;
+            this.opp = JSON.parse(JSON.stringify(data));
             this.customOpp = data;
             console.log('OPPPPPPPP:::', data)
-            this.loadSavedData();
-
-            var aad = {}
-            if(this.opp.Application_AssetDetail__r != null){
-                aad = this.opp.Application_AssetDetail__r;
-                console.log('ANUPAMA-YES::', aad)
+            
+            if(this.loadSavedData()){
+                this.displayComp = true;
             }else{
-                console.log('ANUPAMA-NO::', aad)
+                this.initialization();
+                this.displayComp = true;
             }
-
-            this.displayComp = true;
+            this.loadNewUsedYearOptions1();  
+            this.loadStreetTypeOptions();
+            this.loadStatesOptions();
+         
         }else{
             this.error = error;
         }
@@ -127,19 +127,8 @@ export default class GlassServiceEstimatorPage extends LightningElement {
         console.log('recordId:::',this.recordId)
 
         this.rendered = false;
-        // sample record ID - Bill
-        // this.recordId = 'a011y000002vcGTAAY';
-
-        this.initialization();
-        this.loadNewUsedYearOptions1();  
-        this.loadStreetTypeOptions();
-        this.loadStatesOptions();
-        this.loadPurchaseTypeOptions();
-    
         this.test = ''
         console.log('Detail::::', this.isDetail)
-
-        // this.getMakeSelectOptions();
     }
 
         
@@ -152,30 +141,40 @@ export default class GlassServiceEstimatorPage extends LightningElement {
         fn += t && t.trim().length > 0 ? t : "";
         return fn;
     }
+
+    get displayFactoryOptions(){
+        if(this.assetOptions ){
+            return true;
+        }else{
+            return false;
+        }
+    }
     
     get isAssetCompleted1(){
-        if(this.assetType == 'Car' && this.newUsed != null && this.year != null){
+        console.log('isAssetCompleted1>>', this.assetType == 'Car', this.newUsed, this.year)
+        if(this.assetType == 'Car' && this.newUsed  && this.year ){
             return false;
         }else{
             return true;
         }
     }
     get isAssetCompleted2(){
-        if(this.assetType == 'Car' && this.newUsed != null && this.year != null && this.make != null){
+        if(this.assetType == 'Car' && this.newUsed  && this.year  && this.make ){
             return false;
         }else{
             return true;
         }
     }
     get isAssetCompleted3(){
-        if(this.assetType == 'Car' && this.newUsed != null && this.year != null && this.make != null && this.model != null){
+        if(this.assetType == 'Car' && this.newUsed  && this.year  && this.make  && this.model ){
             return false;
         }else{
             return true;
         }
     }
     get isAssetCompleted4(){
-        if(this.assetType == 'Car' && this.newUsed != null && this.year != null && this.make != null && this.model != null && this.variantDesc != null){
+        console.log('isAssetCompleted4>>', this.variantDesc == null, this.variantDesc == '', !this.variantDesc)
+        if(this.assetType == 'Car' && this.newUsed && this.year && this.make && this.model && this.variantDesc){
             return false;
         }else{
             return true;
@@ -185,7 +184,6 @@ export default class GlassServiceEstimatorPage extends LightningElement {
     get isUserSettlementTeam() {
         isUserIdSettlementTeam({userId : this.recordId})
         .then((result) => {
-            console.log('isUserIdSettlementTeam:::'+ result)
             return result;
         })
         .catch((error) => {
@@ -230,7 +228,8 @@ export default class GlassServiceEstimatorPage extends LightningElement {
         this.totalTradeLowPriceOptions = 0.0;
         this.totalTradePriceOptions = 0.0;
         this.totalRetailPriceOptions = 0.0;
-        this.showOptions = true;
+        this.showOptions = false;
+
 
         // dummy values
         // this.actualKms = 100000
@@ -284,13 +283,13 @@ export default class GlassServiceEstimatorPage extends LightningElement {
     error = '';
     detailsIsVisible = true;
     typeLoan = null;
-    carPrice = 0;
+    @track carPrice = 0;
     deposit = 0;
     warranty = 0;
     gap = 0;
     lpi = 0;
     lti = 0;
-    fees = 0;
+    @track fees = 0;
     quotingFees = 0;
     isRefinanceMacq;
     state;
@@ -354,6 +353,8 @@ export default class GlassServiceEstimatorPage extends LightningElement {
         Search_Certificate_Number__c : null,
         PPSR_Proxy_Message__c : null
     }
+    progress = 0;
+    visibleProgress;
 
     test;
     
@@ -417,18 +418,6 @@ export default class GlassServiceEstimatorPage extends LightningElement {
             this.error = error;
         });
     }
-    
-    loadPurchaseTypeOptions(){
-        // getPicklistValues()
-        // .then((result) => {
-        //     console.log('loadPurchaseTypeOptions::::', result)
-        //     this.purchaseTypes = Object.entries(result).map(([value,label]) => ({ value, label }));
-        // })
-        // .catch((error) => {
-        //     console.log(error);
-        //     this.error = error;
-        // });
-    }
 
     getVariantFactoryOptions(load){
 
@@ -461,9 +450,11 @@ export default class GlassServiceEstimatorPage extends LightningElement {
                 this.assetOptionsData = result.assetStandardFeautersData.assetOptionsData; 
                 this.assetOptionsSelect = Object.entries(result.assetStandardFeautersData.assetOptionsSelect).map(([value,label]) => ({ value, label }));
 
-                if(this.assetOptionsSelect != null){
+                if(this.assetOptionsSelect && Object.keys(this.assetOptionsSelect).length > 0){
                     console.log('show options:;', this.showOptions)
                     this.showOptions = true;
+                }else{
+                    this.showOptions = false;
                 }
 
                 // this.assetOptionsSelect = result.assetStandardFeautersData.assetOptionsSelect;
@@ -479,7 +470,7 @@ export default class GlassServiceEstimatorPage extends LightningElement {
                 // this.IsDetail2 = true;
                 // this.IsDetail0 = false;
 
-                if(this.variantObj != null){
+                if(this.variantObj ){
                     this.variantNewPrice = this.variantObj.New_Price__c;
                 }
 
@@ -488,7 +479,7 @@ export default class GlassServiceEstimatorPage extends LightningElement {
                 this.calculateEstimation();
 
                     if(load == true){
-                        if(this.glassVariant != null){
+                        if(this.glassVariant ){
                             this.model = this.glassVariant.Family__c;
                             this.getModelVariantsSelectOptionsAuxFunc();
                             this.variantDesc = this.glassVariant.Description__c;
@@ -535,7 +526,7 @@ export default class GlassServiceEstimatorPage extends LightningElement {
         }
 
         this.clearFamilyBadge();
-        if (this.family != null) {
+        if (this.family ) {
             console.log('loadFamilyBadgeOptions: Family ' + this.family);
             this.getFamilyBadgeSelectOptionsRedbook();
             
@@ -548,7 +539,7 @@ export default class GlassServiceEstimatorPage extends LightningElement {
         }
 
         this.clearBadgeVariant();
-        if (this.badgeRedbook != null) {
+        if (this.badgeRedbook ) {
             this.getBadgeVariantsSelectOptions();
         }
     }
@@ -558,7 +549,7 @@ export default class GlassServiceEstimatorPage extends LightningElement {
         .then((result) => {
             this.vehicleObj = result.vehicleByRedbookKey;
             if(load){
-                if(this.vehicleObj != null){
+                if(this.vehicleObj ){
                     this.family = this.vehicleObj.Family_Code__c;
                     this.loadFamilyBadgeOptions();
                     this.badgeRedbook = this.vehicleObj.Badge_Description__c;
@@ -577,7 +568,7 @@ export default class GlassServiceEstimatorPage extends LightningElement {
             this.variantRedbook = e.target.value;
         }
 
-        if(this.variantRedbook != null){
+        if(this.variantRedbook ){
             getVehicle({code: this.variantRedbook})
             .then((result) => {
                 this.vehicleObj = result.vehicleByRedbookKey;
@@ -682,6 +673,19 @@ export default class GlassServiceEstimatorPage extends LightningElement {
 
     }
 
+    changeDetails(e){
+        const fieldName = e.target.name;
+        if(fieldName == 'make'){
+            this.make = e.target.value;
+        }else if(fieldName == 'model'){
+            this.model = e.target.value;
+        }else if(fieldName == 'variant'){
+            this.variantDesc = e.target.value;
+        }else if(fieldName == 'series'){
+            this.series = e.target.value;
+        }
+    }
+
     // retrieving make models --> glass & redbook
     loadMakeModelOrFamilyOptions(event){
         if(event && event.target && event.target.name == 'make'){
@@ -691,18 +695,14 @@ export default class GlassServiceEstimatorPage extends LightningElement {
         this.clearMakeModelOrFamily();
         this.clearMake();
         
-        if(this.make != null){
+        if(this.make ){
 
             var carParameter = {
                 year : this.year,
                 make : this.make,
                 newUsed : this.newUsed,
                 lender : this.lender,
-                code : this.make,
-                family: this.family,
-                variant: this.variantDesc,
-                series: this.series,
-                IdCar: this.variant
+                code : this.make
             }
             getMakeModelsSelectOptions({wrapper : carParameter}).then((result) => {
                 console.log('Glass Data:'+ JSON.stringify(result.glassObj));
@@ -725,17 +725,13 @@ export default class GlassServiceEstimatorPage extends LightningElement {
 
     loadMake() {
         console.log('make function triggered!')
-        if(this.make != null && this.newUsed != null && this.year != null){
+        if(this.make  && this.newUsed  && this.year ){
             var carParameter = {
                 year : this.year,
                 make : this.make,
                 newUsed : this.newUsed,
                 lender : this.lender,
-                code : this.make,
-                family: this.family,
-                variant: this.variantDesc,
-                series: this.series,
-                IdCar: this.variant
+                code : this.make
             }
             getMakeModelsSelectOptions({wrapper : carParameter}).then((result) => {
                 console.log('MAKE() - Redbook Data:'+ JSON.stringify(result.redObj));
@@ -850,7 +846,7 @@ export default class GlassServiceEstimatorPage extends LightningElement {
     }
 
     get averageKM() {
-        if (this.variantObj != null && this.variantObj.Average_Kms__c != null) {
+        if (this.variantObj  && this.variantObj.Average_Kms__c ) {
             return this.variantObj.Average_Kms__c * 1000;
         }
         return 0;
@@ -911,21 +907,18 @@ export default class GlassServiceEstimatorPage extends LightningElement {
         });
     }
 
-    // getGlassCarsListFunc(){
-    //     getGlassCarsList({make :this.make})
-    //     .then((result) => {
-    //         console.log(result)
-    //         this.makeObj = result;
-    //         this.glassMake = result;
-    //     })
-    //     .catch((error) => {
-    //         console.log(error);
-    //         this.error = error;
-    //     });
-    // }
 
     get displayClass(){
-        return 'Light Commercial Vehicles';
+        if(this.variantObject && this.variantObject.Type_Source__c == 'CVG'){
+            return 'Light Commercial Vehicles';
+        }else if(this.variantObject && this.variantObject.Type_Source__c == 'PVG'){
+            return 'Passenger Vehicles';
+        }else if(this.variantObject && this.variantObject.Type_Source__c == 'OCG'){
+            return 'Older Cars';
+        }else if(this.variantObject && this.variantObject.Type_Source__c == 'OLC'){
+            return 'Older Light Commercial';
+        }
+        return null;
     }
 
     getModelVariantsSelectOptionsAuxFunc(){
@@ -943,12 +936,12 @@ export default class GlassServiceEstimatorPage extends LightningElement {
 
     // loadVariantSeriesOptionsFunc() {
     //     this.clearVariantSeries();
-    //     if (this.variantDesc != null) {
+    //     if (this.variantDesc ) {
     //         seriesSelect = GlassServicesHelper.getVariantSeriesSelectOptionsAux(variantDesc, model, year, make);
     //     }
     //     if(isDetail == 0 || isDetail == 2 || isDetail == 3)
     //         this.listCars();
-    //     if(seriesSelect != null && seriesSelect.size()==1)
+    //     if(seriesSelect  && seriesSelect.size()==1)
     //         isDetail=0;
     // }
 
@@ -998,14 +991,11 @@ export default class GlassServiceEstimatorPage extends LightningElement {
             this.model = event.target.value;
         }
 
-        if(load){
+        if(!load){
             this.clearModelVariant();
         }
 
-        // this.getCarsList();
-
-        // this.clearModelVariant();
-        if (this.model != null) {
+        if (this.model ) {
             this.getModelVariantsSelectOptionsAuxFunc();
         }
         if(this.isDetail == 0 || this.isDetail == 2 || this.isDetail == 3)
@@ -1017,17 +1007,16 @@ export default class GlassServiceEstimatorPage extends LightningElement {
             this.variantDesc = event.target.value;
         }
 
-        // this.getCarsList();
         if(load != false){
             this.clearVariantSeries();
         }
         
-        if (this.variantDesc != null) {
+        if (this.variantDesc ) {
             this.getVariantSeriesSelectOptionsAuxFunc();
         }
         if(this.isDetail == 0 || this.isDetail == 2 || this.isDetail == 3)
             this.listCars();
-        if(this.seriesSelect != null && Object.keys(this.seriesSelect).length == 1)
+        if(this.seriesSelect  && Object.keys(this.seriesSelect).length == 1)
             this.IsDetail0 = true;
             this.isDetail = 0;
     }
@@ -1144,38 +1133,32 @@ export default class GlassServiceEstimatorPage extends LightningElement {
     }
 
     loadNewUsedYearOptions(event) {
-        if(this.assetOptions != null){
+        if(this.assetOptions ){
                 this.assetOptions = [];
             }
             this.assetOptionsSelect = null;
-        //    this.showOptions = false;
 
         if(event.target.name == 'assetType'){
             this.assetType = event.target.value;
-        //     if(this.assetOptions != null){
-        //         this.assetOptions = [];
-        //     }
-        //    this.showOptions = false;
+            this.clearNewUsedYear();
+            this.clearMake();
         }
 
         if(event.target.name == 'newUsed'){
             this.newUsed = event.target.value;
-            // if(this.assetOptions != null){
-            //     this.assetOptions = [];
-            // }
-            // this.assetOptionsSelect = [];
+            if(this.assetType == 'Car'){
+                this.clearNewUsedYear();
+                this.clearMake();
+            }
         }
 
         console.log('loadNewUsedYearOptions... ' + this.newUsed + ' >> ' + this.assetType);
 
-        this.clearNewUsedYear();
-        this.clearMake();
-
-        if(this.carList != null){
+        if(this.carList ){
             this.carList = null;
         }
 
-        if (this.newUsed != null) {
+        if (this.newUsed ) {
             this.getYears();
         }
         if(this.isDetail == 0 || this.isDetail == 2 || this.isDetail == 3)
@@ -1186,10 +1169,7 @@ export default class GlassServiceEstimatorPage extends LightningElement {
     loadNewUsedYearOptions1() {
         console.log('loadNewUsedYearOptions... ' + this.newUsed + ' >> ' + this.assetType);
 
-        this.clearNewUsedYear();
-        this.clearMake();
-
-        if (this.newUsed != null) {
+        if (this.newUsed ) {
             this.getYears();
         }
         if(this.isDetail == 0 || this.isDetail == 2 || this.isDetail == 3)
@@ -1218,9 +1198,9 @@ export default class GlassServiceEstimatorPage extends LightningElement {
 
     clearVariantFactoryOptions() {
         this.variantNewPrice = 0.0;
-        this.actualKms = 0;
+        // this.actualKms = 0;
         // this.assetOptionsData = null;
-        // if (this.assetOptions != null) {
+        // if (this.assetOptions ) {
         //     this.assetOptions = [];
         // }
         // this.assetOptionsSelect = null;
@@ -1239,7 +1219,7 @@ export default class GlassServiceEstimatorPage extends LightningElement {
         var totalRetailPriceOptions = 0.0;
 
         
-        if (this.assetOptionsData != null && this.assetOptions != null) {
+        if (this.assetOptionsData  && this.assetOptions ) {
 
             console.log('asset Options Data 1:::', this.assetOptionsData);
             console.log('asset Options  1:::', this.assetOptions);
@@ -1264,7 +1244,7 @@ export default class GlassServiceEstimatorPage extends LightningElement {
             console.log('Total Price Options::', totalPriceOptions)
 
             if ('new' == this.newUsed || 'demo' == this.newUsed) {
-              if (this.variantObj.Retail_Price__c != null && this.variantObj.Retail_Price__c > 0) {
+              if (this.variantObj.Retail_Price__c  && this.variantObj.Retail_Price__c > 0) {
                 //value = value * .8;
                 //value = value.setScale(-2);
                 totalRetailPriceOptions += totalPriceOptions;
@@ -1334,13 +1314,13 @@ export default class GlassServiceEstimatorPage extends LightningElement {
 
         console.log('calculateKmsAdjustment:::')
 
-        if(event && event.target && event.target.name != null ){
+        if(event && event.target && event.target.name  ){
             if(event.target.name == 'calculateKmsAdjustment'){
                 this.actualKms = event.target.value;
             }
         }else{
         
-            if ('used' == this.newUsed.toLowerCase() && this.variantObj != null && this.actualKms > 0 && 'AFS' != this.lender) {
+            if ('used' == this.newUsed.toLowerCase() && this.variantObj  && this.actualKms > 0 && 'AFS' != this.lender) {
 
                 Promise.resolve(this.calculateAdjustmentFunc()).then(value => {
                     if(value){
@@ -1371,13 +1351,9 @@ export default class GlassServiceEstimatorPage extends LightningElement {
 
     selectedPurchaseType(event){
 
-        console.log('purchase type change >>', this.customOpp.Purchase_Type__c)
-
         if(event && event.target){
             this.purchaseType = event.target.value;
         }
-
-        console.log('purchase type change >>', this.customOpp.Purchase_Type__c)
 
         this.isRefinanceMacq = false;
         if ('Refinance_Macq' == this.purchaseType){
@@ -1450,20 +1426,25 @@ export default class GlassServiceEstimatorPage extends LightningElement {
     }
 
     loadLenderMakeOptions(event) {
-        this.clearLenderMake();
-        this.clearMake();
+        if(this.assetType == 'Car'){
+            this.clearLenderMake();
+            this.clearMake();
+        }
 
         if(event && event.target && event.target.name == 'year'){
             this.year = event.target.value;
             console.log('::year::'+this.year);
         }
 
-        if(this.year != null){
-            this.getMakeSelectOptionsFunc();
-        }
+        if(this.assetType == 'Car'){
 
-        if(this.isDetail == 0 || this.isDetail == 2 || this.isDetail == 3)
-            this.listCars();
+            if(this.year ){
+                this.getMakeSelectOptionsFunc();
+            }
+
+            if(this.isDetail == 0 || this.isDetail == 2 || this.isDetail == 3)
+                this.listCars();
+        }
     }
 
     checkCarList(){
@@ -1477,7 +1458,7 @@ export default class GlassServiceEstimatorPage extends LightningElement {
 
     listCars(){
 
-        if(this.series != null){
+        if(this.series ){
             this.isDetail = 0;
             this.IsDetail0 = true;
             this.IsDetail2 = false;
@@ -1505,21 +1486,21 @@ export default class GlassServiceEstimatorPage extends LightningElement {
     // getters :::::::
 
     get tradeLowAdjustedValue() {
-        if (this.variantObj != null) { 
+        if (this.variantObj ) { 
             return (this.variantObj.Trade_Low_Price__c + this.totalTradeLowPriceOptions + this.totalTradeLowPriceKms);
         }
         return 0.0;
     }
 
     get tradeAdjustedValue() {
-        if (this.variantObj != null) {
+        if (this.variantObj ) {
             return (this.variantObj.Trade_Price__c + this.totalTradePriceOptions + this.totalTradePriceKms);
         }
         return 0.0;
     }
 
     get reatilAdjustedValue() {
-        if (this.variantObj != null) {
+        if (this.variantObj ) {
             console.log('reatilAdjustedValue:::', this.variantObj.Retail_Price__c + this.totalRetailPriceOptions + this.totalRetailPriceKms)
             const val = this.variantObj.Retail_Price__c + this.totalRetailPriceOptions + this.totalRetailPriceKms;
             return val;
@@ -1528,21 +1509,21 @@ export default class GlassServiceEstimatorPage extends LightningElement {
     }
 
     get tradeLowGlassValue() {
-        if (this.variantObj != null) {
+        if (this.variantObj ) {
             return (this.variantObj.Trade_Low_Price__c);
         }
         return 0.0;
     }
 
     get tradeGlassValue() {
-        if (this.variantObj != null) {
+        if (this.variantObj ) {
             return (this.variantObj.Trade_Price__c);
         }
         return 0.0;
     }
 
     get retailGlassValue() {
-        if (this.variantObj != null) {
+        if (this.variantObj ) {
             return (this.variantObj.Retail_Price__c);
         }
         return 0.0;
@@ -1597,7 +1578,6 @@ export default class GlassServiceEstimatorPage extends LightningElement {
                 }
             } else {
                 r = this.reatilAdjustedValue;
-                console.log('ltvValue-inside', r)
             }
         } else if (
           'demo' == this.newUsed &&
@@ -1605,38 +1585,36 @@ export default class GlassServiceEstimatorPage extends LightningElement {
         ) {
           r = this.reatilAdjustedValue;
         }
-        console.log('ltvValue', this.reatilAdjustedValue)
-        console.log('ltvValue', r)
         return r;
     }
 
     get ltvNAFValue() {
         let r = 0;
         // this.LtvFeeValue;
-        if(this.fees != null){
+        if(this.fees ){
             r += parseFloat(this.fees)
         }
 
-        if (this.warranty != null) {
+        if (this.warranty ) {
             r += parseFloat(this.warranty);
         }
-        if (this.gap != null) {
+        if (this.gap ) {
             r += parseFloat(this.gap);
         }
 
         if (('ANZ' != this.lender) && ('Liberty' != this.lender)) {
-            if (this.lpi != null) {
+            if (this.lpi ) {
                 r += parseFloat(this.lpi);
             }
-            if (this.lti != null) {
+            if (this.lti ) {
                 r += parseFloat(this.lti);
             }
         }
-        if (this.carPrice != null) {
+        if (this.carPrice ) {
             r += parseFloat( this.carPrice);
         }
 
-        if (this.deposit != null) {
+        if (this.deposit ) {
             r -= parseFloat(this.deposit);
         }
 
@@ -1688,7 +1666,11 @@ export default class GlassServiceEstimatorPage extends LightningElement {
     }
 
     carPriceChange(e){
-        this.carPrice = e.target.value;
+        if(e.target.value){
+            this.carPrice = e.target.value;
+        }else{
+            this.carPrice = 0;
+        }
     }
 
     warrantyChange(e){
@@ -1713,63 +1695,20 @@ export default class GlassServiceEstimatorPage extends LightningElement {
     }
 
     feesChange(e){
-        this.fees = e.target.value;
+        if(e.target.value){
+            this.fees = e.target.value;
+        }else{
+            this.fees = 0;
+        }
     }
 
     lpiChange(e){
         this.lpi = e.target.value;
     }
 
-    dealerTypeChange(e){
-        this.dealerType = e.target.value;
-    }
-
-    dealerNameChange(e){
-        this.dealerName = e.target.value;
-    }
-
-    dealerPhoneNoChange(e){
-        this.dealerPhoneNo = e.target.value;
-    }
-
-    dealerStreetNoChange(e){
-        this.dealerStreetNo = e.target.value;
-    }
-
-    dealerSuburbChange(e){
-        this.dealerSuburb = e.target.value;
-    }
-
-    dealerContactNameChange(e){
-        this.dealerContactName = e.target.value;
-    }
-
-    dealerMobileNoChange(e){
-        this.dealerMobile = e.target.value;
-    }
-
-    dealerAddressChange(e){
-        this.dealerAddress = e.target.value;
-    }
-
-    dealerPostalCodeChange(e){
-        this.dealerPostCode = e.target.value;
-    }
-
-    dealerEmailChange(e){
-        this.dealerEmail = e.target.value;
-    }
-
-    dealerUnitNoChange(e){
-        this.dealerUnitNo = e.target.value;
-    }
-
-    dealerStreetTypeChange(e){
-        this.dealerStreetType = e.target.value;
-    }
-
-    dealerStateChange(e){
-        this.dealerState = e.target.value;
+    // all values in vendor details changed from here
+    dealerValChange(e){
+        this.opp[e.target.name] = e.target.value;   
     }
 
     regoNoChange(e){
@@ -1797,7 +1736,9 @@ export default class GlassServiceEstimatorPage extends LightningElement {
         console.log('Load saved Data:::::');
         console.log(JSON.stringify( this.opp))
 
-        if(this.opp.Application_AssetDetail__c != null){
+        this.visibleProgress = false;
+
+        if(this.opp.Application_AssetDetail__c ){
             var aad = {};
             aad = this.opp.Application_AssetDetail__r;
             console.log('AAD::::', aad);
@@ -1821,12 +1762,12 @@ export default class GlassServiceEstimatorPage extends LightningElement {
 
                 console.log('working.....', this.glassVariant);
 
-                if(aad.Redbook_key__c != null){
+                if(aad.Redbook_key__c ){
                     this.loadRedbookVehicle(aad.Redbook_Key__c, true);
                     this.variantRedbook = aad.Redbook_Key__c;
                 }
 
-                if(aad.Factory_Options__c != null){
+                if(aad.Factory_Options__c ){
                     this.assetOptions = JSON.parse(aad.Factory_Options__c);
                     console.log('Factory options::::', this.assetOptions)
                 }
@@ -1851,10 +1792,10 @@ export default class GlassServiceEstimatorPage extends LightningElement {
             this.lpi = aad.LPI__c;
             this.fees =  aad.Fees__c;
 
-            // if (aad.Actual_KM__c != null) {
+            if (aad.Actual_KM__c ) {
                 console.log(aad.Actual_KM__c)
                 this.actualKms = aad.Actual_KM__c;
-            // }
+            }
 
             this.rego = aad.Rego__c;
             this.vin = aad.VIN__c;
@@ -1872,22 +1813,24 @@ export default class GlassServiceEstimatorPage extends LightningElement {
             }
 
             this.purchaseType = this.opp.Purchase_Type__c;
-            this.dealerAddress = this.opp.Dealer_Address__c;
-            this.dealerContactName = this.opp.Dealer_Contact_Name__c;
-            this.dealerEmail = this.opp.Dealer_Email__c;
-            this.dealerMobile = this.opp.Dealer_Mobile__c;
-            this.dealerName = this.opp.Dealer_Name__c;
-            this.dealerPhoneNo = this.opp.Dealer_Phone_Number__c; 
-            this.dealerType = this.opp.Dealer_Type__c;
-            this.dealerUnitNo = this.opp.Dealer_Unit_Number__c;
-            this.dealerStreetType = this.opp.Dealer_Street_Type__c;
-            this.dealerState = this.opp.Dealer_State__c;
-            this.contractNumber = this.opp.Contract_Number__c;
-            this.dealerStreetNo = this.opp.Dealer_Street_Number__c;
-            this.dealerSuburb = this.opp.Dealer_Suburb__c;
-            this.dealerPostCode = this.opp.Dealer_Postcode__c;
+            // this.dealerAddress = this.opp.Dealer_Address__c;
+            // this.dealerContactName = this.opp.Dealer_Contact_Name__c;
+            // this.dealerEmail = this.opp.Dealer_Email__c;
+            // this.dealerMobile = this.opp.Dealer_Mobile__c;
+            // this.dealerName = this.opp.Dealer_Name__c;
+            // this.dealerPhoneNo = this.opp.Dealer_Phone_Number__c; 
+            // this.dealerType = this.opp.Dealer_Type__c;
+            // this.dealerUnitNo = this.opp.Dealer_Unit_Number__c;
+            // this.dealerStreetType = this.opp.Dealer_Street_Type__c;
+            // this.dealerState = this.opp.Dealer_State__c;
+            // this.contractNumber = this.opp.Contract_Number__c;
+            // this.dealerStreetNo = this.opp.Dealer_Street_Number__c;
+            // this.dealerSuburb = this.opp.Dealer_Suburb__c;
+            // this.dealerPostCode = this.opp.Dealer_Postcode__c;
 
             console.log('parameters:::', carParameter)
+
+            return true;
 
             // unecessary snippet ---//
             // getCodeModel({ param : carParameter })
@@ -1906,7 +1849,7 @@ export default class GlassServiceEstimatorPage extends LightningElement {
         getApplicationQuoting({oppId: this.opp.Id, appId: this.opp.Application__c})
         .then((d) => {
             console.log('getApplicationQuoting::::', d)
-            if (d != null) {
+            if (d ) {
                 if (d.Name =='ANZ') {
                     this.lender = 'ANZ';
                 } else if (d.Name =='Macquarie') {
@@ -1939,7 +1882,7 @@ export default class GlassServiceEstimatorPage extends LightningElement {
                 //Type loan
                 if ('Consumer Loan' == d.Loan_Product__c) {
                     this.typeLoan = 'Consumer';
-                } else if (d.Loan_Product__c != null) {
+                } else if (d.Loan_Product__c ) {
                     if (d.Loan_Product__c =='Lease') {
                         this.typeLoan = 'Leasing';
                     } else if (d.Loan_Product__c =='Chattel') {
@@ -1953,7 +1896,7 @@ export default class GlassServiceEstimatorPage extends LightningElement {
                 // this.gap = 0;
                 // this.lpi = 0;
                 // this.lti = 0;
-                if (d.Net_Deposit__c != null) {
+                if (d.Net_Deposit__c ) {
                     this.deposit += d.Net_Deposit__c;
                 }
                 if ('A' == d.Insurance_Warranty_Acceptance__c) {
@@ -1976,40 +1919,40 @@ export default class GlassServiceEstimatorPage extends LightningElement {
                 }
     
                 // this.quotingFees = 0;
-                if (d.Application_Fee__c != null) {
+                if (d.Application_Fee__c ) {
                     this.quotingFees += d.Application_Fee__c;
                 }
                 
                 if ('Liberty' ==this.lender) {
-                    if (d.Registration_Fee__c != null) {
+                    if (d.Registration_Fee__c ) {
                         this.quotingFees += d.Registration_Fee__c;
                     }
                 } else {
-                    if (d.DOF__c != null) {
+                    if (d.DOF__c ) {
                         this.quotingFees += d.DOF__c;
                     }
                 }
                 
                 if ('Money 3' ==this.lender) {
                     if ('Asset Finance' == d.Customer_Profile__c) {
-                        if (d.Risk_Fee__c != null) {
+                        if (d.Risk_Fee__c ) {
                             this.quotingFees += d.Risk_Fee__c;
                         }
                     }
                 }
                 
                 if ('Finance 1' ==this.lender) {
-                    if (d.Risk_Fee__c != null) {
+                    if (d.Risk_Fee__c ) {
                         this.quotingFees += d.Risk_Fee__c;
                     }
                 }
                 
-                if (d.PPSR__c != null) {
+                if (d.PPSR__c ) {
                     this.quotingFees += d.PPSR__c;
                 }
                 if ('Latitude' == d.Name ||
                     d.Name.startsWith('AFS')) {
-                    if (d.Registration_Fee__c != null) {
+                    if (d.Registration_Fee__c ) {
                         this.quotingFees += d.Registration_Fee__c;
                     }
                 }
@@ -2017,11 +1960,15 @@ export default class GlassServiceEstimatorPage extends LightningElement {
             
             this.selectedPurchaseType();
             this.calculateKmsAdjustment();
+
+            return true;
         })
         .catch((error) => {
             console.log(error);
             this.error = error;
         })
+
+        return false;
     }
 
     //  SHOW toast
@@ -2039,50 +1986,61 @@ export default class GlassServiceEstimatorPage extends LightningElement {
         let isOk = true;
         // return isOk;
         if(this.isValidRequiredFields()){
-            if (prefixFile != null) {
+            if (prefixFile ) {
                 if (this.opp.Application__c == null) {
                     this.showToast('error','Please create an Application form before saving for any appoval process.');
                     isOk = false;
                 }
                 if(prefixFile.includes('FORMAL_APPROVAL')) {
                     let t = ' in Vendor Details section before saving for Formal Approval.';
-                    if (this.dealerName == null){
-                        this.showToast('error','Please fill a Vendor Name'+t);
-                        isOk = false;       
-                    }else
-                    if (this.dealerEmail == null){
-                        this.showToast('error','Please fill an Email'+t);
-                        isOk = false;       
-                    }else
-                    if (this.dealerAddress == null){
-                        this.showToast('error','Please fill an Address'+t);
-                        isOk = false;       
-                    }else
-                    if (this.dealerContactName == null){
-                        this.showToast('error','Please fill a Contact Name'+t);
-                        isOk = false;       
-                    }else
-                    if (this.dealerPhoneNo == null){
-                        this.showToast('error','Please fill a Phone Number'+t);
-                        isOk = false;       
-                    }else
-                    
-                    if (this.dealerSuburb == null){
-                        this.showToast('error','Please fill a Suburb'+t);
-                        isOk = false;       
-                    }else
-                    if (this.dealerPostCode == null){
-                        this.showToast('error','Please fill an Address'+t);
-                        isOk = false;       
-                    }else
-                    if (this.dealerState == null) {
-                        this.showToast('error','Please fill a State'+t);
-                        isOk = false;       
-                    }else
-                    if (this.dealerType == null){
-                        this.showToast('error','Please fill a Dealer Type'+t);
+                    let fields = [];
+
+                    if (!this.opp.Dealer_Name__c){
+                        // this.showToast('error','Please fill a Vendor Name'+t);
+                        fields.push('[Vendor Name]');
                         isOk = false;       
                     }
+                    if (!this.opp.Dealer_Email__c){
+                        // this.showToast('error','Please fill an Email'+t);
+                        fields.push('[Email]');
+                        isOk = false;       
+                    }
+                    if (!this.opp.Dealer_Address__c){
+                        // this.showToast('error','Please fill an Address'+t);
+                        fields.push('[Address]');
+                        isOk = false;       
+                    }
+                    if (!this.opp.Dealer_Contact_Name__c){
+                        // this.showToast('error','Please fill a Contact Name'+t);
+                        fields.push('[Contact Name]');
+                        isOk = false;       
+                    }
+                    if (!this.opp.Dealer_Phone_Number__c){
+                        // this.showToast('error','Please fill a Phone Number'+t);
+                        fields.push('[Phone Number]');
+                        isOk = false;       
+                    }
+                    if (!this.opp.Dealer_Suburb__c){
+                        // this.showToast('error','Please fill a Suburb'+t);
+                        fields.push('[Suburb]');
+                        isOk = false;       
+                    }
+                    if (!this.opp.Dealer_Postcode__c){
+                        // this.showToast('error','Please fill an Address'+t);
+                        fields.push('[Address]');
+                        isOk = false;       
+                    }
+                    if (!this.opp.Dealer_State__c) {
+                        // this.showToast('error','Please fill a State'+t);
+                        fields.push('[State]');
+                        isOk = false;       
+                    }
+                    if (!this.opp.Dealer_Type__c){
+                        // this.showToast('error','Please fill a Dealer Type'+t);
+                        fields.push('[Dealer Type]');
+                        isOk = false;       
+                    }
+                    this.showToast('error','Please fill '+ fields +t);
                 }
             }
             if (this.assetType == 'Car') {
@@ -2157,6 +2115,22 @@ export default class GlassServiceEstimatorPage extends LightningElement {
         this.saveEstimationPdf('FORMAL_APPROVAL_');
     }
 
+    toggleProgress(status) {
+        if (status) {
+            // stop
+            this.visibleProgress = false;
+            clearInterval(this._interval);
+        } else {
+            // start
+            this.visibleProgress = true;
+            // eslint-disable-next-line @lwc/lwc/no-async-operation
+            this._interval = setInterval(() => {
+                this.progress = this.progress === 100 ? 0 : this.progress + 2;
+            }, 200);
+        }
+        console.log('progress>>>', this.progress)
+    }
+
     saveEstimationPdf(prefixFile){
         // PageReference pdf = null;
         const allVariables = {};
@@ -2169,10 +2143,12 @@ export default class GlassServiceEstimatorPage extends LightningElement {
         console.log('running0....', JSON.stringify(aad))
 
         if(this.isPdfReadyToGenerate(prefixFile)){
+
+            this.toggleProgress(false);
             
             try{
                 oppLocal = JSON.parse(JSON.stringify(this.opp));
-            if(this.opp.Application_AssetDetail__c != null){
+            if(this.opp.Application_AssetDetail__c ){
                 aad = JSON.parse(JSON.stringify(this.opp.Application_AssetDetail__r))  ;
                 // console.log('aad1::', aad)
             }
@@ -2190,7 +2166,7 @@ export default class GlassServiceEstimatorPage extends LightningElement {
                 console.log('running1-1-1....', dto)
                 let tmpOptions = '';
 
-                if(this.assetOptions != null){
+                if(this.assetOptions ){
 
                     for(let i = 0; i < this.assetOptions.length; i++){ 
                     
@@ -2229,12 +2205,12 @@ export default class GlassServiceEstimatorPage extends LightningElement {
                 aad.Variant__c = this.variant;
                 aad.Variant_Desc__c = this.variantDesc;
 
-                if (this.vehicleObj != null) {
+                if (this.vehicleObj ) {
                     aad.Redbook_Key__c = this.vehicleObj.Name;
                     dto.redbookKey = aad.Redbook_Key__c;
                 }
                 console.log('running1-3....', aad)
-                if (this.assetOptions != null || this.assetOptions != []) {
+                if (this.assetOptions  || this.assetOptions != []) {
                     aad.Factory_Options__c =  JSON.stringify(this.assetOptions);
                 } else {
                     aad.Factory_Options__c = null;
@@ -2279,9 +2255,8 @@ export default class GlassServiceEstimatorPage extends LightningElement {
             dto.ltvValue = '$' + this.ltvValue;
             dto.naf = '$' + this.ltvNAFValue;
             dto.lvrLabel = this.ltvLvrLabel;
-            dto.lvrValue = this.ltvLvrValue + '%';            
+            dto.lvrValue = parseFloat(this.ltvLvrValue*100 ).toFixed(2) + '%';            
             dto.actualKms = this.actualKms;
-            console.log('Purchase Type >>', this.customOpp.Purchase_Type__c);
             dto.purchaseType = this.purchaseType;
             dto.contractNumber = this.contractNumber;
             dto.vendorName = this.dealerName;
@@ -2321,29 +2296,15 @@ export default class GlassServiceEstimatorPage extends LightningElement {
             aad.Rego_State__c = this.regoState;
 
             oppLocal.New_Used__c = dto.newUsed.toUpperCase();
-            oppLocal.Purchase_Type__c = this.customOpp.Purchase_Type__c;
+            oppLocal.Purchase_Type__c = this.purchaseType;
             oppLocal.Contract_Number__c = this.contractNumber;
-            oppLocal.Dealer_Phone_Number__c = this.dealerPhoneNo;
-            oppLocal.Dealer_Street_Number__c = this.dealerStreetNo;
-            oppLocal.Dealer_Suburb__c = this.dealerSuburb;
-            oppLocal.Dealer_Contact_Name__c = this.dealerContactName;
-            oppLocal.Dealer_Mobile__c = this.dealerMobile;
-            oppLocal.Dealer_Address__c = this.dealerAddress;
-            oppLocal.Dealer_Postcode__c = this.dealerPostCode;
-            oppLocal.Dealer_Email__c = this.dealerEmail;
-            oppLocal.Dealer_Unit_Number__c = this.dealerUnitNo;
-            oppLocal.Dealer_Street_Type__c = this.dealerStreetType;
-            oppLocal.Dealer_State__c = this.dealerState;
-            oppLocal.Dealer_Type__c = this.dealerType;
-            oppLocal.Dealer_Name__c = this.dealerName;
             
-
             console.log('AAD....', aad)
             console.log('DTO....', dto)
             console.log('OPP-LOCAL....', oppLocal)
             console.log('Prefix file....', prefixFile)
 
-            if(pdf != null){
+            if(pdf ){
                         // console.log('insertAssetDetails>>>', aad, oppLocal, dto, prefixFile)
                         insertAssetDetails({ appAssetDetails : aad, oppt : oppLocal, dto: dto, prefixFile : prefixFile })
                         .then((result) => {
@@ -2353,6 +2314,7 @@ export default class GlassServiceEstimatorPage extends LightningElement {
                             }else{
                                 this.showToast('error',result)
                             }
+                            this.toggleProgress(true);
                         })
                         .catch((error) => {
                             this.showToast('error', error.message)
@@ -2372,6 +2334,7 @@ export default class GlassServiceEstimatorPage extends LightningElement {
                 this.showToast('warning','Some data could not be saved properly. Please reload this page and try to save your data again.');
             }
             this.showToast('error', e.stack);
+            this.visibleProgress = false;
             // ApexPages.addMessage(new ApexPages.Message(ApexPages.Severity.ERROR, e.getStackTraceString()));
         }
         // }
