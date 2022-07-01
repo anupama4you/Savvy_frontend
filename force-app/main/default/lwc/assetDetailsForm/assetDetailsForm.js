@@ -88,6 +88,7 @@ export default class GlassServiceEstimatorPage extends LightningElement {
     @track makeObject = intitialMakeObj;
     @track variantObject = initialVariantObject;
     @track warnings = [];
+    @track isFormalApproval = false;
 
     @api recordId;
     @track displayComp = false;
@@ -1150,6 +1151,7 @@ export default class GlassServiceEstimatorPage extends LightningElement {
                 this.clearNewUsedYear();
                 this.clearMake();
             }
+            console.log('newUSED>>>', this.newUsed)
         }
 
         console.log('loadNewUsedYearOptions... ' + this.newUsed + ' >> ' + this.assetType);
@@ -1318,7 +1320,7 @@ export default class GlassServiceEstimatorPage extends LightningElement {
             if(event.target.name == 'calculateKmsAdjustment'){
                 this.actualKms = event.target.value;
             }
-        }else{
+        }
         
             if ('used' == this.newUsed.toLowerCase() && this.variantObj  && this.actualKms > 0 && 'AFS' != this.lender) {
 
@@ -1342,11 +1344,11 @@ export default class GlassServiceEstimatorPage extends LightningElement {
             this.totalRetailPriceKms = totalRetailPriceKms;
             this.totalTradePriceKms = totalTradePriceKms;
             this.totalTradeLowPriceKms = totalTradeLowPriceKms;
-        }
+        
     }
 
     get carLabelPriceSuff(){
-        return this.CarLabel + 'Price'
+        return this.CarLabel + ' Price'
     }
 
     selectedPurchaseType(event){
@@ -1531,7 +1533,7 @@ export default class GlassServiceEstimatorPage extends LightningElement {
 
     get ltvFeeValue() {
         let quFee = this.quotingFees;
-        return (quFee);
+        return '($'+parseFloat(quFee).toFixed(2)+')';
     }   
 
     // pending.....
@@ -1980,6 +1982,22 @@ export default class GlassServiceEstimatorPage extends LightningElement {
         });
         this.dispatchEvent(event);
     }
+
+    testBtn(){
+        // this.isFormalApproval = true;
+        this.template.querySelectorAll(`[data-id="dealer"]`).forEach(inputField => {
+            console.log('triggered>> Inside loop !!', JSON.stringify(inputField,null,2))
+            console.log('triggered>> Inside loop !!', inputField.value)
+
+            if(!inputField.value){
+                inputField.setCustomValidity("This field is required");
+                inputField.reportValidity();
+            }
+            
+        });
+       
+       console.log('triggered!!')
+    }
  
 
     isPdfReadyToGenerate(prefixFile) {
@@ -1992,55 +2010,22 @@ export default class GlassServiceEstimatorPage extends LightningElement {
                     isOk = false;
                 }
                 if(prefixFile.includes('FORMAL_APPROVAL')) {
-                    let t = ' in Vendor Details section before saving for Formal Approval.';
-                    let fields = [];
+                    this.template.querySelectorAll(`[data-id="dealer"]`).forEach(inputField => {
+                        console.log('triggered>> Inside loop !!', JSON.stringify(inputField,null,2))
+                        console.log('triggered>> Inside loop !!', inputField.value)
+            
+                        if(!inputField.value){
+                            inputField.setCustomValidity("This field is required");
+                            inputField.reportValidity();
+                            isOk = false;
+                        }
 
-                    if (!this.opp.Dealer_Name__c){
-                        // this.showToast('error','Please fill a Vendor Name'+t);
-                        fields.push('[Vendor Name]');
-                        isOk = false;       
-                    }
-                    if (!this.opp.Dealer_Email__c){
-                        // this.showToast('error','Please fill an Email'+t);
-                        fields.push('[Email]');
-                        isOk = false;       
-                    }
-                    if (!this.opp.Dealer_Address__c){
-                        // this.showToast('error','Please fill an Address'+t);
-                        fields.push('[Address]');
-                        isOk = false;       
-                    }
-                    if (!this.opp.Dealer_Contact_Name__c){
-                        // this.showToast('error','Please fill a Contact Name'+t);
-                        fields.push('[Contact Name]');
-                        isOk = false;       
-                    }
-                    if (!this.opp.Dealer_Phone_Number__c){
-                        // this.showToast('error','Please fill a Phone Number'+t);
-                        fields.push('[Phone Number]');
-                        isOk = false;       
-                    }
-                    if (!this.opp.Dealer_Suburb__c){
-                        // this.showToast('error','Please fill a Suburb'+t);
-                        fields.push('[Suburb]');
-                        isOk = false;       
-                    }
-                    if (!this.opp.Dealer_Postcode__c){
-                        // this.showToast('error','Please fill an Address'+t);
-                        fields.push('[Address]');
-                        isOk = false;       
-                    }
-                    if (!this.opp.Dealer_State__c) {
-                        // this.showToast('error','Please fill a State'+t);
-                        fields.push('[State]');
-                        isOk = false;       
-                    }
-                    if (!this.opp.Dealer_Type__c){
-                        // this.showToast('error','Please fill a Dealer Type'+t);
-                        fields.push('[Dealer Type]');
-                        isOk = false;       
-                    }
-                    this.showToast('error','Please fill '+ fields +t);
+                        if(!isOk){
+                            this.showToast('error','Please fill the fields in Vendor Details section before saving for Formal Approval.');
+                        }
+                        
+                    });
+                   
                 }
             }
             if (this.assetType == 'Car') {
@@ -2180,10 +2165,10 @@ export default class GlassServiceEstimatorPage extends LightningElement {
                         .forEach(function eachkey(key){
                             if(key == assetOpts[i]){
                                 console.log('opts::', key)
-                                if(tmpOptions != ''){
+                                if(tmpOptions){
                                     tmpOptions += ', ';
                                 }
-                                tmpOptions += assetData[key][0].name + ' (' + assetData[key][0].value + ')';
+                                tmpOptions += assetData[key][0].name + ' (' + assetData[key][0].value.toLocaleString('en-US') + ')';
                             }
                         })
 
@@ -2259,12 +2244,12 @@ export default class GlassServiceEstimatorPage extends LightningElement {
             dto.actualKms = this.actualKms;
             dto.purchaseType = this.purchaseType;
             dto.contractNumber = this.contractNumber;
-            dto.vendorName = this.dealerName;
-            dto.vendorEmail = this.dealerEmail;
-            dto.vendorAddress = this.dealerAddress;
-            dto.vendorContact = this.dealerContactName;
-            dto.vendorPhone = this.dealerPhoneNo;
-            dto.vendorMobile = this.dealerMobile;
+            dto.vendorName = this.opp.Dealer_Name__c;
+            dto.vendorEmail = this.opp.Dealer_Email__c;
+            dto.vendorAddress = this.opp.Dealer_Address__c;
+            dto.vendorContact = this.opp.Dealer_Contact_Name__c;
+            dto.vendorPhone = this.opp.Dealer_Phone_Number__c;
+            dto.vendorMobile = this.opp.Dealer_Mobile__c;
             dto.rego = this.rego;
             dto.vin = this.vin;
             dto.engine = this.engine;

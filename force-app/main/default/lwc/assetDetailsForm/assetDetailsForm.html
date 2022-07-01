@@ -38,18 +38,14 @@
               <div class="slds-page-header__col-title">
                 <div class="slds-media">
                   <div class="slds-media__figure">
-                    <!-- <span class="slds-icon_container slds-icon-standard-opportunity">
-                      <svg class="slds-icon slds-page-header__icon" aria-hidden="true">
-                        <use xlink:href="/assets/icons/standard-sprite/svg/symbols.svg#opportunity"></use>
-                      </svg>
-                    </span> -->
+                    <!-- <lightning-icon size="small" icon-name="action:description" alternative-text="Asset Details" title="Asset Details" ></lightning-icon> -->
                   </div>
                   <div class="slds-media__body">
                     <div class="slds-page-header__name">
                       <div class="slds-page-header__name-title">
-                        <h1>
-                          <span>Asset Details - LTV for {opp.Name}</span>
-                          <span class="slds-page-header__title" title="Asset Details">Asset Details</span>
+                        
+                        <h1><b>
+                          <span class="slds-page-header__title" title="Asset Details" style="font-weight: 500">Asset Details - LTV for {opp.Name}</span></b>
                         </h1>
                       </div>
                     </div>
@@ -108,7 +104,23 @@
                         </div>
                         <div class="slds-card__body slds-card__body_inner">
                             <lightning-combobox name="assetType" label="Asset Type" onchange={loadNewUsedYearOptions} value={assetType} options={assetTypes}></lightning-combobox>
-                            <div class="slds-form__row"   style="display: inline-block;">
+                            <!-- <fieldset class="slds-form-element">
+                                <legend class="slds-form-element__legend slds-form-element__label">Radio Group Label</legend>
+                                <div class="slds-form-element__control">
+                                <div class="slds-radio_button-group">
+                                <template for:each={newOrUsedOptions} for:item='item'>
+                                    <span class="slds-button slds-radio_button" key={item}>
+                                        <input type="radio" name="newUsed" id={item.value} aria-orientation="horizontal"  value={item.value} onchange={loadNewUsedYearOptions} />
+                                        <label class="slds-radio_button__label" for={item.value}>
+                                        <span class="slds-radio_faux">{item.label}</span>
+                                        </label>
+                                    </span>
+                                </template>
+                                    </div>
+                                </div>
+                            </fieldset> -->
+
+                            <div class="slds-form__row" style="display: inline-block; height:10px">
                                 <lightning-radio-group 
                                     name="newUsed"
                                     label="Condition"
@@ -116,7 +128,6 @@
                                     onchange={loadNewUsedYearOptions}
                                     value={newUsed}
                                     type="radio"
-
                                     class="validate" required></lightning-radio-group></div>
                                 <lightning-combobox type="text" name="year" label="Year of Vehicle" value={year} onchange={loadLenderMakeOptions} options={yearSelect} class="validate"  required></lightning-combobox>
                               </div>
@@ -475,99 +486,99 @@
                         </header>
                         </div>
                         <div class="slds-card__body slds-card__body_inner">
-                            <table class="slds-table slds-table_cell-buffer slds-table_bordered slds-table_striped" cellpadding="5">
+                            <table class="slds-table slds-table_cell-buffer slds-table_bordered slds-table_striped" cellpadding="2">
                                 <tr>
-                                    <td width="20%">
+                                    <td>
                                         <!-- <lightning-spinner alternative-text="Loading" size="small"></lightning-spinner>&nbsp; -->
                                     </td>
-                                    <td width="20%">RRP</td>
-                                    <td width="20%">
+                                    <td>RRP</td>
+                                    <td>
                                         Trade Low 
                                     </td>
-                                    <td width="20%">
+                                    <td>
                                         Trade 
                                     </td>
-                                    <td width="20%">  
+                                    <td>  
                                         Retail
                                     </td>
                                 </tr>
                                 <tr>
                                     <td>Glass's Value</td>
                                     <td>
-                                        <h3>
+                                  
                                             <lightning-formatted-number value={variantNewPrice} format-style="currency" currency-code="AUD" maximum-fraction-digits="2"></lightning-formatted-number>
-                                        </h3>&nbsp;
+                                      
                                     </td>
                                     <td>
-                                        <h3>
+                                       
                                             <lightning-formatted-number value={tradeLowGlassValue} format-style="currency" currency-code="AUD" maximum-fraction-digits="2"></lightning-formatted-number>
-                                        </h3>&nbsp;
+                                 
                                     </td>
                                     <td>
-                                        <h3>
+                                   
                                             <lightning-formatted-number value={tradeGlassValue} format-style="currency" currency-code="AUD" maximum-fraction-digits="2"></lightning-formatted-number>
-                                        </h3>&nbsp;
+                                       
                                     </td>
                                     <td>
-                                        <h3>
+                             
                                             <lightning-formatted-number value={retailGlassValue} format-style="currency" currency-code="AUD" maximum-fraction-digits="2"></lightning-formatted-number>
-                                        </h3>&nbsp;
+                                      
                                     </td>
                                 </tr>
                                 <tr>
                                     <td>KM Adjustment</td>
                                     <td>&nbsp;</td>
                                     <td>
-                                        <h3>
+                                 
                                             <lightning-formatted-number value={totalTradeLowPriceKms} format-style="currency" currency-code="AUD" maximum-fraction-digits="2"></lightning-formatted-number>
-                                        </h3>&nbsp;
+                                
                                     </td>
                                     <td>
-                                        <h3>
+                                  
                                             <lightning-formatted-number value={totalTradePriceKms} format-style="currency" currency-code="AUD" maximum-fraction-digits="2"></lightning-formatted-number>
-                                        </h3>&nbsp;
+                                   
                                     </td>
                                     <td>
-                                        <h3>
+                                     
                                             <lightning-formatted-number value={totalRetailPriceKms} format-style="currency" currency-code="AUD" maximum-fraction-digits="2"></lightning-formatted-number>
-                                        </h3>&nbsp;
+                                     
                                     </td>
                                 </tr>
                                 <tr>
                                     <td>Value of Options</td>
                                     <td>
-                                        <h3>
+                                   
                                             <lightning-formatted-number value={totalPriceOptions} format-style="currency" currency-code="AUD" maximum-fraction-digits="2"></lightning-formatted-number>
-                                        </h3>&nbsp;
+                                      
                                     </td>
-                                    <td><h3>
+                                    <td>
                                         <lightning-formatted-number value={totalTradeLowPriceOptions} format-style="currency" currency-code="AUD" maximum-fraction-digits="2"></lightning-formatted-number>
-                                        </h3>&nbsp;
+                                     
                                     </td>
-                                    <td><h3>
+                                    <td>
                                         <lightning-formatted-number value={totalTradePriceOptions} format-style="currency" currency-code="AUD" maximum-fraction-digits="2"></lightning-formatted-number>
-                                        </h3>&nbsp;</td>
-                                    <td><h3>
+                                        </td>
+                                    <td>
                                         <lightning-formatted-number value={totalRetailPriceOptions} format-style="currency" currency-code="AUD" maximum-fraction-digits="2"></lightning-formatted-number>
-                                        </h3>&nbsp;</td>
+                                       </td>
                                 </tr>
                                 <tr>
                                     <td>Adjusted Values</td>
                                     <td>
-                                        <lightning-formatted-number value={totalEstimated} format-style="currency" currency-code="AUD" maximum-fraction-digits="2"></lightning-formatted-number>
-                                       &nbsp;
+                                        <lightning-formatted-number value={totalEstimated} format-style="currency" currency-code="AUD" maximum-fraction-digits="2" class="adjustedValues"></lightning-formatted-number>
+                                  
                                     </td>
                                     <td>
-                                        <lightning-formatted-number value={tradeLowAdjustedValue} format-style="currency" currency-code="AUD" maximum-fraction-digits="2"></lightning-formatted-number>
-                                         &nbsp;
+                                        <lightning-formatted-number value={tradeLowAdjustedValue} format-style="currency" currency-code="AUD" maximum-fraction-digits="2" class="adjustedValues"></lightning-formatted-number>
+                                       
                                     </td>
                                     <td>
-                                        <lightning-formatted-number value={tradeAdjustedValue} format-style="currency" currency-code="AUD" maximum-fraction-digits="2"></lightning-formatted-number>
-                                        &nbsp;
+                                        <lightning-formatted-number value={tradeAdjustedValue} format-style="currency" currency-code="AUD" maximum-fraction-digits="2" class="adjustedValues"></lightning-formatted-number>
+                                  
                                     </td>
                                     <td>
-                                        <lightning-formatted-number value={reatilAdjustedValue} format-style="currency" currency-code="AUD" maximum-fraction-digits="2"></lightning-formatted-number>
-                                         &nbsp;
+                                        <lightning-formatted-number value={reatilAdjustedValue} format-style="currency" currency-code="AUD" maximum-fraction-digits="2" class="adjustedValues"></lightning-formatted-number>
+                               
                                     </td>
                                 </tr>
                             </table>
@@ -615,7 +626,7 @@
                                     <lightning-combobox name="typeLoan" label="Type Loan" value={typeLoan} options={typeLoanOptions} onchange={putFeesValueTypeLoan} class="validate"  required></lightning-combobox>
                                     <lightning-input type="number" name="deposit" label="	Deposit/Trade in" onchange={depositChange} formatter="currency" step="0.01" value={deposit}></lightning-input>
                                     <lightning-input type="number" name="gap" label="GAP" value={gap} onchange={gapChange} step="0.01"></lightning-input>
-                                    <lightning-input type="number" name="averageKM" label="Average KM" value={averageKM} onchange={averageKMChange}></lightning-input>
+                                    <lightning-input type="number" name="averageKM" label="Average KM" value={averageKM} onchange={averageKMChange} disabled></lightning-input>
                                     <lightning-input type="number" name="NAF" label="NAF" value={ltvNAFValue} formatter="currency" step="0.01" disabled></lightning-input>
                                   </div>
                                   <div class="slds-col">
@@ -628,9 +639,9 @@
                                   <div class="slds-col">
                                     <lightning-input  label={carPriceLabel} value={ltvCarAge} disabled></lightning-input>
 
-                                        <output> <p><lightning-formatted-number value={ltvFeeValue} format-style="currency" currency-code="AUD" maximum-fraction-digits="2"></lightning-formatted-number></p></output>
+                                    <lightning-input value={ltvFeeValue} read-only></lightning-input>
                                    
-                                    <lightning-input type="number" label="LTI" value={lti} step="0.01" disabled></lightning-input>
+                                    <lightning-input type="number" label="LTI" value={lti} step="0.01"></lightning-input>
                                   </div>
                             </div>
                         </div>
@@ -659,26 +670,55 @@
                         </header>
                         </div>
                         <div class="slds-card__body slds-card__body_inner">
-                            <div class="slds-grid slds-gutters slds-p-around_small form-content">
-                                <div class="slds-col">
-                                    <lightning-combobox name="Dealer_Type__c" class="dealerType" data-id="dealerType" label="Dealer Type" value={opp.Dealer_Type__c} options={dealerTypeOptions} onchange={dealerValChange}></lightning-combobox>
-                                    <lightning-input name="Dealer_Name__c" class="dealerName" data-id="dealerName" label="Name" value={opp.Dealer_Name__c} onchange={dealerValChange}></lightning-input>
-                                    <lightning-input type="tel" data-id="dealerPhoneNo" name="Dealer_Phone_Number__c" label="Phone" value={opp.Dealer_Phone_Number__c} onchange={dealerValChange}></lightning-input>
-                                    <lightning-input name="Dealer_Street_Number__c" data-id="dealerStreetNo" label="Street Number" value={opp.Dealer_Street_Number__c} onchange={dealerValChange}   required></lightning-input>
-                                    <lightning-input name="Dealer_Suburb__c" data-id="dealerSuburb" label="Suburb" value={opp.Dealer_Suburb__c} onchange={dealerValChange}   required></lightning-input>
-                                  </div>
-                                  <div class="slds-col">
-                                    <lightning-input name="Dealer_Contact_Name__c" data-id="dealerContactName" label="Contact Person" value={opp.Dealer_Contact_Name__c} onchange={dealerValChange}></lightning-input>
-                                    <lightning-input type="tel" data-id="dealerMobile" name="Dealer_Mobile__c" label="Mobile" value={opp.Dealer_Mobile__c} onchange={dealerValChange}></lightning-input>
-                                    <lightning-input name="Dealer_Address__c" data-id="dealerStreetAddress" label="Street Address" value={opp.Dealer_Address__c} onchange={dealerValChange}   required></lightning-input>
-                                    <lightning-input name="Dealer_Postcode__c" data-id="dealerPostCode" label="Postcode" value={opp.Dealer_Postcode__c} onchange={dealerValChange}   required></lightning-input>
-                                  </div>
-                                  <div class="slds-col">
-                                    <lightning-input type="email" data-id="dealerEmail" name="Dealer_Email__c" label="Email" value={opp.Dealer_Email__c} onchange={dealerValChange}></lightning-input>
-                                    <lightning-input name="Dealer_Unit_Number__c" data-id="dealerUnitNo" label="Unit Number" value={opp.Dealer_Unit_Number__c} onchange={dealerValChange}></lightning-input>
-                                    <lightning-combobox name="Dealer_Street_Type__c" data-id="dealerStreetType" label="Street Type" options={streetTypeOptions_} value={opp.Dealer_Street_Type__c} onchange={dealerValChange}></lightning-combobox>
-                                    <lightning-combobox name="Dealer_State__c" data-id="dealerState" label="State" value={opp.Dealer_State__c} options={statesOptions} onchange={dealerValChange}></lightning-combobox>
-                                  </div>
+                            <div class="demo-only demo-only--sizing slds-grid slds-wrap">
+                                <div class="slds-col slds-size_1-of-3">
+                                    <lightning-combobox name="Dealer_Type__c" class="dealerType" data-id="dealer" label="Dealer Type" value={opp.Dealer_Type__c} options={dealerTypeOptions} onchange={dealerValChange} required={isFormalApproval}></lightning-combobox>
+                                </div>
+                                <div class="slds-col slds-size_2-of-3">
+                                </div>
+
+                                <div class="slds-col slds-size_1-of-3">
+                                    <lightning-input name="Dealer_Name__c" class="dealerName" data-id="dealer" label="Name" value={opp.Dealer_Name__c} onchange={dealerValChange} required={isFormalApproval}></lightning-input>
+                                </div>
+                                <div class="slds-col slds-size_1-of-3">
+                                    <lightning-input name="Dealer_Contact_Name__c" data-id="dealer" label="Contact Person" value={opp.Dealer_Contact_Name__c} onchange={dealerValChange} required={isFormalApproval}></lightning-input>
+                                </div>
+                                <div class="slds-col slds-size_1-of-3">
+                                    <lightning-input type="email" data-id="dealer" name="Dealer_Email__c" label="Email" value={opp.Dealer_Email__c} onchange={dealerValChange} required={isFormalApproval}></lightning-input>
+                                </div>
+
+                                <div class="slds-col slds-size_1-of-3">
+                                    <lightning-input type="tel" data-id="dealer" name="Dealer_Phone_Number__c" label="Phone" value={opp.Dealer_Phone_Number__c} onchange={dealerValChange} required={isFormalApproval}></lightning-input>
+                                </div>
+                                <div class="slds-col slds-size_1-of-3">
+                                    <lightning-input type="tel" data-id="dealer" name="Dealer_Mobile__c" label="Mobile" value={opp.Dealer_Mobile__c} onchange={dealerValChange} required={isFormalApproval}></lightning-input>
+                                </div>
+                                <div class="slds-col slds-size_1-of-3">
+                                    <lightning-input name="Dealer_Unit_Number__c" data-id="dealer" label="Unit Number" value={opp.Dealer_Unit_Number__c} onchange={dealerValChange} required={isFormalApproval}></lightning-input>
+                                </div>
+
+                                <div class="slds-col slds-size_1-of-3">
+                                    <lightning-input name="Dealer_Street_Number__c" data-id="dealer" label="Street Number" value={opp.Dealer_Street_Number__c} class="validate" onchange={dealerValChange}  required></lightning-input>
+                                </div>
+                                <div class="slds-col slds-size_1-of-3">
+                                    <lightning-input name="Dealer_Address__c" data-id="dealer" label="Street Address" value={opp.Dealer_Address__c} class="validate" onchange={dealerValChange}   required></lightning-input>
+                                </div>
+                                <div class="slds-col slds-size_1-of-3">
+                                    <lightning-combobox name="Dealer_Street_Type__c" data-id="dealer" label="Street Type" options={streetTypeOptions_} value={opp.Dealer_Street_Type__c} onchange={dealerValChange} required={isFormalApproval}></lightning-combobox>
+                                </div>
+
+                                <div class="slds-col slds-size_1-of-3">
+                                    <lightning-input name="Dealer_Suburb__c" data-id="dealer" label="Suburb" value={opp.Dealer_Suburb__c} class="validate" onchange={dealerValChange}   required></lightning-input>
+                                </div>
+                                <div class="slds-col slds-size_1-of-3">
+                                    <lightning-input name="Dealer_Postcode__c" data-id="dealer" label="Postcode" value={opp.Dealer_Postcode__c} class="validate" onchange={dealerValChange}   required></lightning-input>
+                                </div>
+                                <div class="slds-col slds-size_1-of-3">
+                                    <lightning-combobox name="Dealer_State__c" data-id="dealer" label="State" value={opp.Dealer_State__c} options={statesOptions} onchange={dealerValChange} required={isFormalApproval}></lightning-combobox>
+                                </div>
+
+                                <lightning-button  label="TEST" onclick={testBtn} icon-name="utility:ribbon"></lightning-button>
+            
                             </div>
                         </div>
                         <footer class="slds-card__footer"></footer>
@@ -707,38 +747,38 @@
                         </div>
                         <div class="slds-card__body slds-card__body_inner">
                             <div class="slds-grid slds-gutters slds-p-around_small form-content">
-                                <div class="slds-col">
+                                <div class="slds-col slds-size_1-of-5">
                                     <lightning-input name="regoNo" label="Rego No." value={rego} onchange={regoNoChange}></lightning-input>
                                   </div>
-                                  <div class="slds-col">
+                                  <div class="slds-col slds-size_1-of-5">
                                     <lightning-combobox name="assetType" label="State" value={regoState} options={statesOptions} onchange={stateChange}></lightning-combobox>
                                   </div>
-                                  <div class="slds-col">
+                                  <div class="slds-col slds-size_1-of-5">
                                     <lightning-input name="assetType" label="VIN" value={vin} onchange={VinChange}></lightning-input>
                                   </div>
-                                  <div class="slds-col">
+                                  <div class="slds-col slds-size_1-of-5">
                                     <lightning-input name="assetType" label="Engine No" value={engine} onchange={engineChange}></lightning-input>
                                   </div>
-                                  <div class="slds-col">
+                                  <div class="slds-col slds-size_1-of-5">
                                     <lightning-input name="assetType" label="Colour" value={colour} onchange={colourChange}></lightning-input>
                                   </div>
                             </div>
                             <template if:true={opp.Application_AssetDetail__r}>
                             <div class="slds-grid slds-gutters slds-p-around_small form-content">
-                                <div class="slds-col">
+                                <div class="slds-col slds-size_1-of-5">
                                     <lightning-input name="PPSR_Proxy_Id__c" label="Request Proxy Id." value={opp.Application_AssetDetail__r.PPSR_Proxy_Id__c} onchange={certificateChange} disabled={isSearchCertificateNumber}></lightning-input>
                                   </div>
-                                  <div class="slds-col">
+                                  <div class="slds-col slds-size_1-of-5">
                                     <lightning-input name="PPSR_Proxy_Last_Update__c" label="Last Update" value={opp.Application_AssetDetail__r.PPSR_Proxy_Last_Update__c} onchange={certificateChange} disabled={isSearchCertificateNumber}></lightning-input>
                                   </div>
-                                  <div class="slds-col">
+                                  <div class="slds-col slds-size_1-of-5">
                                     <lightning-input name="Search_Certificate_Number__c" label="PPSR Request No." value={opp.Application_AssetDetail__r.Search_Certificate_Number__c} onchange={certificateChange} disabled={isSearchCertificateNumber}></lightning-input>
                                   </div>
-                                  <div class="slds-col">
+                                  <div class="slds-col slds-size_2-of-5">
                                     <lightning-input name="PPSR_Proxy_Message__c" label="Note" value={opp.Application_AssetDetail__r.PPSR_Proxy_Message__c} onchange={certificateChange} disabled={isSearchCertificateNumber}></lightning-input>
                                   </div>
-                                  <div class="slds-col">
-                                  </div>
+                                  <!-- <div class="slds-col slds-size_1-of-5">
+                                  </div> -->
                             </div>
                             </template>
                         </div>
@@ -762,54 +802,71 @@
                             </div>
                             <div class="slds-media__body">
                             <h2 class="slds-card__header-title">
-                                <span>LTV</span>
+                                <span>Vehicle Details</span>
                               
                             </h2>
                             </div>
                         </header>
                         </div>
                         <div class="slds-card__body slds-card__body_inner">
-                                <div class="slds-grid slds-gutters slds-p-around_small form-content">
-                                    <div class="slds-col">
-                                            
-                                        <!-- <lightning-input name="assetType" label="Make" value={makeObject.Name} readonly></lightning-input> -->
-                                        <lightning-input name="assetType" label="GlassCode" value={variantObject.Code__c} readonly></lightning-input>
-                                        <lightning-input name="assetType" label="Variant" value={variantObject.Description__c} readonly></lightning-input>
-                                        <lightning-input name="assetType" label="Class" value={displayClass} readonly></lightning-input>
-                                        <lightning-input name="assetType" label="Transmition" value={variantObject.Transmission__c} readonly></lightning-input>
-                                      </div>
-                                      <div class="slds-col">
-                                        <lightning-input name="assetType" label="Year" value={variantObject.Year__c} readonly></lightning-input>
-                                        <lightning-input name="assetType" label="Family" value={variantObject.Family__c} readonly></lightning-input>
-                                        <lightning-input name="assetType" label="Style / Body" value={variantObject.Style__c} readonly></lightning-input>
-                                        <lightning-input name="assetType" label="Engine" value={variantObject.Engine__c} readonly></lightning-input>
-                                        <lightning-input name="assetType" label="Size" value={variantObject.Size__c} readonly></lightning-input>
-                                      </div>
-                                      <div class="slds-col">
-                                        <lightning-input name="assetType" label="NVIC" value={variantObject.NVIC__c} readonly></lightning-input>
-                                        <lightning-input name="assetType" label="Release Date" value={variantObject.Release_Date__c} readonly></lightning-input>
-                                        <lightning-input name="assetType" label="Series" value={variantObject.Series__c} readonly></lightning-input>
-                                        <lightning-input name="assetType" label="CC" value={variantObject.CC__c} readonly></lightning-input>
-                                        <lightning-input name="assetType" label="Cylinders" value={variantObject.Cylinders__c} readonly></lightning-input>
-                                      </div>
-                                      
-                                </div>
-                            </div>
+                            <table class="tableSubsection" cellpadding="5">
+                                <tr>
+                                    <td width="12%">Make</td>
+                                    <td width="26%"><h3>{makeObject.Name}</h3></td>
+                                    <td width="12%">Year</td>
+                                    <td width="22%">{variantObject.Year__c}</td>
+                                    <td width="12%">NVIC</td>
+                                    <td width="16%"><h3>{variantObject.NVIC__c}</h3></td>
+                                </tr>
+                                <tr>
+                                    <td>GlassCode</td>
+                                    <td>{variantObject.Code__c}</td>
+                                    <td>Family</td>
+                                    <td>{variantObject.Family__c}</td>
+                                    <td>Release Date</td>
+                                    <td>{variantObject.Release_Date__c}</td>
+                                </tr>
+                                <tr>
+                                    <td>Variant</td>
+                                    <td>{variantObject.Description__c}</td>
+                                    <td>Style / Body</td>
+                                    <td>{variantObject.Style__c}</td>
+                                    <td>Series</td>
+                                    <td>{variantObject.Series__c}</td>
+                                </tr>
+                                <tr>
+                                    <td>Class</td>
+                                    <td>
+                                        {displayClass}
+                                        </td>
+                                    <td>Engine</td>
+                                    <td>{variantObject.Engine__c}</td>
+                                    <td>CC</td>
+                                    <td>{variantObject.CC__c}</td>
+                                </tr>
+                                <tr>
+                                    <td>Transmition</td>
+                                    <td>{variantObject.Transmission__c}</td>
+                                    <td>Size</td>
+                                    <td>{variantObject.Size__c}</td>
+                                    <td>Cylinders</td>
+                                    <td>{variantObject.Cylinders__c}</td>
+                                </tr>
+                            </table>
+
+                        </div>
                       </article>
                       <div class="slds-m-left_medium">
                         <template if:true={assetStandardFeautersData}>
                             <b>Standard Features</b><br>
-                          <div class="c-container">
-                            <lightning-layout vertical-align="stretch" multiple-rows="true" class="x-large">
+                           <ul class="div2Columns">
+                            <template if:true={assetStandardFeautersData}>
                                 <template for:each={assetStandardFeautersData} for:item="feature">
-                                  <lightning-layout-item key={feature} size="6">
-                                    <div class="custom-box"> [{feature.code}] {feature.name}</div>
-                                  </lightning-layout-item>
+                                <li key={feature}> [{feature.code}] {feature.name}</li>
                                 </template>
-                            </lightning-layout>
-                          </div>
+                            </template>
+                            </ul>
                         </template>
-                        
                     </div>
                     </template>
                       <!-- ||||- -->

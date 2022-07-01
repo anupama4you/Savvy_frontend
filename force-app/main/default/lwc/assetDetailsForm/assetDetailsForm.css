@@ -1,0 +1,19 @@
+.adjustedValues{
+    color: #1a75ff !important;
+    font-weight: bold;
+}
+
+.div2Columns {
+    columns: 2;
+    -webkit-columns: 2;
+    -moz-columns: 2;
+    }
+
+.tableSubsection {
+    width: 100%;
+    margin-top: 18px;
+    padding: 2px;
+    padding-left: 20px;
+    padding-top: 10px;
+    padding-bottom: 10px;
+    }
