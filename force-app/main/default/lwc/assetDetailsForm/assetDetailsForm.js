@@ -89,6 +89,7 @@ export default class GlassServiceEstimatorPage extends LightningElement {
     @track variantObject = initialVariantObject;
     @track warnings = [];
     @track isFormalApproval = false;
+    @track newUsedStatus = {'new': false, 'demo': false, 'used': true};
 
     @api recordId;
     @track displayComp = false;
@@ -1022,13 +1023,6 @@ export default class GlassServiceEstimatorPage extends LightningElement {
             this.isDetail = 0;
     }
 
-    clearMakeModelOrFamily() {
-        this.clearMakeFamily();
-        this.clearModelVariant();
-        this.clearFamilyBadge();
-        this.clearVariantSeries();
-    }
-
      validateRedBookLendersFunc(){
         console.log("validateRedBookLenders...", this.lender);
         const x = validateRedBookLenders({lender: this.lender})
@@ -1084,9 +1078,9 @@ export default class GlassServiceEstimatorPage extends LightningElement {
  
     get newOrUsedOptions() {
         return [
-            { label: 'New', value: 'new' },
-            { label: 'Demo', value: 'demo' },
-            { label: 'Used', value: 'used' },
+            { label: 'New', value: 'new', checked: this.newUsedStatus.new },
+            { label: 'Demo', value: 'demo',  checked: this.newUsedStatus.demo },
+            { label: 'Used', value: 'used',  checked: this.newUsedStatus.used },
         ];
     }
 
@@ -1147,9 +1141,29 @@ export default class GlassServiceEstimatorPage extends LightningElement {
 
         if(event.target.name == 'newUsed'){
             this.newUsed = event.target.value;
+            switch (this.newUsed) {
+                case 'demo':
+                    this.newUsedStatus = {'new': false, 'demo': true, 'used': false};
+                    break;
+                
+                case 'new':
+                    this.newUsedStatus = {'new': true, 'demo': false, 'used': false};
+                    break;
+
+                case 'used':
+                    this.newUsedStatus = {'new': false, 'demo': false, 'used': true};
+                    break;
+                default:
+                    break;
+            }
+            console.log('TESTING>>>', this.assetType)
             if(this.assetType == 'Car'){
+                console.log('TESTING1>>>', this.assetType)
                 this.clearNewUsedYear();
+                console.log('TESTING2>>>', this.assetType)
                 this.clearMake();
+
+                console.log('TESTING3>>>', this.assetType)
             }
             console.log('newUSED>>>', this.newUsed)
         }
@@ -1180,10 +1194,14 @@ export default class GlassServiceEstimatorPage extends LightningElement {
     }
 
     clearModelVariant() {
+        console.log('heeey>>')
         this.variantObj = null;
+        this.variantObject = initialVariantObject;
         this.variantDesc = null;
         this.variantSelect = null;
+        console.log('heeey>>')
         this.clearVariantSeries();
+        console.log('heeey>>')
     }
 
     clearNewUsedYear() {
@@ -1193,9 +1211,11 @@ export default class GlassServiceEstimatorPage extends LightningElement {
     }
 
     clearVariantSeries() {
+        console.log('heeey>>')
         this.series = null;
         this.seriesSelect = null;
         this.clearVariantFactoryOptions();
+        console.log('heeey>>')
     }
 
     clearVariantFactoryOptions() {
@@ -1213,6 +1233,7 @@ export default class GlassServiceEstimatorPage extends LightningElement {
 
     calculateEstimation() {
         console.log('Calculate estimation:::');
+        try{
 
         var totalPriceOptions = 0.0;
         var totalEstimated = 0.0;
@@ -1246,7 +1267,7 @@ export default class GlassServiceEstimatorPage extends LightningElement {
             console.log('Total Price Options::', totalPriceOptions)
 
             if ('new' == this.newUsed || 'demo' == this.newUsed) {
-              if (this.variantObj.Retail_Price__c  && this.variantObj.Retail_Price__c > 0) {
+              if (this.variantObject.Retail_Price__c  && this.variantObject.Retail_Price__c > 0) {
                 //value = value * .8;
                 //value = value.setScale(-2);
                 totalRetailPriceOptions += totalPriceOptions;
@@ -1294,6 +1315,7 @@ export default class GlassServiceEstimatorPage extends LightningElement {
                 // });
                 
             }    
+            
         }
        
         totalEstimated = this.variantNewPrice + totalPriceOptions;
@@ -1305,6 +1327,10 @@ export default class GlassServiceEstimatorPage extends LightningElement {
         this.totalRetailPriceOptions = totalRetailPriceOptions;
 
         this.calculateKmsAdjustment();
+
+        }catch(error) {
+            console.error('Any errors :::',error);
+        };
     }
 
     calculateKmsAdjustment(event) {
@@ -1383,29 +1409,21 @@ export default class GlassServiceEstimatorPage extends LightningElement {
         this.makeSelect = null;
         this.badgeRedbook = null;
         this.badgeSelectRedbook = null;
+        console.log('TESTING>>ANUPMA')
         this.clearMakeModelOrFamily();
+        console.log('TESTING>>ANUPMA')
     }
 
     clearMakeModelOrFamily() {
+        console.log('TESTING>>123')
         this.clearMakeFamily();
+        console.log('TESTING>>123')
         this.clearModelVariant();
+        console.log('TESTING>>123')
         this.clearFamilyBadge();
+        console.log('TESTING>>123')
         this.clearVariantSeries();
     }
-
-    clearModelVariant() {
-        this.variantObj = null;
-        this.variantDesc = null;
-        this.variantSelect = null;
-        this.clearVariantSeries();
-    }
-
-    clearVariantSeries() {
-        this.series = null;
-        this.seriesSelect = null;
-        this.clearVariantFactoryOptions();
-    }
-
 
     clearMakeFamily() {
         this.model = null;
@@ -1454,6 +1472,7 @@ export default class GlassServiceEstimatorPage extends LightningElement {
     }
 
     clearMake() {
+        console.log('clearMAKE >>')
         this.makeObj = null;
         this.makeObject = intitialMakeObj;
     }
@@ -2011,13 +2030,13 @@ export default class GlassServiceEstimatorPage extends LightningElement {
                 }
                 if(prefixFile.includes('FORMAL_APPROVAL')) {
                     this.template.querySelectorAll(`[data-id="dealer"]`).forEach(inputField => {
-                        console.log('triggered>> Inside loop !!', JSON.stringify(inputField,null,2))
-                        console.log('triggered>> Inside loop !!', inputField.value)
-            
                         if(!inputField.value){
                             inputField.setCustomValidity("This field is required");
                             inputField.reportValidity();
                             isOk = false;
+                        }else{
+                            inputField.setCustomValidity("");
+                            inputField.reportValidity();
                         }
 
                         if(!isOk){

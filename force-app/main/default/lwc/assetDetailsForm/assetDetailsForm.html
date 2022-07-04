@@ -104,13 +104,13 @@
                         </div>
                         <div class="slds-card__body slds-card__body_inner">
                             <lightning-combobox name="assetType" label="Asset Type" onchange={loadNewUsedYearOptions} value={assetType} options={assetTypes}></lightning-combobox>
-                            <!-- <fieldset class="slds-form-element">
-                                <legend class="slds-form-element__legend slds-form-element__label">Radio Group Label</legend>
+                            <fieldset class="slds-form-element">
+                                <legend class="slds-form-element__legend slds-form-element__label"><abbr class="slds-required" title="required">*</abbr>Condition</legend>
                                 <div class="slds-form-element__control">
                                 <div class="slds-radio_button-group">
                                 <template for:each={newOrUsedOptions} for:item='item'>
                                     <span class="slds-button slds-radio_button" key={item}>
-                                        <input type="radio" name="newUsed" id={item.value} aria-orientation="horizontal"  value={item.value} onchange={loadNewUsedYearOptions} />
+                                        <input type="radio" name="newUsed" id={item.value} value={item.value} onchange={loadNewUsedYearOptions} class="validate" checked={item.checked} />
                                         <label class="slds-radio_button__label" for={item.value}>
                                         <span class="slds-radio_faux">{item.label}</span>
                                         </label>
@@ -118,9 +118,9 @@
                                 </template>
                                     </div>
                                 </div>
-                            </fieldset> -->
+                            </fieldset>
 
-                            <div class="slds-form__row" style="display: inline-block; height:10px">
+                            <!-- <div class="slds-form__row" style="display: inline-block; height:10px">
                                 <lightning-radio-group 
                                     name="newUsed"
                                     label="Condition"
@@ -128,8 +128,9 @@
                                     onchange={loadNewUsedYearOptions}
                                     value={newUsed}
                                     type="radio"
-                                    class="validate" required></lightning-radio-group></div>
-                                <lightning-combobox type="text" name="year" label="Year of Vehicle" value={year} onchange={loadLenderMakeOptions} options={yearSelect} class="validate"  required></lightning-combobox>
+                                    class="validate" required></lightning-radio-group></div> -->
+
+                            <lightning-combobox type="text" name="year" label="Year of Vehicle" value={year} onchange={loadLenderMakeOptions} options={yearSelect} class="validate"  required></lightning-combobox>
                               </div>
                               </article>
                               <!-- ||||- -->
@@ -614,35 +615,69 @@
                         </header>
                         </div>
                         <div class="slds-card__body slds-card__body_inner">
-                            <div class="slds-grid slds-gutters slds-p-around_small form-content">
-                                <div class="slds-col">
+                            <div class="slds-grid slds-wrap">
+                                <div class="slds-col slds-size_1-of-4">
                                     <lightning-combobox name="lender" label="Lenders" value={lender} onchange={putFeesValue} options={lenderOptions} class="validate"  required></lightning-combobox>
-                                    <lightning-input type="number" name="carPrice" label={carLabelPriceSuff} value={carPrice} onchange={carPriceChange} formatter="currency" step="0.01" class="validate"  required></lightning-input>
-                                    <lightning-input type="number" name="warranty" placeholder="$" label="Warranty" value={warranty} onchange={warrantyChange} step="0.01"></lightning-input>
-                                    <lightning-input type="number" name="calculateKmsAdjustment" label="Actual KM" onchange={calculateKmsAdjustment} value={actualKms}></lightning-input>
-                                    <lightning-input type="number" name="RRP" label={ltvValueLabel} value={ltvValue} formatter="currency" step="0.01"  disabled></lightning-input>
-                                  </div>
-                                  <div class="slds-col">
+                                </div>
+                                <div class="slds-col slds-size_1-of-4">
                                     <lightning-combobox name="typeLoan" label="Type Loan" value={typeLoan} options={typeLoanOptions} onchange={putFeesValueTypeLoan} class="validate"  required></lightning-combobox>
-                                    <lightning-input type="number" name="deposit" label="	Deposit/Trade in" onchange={depositChange} formatter="currency" step="0.01" value={deposit}></lightning-input>
-                                    <lightning-input type="number" name="gap" label="GAP" value={gap} onchange={gapChange} step="0.01"></lightning-input>
-                                    <lightning-input type="number" name="averageKM" label="Average KM" value={averageKM} onchange={averageKMChange} disabled></lightning-input>
-                                    <lightning-input type="number" name="NAF" label="NAF" value={ltvNAFValue} formatter="currency" step="0.01" disabled></lightning-input>
-                                  </div>
-                                  <div class="slds-col">
+                                </div>
+                                <div class="slds-col slds-size_1-of-4">
                                     <lightning-input name="newUsed" label="New/Used" value={newUsed} disabled></lightning-input>
-                                    <lightning-input type="number" name="fees" label="Fees" value={fees} onchange={feesChange} formatter="currency" step="0.01" class="validate"  required></lightning-input>
-                                    <lightning-input type="number" name="lpi" label="LPI" value={lpi} onchange={lpiChange} step="0.01"></lightning-input>
-                                    <lightning-combobox type="text" name="Purchase_Type__c" label="Purchase Type" value={opp.Purchase_Type__c} options={purchaseTypeOptions} onchange={selectedPurchaseType}></lightning-combobox>
-                                    <lightning-input type="number" name="LVR" label={ltvLvrLabel} value={ltvLvrValue} formatter="percent" step="1"  disabled></lightning-input>
-                                  </div>
-                                  <div class="slds-col">
+                                </div>
+                                <div class="slds-col slds-size_1-of-4">
                                     <lightning-input  label={carPriceLabel} value={ltvCarAge} disabled></lightning-input>
+                                </div>
 
+                                <div class="slds-col slds-size_1-of-4">
+                                    <lightning-input type="number" name="carPrice" label={carLabelPriceSuff} value={carPrice} onchange={carPriceChange} formatter="currency" step="0.01" class="validate"  required></lightning-input>
+                                </div>
+                                <div class="slds-col slds-size_1-of-4">
+                                    <lightning-input type="number" name="deposit" label="	Deposit/Trade in" onchange={depositChange} formatter="currency" step="0.01" value={deposit}></lightning-input>
+                                </div>
+                                <div class="slds-col slds-size_1-of-4">
+                                    <lightning-input type="number" name="fees" label="Fees" value={fees} onchange={feesChange} formatter="currency" step="0.01" class="validate"  required></lightning-input>
+                                </div>
+                                <div class="slds-col slds-size_1-of-4">
                                     <lightning-input value={ltvFeeValue} read-only></lightning-input>
-                                   
+                                </div>
+
+                                <div class="slds-col slds-size_1-of-4">
+                                    <lightning-input type="number" name="warranty" placeholder="$" label="Warranty" value={warranty} onchange={warrantyChange} step="0.01"></lightning-input>
+                                </div>
+                                <div class="slds-col slds-size_1-of-4">
+                                    <lightning-input type="number" name="gap" label="GAP" value={gap} onchange={gapChange} step="0.01"></lightning-input>
+                                </div>
+                                <div class="slds-col slds-size_1-of-4">
+                                    <lightning-input type="number" name="lpi" label="LPI" value={lpi} onchange={lpiChange} step="0.01"></lightning-input>
+                                </div>
+                                <div class="slds-col slds-size_1-of-4">
                                     <lightning-input type="number" label="LTI" value={lti} step="0.01"></lightning-input>
-                                  </div>
+                                </div>
+
+                                <div class="slds-col slds-size_1-of-4">
+                                    <lightning-input type="number" name="calculateKmsAdjustment" label="Actual KM" onchange={calculateKmsAdjustment} value={actualKms}></lightning-input>
+                                </div>
+                                <div class="slds-col slds-size_1-of-4">
+                                    <lightning-input type="number" name="averageKM" label="Average KM" value={averageKM} onchange={averageKMChange} disabled></lightning-input>
+                                </div>
+                                <div class="slds-col slds-size_1-of-4">
+                                    <lightning-combobox type="text" name="Purchase_Type__c" label="Purchase Type" value={opp.Purchase_Type__c} options={purchaseTypeOptions} onchange={selectedPurchaseType}></lightning-combobox>
+                                </div>
+                                <div class="slds-col slds-size_1-of-4">
+                                </div>
+
+                                <div class="slds-col slds-size_1-of-4">
+                                    <lightning-input type="number" name="RRP" label={ltvValueLabel} value={ltvValue} formatter="currency" step="0.01"  disabled></lightning-input>
+                                </div>
+                                <div class="slds-col slds-size_1-of-4">
+                                    <lightning-input type="number" name="NAF" label="NAF" value={ltvNAFValue} formatter="currency" step="0.01" disabled></lightning-input>
+                                </div>
+                                <div class="slds-col slds-size_1-of-4">
+                                    <lightning-input type="number" name="LVR" label={ltvLvrLabel} value={ltvLvrValue} formatter="percent" step="1"  disabled></lightning-input>
+                                </div>
+                                <div class="slds-col slds-size_1-of-4">
+                                </div>
                             </div>
                         </div>
                         <footer class="slds-card__footer"></footer>
@@ -670,7 +705,7 @@
                         </header>
                         </div>
                         <div class="slds-card__body slds-card__body_inner">
-                            <div class="demo-only demo-only--sizing slds-grid slds-wrap">
+                            <div class="slds-grid slds-wrap">
                                 <div class="slds-col slds-size_1-of-3">
                                     <lightning-combobox name="Dealer_Type__c" class="dealerType" data-id="dealer" label="Dealer Type" value={opp.Dealer_Type__c} options={dealerTypeOptions} onchange={dealerValChange} required={isFormalApproval}></lightning-combobox>
                                 </div>
@@ -716,9 +751,6 @@
                                 <div class="slds-col slds-size_1-of-3">
                                     <lightning-combobox name="Dealer_State__c" data-id="dealer" label="State" value={opp.Dealer_State__c} options={statesOptions} onchange={dealerValChange} required={isFormalApproval}></lightning-combobox>
                                 </div>
-
-                                <lightning-button  label="TEST" onclick={testBtn} icon-name="utility:ribbon"></lightning-button>
-            
                             </div>
                         </div>
                         <footer class="slds-card__footer"></footer>
