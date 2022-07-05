@@ -417,7 +417,7 @@
                             </div>
                         </template>
                         <div class="slds-card__body slds-card__body_inner">
-                            <lightning-combobox name="family" label="Family" value={family} options={familySelect} onchange={loadFamilyBadgeOptions} class="validate"  required></lightning-combobox>
+                            <lightning-combobox name="family" label="Family" value={family} options={familySelect} onchange={loadFamilyBadgeOptions}></lightning-combobox>
                             <lightning-combobox name="assetType" label="Badge" value={badgeRedbook} options={badgeSelectRedbook} onchange={loadBadgeVariantOptions}></lightning-combobox>
                             <lightning-combobox name="assetType" label="Variant" value={variantRedbook} options={variantSelectRedbook} onchange={getVehicleKey}></lightning-combobox>
                             <lightning-input name="assetType" label="Redbook Key" value={toName} disabled></lightning-input>
@@ -652,11 +652,11 @@
                                     <lightning-input type="number" name="lpi" label="LPI" value={lpi} onchange={lpiChange} step="0.01"></lightning-input>
                                 </div>
                                 <div class="slds-col slds-size_1-of-4">
-                                    <lightning-input type="number" label="LTI" value={lti} step="0.01"></lightning-input>
+                                    <lightning-input type="number" label="LTI" value={lti} step="0.01" onchange={ltiChange}></lightning-input>
                                 </div>
 
                                 <div class="slds-col slds-size_1-of-4">
-                                    <lightning-input type="number" name="calculateKmsAdjustment" label="Actual KM" onchange={calculateKmsAdjustment} value={actualKms}></lightning-input>
+                                    <lightning-input type="number" data-id="actualKM_" name="calculateKmsAdjustment" label="Actual KM" onchange={calculateKmsAdjustment} value={actualKms}></lightning-input>
                                 </div>
                                 <div class="slds-col slds-size_1-of-4">
                                     <lightning-input type="number" name="averageKM" label="Average KM" value={averageKM} onchange={averageKMChange} disabled></lightning-input>
@@ -733,20 +733,20 @@
                                 </div>
 
                                 <div class="slds-col slds-size_1-of-3">
-                                    <lightning-input name="Dealer_Street_Number__c" data-id="dealer" label="Street Number" value={opp.Dealer_Street_Number__c} class="validate" onchange={dealerValChange}  required></lightning-input>
+                                    <lightning-input name="Dealer_Street_Number__c" data-id="dealer" label="Street Number" value={opp.Dealer_Street_Number__c} class="validate" onchange={dealerValChange}  required={isFormalApproval}></lightning-input>
                                 </div>
                                 <div class="slds-col slds-size_1-of-3">
-                                    <lightning-input name="Dealer_Address__c" data-id="dealer" label="Street Address" value={opp.Dealer_Address__c} class="validate" onchange={dealerValChange}   required></lightning-input>
+                                    <lightning-input name="Dealer_Address__c" data-id="dealer" label="Street Address" value={opp.Dealer_Address__c} class="validate" onchange={dealerValChange}  required={isFormalApproval} ></lightning-input>
                                 </div>
                                 <div class="slds-col slds-size_1-of-3">
                                     <lightning-combobox name="Dealer_Street_Type__c" data-id="dealer" label="Street Type" options={streetTypeOptions_} value={opp.Dealer_Street_Type__c} onchange={dealerValChange} required={isFormalApproval}></lightning-combobox>
                                 </div>
 
                                 <div class="slds-col slds-size_1-of-3">
-                                    <lightning-input name="Dealer_Suburb__c" data-id="dealer" label="Suburb" value={opp.Dealer_Suburb__c} class="validate" onchange={dealerValChange}   required></lightning-input>
+                                    <lightning-input name="Dealer_Suburb__c" data-id="dealer" label="Suburb" value={opp.Dealer_Suburb__c} class="validate" onchange={dealerValChange}   required={isFormalApproval}></lightning-input>
                                 </div>
                                 <div class="slds-col slds-size_1-of-3">
-                                    <lightning-input name="Dealer_Postcode__c" data-id="dealer" label="Postcode" value={opp.Dealer_Postcode__c} class="validate" onchange={dealerValChange}   required></lightning-input>
+                                    <lightning-input name="Dealer_Postcode__c" data-id="dealer" label="Postcode" value={opp.Dealer_Postcode__c} class="validate" onchange={dealerValChange}   required={isFormalApproval}></lightning-input>
                                 </div>
                                 <div class="slds-col slds-size_1-of-3">
                                     <lightning-combobox name="Dealer_State__c" data-id="dealer" label="State" value={opp.Dealer_State__c} options={statesOptions} onchange={dealerValChange} required={isFormalApproval}></lightning-combobox>

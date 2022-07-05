@@ -89,7 +89,7 @@ export default class GlassServiceEstimatorPage extends LightningElement {
     @track variantObject = initialVariantObject;
     @track warnings = [];
     @track isFormalApproval = false;
-    @track newUsedStatus = {'new': false, 'demo': false, 'used': true};
+    @track newUsedStatus = {'new': true, 'demo': false, 'used': false};
 
     @api recordId;
     @track displayComp = false;
@@ -610,6 +610,7 @@ export default class GlassServiceEstimatorPage extends LightningElement {
     }
 
     getBadgeVariantsSelectOptions(){
+        console.log('getBadgeVariantsSelectOptions::', this.makeRedbook, this.family, this.badgeRedbook)
         getBadgeVariantsSelectOptions({ makeRedbook: this.makeRedbook, model: this.family, badge: this.badgeRedbook })
         .then((result) => {
             console.log(result)
@@ -1345,6 +1346,17 @@ export default class GlassServiceEstimatorPage extends LightningElement {
         if(event && event.target && event.target.name  ){
             if(event.target.name == 'calculateKmsAdjustment'){
                 this.actualKms = event.target.value;
+                let inputField = this.template.querySelector(`[data-id="actualKM_"]`);
+
+                if(parseInt(this.actualKms) > 145000 || parseInt(this.actualKms) < 0){
+                    this.showToast('error', 'The Actual KM must be allowable in a range from 0 to 145,000, please check that information and try again');
+                    
+                    inputField.setCustomValidity("Invalid value");
+                    inputField.reportValidity();
+                }else{
+                    inputField.setCustomValidity("");
+                    inputField.reportValidity();
+                }
             }
         }
         
@@ -1727,6 +1739,10 @@ export default class GlassServiceEstimatorPage extends LightningElement {
         this.lpi = e.target.value;
     }
 
+    ltiChange(e){
+        this.lti = e.target.value;
+    }
+
     // all values in vendor details changed from here
     dealerValChange(e){
         this.opp[e.target.name] = e.target.value;   
@@ -1768,6 +1784,21 @@ export default class GlassServiceEstimatorPage extends LightningElement {
             this.lender = aad.Lender__c;
             if(this.assetType == 'Car'){
                 this.newUsed = aad.Condition__c;
+                switch (this.newUsed.toLowerCase()) {
+                    case 'demo':
+                        this.newUsedStatus = {'new': false, 'demo': true, 'used': false};
+                        break;
+                    
+                    case 'new':
+                        this.newUsedStatus = {'new': true, 'demo': false, 'used': false};
+                        break;
+
+                    case 'used':
+                        this.newUsedStatus = {'new': false, 'demo': false, 'used': true};
+                        break;
+                    default:
+                        break;
+                }
                 this.loadNewUsedYearOptions1();
                 this.year = aad.Year__c.toString();
                 this.loadLenderMakeOptions();
@@ -2024,7 +2055,7 @@ export default class GlassServiceEstimatorPage extends LightningElement {
         // return isOk;
         if(this.isValidRequiredFields()){
             if (prefixFile ) {
-                if (this.opp.Application__c == null) {
+                if (!this.opp.Application__c) {
                     this.showToast('error','Please create an Application form before saving for any appoval process.');
                     isOk = false;
                 }
@@ -2048,47 +2079,51 @@ export default class GlassServiceEstimatorPage extends LightningElement {
                 }
             }
             if (this.assetType == 'Car') {
-                if (this.variantObj == null) {
+                if (!this.variantObj) {
                     this.showToast('error','Please select a variant of the car model before generating the Pdf.');
                     isOk = false;
                 }
             } else {
-                if (this.year == null) {
+                if (!this.year) {
                     this.showToast('error','Please select a year before generating the Pdf.');
                     isOk = false;
                 }
-                if (this.makeOVehicle == null || this.modelOVehicle == null || this.variantOVehicle == null || this.seriesOVehicle == null) {
+                if (!this.makeOVehicle || !this.modelOVehicle || !this.variantOVehicle || !this.seriesOVehicle) {
                     this.showToast('error','Please fill all detail fields before generating the Pdf.');
                     isOk = false;
                 }
             }
-            if (this.lender == null) {
+            if (!this.lender) {
                 this.showToast('error','Please select a Lender in LTV section before generating the Pdf.');
                 isOk = false;
             }
-            if (this.typeLoan == null) {
+            if (!this.typeLoan) {
                 this.showToast('error','Please select a Type Loan in LTV section before generating the Pdf.');
                 isOk = false;
             }
-            if (this.carPrice == null || this.carPrice == 0) {
+            if (!this.carPrice || this.carPrice == 0) {
                 this.showToast('error','Please fill a car price in LTV section before generating the Pdf.');
                 isOk = false;
             }
-            if (this.ltvNAFValue == 0) {
+            if (!this.ltvNAFValue || this.ltvNAFValue == 0) {
                 this.showToast('error','Please adjust your values, NAF must be greater than 0 in LTV section.');
                 isOk = false;
             }
-            if (this.fees == 0) {
+            if (!this.fees || this.fees == 0) {
                 this.showToast('error','Please fill a value for Fees in LTV section before generating the Pdf.');
                 isOk = false;
             }
-            if (this.customOpp.Purchase_Type__c == null){
+            if (!this.customOpp.Purchase_Type__c){
                 this.showToast('error','Please select a Purchase Type in LTV section');
                 isOk = false;       
             }
-            if ((this.customOpp.Purchase_Type__c !=null && 'Refinance_Macq'== this.customOpp.Purchase_Type__c) && (this.contractNumber == null || this.contractNumber == null)){
+            if ((this.customOpp.Purchase_Type__c && 'Refinance_Macq'== this.customOpp.Purchase_Type__c) && (!this.contractNumber || !this.contractNumber)){
                 this.showToast('error','Please fill a contract number in LTV section');
                 isOk = false;       
+            }
+            if(!this.actualKms || parseInt(this.actualKms) < 0 || parseInt(this.actualKms) > 145000){
+                this.showToast('error','The Actual KM must be allowable in a range from 0 to 145,000, please check that information and try again');
+                isOk = false;  
             }
             if ('used' == this.newUsed) {
                 if ((this.actualKms == null) && ('ANZ' != this.lender)) {
