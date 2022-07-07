@@ -1,0 +1,32 @@
+<apex:component >
+    <apex:attribute name="opp" type="Custom_Opportunity__c" description="Opportunity Data" required="true"/>
+    <apex:attribute name="app" type="Application__c" description="Application Data" required="true"/>
+    <apex:attribute name="quo" type="Application_Quoting__c" description="Quoting Calculation Data" required="true"/>
+    <apex:attribute name="title" type="String" description="Title of the section" required="true"/>
+    <table width="100%" border="1">
+        <tr><td colspan="2" class="tableCaption">{!title}</td></tr>
+        <tr>
+            <td width="25%" class="labelDate">Application Type</td>
+            <td width="75%"><apex:outputField value="{!app.Application_Type__c}"/></td>
+        </tr>
+        <tr>
+            <td class="labelDate">Goods Type</td>
+            <td><apex:outputField value="{!quo.Goods_type__c}"/></td>
+        </tr>
+        <tr>
+            <td class="labelDate">Product</td>
+            <td><apex:outputField value="{!quo.Loan_Product__c}"/></td>
+        </tr>
+        <tr>
+            <td class="labelDate">Applicants</td>
+            <td>
+            	<apex:outputText value="Individual" rendered="{!app.No_of_People__c == 1}" />
+            	<apex:outputText value="Joint" rendered="{!app.No_of_People__c == 2}" />
+            </td>
+        </tr>
+        <tr>
+            <td class="labelDate">SOB</td>
+            <td>{!quo.Name}</td>
+        </tr>
+    </table>
+</apex:component>

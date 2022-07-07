@@ -1,0 +1,54 @@
+<apex:page showHeader="true" sidebar="true" controller="LenderLoginsExtension" cache="false" title="Lender Logins">
+  <!-- Partner Portal Styles -->
+  <apex:outputPanel rendered="{!isBrokerPartnerUser}">
+    <style type="text/css">
+      html .brandQuaternaryBgr,
+      .titleDiv {
+        background: #ffffff !important;
+      }
+  
+      .bPageBlock {
+        border: 1px solid white !important;
+      }
+    </style>
+  </apex:outputPanel>
+    <apex:form id="formData">
+        <apex:pageBlock title="Lender Logins for  {!$User.FirstName} {!$User.LastName}" mode="edit" >
+            <apex:pageBlockButtons location="top" rendered="true">
+                      <apex:commandButton action="{!newLogin}" value="New Login" reRender="formData" rendered="{!!isShowForm}" status="sts"/>
+                      <apex:commandButton action="{!save}" value="Save" id="btnSave" reRender="formData" rendered="{!isShowForm}" status="sts"/>
+                      <apex:commandButton action="{!deleteRecord}" value="Delete" id="btnDelete" reRender="formData" rendered="{!AND(isShowForm,objLogin.Id != null)}" status="sts"/>
+                      <apex:commandButton action="{!cancel}" value="Cancel" id="btnCancel" immediate="true" reRender="formData" rendered="{!isShowForm}" status="sts"/>
+                      &nbsp;&nbsp;&nbsp;&nbsp;
+                      <apex:actionStatus startText="Processing..." id="sts"  />
+            </apex:pageBlockButtons>
+            <apex:pageMessages id="msg" />
+            <apex:pageBlockSection title="New / Edit" id="pnlForm" rendered="{!isShowForm}" >
+                <apex:inputField value="{!objLogin.Lender__c}">
+                    <apex:actionSupport event="onchange" reRender="formData" status="sts" />
+                </apex:inputField>
+                <apex:inputCheckbox value="{!isShareCredentials}"> I use a credential from other Consultant
+                    <apex:actionSupport event="onchange" reRender="formData" status="sts" />
+                </apex:inputCheckbox>
+                <apex:inputField value="{!objLogin.User_Name__c}" rendered="{!!isShareCredentials}" />
+                <apex:inputField value="{!objLogin.Password__c}" rendered="{!!isShareCredentials}" />
+                <apex:inputField value="{!objLogin.State__c}" rendered="{!AND(objLogin.Lender__c = 'ANZ',!isShareCredentials)}" id="fldState"/>
+                <apex:inputField value="{!objLogin.Password_Two__c}"  rendered="{!AND(OR(objLogin.Lender__c = 'ANZ' || objLogin.Lender__c = 'AFS'),!isShareCredentials)}" id="fldPass2" />
+                <apex:inputField value="{!objLogin.User_Linked__c}" rendered="{!isShareCredentials}" />
+                <br/>
+            </apex:pageBlockSection>
+            <apex:pageBlockTable id="tblData" value="{!data}" var="d" captionClass="captionTable">
+                <!-- <apex:facet name="caption">Lender Login</apex:facet> -->
+                <apex:column headerValue="Lender" value="{!d.dto.Lender__c}"/>
+                <apex:column headerValue="Username" value="{!d.dto.User_Name__c}"/>
+                <apex:column headerValue="Password" value="{!d.dto.Password__c}"/>
+                <apex:column headerValue="State" value="{!d.dto.State__c}"/>
+                <apex:column headerValue="Password Two" value="{!d.dto.Password_Two__c}"/>
+                <apex:column headerValue="Share with" value="{!d.sharedUserName}"/>
+                <apex:column headerValue="Actions">
+                    <apex:outputLink value="/apex/LenderLogins?ID={!d.id}">Edit/Delete</apex:outputLink>
+                </apex:column>
+            </apex:pageBlockTable>
+        </apex:pageBlock>
+    </apex:form>
+</apex:page>

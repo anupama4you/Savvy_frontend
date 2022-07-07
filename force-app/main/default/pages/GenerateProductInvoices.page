@@ -1,0 +1,71 @@
+<apex:page standardController="Custom_Opportunity__c" extensions="GenerateProductInvoicesExtension" title="Generate Invoices: {!Custom_Opportunity__c.Name}">
+    <apex:variable value="{!Custom_Opportunity__c}" var="o" />
+    <apex:sectionHeader title="Generate Invoices" subtitle="{!o.Name}" />
+    <apex:pageMessages id="msg" />
+    
+    <script type="text/javascript">
+    	
+        isGenerated = false;
+        
+        function startGenerate() {
+            if(!isGenerated) {
+                GenerateMain();
+                isGenerated = true;
+            }
+        }
+    </script>
+    
+    <apex:form id="generateForm">
+        <apex:actionFunction action="{!GenerateMain}" name="GenerateMain" reRender="msg, generateForm" status="stsGen" oncomplete="Generate();"/>
+        <apex:actionFunction action="{!Generate}" name="Generate" reRender="msg, generateForm" status="stsGen" oncomplete="downloadXeroInvoicePdf();"/>
+        <apex:actionFunction action="{!downloadXeroInvoicePdf}" name="downloadXeroInvoicePdf" reRender="msg, generateForm" status="stsDown" oncomplete="downloadXeroInvoicePdf();"/>
+        
+        <apex:pageBlock >
+            <apex:outputText value="Do you want to generate Invoices for the Products under this Opportunity?" />        
+            <apex:pageBlockButtons location="bottom">
+                <!--<apex:commandButton value="Generate" action="{!GenerateMain}" reRender="msg, generateForm" status="stsGen" oncomplete="Generate();" disabled="{!isDisabled}"/>-->
+                <apex:commandButton value="Generate" onclick="startGenerate()" reRender="msg, generateForm" status="stsGen" disabled="{!isDisabled}"/>
+
+                <apex:commandButton value="Refresh results table" reRender="msg, generateForm" status="stsRefresh"/>
+                <apex:commandButton value="Cancel" action="{!cancel}" />
+                <apex:actionStatus startText="   (Generating...)" id="stsGen"  />
+                <apex:actionStatus startText="   (Downloading...)" id="stsDown" />
+                <apex:actionStatus startText="   (Synchronizing...)" id="stsUpdat" />
+                <apex:actionStatus startText="   (Refreshing...)" id="stsRefresh" />
+            </apex:pageBlockButtons>
+        </apex:pageBlock> 
+        
+        <apex:pageBlock >
+            <div class="referenceTitle">
+                <h1>Table Results</h1>
+            </div>
+            <apex:pageBlockTable value="{!displayInvoices}" var="i">
+                <apex:column headerValue="Invoice Number" value="{!i.Name}" />
+                <apex:column headerValue="Date of Invoice" value="{!i.Date_of_Invoice__c}" />
+                <apex:column headerValue="Name" value="{!i.RecordType.Name}" />
+                <apex:column headerValue="Invoice Amount" value="{!i.Invoice_Amount__c}" />
+                <apex:column headerValue="Opportunity" value="{!i.Opportunity__c}" />
+                <apex:column headerValue="Product" value="{!i.Product__c}" />
+                <apex:column headerValue="Xero Invoice Number" value="{!i.Xero_Invoice_Number__c}" />
+                <apex:column headerValue="Xero Link">
+                    <a href="https://go.xero.com/AccountsReceivable/Edit.aspx?InvoiceID={!i.Xero_Invoice_Id__c}" target="_blank" style=" display: {!IF(i.Xero_Invoice_Id__c != null, '', 'none')}">open in Xero</a>
+                </apex:column>
+                <apex:column headerValue="Xero Invoice DOF Number" value="{!i.Xero_Invoice_DOF_Number__c}"/>
+                <apex:column headerValue="Xero Link">
+                    <a href="https://go.xero.com/AccountsReceivable/Edit.aspx?InvoiceID={!i.Xero_Invoice_DOF_Id__c}" target="_blank" style=" display: {!IF(i.Xero_Invoice_DOF_Id__c != null, '', 'none')}">open in Xero</a>
+                </apex:column>
+                <apex:column headerValue="Xero Message" value="{!i.Xero_Message__c}" />
+                <apex:column headerValue="Action">
+                    <apex:commandButton value="Sync" action="{!updateXeroCommissionInvoice}" reRender="msg, generateForm" status="stsUpdat">
+                        <apex:param name="updateInvoiceID" assignTo="{!updateInvoiceID}" value="{!i.Xero_Invoice_Id__c}" />
+                    </apex:commandButton>
+                    <apex:commandButton value="Sync DOF" action="{!updateXeroDOFInvoice}" reRender="msg, generateForm" status="stsUpdat" style=" display: {!IF(i.Xero_Invoice_DOF_Id__c != null, '', 'none')}">
+                        <apex:param name="updateInvoiceDOFID" assignTo="{!updateInvoiceID}" value="{!i.Xero_Invoice_DOF_Id__c}" />
+                    </apex:commandButton>
+                </apex:column>
+            </apex:pageBlockTable>
+        </apex:pageBlock>
+    </apex:form>
+    <apex:outputField value="{!o.Account_First_Name__c}" rendered="false" />
+    <apex:outputField value="{!o.Account_Last_Name__c}" rendered="false" />
+</apex:page>

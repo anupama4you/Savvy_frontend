@@ -1,0 +1,1859 @@
+<apex:page standardController="Custom_Opportunity__c" extensions="VDApprovalDetailExtension" cache="false" title="Approval List" showHeader="true">
+    <apex:stylesheet value="https://maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css"/>
+	<style type="text/css">
+    
+        /* Lelo */
+
+        .customInputStyle {
+            width: 20px;
+        }
+      
+        .leftTables {
+            display: inline-block;
+            float: left;
+            width: 48%;
+            padding-left: 20px;
+        }
+        .rightTables {
+            display: inline-block;
+            width: 48%;
+            padding-left: 20px;
+        }
+        
+        .leftTables2 {
+            display: inline-block;
+            float: left;
+            width: 32%;
+            padding-left: 20px;
+        }
+        
+        .leftTablesNoFloat {
+            display: inline-block;
+            width: 38%;
+            padding-left: 20px;
+        }
+        .rightTablesNoFloat {
+            display: inline-block;
+            width: 58%;
+            padding-left: 20px;
+        }
+        
+        .rightTables2 {
+            display: inline-block;
+            width: 64%;
+            padding-left: 20px;
+        }
+      
+        .oneTables {
+            display: inline-block;
+            /*float: left;*/
+            width: 97.5%;
+            padding-left: 20px;
+        }
+      
+        .section {
+            background: #f8f8f8;
+            border: 1px solid #ddd;
+            padding-bottom: 20px;
+        }
+
+        .subSectionTab {
+            border: 1px solid #ddd;
+            border-bottom: transparent;
+            display: inline-block;
+            background-color: #fff;
+            position: relative;
+            padding: 3px;
+            padding-right: 20px;
+            padding-left: 20px;
+            top: 20px;
+        }
+        
+        .tableSubsection {
+            width: 100%;
+            background: white;
+            border: 1px solid #ddd;
+            margin-top: 18px;
+            padding: 2px;
+            padding-left: 20px;
+            padding-top: 10px;
+            padding-bottom: 10px;
+        }
+        
+        .labelColumn {
+            width: 25%;
+            /*padding-bottom: 13px;*/
+        }
+        .dataColumn {
+            width: 25%;
+        }
+      	
+        .labelOneColumn {
+            width: 30%;
+            /*padding-bottom: 13px;*/
+        }
+        .dataOneColumn {
+            width: 70%;
+        }
+        
+        .divTitle {
+            background-color: #ddd;
+            padding-top: 1px;
+            padding-bottom: 1px;
+            padding-left: 15px;
+            /*text-transform: uppercase;*/
+            font-weight: bold;
+            border: 1px solid #ddd;
+        }
+        .dataInput {
+            border: 1px solid #e0e0e0;
+            padding: 0.3em !important;;
+            min-width: 173px !important;;
+        }
+        .dataInput2 {
+            border: 1px solid #e0e0e0;
+            padding: 0.3em !important;
+            min-width: 53px !important;
+            max-width: 113px !important;
+            text-align: right;
+        }
+        .dataInputFull {
+            border: 1px solid #e0e0e0;
+            padding: 0.3em !important;
+            min-width: 98% !important;
+        }
+        .selectList {
+            border: 1px solid #e0e0e0;
+            padding: 0.3em;
+            width:182px;
+            height: 25px !important;
+        }
+        .selectList2 {
+            border: 1px solid #e0e0e0;
+            padding: 0.3em;
+            width:122px;
+            height: 25px !important;
+        }
+        .selectListMultiple {
+            border: 1px solid #e0e0e0;
+            padding: 0.3em;
+            width:182px;
+        }
+        .titleDiv {
+            width: 100%;
+            height: 43px;
+            font-size: 1.0rem;
+        }
+        .toolOptions {
+            float: right;
+            text-align: right;
+            width: 60%;
+        }
+
+        #main .bPageBlock {
+            border-top: 1px solid white !important;
+        }
+
+        .commandButtons {
+            padding: 9px 10px !important;
+            color: #fff !important;
+            font-size: 11px !important;
+            outline: none !important;
+            text-transform: uppercase !important;
+            background: rgb(125,126,125) !important; /* Old browsers */
+            background: -moz-linear-gradient(top,  rgba(125,126,125,1) 0%, rgba(14,14,14,1) 100%) !important; /* FF3.6-15 */
+            background: -webkit-linear-gradient(top,  rgba(125,126,125,1) 0%,rgba(14,14,14,1) 100%) !important; /* Chrome10-25,Safari5.1-6 */
+            background: linear-gradient(to bottom,  rgba(125,126,125,1) 0%,rgba(14,14,14,1) 100%) !important; /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
+            filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#7d7e7d', endColorstr='#0e0e0e',GradientType=0 ) !important; /* IE6-9 */
+        }
+        .commandButtons:hover {
+            background: rgb(125,126,125) !important; /* Old browsers */
+            background: -moz-linear-gradient(top,  rgba(125,126,125,1) 0%, rgba(14,14,14,1) 41%) !important; /* FF3.6-15 */
+            background: -webkit-linear-gradient(top,  rgba(125,126,125,1) 0%,rgba(14,14,14,1) 41%) !important; /* Chrome10-25,Safari5.1-6 */
+            background: linear-gradient(to bottom,  rgba(125,126,125,1) 0%,rgba(14,14,14,1) 41%) !important; /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
+            filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#7d7e7d', endColorstr='#0e0e0e',GradientType=0 ) !important; /* IE6-9 */
+        }
+
+        .noSidebarCell, .sidebarCell .fixed {
+            height: inherit;
+        }
+        
+        /* Servicing Calculator*/
+        
+        #ServicingCalc .bPageBlock {
+            border-top: 1px solid white !important;
+        }
+        .cellMultiTables {
+            vertical-align: top;
+        }
+        .cellExtraRigthPading {
+            padding-right: 18px;
+        }
+        .cellExtraLeftPading {
+            padding-left: 18px;
+        }
+        .incomeValue {
+            color: #1a75ff !important;
+        }
+        .notIncomeValue {
+            color: #cc0000 !important;
+        }     
+        
+        #YtdCalc .bPageBlock {
+            border-top: 1px solid white !important;
+        }
+        
+        #GlassServEstimator .bPageBlock {
+            border-top: 1px solid white !important;
+        }
+        .totalCalculated {
+        	color: #1a75ff !important;
+            font-weight: bold;
+            font-size: 13px;
+        }
+        .bPageBlock { 
+        	    border-top: 1px solid white !important;
+        }
+        .div2Columns {
+            -webkit-column-count: 2; /* Chrome, Safari, Opera */
+            -moz-column-count: 2; /* Firefox */
+            column-count: 2;
+        }
+
+        .odd {
+            background-color: #e7ebee;
+        }
+        .even {
+            
+        }
+        .tableClass {
+            background-color: #ffffff;  
+        }  
+        .labelTableData1 {
+            font-size: 12px;
+            font-weight: bold;
+        }
+        .head2 {
+            font-size: 0.75rem;
+            font-weight: bold;
+        }
+        .head3 {
+            font-size: 0.85rem;
+            font-weight: bold;
+        }
+        .head2Under {
+            font-size: 0.75rem;
+            font-weight: bold;
+            text-decoration: underline;
+        }
+        .head3Under {
+            font-size: 0.85rem;
+            font-weight: bold;
+            text-decoration: underline;
+        }
+        .totalSection {
+            border-top: 1px solid black;
+            border-bottom: 1px double black;
+        }
+        .rowResult {
+            background-color: #f2f2f2;
+        }
+        .cellBlack {
+            background-color: silver;
+        }
+        .cellTotalInvoice {
+            background-color: #c6e0e9;
+        }
+        .cellTotalVD {
+            background-color: #FFD760;
+        }
+        .cellVDSettlement {
+            background: -moz-linear-gradient(top,  rgba(107,186,112,0.44) 0%, rgba(107,186,112,1) 100%); /* FF3.6-15 */
+            background: -webkit-linear-gradient(top,  rgba(107,186,112,0.44) 0%,rgba(107,186,112,1) 100%); /* Chrome10-25,Safari5.1-6 */
+            background: linear-gradient(to bottom,  rgba(107,186,112,0.44) 0%,rgba(107,186,112,1) 100%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
+            filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#706bba70', endColorstr='#6bba70',GradientType=0 ); /* IE6-9 */
+        }
+        /* end */
+    </style>
+    <apex:includeScript value="{! $Resource.jQuery }"/>
+    <script type="text/javascript">
+        jQuery.noConflict();
+        jQuery(document).ready(function() {
+            jQuery('.approveAction').click(function(e) {
+                if ( confirm('Are you sure you want to approve this process? Click OK to continue approving.') ) {
+                    return true;
+                }
+                e.preventDefault();
+            });
+            jQuery('.rejectAction').click(function(e) {
+                if ( confirm('Are you sure you want to reject this process? Click OK to continue rejecting.') ) {
+                    return true;
+                }
+                e.preventDefault();
+            });
+        });
+    </script>
+    <apex:outputPanel layout="block" id="approvalProcess">
+        <apex:variable value="{!Custom_Opportunity__c}" var="opp" />
+        <apex:variable value="{!Custom_Opportunity__c.VD_Worksheet__r}" var="ws" />
+    	<apex:pageMessages id="msgPanel" />
+	    <apex:form id="formData">
+	    	<apex:outputPanel layout="block" styleClass="titleDiv">
+	            <h1>Savvy Finance Vehicles Direct Manage/Decline Approval Request for {!opp.Name}</h1>
+	            <apex:outputPanel layout="block" styleClass="toolOptions">
+	                
+	            </apex:outputPanel>
+	        </apex:outputPanel>
+            <apex:pageBlock mode="edit" id="applicationForm">
+	        <!-- ASSET DETAILS -->
+	        <apex:outputPanel layout="block" styleClass="section">
+	        	<div class="divTitle">Opportunity</div>
+	        	<table width="99%">
+                    <tr>
+                    	<td width="60%" class="cellMultiTables cellExtraLeftPading cellExtraRigthPading">
+                            <!-- <apex:outputPanel rendered="{!isVDSales}"> -->
+                            <apex:outputPanel >
+    				            <apex:outputPanel styleClass="subSectionTab"><h3>VEHICLES DIRECT WORKSHEET</h3></apex:outputPanel>
+    				            <table class="tableSubsection">
+                                    <tr>
+                                        <td width="40%">
+                                            <table width="100%">
+                                                <tr>
+                                                    <td colspan="2"><apex:outputText value="Opportunity:" styleClass="head2" /></td>
+                                                </tr>
+                                                <tr>
+                                                    <td width="40%">Opportunity</td>
+                                                    <td width="60%" class="labelTableData1"><apex:outputLink value="/{!opp.Id}">{!opp.Name}</apex:outputLink></td>
+                                                </tr>
+                                                <tr>
+                                                    <td>Current Status</td>
+                                                    <td>{!opp.Status__c}</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>Current VD Status</td>
+                                                    <td class="labelTableData1">{!opp.VD_Status_Process__c}</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>VD Type</td>
+                                                    <td class="labelTableData1">{!ws.Type_of_Process__c}</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>Finance Consultant</td>
+                                                    <td>{!opp.Owner.Name}</td>
+                                                </tr>
+                                            </table>
+                                            <br/>
+                                            <table width="100%">
+                                                <tr>
+                                                    <td colspan="2"><apex:outputText value="Client Details:" styleClass="head2" /></td>
+                                                </tr>
+                                                <tr>
+                                                    <td width="40%">
+                                                        <apex:outputLabel style="display:inline-block;" value="Names Applicant 1: " for="name1"/>
+                                                    </td>
+                                                    <td width="60%">
+                                                        <apex:outputField id="name1" value="{!opp.First_Name__c}"/>&nbsp;
+                                                        <apex:outputField id="lastName1" value="{!opp.Last_Name__c}"/>
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td>
+                                                        <apex:outputLabel style="display:inline-block;" value="Names Applicant 2: " for="name2"/>
+                                                    </td>
+                                                    <td>
+                                                        <apex:outputField id="name2" value="{!opp.Second_Applicant_First_Name__c}"/>&nbsp;
+                                                        <apex:outputField id="lastName2" value="{!opp.Second_Applicant_Last_Name__c}"/>
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td>
+                                                        <apex:outputLabel style="display:inline-block;" value="Client Address: " for="address"/>
+                                                    </td>
+                                                    <td>
+                                                        <apex:outputField id="address" value="{!opp.Address__c}"/>
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td>
+                                                        <apex:outputLabel style="display:inline-block;" value="Mobile Number:" for="mobile"/>
+                                                    </td>
+                                                    <td>
+                                                        <apex:outputField id="mobile" value="{!opp.Mobile_Number__c}"/>
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td>
+                                                        <apex:outputLabel style="display:inline-block;" value="Home Phone Number: " for="homePhone"/>
+                                                    </td>
+                                                    <td>
+                                                        <apex:outputField id="homePhone" value="{!opp.Home_Phone__c}"/>
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td>
+                                                        <apex:outputLabel style="display:inline-block;" value="Work Phone Number: " for="workPhone"/>
+                                                    </td>
+                                                    <td class="dataOneColumn">
+                                                        <apex:outputField id="workPhone" value="{!opp.Work_Phone__c}"/>
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td>
+                                                        <apex:outputLabel style="display:inline-block;" value="Email: " for="clientBudget"/>
+                                                    </td>
+                                                    <td>
+                                                        <apex:outputField id="email" value="{!opp.Email_Address__c}"/>
+                                                    </td>
+                                                </tr>
+                                                <tr style= "display: {!IF(ws.Type_of_Process__c == 'New Car - Demo', '','none')}">
+                                                    <td>
+                                                        <apex:outputLabel style="display:inline-block;" value="Trade In: " for="tradeIn"/>
+                                                    </td>
+                                                    <td>
+                                                        <apex:outputField id="tradeIn" value="{!opp.Is_Trade_In__c}"/>
+                                                    </td>
+                                                </tr>
+                                            </table>
+                                        </td>
+                                        <td width="60%">
+                                            <apex:outputPanel rendered="{!ws.Type_of_Process__c == 'Fleet Referral'}">
+                                                <table width="100%">
+                                                    <tr>
+                                                        <td colspan="2"><apex:outputText value="Finance Details:" styleClass="head2" /></td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td width="65%">
+                                                            <apex:outputLabel style="display:inline-block;" value="Lender approved with: " for="lenderApproval"/>
+                                                        </td>
+                                                        <td width="35%">
+                                                            <apex:outputField id="lenderApproval" value="{!opp.Lender_Approved__c}"/>
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td>
+                                                            <apex:outputLabel style="display:inline-block;" value="Lender Pre-Approved Amount: " for="preApproved"/>
+                                                        </td>
+                                                        <td>
+                                                            <apex:outputText value="{0, Number, Currency}" id="preApproved">
+                                                                <apex:param value="{!VALUE(opp.Pre_Approved_Amount__c)}" />
+                                                            </apex:outputText>&nbsp;
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td>
+                                                            <apex:outputLabel style="display:inline-block;" value="Lender Pre-Approved Maximum Age of Vehicle: " for="preApprovedAge"/>
+                                                        </td>
+                                                        <td>
+                                                            <apex:outputField id="preApprovedAge" value="{!opp.Pre_Approved_Vehicle_Age__c}"/>
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td>
+                                                            <apex:outputLabel style="display:inline-block;" value="Client Deposit Amount Required: " for="requiredDeposit"/>
+                                                        </td>
+                                                        <td>
+                                                            <apex:outputText value="{0, Number, Currency}" id="requiredDeposit">
+                                                                <apex:param value="{!opp.Required_Client_Deposit__c}" />
+                                                            </apex:outputText>&nbsp;
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td>
+                                                            <apex:outputLabel style="display:inline-block;" value="Client Budget (Range): " for="clientBudget"/>
+                                                        </td>
+                                                        <td>
+                                                            <apex:outputField id="clientBudget" value="{!opp.Client_Budget__c}"/>
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td>
+                                                            <apex:outputLabel style="display:inline-block;" value="Payout Details (for Trade-in): " for="payoutDetails"/>
+                                                        </td>
+                                                        <td>
+                                                            <apex:outputField id="payoutDetails" value="{!opp.Payout_Details__c}"/>
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td>
+                                                            <apex:outputLabel style="display:inline-block;" value="Trade In Details: " for="tradeinDetails"/>
+                                                        </td>
+                                                        <td>
+                                                            <apex:outputField id="tradeinDetails" value="{!opp.Trade_in_Details__c}"/>
+                                                        </td>
+                                                    </tr>
+                                                    <!-- <tr>
+                                                        <td class="labelOneColumn">
+                                                                <apex:outputLabel style="display:inline-block;" value="Dealer Contacted (if applicable): " for="dealerContact"/>
+                                                        </td>
+                                                        <td class="dataOneColumn">
+                                                                <apex:outputField id="dealerContact" value="{!opp.Dealer_Contacted__c}"/>
+                                                        </td>
+                                                    </tr> -->
+                                                    <tr>
+                                                        <td>
+                                                            <apex:outputLabel style="display:inline-block;" value="Special Conditions (LTV etc): " for="specialCondition"/>
+                                                        </td>
+                                                        <td>
+                                                            <apex:outputField id="specialCondition" value="{!opp.Special_Conditions__c}"/>
+                                                        </td>
+                                                    </tr>
+                                                </table>
+                                                <br/>
+                                            </apex:outputPanel>
+                                            <table width="100%">
+                                                <tr>
+                                                    <td colspan="2"><apex:outputText value="Vehicle Details (indicative):" styleClass="head2" /></td>
+                                                </tr>
+                                                <tr>
+                                                    <td class="labelOneColumn">
+                                                            <apex:outputLabel style="display:inline-block;" value="New/Used: " for="usedNew"/>
+                                                    </td>
+                                                    <td class="dataOneColumn">
+                                                            <apex:outputField id="usedNew" value="{!opp.New_Used__c}"/>
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td class="labelOneColumn">
+                                                            <apex:outputLabel style="display:inline-block;" value="Vehicle Details (if known): " for="vehicleDetails"/>
+                                                    </td>
+                                                    <td class="dataOneColumn">
+                                                            <apex:outputField id="vehicleDetails" value="{!opp.Vehicle_Details__c}"/>
+                                                    </td>
+                                                </tr>
+                                            </table>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td colspan="2">
+                                            <hr/>
+                                            <table width="100%">
+                                                <tr>
+                                                    <td>
+                                                        <apex:outputLabel style="display:inline-block;" value="Notes: " for="VDNotes"/> &nbsp;&nbsp;
+                                                        <apex:outputField id="VDNotes" value="{!opp.VD_Notes__c}"/>
+                                                    </td>
+                                                </tr>
+                                            </table>
+                                            <hr/>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td colspan="2">
+                                            <table width="100%">
+                                                <tr>
+                                                    <td colspan="3"><apex:outputText value="Vehicle Details (Final):" styleClass="head2" /></td>
+                                                </tr>
+                                                <tr>
+                                                    <td width="33%">
+                                                        <table width="100%">
+                                                            <tr>
+                                                                <td>Car Type</td>
+                                                                <td>
+                                                                    <apex:outputPanel styleClass="requiredInput"><apex:outputPanel styleClass="requiredBlock"></apex:outputPanel></apex:outputPanel>
+                                                                    <apex:selectList size="1" multiselect="false" value="{!detailDto.newUsed}" id="fldNewUsed" styleClass="selectList">
+                                                                        <apex:selectOption itemValue="" itemLabel="--None--" />
+                                                                        <apex:selectOption itemValue="Demo" itemLabel="Demo" />
+                                                                        <apex:selectOption itemValue="New" itemLabel="New" />
+                                                                        <apex:selectOption itemValue="Used" itemLabel="Used" />
+                                                                    </apex:selectList>
+                                                                </td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td>Vehicle ID</td>
+                                                                <td>
+                                                                    <apex:outputPanel styleClass="requiredInput"><apex:outputPanel styleClass="requiredBlock"></apex:outputPanel></apex:outputPanel>
+                                                                    <apex:inputText styleClass="dataInput" value="{!detailDto.vehicleId}" maxlength="255"/>
+                                                                </td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td>Color</td>
+                                                                <td>
+                                                                    <apex:outputPanel styleClass="requiredInput"><apex:outputPanel styleClass="requiredBlock"></apex:outputPanel></apex:outputPanel>
+                                                                    <apex:inputText styleClass="dataInput" value="{!detailDto.color}" maxlength="100"/>
+                                                                </td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td>Registration</td>
+                                                                <td>
+                                                                    <apex:outputPanel styleClass="requiredInput"><apex:outputPanel styleClass="requiredBlock"></apex:outputPanel></apex:outputPanel>
+                                                                    <apex:inputText styleClass="dataInput" value="{!detailDto.registration}" maxlength="100"/>
+                                                                </td>
+                                                            </tr>
+                                                        </table>                                                    
+                                                    </td>
+                                                    <td width="34%">
+                                                        <table width="100%">
+                                                            <tr>
+                                                                <td>Dealer Name</td>
+                                                                <td>
+                                                                    <apex:outputPanel styleClass="requiredInput"><apex:outputPanel styleClass="requiredBlock"></apex:outputPanel></apex:outputPanel>
+                                                                    <apex:inputText styleClass="dataInput" value="{!detailDto.dealerName}" maxlength="100"/>
+                                                                </td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td>Dealer Contact</td>
+                                                                <td>
+                                                                    <apex:outputPanel styleClass="requiredInput"><apex:outputPanel styleClass="requiredBlock"></apex:outputPanel></apex:outputPanel>
+                                                                    <apex:inputText styleClass="dataInput" value="{!detailDto.dealerContact}" maxlength="100"/>
+                                                                </td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td>Dealer Email</td>
+                                                                <td>
+                                                                    <apex:outputPanel styleClass="requiredInput"><apex:outputPanel styleClass="requiredBlock"></apex:outputPanel></apex:outputPanel>
+                                                                    <apex:inputText styleClass="dataInput" value="{!detailDto.dealerEmail}" maxlength="100"/>
+                                                                </td>
+                                                            </tr>
+                                                            
+                                                            
+                                                            
+                                                            
+                                                            
+                                                            
+                                                            
+                                                            <tr>
+                                                                <td class="labelColumn"><apex:outputLabel value="Dealer Street Number" /></td>
+                                                                <td class="dataColumn">
+                                                                    <apex:outputPanel styleClass="requiredInput"><apex:outputPanel styleClass="requiredBlock"></apex:outputPanel></apex:outputPanel>
+                                                                    <apex:inputText styleClass="dataInput" label="Suburb" value="{!detailDto.dealerStreetNumber}" />
+                                                                </td>
+                                                            </tr>
+                                                            
+                                                            <tr>
+                                                                <td class="labelColumn"><apex:outputLabel value="Dealer Street Type" /></td>
+                                                                <td class="dataColumn">
+                                                                    <apex:outputPanel styleClass="requiredInput"><apex:outputPanel styleClass="requiredBlock"></apex:outputPanel></apex:outputPanel>
+                                                                    <apex:selectList label="State" value="{!detailDto.dealerStreetType}" multiselect="false" size="1" styleClass="selectList" >
+                                                                        <apex:selectOptions value="{!streetTypeOptions}" />
+                                                                    </apex:selectList>
+                                                                </td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td class="labelColumn"><apex:outputLabel value="Dealer Postcode" /></td>
+                                                                <td class="dataColumn">
+                                                                    <apex:outputPanel styleClass="requiredInput"><apex:outputPanel styleClass="requiredBlock"></apex:outputPanel></apex:outputPanel>
+                                                                    <apex:inputText styleClass="dataInput" label="Postcode" value="{!detailDto.dealerPostcode}"  />
+                                                                </td>
+                                                            </tr>
+                                                            
+                                                            
+                                                            
+                                                            
+                                                            
+                                                            
+                                                            
+                                                            
+                                                            
+                                                            
+                                                            
+                                                            
+                                                            
+                                                            
+                                                        </table>
+                                                    </td>
+                                                    <td width="33%">
+                                                        <table width="100%">
+                                                            <tr>
+                                                                <td>Dealer Phone</td>
+                                                                <td>
+                                                                    <apex:outputPanel styleClass="requiredInput"><apex:outputPanel styleClass="requiredBlock"></apex:outputPanel></apex:outputPanel>
+                                                                    <apex:inputText styleClass="dataInput" value="{!detailDto.dealerPhone}" maxlength="30"/>
+                                                                </td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td>Dealer Mobile</td>
+                                                                <td>
+                                                                    <apex:outputPanel styleClass="requiredInput"><apex:outputPanel styleClass="requiredBlock"></apex:outputPanel></apex:outputPanel>
+                                                                    <apex:inputText styleClass="dataInput" value="{!detailDto.dealerMobile}" maxlength="30"/>
+                                                                </td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td>Dealer Account Email</td>
+                                                                <td>
+                                                                    <apex:outputPanel styleClass="requiredInput"><apex:outputPanel styleClass="requiredBlock"></apex:outputPanel></apex:outputPanel>
+                                                                    <apex:inputText styleClass="dataInput" value="{!detailDto.dealerAccountEmail}" maxlength="100"/>
+                                                                </td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td>Dealer Address</td>
+                                                                <td>
+                                                                    <apex:outputPanel styleClass="requiredInput"><apex:outputPanel styleClass="requiredBlock"></apex:outputPanel></apex:outputPanel>
+                                                                    <apex:inputText styleClass="dataInput" value="{!detailDto.dealerAddress}" maxlength="255"/>
+                                                                </td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td class="labelColumn"><apex:outputLabel value="Dealer Suburb" /></td>
+                                                                <td class="dataColumn">
+                                                                    <apex:outputPanel styleClass="requiredInput"><apex:outputPanel styleClass="requiredBlock"></apex:outputPanel></apex:outputPanel>
+                                                                    <apex:inputText styleClass="dataInput" label="Suburb" value="{!detailDto.dealerSubUrb}" />
+                                                                </td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td class="labelColumn"><apex:outputLabel value="Dealer State" /></td>
+                                                                <td class="dataColumn">
+                                                                    <apex:outputPanel styleClass="requiredInput"><apex:outputPanel styleClass="requiredBlock"></apex:outputPanel></apex:outputPanel>
+                                                                    <apex:selectList label="State" value="{!detailDto.dealerState}" multiselect="false" size="1" styleClass="selectList">
+                                                                        <apex:selectOptions value="{!statesOfIssue2Sel}" />
+                                                                    </apex:selectList>
+                                                                </td>
+                                                            </tr>
+                                                            <!-- <tr>
+                                                                <td colspan="2" align="Right">
+                                                                    <apex:actionStatus startText="(processing...)" id="stsProcess2"  />
+                                                                    &nbsp;&nbsp;
+                                                                    <apex:commandButton value="Save Details" action="{!saveVehicleDetails}" styleClass="commandButtons" reRender="msgPanel" status="stsProcess2" />
+                                                                </td>
+                                                            </tr> -->
+                                                        </table> 
+                                                    </td>
+                                                </tr>
+                                            </table>
+                                        </td>
+                                    </tr>
+                                    <tr><td colspan="2"><hr/></td></tr>
+                                    <tr>
+                                        <td colspan="2">
+                                            <table width="98%" cellpadding="2" cellspacing="0">
+                                                <tr>
+                                                    <td colspan="2" class="head2">VD Consultant:&nbsp;{!ws.VD_Approver_Name__c}</td>
+                                                    <td class="head2" align="center">Date</td>
+                                                    <td class="head2" align="center">
+                                                        <apex:outputText value="{0,date}">
+                                                            <apex:param value="{!TODAY()}" />
+                                                        </apex:outputText>
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td colspan="2" class="head2">Dealer</td>
+                                                    <td class="head2" align="center">GST Inclusive</td>
+                                                    <td class="head2" align="center">VD Margin</td>
+                                                </tr>
+                                                <tr>
+                                                    <td width="40%"><apex:outputLabel value="{!$ObjectType.VD_Worksheet__c.fields.Cost_Price__c.Label}" /></td>
+                                                    <td width="20%" rowspan="2">
+                                                        <apex:inputField styleClass="dataInput" value="{!ws.Dealer_Comments__c}"/>
+                                                    </td>
+                                                    <td width="20%" align="right">
+                                                        <apex:outputPanel styleClass="requiredInput"><apex:outputPanel styleClass="requiredBlock"></apex:outputPanel></apex:outputPanel>
+                                                        <apex:inputField styleClass="dataInput2" value="{!ws.Cost_Price__c}">
+                                                            <apex:actionSupport event="onchange" action="{!recalculateFormulas}" reRender="subTotal1, subTotal2, subTotal3, subTotal4, subTotal5, GreatTotal, savvyProfit" />
+                                                        </apex:inputField>
+                                                    </td>
+                                                    <td width="20%" class="cellBlack">&nbsp;</td>
+                                                </tr>
+                                                <tr>
+                                                    <td><apex:outputLabel value="{!$ObjectType.VD_Worksheet__c.fields.Procurement_Fee__c.Label}" /></td>
+                                                    
+                                                    <td align="right">
+                                                        <apex:inputField styleClass="dataInput2" value="{!ws.Procurement_Fee__c}">
+                                                            <apex:actionSupport event="onchange" action="{!recalculateFormulas}" reRender="subTotal1, subTotal2, subTotal3, subTotal4, subTotal5, VDSubTotal1, VDSubTotal2, VDSubTotal3, VDSubTotal4, VDSubTotal5, VDProcMargin, GreatTotal, savvyProfit, marginIncGst, marginExcGst" />
+                                                        </apex:inputField>
+                                                    </td>
+                                                    <td align="right">
+                                                        <apex:outputText value="{0, Number, Currency}" id="VDProcMargin">
+                                                            <apex:param value="{!ws.Procurement_Fee__c}" />
+                                                        </apex:outputText>
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td class="cellTotalInvoice head2" colspan="2"><apex:outputLabel value="Sub Total 1" /></td>
+                                                    
+                                                    <td class="totalSection head2 cellTotalInvoice" align="right">
+                                                        <apex:outputText value="{0, Number, Currency}" id="subTotal1">
+                                                            <apex:param value="{!ws.Dealer_Sub_Total_1__c}" />
+                                                        </apex:outputText>
+                                                    </td>
+                                                    <td class="totalSection head2 cellTotalVD" align="right">
+                                                        <apex:outputText value="{0, Number, Currency}" id="VDSubTotal1">
+                                                            <apex:param value="{!ws.Procurement_Fee__c}" />
+                                                        </apex:outputText>
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td>
+                                                        <apex:outputLabel value="{!$ObjectType.VD_Worksheet__c.fields.Less_Trade_In_Value__c.Label}" />
+                                                    </td>
+                                                    <td>
+                                                        <apex:inputField styleClass="dataInput" value="{!ws.Less_Trade_Comments__c}"/>
+                                                    </td>
+                                                    <td align="right">
+                                                        <apex:inputField styleClass="dataInput2" value="{!ws.Less_Trade_In_Value__c}">
+                                                            <apex:actionSupport event="onchange" action="{!recalculateFormulas}" reRender="subTotal2, VDSubTotal2, VDSubTotal3, VDSubTotal4, VDSubTotal5, marginIncGst, marginExcGst" />
+                                                        </apex:inputField>
+                                                    </td>
+                                                    <td class="cellBlack">&nbsp;</td>
+                                                </tr>
+                                                <tr class="cellVDSettlement">
+                                                    <td><apex:outputLabel value="{!$ObjectType.VD_Worksheet__c.fields.Trading_Customer__c.Label}" /></td>
+                                                    <td>
+                                                        <apex:inputField styleClass="dataInput" value="{!ws.Trading_Customer_Comments__c}"/>
+                                                    </td>
+                                                    <td align="right">
+                                                        <apex:inputField styleClass="dataInput2" value="{!ws.Trading_Customer__c}">
+                                                            <apex:actionSupport event="onchange" action="{!recalculateFormulas}" reRender="subTotal2, subTotal3, subTotal4, subTotal5, VDTradingCustomer, VDSubTotal2, VDSubTotal3, VDSubTotal4, VDSubTotal5, GreatTotal, savvyProfit, VDSavvyProfit, marginIncGst, marginExcGst" />
+                                                        </apex:inputField>
+                                                    </td>
+                                                    <td align="right">
+                                                        <apex:outputText value="{0, Number, Currency}" id="VDTradingCustomer">
+                                                            <apex:param value="{!ws.Less_Trade_In_Value__c - ws.Trading_Customer__c}" />
+                                                        </apex:outputText>
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td><apex:outputLabel value="{!$ObjectType.VD_Worksheet__c.fields.Plus_Payout__c.Label}" /></td>
+                                                    <td>
+                                                        <apex:inputField styleClass="dataInput" value="{!ws.Plus_Payout_Comments__c}"/>
+                                                    </td>
+                                                    <td align="right">
+                                                        <apex:inputField styleClass="dataInput2" value="{!ws.Plus_Payout__c}">
+                                                            <apex:actionSupport event="onchange" action="{!recalculateFormulas}" reRender="subTotal2, subTotal3, subTotal4, subTotal5, GreatTotal, savvyProfit" />
+                                                        </apex:inputField>
+                                                    </td>
+                                                    <td class="cellBlack">&nbsp;</td>
+                                                </tr>
+                                                <tr>
+                                                    <td class="head2 cellTotalInvoice" colspan="2"><apex:outputLabel value="Sub Total 2" /></td>
+                                                    
+                                                    <td class="totalSection head2 cellTotalInvoice" align="right">
+                                                        <apex:outputText value="{0, Number, Currency}" id="subTotal2">
+                                                            <apex:param value="{!ws.Dealer_Sub_Total_2__c}" />
+                                                        </apex:outputText>
+                                                    </td>
+                                                    <td class="totalSection head2 cellTotalVD" align="right">
+                                                        <apex:outputText value="{0, Number, Currency}" id="VDSubTotal2">
+                                                            <apex:param value="{!ws.Dealer_VD_Sub_Total_2__c}" />
+                                                        </apex:outputText>
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td class="head2"><apex:outputLabel value="Dealer Accessories" /></td>
+                                                    <td class="head2" align="center">Wholesale Cost</td>
+                                                    <td class="head2" align="center">Retail Cost</td>
+                                                    <td class="head2" align="center">Profit Margin</td>
+                                                </tr>
+                                                <tr>
+                                                    <td><apex:inputField value="{!ws.Accessory_Label_1__c}" /></td>
+                                                    <td align="right">
+                                                        <apex:inputField styleClass="dataInput2" value="{!ws.Accessory_Dealer_Wholesale_Cost_1__c}">
+                                                            <apex:actionSupport event="onchange" action="{!recalculateFormulas}" reRender="dealerProfit1, dealerWholeTotal, dealerProfitTotal, VDSubTotal3, VDSubTotal4, VDSubTotal5, marginIncGst, marginExcGst" />
+                                                        </apex:inputField>
+                                                    </td>
+                                                    <td align="right">
+                                                        <apex:inputField styleClass="dataInput2" value="{!ws.Accessory_Dealer_Retail_Cost_1__c}">
+                                                            <apex:actionSupport event="onchange" action="{!recalculateFormulas}" reRender="dealerProfit1, dealerRetailTotal, dealerProfitTotal, VDSubTotal3, subTotal3, subTotal4, subTotal5, VDSubTotal4, VDSubTotal5, GreatTotal, savvyProfit, marginIncGst, marginExcGst" />
+                                                        </apex:inputField>
+                                                    </td>
+                                                    <td class="head2" align="right">
+                                                        <apex:outputText value="{0, Number, Currency}" id="dealerProfit1">
+                                                            <apex:param value="{!ws.Accessory_Dealer_Profit_1__c}" />
+                                                        </apex:outputText>
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td><apex:inputField value="{!ws.Accessory_Label_2__c}" /></td>
+                                                    <td align="right">
+                                                        <apex:inputField styleClass="dataInput2" value="{!ws.Accessory_Dealer_Wholesale_Cost_2__c}">
+                                                            <apex:actionSupport event="onchange" action="{!recalculateFormulas}" reRender="dealerProfit2, dealerWholeTotal, dealerProfitTotal, VDSubTotal3, VDSubTotal4, VDSubTotal5, marginIncGst, marginExcGst" />
+                                                        </apex:inputField>
+                                                    </td>
+                                                    <td align="right">
+                                                        <apex:inputField styleClass="dataInput2" value="{!ws.Accessory_Dealer_Retail_Cost_2__c}">
+                                                            <apex:actionSupport event="onchange" action="{!recalculateFormulas}" reRender="dealerProfit2, dealerRetailTotal, dealerProfitTotal, subTotal3, subTotal4, subTotal5, VDSubTotal3, VDSubTotal4, VDSubTotal5, GreatTotal, savvyProfit, marginIncGst, marginExcGst" />
+                                                        </apex:inputField>
+                                                    </td>
+                                                    <td class="head2" align="right">
+                                                        <apex:outputText value="{0, Number, Currency}" id="dealerProfit2">
+                                                            <apex:param value="{!ws.Accessory_Dealer_Profit_2__c}" />
+                                                        </apex:outputText>
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td class="totalSection head2"><apex:outputLabel value="Dealer Invoice (Inc GST) Excluding Accessories" /></td>
+                                                    <td class="totalSection head2" align="right" valign="middle">
+                                                        <apex:outputText value="{0, Number, Currency}" id="dealerWholeTotal">
+                                                            <apex:param value="{!ws.Dealer_Wholesale_Total__c}" />
+                                                        </apex:outputText>
+                                                    </td>
+                                                    <td class="totalSection head2" align="right" valign="middle">
+                                                        <apex:outputText value="{0, Number, Currency}" id="dealerRetailTotal">
+                                                            <apex:param value="{!ws.Dealer_Retail_Total__c}" />
+                                                        </apex:outputText>
+                                                    </td>
+                                                    <td class="totalSection head2" align="right" valign="middle">
+                                                        <apex:outputText value="{0, Number, Currency}" id="dealerProfitTotal">
+                                                            <apex:param value="{!ws.Dealer_Profit_Total__c}" />
+                                                        </apex:outputText>
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td class="head2 cellTotalInvoice" colspan="2"><apex:outputLabel value="Sub Total 3" /></td>
+                                                    
+                                                    <td class="totalSection head2 cellTotalInvoice" align="right" valign="middle">
+                                                        <apex:outputText value="{0, Number, Currency}" id="subTotal3">
+                                                            <apex:param value="{!ws.Dealer_Sub_Total_3__c}" />
+                                                        </apex:outputText>
+                                                    </td>
+                                                    <td class="totalSection head2 cellTotalVD" align="right" valign="middle">
+                                                        <apex:outputText value="{0, Number, Currency}" id="VDSubTotal3">
+                                                            <apex:param value="{!ws.Dealer_VD_Sub_Total_3__c}" />
+                                                        </apex:outputText>
+                                                    </td>
+                                                </tr>
+                                                <tr><td colspan="4"><hr/></td></tr>
+                                                <tr>
+                                                    <td class="head2Under" colspan="3"><br/><apex:outputLabel value="Items Included in VD Invoice" /></td>
+                                                    <td class="head2Under" align="center">VD Margin</td>
+                                                </tr>
+                                                <tr>
+                                                    <td><apex:outputLabel value="{!$ObjectType.VD_Worksheet__c.fields.Deposit_Paid__c.Label}" /></td>
+                                                    <td class="cellBlack" rowspan="4">&nbsp;</td>
+                                                    <td align="right">
+                                                        <apex:inputField styleClass="dataInput2" value="{!ws.Deposit_Paid__c}">
+                                                            <apex:actionSupport event="onchange" action="{!recalculateFormulas}" reRender="subTotal4, subTotal5, itemInvoiceTotal, GreatTotal, savvyProfit" />
+                                                        </apex:inputField>
+                                                    </td>
+                                                    <td class="cellBlack" rowspan="7">&nbsp;</td>
+                                                </tr>
+                                                <tr>
+                                                    <td><apex:outputLabel value="{!$ObjectType.VD_Worksheet__c.fields.Deposit_to_Be_Paid__c.Label}" /></td>
+                                                    
+                                                    <td align="right">
+                                                        <apex:inputField styleClass="dataInput2" value="{!ws.Deposit_to_Be_Paid__c}">
+                                                            <apex:actionSupport event="onchange" action="{!recalculateFormulas}" reRender="subTotal4, subTotal5, itemInvoiceTotal, GreatTotal, savvyProfit" />
+                                                        </apex:inputField>
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td><apex:outputLabel value="{!$ObjectType.VD_Worksheet__c.fields.Deposit_Refund__c.Label}" /></td>
+                                                    
+                                                    <td align="right">
+                                                        <apex:inputField styleClass="dataInput2" value="{!ws.Deposit_Refund__c}">
+                                                            <apex:actionSupport event="onchange" action="{!recalculateFormulas}" reRender="subTotal4, subTotal5, itemInvoiceTotal, GreatTotal, savvyProfit" />
+                                                        </apex:inputField>
+                                                    </td>
+                                                    
+                                                </tr>
+                                                <tr>
+                                                    <td><apex:outputLabel value="{!$ObjectType.VD_Worksheet__c.fields.Stamp_Duty__c.Label}" /></td>
+                                                    
+                                                    <td align="right">
+                                                        <apex:inputField styleClass="dataInput2" value="{!ws.Stamp_Duty__c}">
+                                                            <apex:actionSupport event="onchange" action="{!recalculateFormulas}" reRender="subTotal4, subTotal5, itemInvoiceTotal, GreatTotal, savvyProfit" />
+                                                        </apex:inputField>
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td><apex:outputLabel value="{!$ObjectType.VD_Worksheet__c.fields.Registration__c.Label}" /></td>
+                                                    <td align="right"><apex:inputField value="{!ws.Registration_Time__c}"/></td>
+                                                    <td align="right">
+                                                        <apex:inputField styleClass="dataInput2" value="{!ws.Registration__c}">
+                                                            <apex:actionSupport event="onchange" action="{!recalculateFormulas}" reRender="subTotal4, subTotal5, itemInvoiceTotal, GreatTotal, savvyProfit" />
+                                                        </apex:inputField>
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td><apex:outputLabel value="{!$ObjectType.VD_Worksheet__c.fields.Other__c.Label}" /></td>
+                                                    <td class="cellBlack" rowspan="2">&nbsp;</td>
+                                                    <td align="right">
+                                                        <apex:inputField styleClass="dataInput2" value="{!ws.Other__c}">
+                                                            <apex:actionSupport event="onchange" action="{!recalculateFormulas}" reRender="subTotal4, subTotal5, itemInvoiceTotal, GreatTotal, savvyProfit" />
+                                                        </apex:inputField>
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td class="head3"><apex:outputLabel value="{!$ObjectType.VD_Worksheet__c.fields.Items_VD_Invoice_Total__c.Label}" /></td>
+                                                    <td class="totalSection head2" align="right">
+                                                        <apex:outputField value="{!ws.Items_VD_Invoice_Total__c}" id="itemInvoiceTotal"/>
+                                                        <!-- <apex:outputText value="{0, Number, Currency}" id="itemInvoiceTotal">
+                                                            <apex:param value="{!ws.Items_VD_Invoice_Total__c}" />
+                                                        </apex:outputText> -->
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td class="head2 cellTotalInvoice" colspan="2"><apex:outputLabel value="Sub Total 4" /></td>
+                                                    
+                                                    <td class="totalSection head2 cellTotalInvoice" align="right" valign="middle">
+                                                        <apex:outputText value="{0, Number, Currency}" id="subTotal4">
+                                                            <apex:param value="{!ws.Items_VD_Invoice_Total__c + ws.Dealer_Sub_Total_3__c}" />
+                                                        </apex:outputText>
+                                                    </td>
+                                                    <td class="totalSection head2 cellTotalVD" align="right" valign="middle">
+                                                        <apex:outputText value="{0, Number, Currency}" id="VDSubTotal4">
+                                                            <apex:param value="{!ws.Dealer_VD_Sub_Total_3__c}" />
+                                                        </apex:outputText>
+                                                    </td>
+                                                </tr>
+                                                <tr><td colspan="4"><hr/></td></tr>
+                                                <tr>
+                                                    <td class="head2Under"><apex:outputLabel value="On Vehicles Direct Invoice" /></td>
+                                                    <td class="head2" align="center">Wholesale Cost</td>
+                                                    <td class="head2" align="center">Retail Cost</td>
+                                                    <td class="head2" align="center">Profit Margin</td>
+                                                </tr>
+                                                <tr>
+                                                    <td><apex:inputField value="{!ws.Accessory_Invoice_Label_1__c}" /></td>
+                                                    <td align="right">
+                                                        <apex:inputField styleClass="dataInput2" value="{!ws.Accessory_Invoice_Wholesale_Cost_1__c}">
+                                                            <apex:actionSupport event="onchange" action="{!recalculateFormulas}" reRender="invoiceProfit1, invoiceWholeTotal, invoiceProfitTotal, VDSubTotal5, marginIncGst, marginExcGst" />
+                                                        </apex:inputField>
+                                                    </td>
+                                                    <td align="right">
+                                                        <apex:inputField styleClass="dataInput2" value="{!ws.Accessory_Invoice_Retail_Cost_1__c}">
+                                                            <apex:actionSupport event="onchange" action="{!recalculateFormulas}" reRender="invoiceProfit1, invoiceRetailTotal, invoiceProfitTotal, VDSubTotal5, subTotal5, GreatTotal, savvyProfit, marginIncGst, marginExcGst" />
+                                                        </apex:inputField>
+                                                    </td>
+                                                    <td class="head2" align="right">
+                                                        <apex:outputText value="{0, Number, Currency}" id="invoiceProfit1">
+                                                            <apex:param value="{!ws.Accessory_Invoice_Profit_1__c}" />
+                                                        </apex:outputText>
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td><apex:inputField value="{!ws.Accessory_Invoice_Label_2__c}" /></td>
+                                                    <td align="right">
+                                                        <apex:inputField styleClass="dataInput2" value="{!ws.Accessory_Invoice_Wholesale_Cost_2__c}">
+                                                            <apex:actionSupport event="onchange" action="{!recalculateFormulas}" reRender="invoiceProfit2, invoiceWholeTotal, invoiceProfitTotal, VDSubTotal5, marginIncGst, marginExcGst" />
+                                                        </apex:inputField>
+                                                    </td>
+                                                    <td align="right">
+                                                        <apex:inputField styleClass="dataInput2" value="{!ws.Accessory_Invoice_Retail_Cost_2__c}">
+                                                            <apex:actionSupport event="onchange" action="{!recalculateFormulas}" reRender="invoiceProfit2, invoiceRetailTotal, invoiceProfitTotal, VDSubTotal5, subTotal5, GreatTotal, savvyProfit, marginIncGst, marginExcGst" />
+                                                        </apex:inputField>
+                                                    </td>
+                                                    <td class="head2" align="right">
+                                                        <apex:outputText value="{0, Number, Currency}" id="invoiceProfit2">
+                                                            <apex:param value="{!ws.Accessory_Invoice_Profit_2__c}" />
+                                                        </apex:outputText>
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td><apex:inputField value="{!ws.Accessory_Invoice_Label_3__c}" /></td>
+                                                    <td align="right">
+                                                        <apex:inputField styleClass="dataInput2" value="{!ws.Accessory_Invoice_Wholesale_Cost_3__c}">
+                                                            <apex:actionSupport event="onchange" action="{!recalculateFormulas}" reRender="invoiceProfit3, invoiceWholeTotal, invoiceProfitTotal, VDSubTotal5, marginIncGst, marginExcGst" />
+                                                        </apex:inputField>
+                                                    </td>
+                                                    <td align="right">
+                                                        <apex:inputField styleClass="dataInput2" value="{!ws.Accessory_Invoice_Retail_Cost_3__c}">
+                                                            <apex:actionSupport event="onchange" action="{!recalculateFormulas}" reRender="invoiceProfit3, invoiceRetailTotal, invoiceProfitTotal, VDSubTotal5, subTotal5, GreatTotal, savvyProfit, marginIncGst, marginExcGst" />
+                                                        </apex:inputField>
+                                                    </td>
+                                                    <td class="head2" align="right">
+                                                        <apex:outputText value="{0, Number, Currency}" id="invoiceProfit3">
+                                                            <apex:param value="{!ws.Accessory_Invoice_Profit_3__c}" />
+                                                        </apex:outputText>
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td>Comments</td>
+                                                    <td colspan="3">
+                                                        <apex:inputTextarea rows="3" cols="70" value="{!ws.Invoice_Comments__c}"/>
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td class="totalSection head2"><apex:outputLabel value="Total VD Accessories" /></td>
+                                                    <td class="totalSection head2" align="right" valign="middle">
+                                                        <apex:outputText value="{0, Number, Currency}" id="invoiceWholeTotal">
+                                                            <apex:param value="{!ws.Invoice_Wholesale_Total__c}" />
+                                                        </apex:outputText>
+                                                    </td>
+                                                    <td class="totalSection head2" align="right" valign="middle">
+                                                        <apex:outputText value="{0, Number, Currency}" id="invoiceRetailTotal">
+                                                            <apex:param value="{!ws.Invoice_Retail_Total__c}" />
+                                                        </apex:outputText>
+                                                    </td>
+                                                    <td class="totalSection head2" align="right" valign="middle">
+                                                        <apex:outputText value="{0, Number, Currency}" id="invoiceProfitTotal">
+                                                            <apex:param value="{!ws.Invoice_Profit_Total__c}" />
+                                                        </apex:outputText>
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td class="cellTotalInvoice head2" colspan="2"><apex:outputLabel value="Sub Total 5" /></td>
+                                                    
+                                                    <td class="totalSection head2 cellTotalInvoice" align="right" valign="middle">
+                                                        <apex:outputText value="{0, Number, Currency}" id="subTotal5">
+                                                            <apex:param value="{!ws.Invoice_Subtotal_5__c}" />
+                                                        </apex:outputText>
+                                                    </td>
+                                                    <td class="totalSection head2 cellTotalVD" align="right" valign="middle">
+                                                        <apex:outputText value="{0, Number, Currency}" id="VDSubTotal5">
+                                                            <apex:param value="{!ws.Dealer_VD_Sub_Total_3__c + ws.Invoice_Profit_Total__c}" />
+                                                        </apex:outputText>
+                                                    </td>
+                                                </tr>
+                                                <tr><td colspan="4">&nbsp;</td></tr>
+                                                <tr>
+                                                    <td class="head2Under" colspan="3"><apex:outputLabel value="Wholesale Trade Transactions" /></td>
+                                                    <td class="head2" align="center">VD Margin</td>
+                                                </tr>
+                                                <tr>
+                                                    <td><apex:outputLabel value="{!$ObjectType.VD_Worksheet__c.fields.Dealer_Trade_In_Value__c.Label}"/></td>
+                                                    <td>&nbsp;</td>
+                                                    <td align="right">
+                                                        <apex:inputField styleClass="dataInput2" value="{!ws.Dealer_Trade_In_Value__c}">
+                                                            <apex:actionSupport event="onchange" action="{!recalculateFormulas}" reRender="savvyProfit, VDTradeIn, VDSavvyProfit, marginIncGst, marginExcGst" />
+                                                        </apex:inputField>
+                                                    </td>
+                                                    <td class="cellBlack">&nbsp;</td>
+                                                </tr>
+                                                <tr>
+                                                    <td><apex:outputLabel value="{!$ObjectType.VD_Worksheet__c.fields.Savvy_Trade_In_value__c.Label}" /></td>
+                                                    <td>&nbsp;</td>
+                                                    <td align="right">
+                                                        <apex:inputField styleClass="dataInput2" value="{!ws.Savvy_Trade_In_value__c}">
+                                                            <apex:actionSupport event="onchange" action="{!recalculateFormulas}" reRender="savvyProfit, VDTradeIn, VDSavvyProfit, GreatTotal, marginIncGst, marginExcGst" />
+                                                        </apex:inputField>
+                                                    </td>
+                                                    <td align="right">
+                                                        <apex:outputText value="{0, Number, Currency}" id="VDTradeIn">
+                                                            <apex:param value="{!ws.Dealer_Trade_In_Value__c - ws.Savvy_Trade_In_value__c}" />
+                                                        </apex:outputText>
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td class="head2"><i><apex:outputLabel value="Less" /></i></td>
+                                                    <td class="cellBlack" colspan="3">&nbsp;</td>
+                                                </tr>
+                                                <tr>
+                                                    <td><apex:outputLabel value="{!$ObjectType.VD_Worksheet__c.fields.Payout_To__c.Label}" /></td>
+                                                    <td>&nbsp;</td>
+                                                    <td align="right">
+                                                        <apex:inputField styleClass="dataInput2" value="{!ws.Payout_To__c}">
+                                                            <apex:actionSupport event="onchange" action="{!recalculateFormulas}" reRender="savvyProfit, VDPayout, VDSavvyProfit, GreatTotal, marginIncGst, marginExcGst" />
+                                                        </apex:inputField>
+                                                    </td>
+                                                    <td>&nbsp;</td>
+                                                </tr>
+                                                <tr>
+                                                    <td class="cellTotalInvoice head2" colspan="2"><apex:outputLabel value="{!$ObjectType.VD_Worksheet__c.fields.Savvy_Profit__c.Label}" /></td>
+                                                    <td class="totalSection head2 cellTotalInvoice" align="right">
+                                                        <apex:outputText value="{0, Number, Currency}" id="savvyProfit">
+                                                            <apex:param value="{!ws.Savvy_Profit__c}" />
+                                                        </apex:outputText>
+                                                    </td>
+                                                    <td class="totalSection head2 cellTotalVD" align="right">
+                                                        <apex:outputText value="{0, Number, Currency}" id="VDSavvyProfit">
+                                                            <apex:param value="{!ws.Great_Total_VD_Margin_Inc_GST__c}" />
+                                                        </apex:outputText>
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td colspan="4"><hr/></td>
+                                                </tr>
+                                                <tr class="rowResult">
+                                                    <td class="cellTotalInvoice head3" colspan="2"><apex:outputLabel value="{!$ObjectType.VD_Worksheet__c.fields.Great_Total_on_Vehicle_Direct_Invoice__c.Label}" /></td>
+                                                    
+                                                    <td class="totalSection head3 cellTotalInvoice" align="right">
+                                                        <apex:outputText value="{0, Number, Currency}" id="GreatTotal">
+                                                            <apex:param value="{!ws.Great_Total_on_Vehicle_Direct_Invoice__c}" />
+                                                        </apex:outputText>
+                                                    </td>
+                                                    <td>&nbsp;</td>
+                                                </tr>
+                                                <tr>
+                                                    <td><apex:outputLabel value="{!$ObjectType.VD_Worksheet__c.fields.Deposit_Collected__c.Label}" /></td>
+                                                    <td><apex:inputField styleClass="dataInput2" value="{!ws.Deposit_Collected__c}"/></td>
+                                                    <td>&nbsp;</td>
+                                                    <td>&nbsp;</td>
+                                                </tr>
+                                                <tr>
+                                                    <td><apex:outputLabel value="Deposit to Be Reimbursed" /></td>
+                                                    <td colspan="3"> If Yes please reimburse to client following settlement<br/>
+                                                    *If No then apply to final invoice</td>
+                                                </tr>
+                                                <tr class="rowResult">
+                                                    <td class="head3" colspan="3"><apex:outputLabel value="{!$ObjectType.VD_Worksheet__c.fields.Total_VD_Margin_Inc_GST__c.Label}" /></td>
+                                                    <td class="head3 cellTotalVD" align="right">
+                                                        <apex:outputText value="{0, Number, Currency}" id="marginIncGst">
+                                                            <apex:param value="{!ws.Great_Total_VD_Margin_Inc_GST__c}" />
+                                                        </apex:outputText>
+                                                    </td>
+                                                </tr>
+                                                <tr class="rowResult">
+                                                    <td class="head3" colspan="3"><apex:outputLabel value="{!$ObjectType.VD_Worksheet__c.fields.Total_VD_Margin_Exc_GST__c.Label}" /></td>
+                                                    <td class="totalSection head3" align="right">
+                                                        <apex:outputText value="{0, Number, Currency}" id="marginExcGst">
+                                                            <apex:param value="{!ws.Total_VD_Margin_Exc_GST__c}" />
+                                                        </apex:outputText>
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td class="head2"><apex:outputLabel value="{!$ObjectType.VD_Worksheet__c.fields.Notes__c.Label}" /></td>
+                                                    <td colspan="3">
+                                                        <apex:inputTextarea rows="3" cols="70" value="{!ws.Notes__c}"/>
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td>
+                                                        <ul class="fa-ul"><li><i class="fa-li fa fa-file-pdf-o fa-lg"></i>
+                                                        <apex:outputLink value="/apex/VDWorksheetPdf?id={!opp.Id}&PV=1" target="_blank">Worksheet preview</apex:outputLink></li></ul>
+                                                    </td>
+                                                    <td colspan="3" align="right">
+                                                        <apex:actionStatus startText="(processing...)" id="stsProcess3"  />
+                                                        &nbsp;&nbsp;
+                                                        <apex:commandButton value="Save Worksheet" action="{!saveWorkSheet}" styleClass="commandButtons" reRender="msgPanelWS" status="stsProcess3" />
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td colspan="4">
+                                                        <apex:pageMessages id="msgPanelWS" />
+                                                    </td>
+                                                </tr>
+                                            </table>
+                                        </td>
+                                    </tr>
+                                </table>    
+                            </apex:outputPanel>
+                            <!-- <apex:outputPanel rendered="{!isVDSettlements}"> -->
+                            <apex:outputPanel rendered="false">
+                                <apex:outputPanel styleClass="subSectionTab"><h3>VEHICLES DIRECT WORKSHEET</h3></apex:outputPanel>
+                                <apex:outputPanel layout="block" styleClass="tableSubsection">
+                                    <table width="98%">
+                                        <tr>
+                                            <td colspan="4">
+                                                <ul class="fa-ul"><li><i class="fa-li fa fa-file-pdf-o fa-lg"></i>
+                                                    <apex:outputLink value="/apex/VDWorksheetPdf?id={!opp.Id}" target="_blank">View PDF Worksheet Document</apex:outputLink></li>
+                                                </ul>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td colspan="4"><apex:outputText value="Opportunity:" styleClass="head2" /></td>
+                                        </tr>
+                                        <tr>
+                                            <td width="20%"><b>Opportunity</b></td>
+                                            <td width="30%" class="labelTableData1"><apex:outputLink value="/{!opp.Id}">{!opp.Name}</apex:outputLink></td>
+                                            <td width="20%"><b>Finance Consultant</b></td>
+                                            <td width="30%">{!opp.Owner.Name}</td>
+                                        </tr>
+                                        <tr>
+                                            <td><b>Current Status</b></td>
+                                            <td>{!opp.Status__c}</td>
+                                            <td><b>Current VD Status</b></td>
+                                            <td class="labelTableData1">{!opp.VD_Status_Process__c}</td>
+                                        </tr>
+                                    </table>
+                                    <br/>
+                                    <table width="98%">
+                                        <tr>
+                                            <td colspan="4"><apex:outputText value="Client Details:" styleClass="head2" /></td>
+                                        </tr>
+                                        <tr>
+                                            <td width="20%"><b><apex:outputLabel value="Names Applicant 1: " /></b></td>
+                                            <td width="30%"><apex:outputField value="{!opp.First_Name__c}"/>&nbsp;<apex:outputField value="{!opp.Last_Name__c}"/></td>
+                                            <td width="20%"><b><apex:outputLabel value="Mobile Number:" /></b></td>
+                                            <td width="30%"><apex:outputField value="{!opp.Mobile_Number__c}"/></td>
+                                        </tr>
+                                        <tr>
+                                            <td><b><apex:outputLabel value="Names Applicant 2: " /></b></td>
+                                            <td><apex:outputField value="{!opp.Second_Applicant_First_Name__c}"/>&nbsp;<apex:outputField value="{!opp.Second_Applicant_Last_Name__c}"/></td>
+                                            <td><b><apex:outputLabel value="Home Phone Number: "/></b></td>
+                                            <td><apex:outputField value="{!opp.Home_Phone__c}"/></td>
+                                        </tr>
+                                        <tr>
+                                            <td><b><apex:outputLabel value="Client Address: " /></b></td>
+                                            <td><apex:outputField value="{!opp.Address__c}"/></td>
+                                            <td><b><apex:outputLabel value="Work Phone Number: " /></b></td>
+                                            <td class="dataOneColumn"><apex:outputField value="{!opp.Work_Phone__c}"/></td>
+                                        </tr>
+                                        <tr>
+                                            <td><b><apex:outputLabel value="Email: " /></b></td>
+                                            <td colspan="3"><apex:outputField value="{!opp.Email_Address__c}"/></td>
+                                        </tr>
+                                    </table>
+                                    <br/>
+                                    <table width="98%">
+                                        <tr>
+                                            <td colspan="6"><apex:outputText value="Vehicle Details (Final):" styleClass="head2" /></td>
+                                        </tr>
+                                        <tr>
+                                            <td width="13%"><b>Car Type:</b></td>
+                                            <td width="20%">
+                                                <apex:outputField value="{!opp.New_Used_Final__c}"/>
+                                            </td>
+                                            <td width="14%"><b>Dealer Name:</b></td>
+                                            <td width="20%">
+                                                <apex:outputField styleClass="dataInput" value="{!opp.Dealer_Name__c}"/>
+                                            </td>
+                                            <td  width="13%"><b>Dealer Phone:</b></td>
+                                            <td width="20%">
+                                                <apex:outputField styleClass="dataInput" value="{!opp.Dealer_Phone_Number__c}"/>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td><b>Vehicle ID:</b></td>
+                                            <td>
+                                                <apex:outputField styleClass="dataInput" value="{!opp.Vehicle_ID__c}"/>
+                                            </td>
+                                            <td><b>Dealer Address:</b></td>
+                                            <td>
+                                                <apex:outputField styleClass="dataInput" value="{!opp.Dealer_Address__c}"/>
+                                            </td>
+                                            <td><b>Dealer Mobile:</b></td>
+                                            <td>
+                                                <apex:outputField styleClass="dataInput" value="{!opp.Dealer_Mobile__c}"/>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td><b>Color:</b></td>
+                                            <td>
+                                                <apex:outputField styleClass="dataInput" value="{!opp.Vehicle_Color__c}"/>
+                                            </td>
+                                            <td><b>Dealer Contact:</b></td>
+                                            <td>
+                                                <apex:outputField styleClass="dataInput" value="{!opp.Dealer_Contact_Name__c}"/>
+                                            </td>
+                                            <td><b>Dealer Email:</b></td>
+                                            <td>
+                                                <apex:outputField styleClass="dataInput" value="{!opp.Dealer_Email__c}"/>
+                                            </td>
+                                        </tr>
+                                        
+                                        <tr>
+                                            <td><b>Dealer Street Number:</b></td>
+                                            <td>
+                                                <apex:outputField styleClass="dataInput" value="{!opp.Dealer_Street_Number__c}"/>
+                                            </td>
+                                            <td><b>Dealer Address:</b></td>
+                                            <td>
+                                                <apex:outputField styleClass="dataInput" value="{!opp.Dealer_Address__c}"/>
+                                            </td>
+                                            <td><b>Dealer Street Type:</b></td>
+                                            <td>
+                                                <apex:outputField styleClass="dataInput" value="{!opp.Dealer_Street_Type__c}"/>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td><b>Dealer Suburb:</b></td>
+                                            <td>
+                                                <apex:outputField styleClass="dataInput" value="{!opp.Dealer_Suburb__c}"/>
+                                            </td>
+                                            <td><b>Dealer Postcode:</b></td>
+                                            <td>
+                                                <apex:outputField styleClass="dataInput" value="{!opp.Dealer_Postcode__c}"/>
+                                            </td>
+                                            <td><b>Dealer State:</b></td>
+                                            <td>
+                                                <apex:outputField styleClass="dataInput" value="{!opp.Dealer_State__c}"/>
+                                            </td>
+                                        </tr>
+                                        
+                                        
+                                        <tr>
+                                            <td><b>Registration:</b></td>
+                                            <td>
+                                                <apex:outputField styleClass="dataInput" value="{!opp.Vehicle_Registration__c}"/>
+                                            </td>
+                                            <td colspan="4"><b>Dealer Account Email:</b>&nbsp;<apex:outputField styleClass="dataInput" value="{!opp.Dealer_Account_Email__c}"/></td>
+                                        </tr>
+                                    </table>   
+                                    <hr/>
+
+
+                                    <table width="98%" cellpadding="2" cellspacing="0">
+                                        <tr>
+                                            <td colspan="2" class="head2">VD Consultan:&nbsp;{!ws.VD_Approver_Name__c}</td>
+                                            <td class="head2" align="center">Date</td>
+                                            <td class="head2" align="center">
+                                                <apex:outputText value="{0,date}">
+                                                    <apex:param value="{!ws.VD_Approval_Date__c}" />
+                                                </apex:outputText>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td colspan="2" class="head2">Dealer</td>
+                                            <td class="head2" align="center">GST Inclusive</td>
+                                            <td class="head2" align="center">VD Margin</td>
+                                        </tr>
+                                        <tr>
+                                            <td width="40%"><apex:outputLabel value="{!$ObjectType.VD_Worksheet__c.fields.Cost_Price__c.Label}" /></td>
+                                            <td width="20%" rowspan="2">
+                                                <apex:outputField value="{!ws.Dealer_Comments__c}"/>
+                                            </td>
+                                            <td width="20%" align="right">
+                                                <apex:outputField value="{!ws.Cost_Price__c}"/>
+                                            </td>
+                                            <td width="20%" class="cellBlack">&nbsp;</td>
+                                        </tr>
+                                        <tr>
+                                            <td><apex:outputLabel value="{!$ObjectType.VD_Worksheet__c.fields.Procurement_Fee__c.Label}" /></td>
+                                            <td align="right">
+                                                <apex:outputField value="{!ws.Procurement_Fee__c}"/>
+                                            </td>
+                                            <td align="right">
+                                                <apex:outputField value="{!ws.Procurement_Fee__c}"/>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td class="cellTotalInvoice head2" colspan="2"><apex:outputLabel value="Sub Total 1" /></td>
+                                            <td class="totalSection head2 cellTotalInvoice" align="right">
+                                                <apex:outputField value="{!ws.Dealer_Sub_Total_1__c}"/>
+                                            </td>
+                                            <td class="totalSection head2 cellTotalVD" align="right">
+                                                <apex:outputField value="{!ws.Procurement_Fee__c}"/>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>
+                                                <apex:outputLabel value="{!$ObjectType.VD_Worksheet__c.fields.Less_Trade_In_Value__c.Label}" />
+                                            </td>
+                                            <td>
+                                                <apex:outputField value="{!ws.Less_Trade_Comments__c}"/>
+                                            </td>
+                                            <td align="right">
+                                                <apex:outputField value="{!ws.Less_Trade_In_Value__c}"/>
+                                            </td>
+                                            <td class="cellBlack">&nbsp;</td>
+                                        </tr>
+                                        <tr class="cellVDSettlement">
+                                            <td><apex:outputLabel value="{!$ObjectType.VD_Worksheet__c.fields.Trading_Customer__c.Label}" /></td>
+                                            <td>
+                                                <apex:outputField value="{!ws.Trading_Customer_Comments__c}"/>
+                                            </td>
+                                            <td align="right">
+                                                <apex:outputField value="{!ws.Trading_Customer__c}"/>
+                                            </td>
+                                            <td align="right">
+                                                <apex:outputText value="{0, Number, Currency}">
+                                                    <apex:param value="{!ws.Less_Trade_In_Value__c - ws.Trading_Customer__c}" />
+                                                </apex:outputText>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td><apex:outputLabel value="{!$ObjectType.VD_Worksheet__c.fields.Plus_Payout__c.Label}" /></td>
+                                            <td>
+                                                <apex:outputField value="{!ws.Plus_Payout_Comments__c}"/>
+                                            </td>
+                                            <td align="right">
+                                                <apex:outputField value="{!ws.Plus_Payout__c}"/>
+                                            </td>
+                                            <td class="cellBlack">&nbsp;</td>
+                                        </tr>
+                                        <tr>
+                                            <td class="head2 cellTotalInvoice" colspan="2"><apex:outputLabel value="Sub Total 2" /></td>
+                                            
+                                            <td class="totalSection head2 cellTotalInvoice" align="right">
+                                                <apex:outputText value="{0, Number, Currency}">
+                                                    <apex:param value="{!ws.Dealer_Sub_Total_2__c}" />
+                                                </apex:outputText>
+                                            </td>
+                                            <td class="totalSection head2 cellTotalVD" align="right">
+                                                <apex:outputText value="{0, Number, Currency}">
+                                                    <apex:param value="{!ws.Dealer_VD_Sub_Total_2__c}" />
+                                                </apex:outputText>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td class="head2"><apex:outputLabel value="Dealer Accessories" /></td>
+                                            <td class="head2" align="center">Wholesale Cost</td>
+                                            <td class="head2" align="center">Retail Cost</td>
+                                            <td class="head2" align="center">Profit Margin</td>
+                                        </tr>
+                                        <tr>
+                                            <td><apex:outputField value="{!ws.Accessory_Label_1__c}" /></td>
+                                            <td align="right">
+                                                <apex:outputField value="{!ws.Accessory_Dealer_Wholesale_Cost_1__c}"/>
+                                            </td>
+                                            <td align="right">
+                                                <apex:outputField value="{!ws.Accessory_Dealer_Retail_Cost_1__c}"/>
+                                            </td>
+                                            <td class="head2" align="right">
+                                                <apex:outputText value="{0, Number, Currency}">
+                                                    <apex:param value="{!ws.Accessory_Dealer_Profit_1__c}" />
+                                                </apex:outputText>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td><apex:outputField value="{!ws.Accessory_Label_2__c}" /></td>
+                                            <td align="right">
+                                                <apex:outputField value="{!ws.Accessory_Dealer_Wholesale_Cost_2__c}"/>
+                                            </td>
+                                            <td align="right">
+                                                <apex:outputField value="{!ws.Accessory_Dealer_Retail_Cost_2__c}"/>
+                                            </td>
+                                            <td class="head2" align="right">
+                                                <apex:outputText value="{0, Number, Currency}">
+                                                    <apex:param value="{!ws.Accessory_Dealer_Profit_2__c}" />
+                                                </apex:outputText>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td class="totalSection head2"><apex:outputLabel value="Dealer Invoice (Inc GST) Excluding Accessories" /></td>
+                                            <td class="totalSection head2" align="right" valign="middle">
+                                                <apex:outputText value="{0, Number, Currency}">
+                                                    <apex:param value="{!ws.Dealer_Wholesale_Total__c}" />
+                                                </apex:outputText>
+                                            </td>
+                                            <td class="totalSection head2" align="right" valign="middle">
+                                                <apex:outputText value="{0, Number, Currency}">
+                                                    <apex:param value="{!ws.Dealer_Retail_Total__c}" />
+                                                </apex:outputText>
+                                            </td>
+                                            <td class="totalSection head2" align="right" valign="middle">
+                                                <apex:outputText value="{0, Number, Currency}">
+                                                    <apex:param value="{!ws.Dealer_Profit_Total__c}" />
+                                                </apex:outputText>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td class="head2 cellTotalInvoice" colspan="2"><apex:outputLabel value="Sub Total 3" /></td>
+                                            
+                                            <td class="totalSection head2 cellTotalInvoice" align="right" valign="middle">
+                                                <apex:outputText value="{0, Number, Currency}">
+                                                    <apex:param value="{!ws.Dealer_Sub_Total_3__c}" />
+                                                </apex:outputText>
+                                            </td>
+                                            <td class="totalSection head2 cellTotalVD" align="right" valign="middle">
+                                                <apex:outputText value="{0, Number, Currency}">
+                                                    <apex:param value="{!ws.Dealer_VD_Sub_Total_3__c}" />
+                                                </apex:outputText>
+                                            </td>
+                                        </tr>
+                                        <tr><td colspan="4"><hr/></td></tr>
+                                        <tr>
+                                            <td class="head2Under" colspan="3"><apex:outputLabel value="Items Included in VD Invoice" /></td>
+                                            <td class="head2Under" align="center">VD Margin</td>
+                                        </tr>
+                                        <tr>
+                                            <td><apex:outputLabel value="{!$ObjectType.VD_Worksheet__c.fields.Deposit_Paid__c.Label}" /></td>
+                                            <td class="cellBlack" rowspan="4">&nbsp;</td>
+                                            <td align="right">
+                                                <apex:outputField value="{!ws.Deposit_Paid__c}"/>
+                                            </td>
+                                            <td class="cellBlack" rowspan="7">&nbsp;</td>
+                                        </tr>
+                                        <tr>
+                                            <td><apex:outputLabel value="{!$ObjectType.VD_Worksheet__c.fields.Deposit_to_Be_Paid__c.Label}" /></td>
+                                            
+                                            <td align="right">
+                                                <apex:outputField value="{!ws.Deposit_to_Be_Paid__c}"/>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td><apex:outputLabel value="{!$ObjectType.VD_Worksheet__c.fields.Deposit_Refund__c.Label}" /></td>
+                                            
+                                            <td align="right">
+                                                <apex:outputField value="{!ws.Deposit_Refund__c}"/>
+                                            </td>
+                                            
+                                        </tr>
+                                        <tr>
+                                            <td><apex:outputLabel value="{!$ObjectType.VD_Worksheet__c.fields.Stamp_Duty__c.Label}" /></td>
+                                            
+                                            <td align="right">
+                                                <apex:outputField value="{!ws.Stamp_Duty__c}"/>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td><apex:outputLabel value="{!$ObjectType.VD_Worksheet__c.fields.Registration__c.Label}" /></td>
+                                            <td align="right"><apex:outputField value="{!ws.Registration_Time__c}"/></td>
+                                            <td align="right">
+                                                <apex:outputField value="{!ws.Registration__c}"/>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td><apex:outputLabel value="{!$ObjectType.VD_Worksheet__c.fields.Other__c.Label}" /></td>
+                                            <td class="cellBlack" rowspan="2">&nbsp;</td>
+                                            <td align="right">
+                                                <apex:outputField value="{!ws.Other__c}"/>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td class="head3"><apex:outputLabel value="{!$ObjectType.VD_Worksheet__c.fields.Items_VD_Invoice_Total__c.Label}" /></td>
+                                            <td class="totalSection head2" align="right">
+                                                <apex:outputField value="{!ws.Items_VD_Invoice_Total__c}"/>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td class="head2 cellTotalInvoice" colspan="2"><apex:outputLabel value="Sub Total 4" /></td>
+                                            
+                                            <td class="totalSection head2 cellTotalInvoice" align="right" valign="middle">
+                                                <apex:outputText value="{0, Number, Currency}">
+                                                    <apex:param value="{!ws.Items_VD_Invoice_Total__c + ws.Dealer_Sub_Total_3__c}" />
+                                                </apex:outputText>
+                                            </td>
+                                            <td class="totalSection head2 cellTotalVD" align="right" valign="middle">
+                                                <apex:outputText value="{0, Number, Currency}">
+                                                    <apex:param value="{!ws.Dealer_VD_Sub_Total_3__c}" />
+                                                </apex:outputText>
+                                            </td>
+                                        </tr>
+                                        <tr><td colspan="4"><hr/></td></tr>
+                                        <tr>
+                                            <td class="head2Under"><apex:outputLabel value="On Vehicles Direct Invoice" /></td>
+                                            <td class="head2" align="center">Wholesale Cost</td>
+                                            <td class="head2" align="center">Retail Cost</td>
+                                            <td class="head2" align="center">Profit Margin</td>
+                                        </tr>
+                                        <tr>
+                                            <td><apex:outputField value="{!ws.Accessory_Invoice_Label_1__c}" /></td>
+                                            <td align="right">
+                                                <apex:outputField value="{!ws.Accessory_Invoice_Wholesale_Cost_1__c}"/>
+                                            </td>
+                                            <td align="right">
+                                                <apex:outputField value="{!ws.Accessory_Invoice_Retail_Cost_1__c}"/>
+                                            </td>
+                                            <td class="head2" align="right">
+                                                <apex:outputText value="{0, Number, Currency}">
+                                                    <apex:param value="{!ws.Accessory_Invoice_Profit_1__c}" />
+                                                </apex:outputText>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td><apex:outputField value="{!ws.Accessory_Invoice_Label_2__c}" /></td>
+                                            <td align="right">
+                                                <apex:outputField value="{!ws.Accessory_Invoice_Wholesale_Cost_2__c}"/>
+                                            </td>
+                                            <td align="right">
+                                                <apex:outputField value="{!ws.Accessory_Invoice_Retail_Cost_2__c}"/>
+                                            </td>
+                                            <td class="head2" align="right">
+                                                <apex:outputText value="{0, Number, Currency}">
+                                                    <apex:param value="{!ws.Accessory_Invoice_Profit_2__c}" />
+                                                </apex:outputText>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td><apex:outputField value="{!ws.Accessory_Invoice_Label_3__c}" /></td>
+                                            <td align="right">
+                                                <apex:outputField value="{!ws.Accessory_Invoice_Wholesale_Cost_3__c}"/>
+                                            </td>
+                                            <td align="right">
+                                                <apex:outputField value="{!ws.Accessory_Invoice_Retail_Cost_3__c}"/>
+                                            </td>
+                                            <td class="head2" align="right">
+                                                <apex:outputText value="{0, Number, Currency}">
+                                                    <apex:param value="{!ws.Accessory_Invoice_Profit_3__c}" />
+                                                </apex:outputText>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>Comments</td>
+                                            <td colspan="3">
+                                                <apex:outputText value="{!ws.Invoice_Comments__c}"/>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td class="totalSection head2"><apex:outputLabel value="Total VD Accessories" /></td>
+                                            <td class="totalSection head2" align="right" valign="middle">
+                                                <apex:outputText value="{0, Number, Currency}">
+                                                    <apex:param value="{!ws.Invoice_Wholesale_Total__c}" />
+                                                </apex:outputText>
+                                            </td>
+                                            <td class="totalSection head2" align="right" valign="middle">
+                                                <apex:outputText value="{0, Number, Currency}">
+                                                    <apex:param value="{!ws.Invoice_Retail_Total__c}" />
+                                                </apex:outputText>
+                                            </td>
+                                            <td class="totalSection head2" align="right" valign="middle">
+                                                <apex:outputText value="{0, Number, Currency}">
+                                                    <apex:param value="{!ws.Invoice_Profit_Total__c}" />
+                                                </apex:outputText>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td class="cellTotalInvoice head2" colspan="2"><apex:outputLabel value="Sub Total 5" /></td>
+                                            
+                                            <td class="totalSection head2 cellTotalInvoice" align="right" valign="middle">
+                                                <apex:outputText value="{0, Number, Currency}">
+                                                    <apex:param value="{!ws.Invoice_Subtotal_5__c}" />
+                                                </apex:outputText>
+                                            </td>
+                                            <td class="totalSection head2 cellTotalVD" align="right" valign="middle">
+                                                <apex:outputText value="{0, Number, Currency}">
+                                                    <apex:param value="{!ws.Dealer_VD_Sub_Total_3__c + ws.Invoice_Profit_Total__c}" />
+                                                </apex:outputText>
+                                            </td>
+                                        </tr>
+                                        <tr><td colspan="4">&nbsp;</td></tr>
+                                        <tr>
+                                            <td class="head2Under" colspan="3"><apex:outputLabel value="Wholesale Trade Transactions" /></td>
+                                            <td class="head2" align="center">VD Margin</td>
+                                        </tr>
+                                        <tr>
+                                            <td><apex:outputLabel value="{!$ObjectType.VD_Worksheet__c.fields.Dealer_Trade_In_Value__c.Label}"/></td>
+                                            <td>&nbsp;</td>
+                                            <td align="right">
+                                                <apex:outputField value="{!ws.Dealer_Trade_In_Value__c}"/>
+                                            </td>
+                                            <td class="cellBlack">&nbsp;</td>
+                                        </tr>
+                                        <tr>
+                                            <td><apex:outputLabel value="{!$ObjectType.VD_Worksheet__c.fields.Savvy_Trade_In_value__c.Label}" /></td>
+                                            <td>&nbsp;</td>
+                                            <td align="right">
+                                                <apex:outputField value="{!ws.Savvy_Trade_In_value__c}"/>
+                                            </td>
+                                            <td align="right">
+                                                <apex:outputText value="{0, Number, Currency}">
+                                                    <apex:param value="{!ws.Dealer_Trade_In_Value__c - ws.Savvy_Trade_In_value__c}" />
+                                                </apex:outputText>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td class="head2"><i><apex:outputLabel value="Less" /></i></td>
+                                            <td class="cellBlack" colspan="3">&nbsp;</td>
+                                        </tr>
+                                        <tr>
+                                            <td><apex:outputLabel value="{!$ObjectType.VD_Worksheet__c.fields.Payout_To__c.Label}" /></td>
+                                            <td>&nbsp;</td>
+                                            <td align="right">
+                                                <apex:outputField value="{!ws.Payout_To__c}"/>
+                                            </td>
+                                            <td>&nbsp;</td>
+                                        </tr>
+                                        <tr>
+                                            <td class="cellTotalInvoice head2" colspan="2"><apex:outputLabel value="{!$ObjectType.VD_Worksheet__c.fields.Savvy_Profit__c.Label}" /></td>
+                                            <td class="totalSection head2 cellTotalInvoice" align="right">
+                                                <apex:outputText value="{0, Number, Currency}">
+                                                    <apex:param value="{!ws.Savvy_Profit__c}" />
+                                                </apex:outputText>
+                                            </td>
+                                            <td class="totalSection head2 cellTotalVD" align="right">
+                                                <apex:outputText value="{0, Number, Currency}">
+                                                    <apex:param value="{!ws.Great_Total_VD_Margin_Inc_GST__c}" />
+                                                </apex:outputText>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td colspan="4"><hr/></td>
+                                        </tr>
+                                        <tr class="rowResult">
+                                            <td class="cellTotalInvoice head3" colspan="2"><apex:outputLabel value="{!$ObjectType.VD_Worksheet__c.fields.Great_Total_on_Vehicle_Direct_Invoice__c.Label}" /></td>
+                                            
+                                            <td class="totalSection head3 cellTotalInvoice" align="right">
+                                                <apex:outputText value="{0, Number, Currency}">
+                                                    <apex:param value="{!ws.Great_Total_on_Vehicle_Direct_Invoice__c}" />
+                                                </apex:outputText>
+                                            </td>
+                                            <td>&nbsp;</td>
+                                        </tr>
+                                        <tr>
+                                            <td><apex:outputLabel value="{!$ObjectType.VD_Worksheet__c.fields.Deposit_Collected__c.Label}" /></td>
+                                            <td><apex:outputField value="{!ws.Deposit_Collected__c}"/></td>
+                                            <td>&nbsp;</td>
+                                            <td>&nbsp;</td>
+                                        </tr>
+                                        <tr>
+                                            <td><apex:outputLabel value="Deposit to Be Reimbursed" /></td>
+                                            <td colspan="3"> If Yes please reimburse to client following settlement<br/>
+                                            *If No then apply to final invoice</td>
+                                        </tr>
+                                        <tr class="rowResult">
+                                            <td class="head3" colspan="3"><apex:outputLabel value="{!$ObjectType.VD_Worksheet__c.fields.Total_VD_Margin_Inc_GST__c.Label}" /></td>
+                                            <td class="head3 cellTotalVD" align="right">
+                                                <apex:outputText value="{0, Number, Currency}">
+                                                    <apex:param value="{!ws.Great_Total_VD_Margin_Inc_GST__c}" />
+                                                </apex:outputText>
+                                            </td>
+                                        </tr>
+                                        <tr class="rowResult">
+                                            <td class="head3" colspan="3"><apex:outputLabel value="{!$ObjectType.VD_Worksheet__c.fields.Total_VD_Margin_Exc_GST__c.Label}" /></td>
+                                            <td class="totalSection head3" align="right">
+                                                <apex:outputText value="{0, Number, Currency}">
+                                                    <apex:param value="{!ws.Total_VD_Margin_Exc_GST__c}" />
+                                                </apex:outputText>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td class="head2"><apex:outputLabel value="{!$ObjectType.VD_Worksheet__c.fields.Notes__c.Label}" /></td>
+                                            <td colspan="3">
+                                                <apex:outputField value="{!ws.Notes__c}"/>
+                                            </td>
+                                        </tr>
+                                    </table>
+
+
+
+
+
+
+
+
+
+
+
+                                </apex:outputPanel>
+                            </apex:outputPanel>
+						</td>
+						<td width="40%" class="cellMultiTables cellExtraLeftPading cellExtraRigthPading">
+							<apex:outputPanel styleClass="subSectionTab"><h3>APPROVAL PROCESS</h3></apex:outputPanel>
+                            <table class="tableSubsection" cellpadding="5">
+                            	<tr>
+                            		<td width="30%">Action</td>
+                            		<td width="70%">
+                                        <apex:selectRadio value="{!actionSelected}" layout="pageDirection">
+                                        	<apex:selectOptions value="{!actionOptions}"/>
+                                        	<!-- <apex:actionSupport event="onchange" reRender="fldReasons" /> -->
+                                        </apex:selectRadio>
+                                    </td>
+                            	</tr>
+                            	<!-- <tr>
+                                    <td>Reason</td>
+                                    <td>
+                                        <apex:selectList value="{!declineSelected}" multiselect="false" id="fldReasons"
+                                        				 disabled="{!actionSelected != 'DEC'}" size="1">
+                                        	<apex:selectOptions value="{!declineOptions}"  />
+                                        </apex:selectList>
+                                    </td>
+                                    <td>&nbsp;</td>
+                                </tr> -->
+                                <tr>
+                                    <td>Comments</td>
+                                    <td>
+                                        <apex:inputTextarea styleClass="dataInput" value="{!noteText}" cols="50" rows="5" id="fldNotes" >
+                                    	</apex:inputTextarea>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>&nbsp;</td>
+                                    <td>
+                                        <apex:commandButton value="Process" action="{!approveProcess}" styleClass="commandButtons" 
+                                        reRender="fldNotes, msgPanel" status="stsProcess" /> &nbsp;&nbsp;&nbsp;
+                                        <apex:commandButton value="Reject" action="{!rejectProcess}" styleClass="commandButtons" 
+                                        reRender="fldNotes, msgPanel" status="stsProcess" rendered="false" /> &nbsp;&nbsp;&nbsp;
+                                        <apex:commandButton value="Cancel" action="{!cancelProcess}" styleClass="commandButtons" 
+                                        reRender="fldNotes, msgPanel" status="stsProcess" />
+                                        <apex:actionStatus startText="(processing...)" id="stsProcess"  />
+                                    </td>
+                                </tr>
+                            </table>
+						</td>
+					</tr>
+				</table>
+	        </apex:outputPanel>
+            
+            <!-- APPROVAL HISTORY -->
+            <apex:outputPanel layout="block" styleClass="section" rendered="false">
+                <div class="divTitle">Approval History</div>
+                <apex:dataTable value="{!allApprovalHistory}" var="step" rowClasses="odd,even" 
+                                styleClass="tableClass"  cellpadding="4" width="100%" align="center" 
+                                cellspacing="4">
+                    <apex:column headerValue="Action" breakbefore="true" width="15%">
+                        <apex:outputField value="{!step.nodeStep.Name}" />
+                        <apex:outputText value="Approval Request Submitted" rendered="{!ISNULL(step.nodeStep)}" />
+                    </apex:column>
+                    <apex:column headerValue="Status" width="7%">
+                        <apex:image url="{!$Resource.ApprovalIcon}" width="16" height="16" rendered="{!step.instanceStep.StepStatus == 'Approved'}" />
+                        <apex:image url="{!$Resource.RejectionIcon}" width="16" height="16" rendered="{!step.instanceStep.StepStatus == 'Rejected'}" />&nbsp;&nbsp;
+                        <apex:outputField value="{!step.instanceStep.StepStatus}" />
+                    </apex:column>
+                    <apex:column headerValue="Date" width="10%">
+                        <apex:outputField value="{!step.instanceStep.CreatedDate}" />
+                    </apex:column>
+                    <apex:column headerValue="Assigned To" width="9%">
+                        <apex:outputField value="{!step.instanceStep.CreatedById}" />
+                    </apex:column>
+                    <apex:column headerValue="Actual Approver" width="9%">
+                        <apex:outputField value="{!step.instanceStep.ActorId}" />
+                    </apex:column>
+                    <apex:column headerValue="Comments" width="50%">
+                        <apex:outputField value="{!step.instanceStep.Comments}" />
+                    </apex:column>
+                </apex:dataTable>
+            </apex:outputPanel>
+            </apex:pageBlock>
+	    </apex:form>
+        <apex:outputField value="{!ws.VD_Approver__c}" rendered="false" />
+	</apex:outputPanel>
+</apex:page>

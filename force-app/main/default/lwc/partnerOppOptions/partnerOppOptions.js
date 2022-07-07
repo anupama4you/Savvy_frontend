@@ -4,11 +4,12 @@ import { NavigationMixin } from "lightning/navigation";
 import { getRecord, getFieldValue } from "lightning/uiRecordApi";
 import NAME_FIELD from "@salesforce/schema/Custom_Opportunity__c.Name";
 import STATUS_FIELD from "@salesforce/schema/Custom_Opportunity__c.Status__c";
+import PARTNER_EXTERNAL_FIELD from "@salesforce/schema/Custom_Opportunity__c.Partner_Is_External__c";
 import myEquifaxIcon from "@salesforce/resourceUrl/EquifaxIcon";
 import myVDIcon from "@salesforce/resourceUrl/VDIcon";
 import getOppQuoting from "@salesforce/apex/PartnerCommunityController.getOppQuoting";
 
-const fields = [NAME_FIELD, STATUS_FIELD];
+const fields = [NAME_FIELD, STATUS_FIELD, PARTNER_EXTERNAL_FIELD];
 export default class PartnerOppOptions extends NavigationMixin(LightningElement) {
   @api recordId;
   appUrl;
@@ -51,19 +52,19 @@ export default class PartnerOppOptions extends NavigationMixin(LightningElement)
     }
     // console.log(JSON.stringify(this.record));
     // console.log(JSON.stringify(this.error));
-    console.log(
-      `Record id: ${this.recordId} [${this.oppName}] > ${document.title}`
-    );
+    // console.log(
+    //   `Record id: ${this.recordId} [${this.oppName}] > ${document.title}`
+    // );
   }
 
   @wire(getOppQuoting, { oppId: "$recordId", fields: ["Id", "Name"] })
   wireQuoting({ error, data }) {
-    console.log(`wiring quoting...`);
+    // console.log(`wiring quoting...`);
     if (data) {
-      console.log(JSON.stringify(data, null, 2));
+      // console.log(JSON.stringify(data, null, 2));
       this.quoting = data;
     } else if (error) {
-      console.log(error);
+      console.error(error);
       this.quoting = undefined;
     }
   }
@@ -78,7 +79,7 @@ export default class PartnerOppOptions extends NavigationMixin(LightningElement)
         .then((url) => {
           this.uploadUrl = url;
         })
-        .catch((err) => console.log(err));
+        .catch((err) => console.error(err));
 
       pageRef = this.buildPageRef("partnerConsole__c",{selCmp:'vedaComponent'});
       //pageRef = this.buildPageRef("Equifax__c");
@@ -86,28 +87,28 @@ export default class PartnerOppOptions extends NavigationMixin(LightningElement)
         .then((url) => {
           this.equifaxUrl = url;
         })
-        .catch((err) => console.log(err));
+        .catch((err) => console.error(err));
 
       pageRef = this.buildPageRef("partnerConsole__c",{selCmp:'emailComponent'});
       this[NavigationMixin.GenerateUrl](pageRef)
         .then((url) => {
           this.emailUrl = url;
         })
-        .catch((err) => console.log(err));
+        .catch((err) => console.error(err));
 
       pageRef = this.buildPageRef("Send_SMS__c");
       this[NavigationMixin.GenerateUrl](pageRef)
         .then((url) => {
           this.smsUrl = url;
         })
-        .catch((err) => console.log(err));
+        .catch((err) => console.error(err));
 
       pageRef = this.buildPageRef("partnerConsole__c", {selCmp:'vehicleDirectComponent'});
       this[NavigationMixin.GenerateUrl](pageRef)
         .then((url) => {
           this.vdUrl = url;
         })
-        .catch((err) => console.log(err));
+        .catch((err) => console.error(err));
     }
   }
 

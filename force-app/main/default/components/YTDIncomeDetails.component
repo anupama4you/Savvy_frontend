@@ -1,0 +1,211 @@
+<apex:component >
+    <apex:attribute name="srv" type="Application_Servicing__c" description="Servicing Calculation Data" required="true"/>
+    <apex:attribute name="applicantType" type="String" description="Applicant Type" required="true"/>
+    <apex:attribute name="YTDincomesApp" type="YTD_Income__c[]" description="Income"/>
+    <apex:attribute name="numApplicant" type="Integer" description="Applicant number" required="true"/>
+    <apex:attribute name="incomesApp" type="Application_Income__c[]" description="Income"/>
+    <apex:repeat value="{!YTDincomesApp}" var="ytd">    
+        <apex:outputPanel rendered="{!ytd.Type__c=='Esanda'}">
+            <table width="100%" border="1">
+                <tr><td colspan="4" class="tableCaption"><strong>YTD/Income - {!applicantType}</strong></td></tr>
+                <tr>
+                    <td width="25%" class="labelDate">Start Date</td>
+                    <td width="25%">
+                        <apex:outputField value="{!ytd.Start_Date__c}"/>
+                    </td>
+                    <td width="25%" class="labelDate">End Date</td>
+                    <td width="25%">
+                        <apex:outputField value="{!ytd.End_Date__c}"/>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="labelDate">Net YTD from Payslip</td>
+                    <td>
+                        <apex:outputField value="{!ytd.Net_Annual_Income__c }"/>
+                    </td>
+                    <td class="labelDate">Annual Gross Base Income</td>
+                    <td>
+                        <apex:outputField value="{!ytd.Gross_YTD_Income__c}"/>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="labelDate" rowspan="2" valign="top">Full Time Salary (Monthly)</td>
+                    <td rowspan="2" valign="top">
+                        <apex:outputField value="{!ytd.Gross_Net_Income__c}"/>
+                    </td>
+                    <td class="labelDate">Overtime</td>
+                    <td>
+                        <apex:outputField value="{!ytd.Difference__c}"/>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="labelDate">Bonuses</td>
+                    <td>
+                        <!-- <apex:outputField value="{!ytd.Income_1_2__c}" rendered="{!numApplicant=1}" />
+<apex:outputField value="{!ytd.Income_2_2__c}" rendered="{!numApplicant=2}" /> -->
+                    </td>
+                </tr>
+            </table>
+        </apex:outputPanel>
+        <apex:outputPanel rendered="{!ytd.Type__c=='Pepper'}">
+            <table width="100%" border="1">
+                <tr><td colspan="4" class="tableCaption"><strong>YTD/Income - {!applicantType}</strong></td></tr>
+                <tr>
+                    <td width="25%" class="labelDate">Start Date</td>
+                    <td width="25%">
+                        <apex:outputField value="{!ytd.Start_Date__c}"/>
+                    </td>
+                    <td width="25%" class="labelDate">End Date</td>
+                    <td width="25%">
+                        <apex:outputField value="{!ytd.End_Date__c}"/>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="labelDate">Net YTD from Payslip</td>
+                    <td>
+                        <apex:outputField value="{!ytd.Net_Annual_Income__c}"/>
+                    </td>
+                    <td class="labelDate">Gross YTD Income From Payslip</td>
+                    <td>
+                        <apex:outputField value="{!ytd.Gross_YTD_Income__c}"/>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="labelDate">Net Monthly Income</td>
+                    <td>
+                        <apex:outputField value="{!ytd.Net_Income__c}" rendered="{!ytd.Net_Income__c <= ytd.Gross_Net_Income__c}" />
+                        <apex:outputField value="{!ytd.Gross_Net_Income__c}" rendered="{!ytd.Gross_Net_Income__c < ytd.Net_Income__c}" />
+                    </td>
+                    <td class="labelDate" colspan="2">&nbsp;</td>
+                </tr>
+            </table>
+        </apex:outputPanel>
+        <apex:outputPanel rendered="{!ytd.Type__c=='Macquarie'}">
+            <table width="100%" border="1">
+                <tr><td colspan="4" class="tableCaption"><strong>YTD/Income - {!applicantType}</strong></td></tr>
+                <tr>
+                    <td width="25%" class="labelDate">Start Date</td>
+                    <td width="25%">
+                        <apex:outputField value="{!ytd.Start_Date__c}"/>
+                    </td>
+                    <td width="25%" class="labelDate">End Date</td>
+                    <td width="25%">
+                        <apex:outputField value="{!ytd.End_Date__c}"/>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="labelDate">Net Year-to-Date From Payslip</td>
+                    <td>
+                        <apex:outputField value="{!ytd.Net_Annual_Income__c}"/>
+                    </td>
+                    <td class="labelDate">Most Recent Payslip Net Income</td>
+                    <td>
+                        <apex:outputField value="{!ytd.Net_Last_Income__c}"/>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="labelDate" valign="top">Net Year-to-Date Salary (Monthly)</td>
+                    <td valign="top">
+                        <apex:outputField value="{!ytd.Net_YTD_Salary_Monthly__c}"/>
+                    </td>
+                    <td class="labelDate">Pay Period (Monthly)</td>
+                    <td>
+                        <apex:outputField value="{!ytd.Pay_Period_Monthly__c}"/>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="labelDate" colspan="3">Full Time Salary (Monthly) (Servicing)</td>
+                    <td>
+                        <apex:outputField value="{!srv.Income_1__c}" rendered="{!numApplicant=1}" />
+                        <apex:outputField value="{!srv.Income_2__c}" rendered="{!numApplicant=2}" />
+                        <apex:outputField value="{!srv.Income_1b__c}" rendered="{!numApplicant=3}" />
+                        <apex:outputField value="{!srv.Income_2b__c}" rendered="{!numApplicant=4}" />
+                    </td>
+                </tr>
+            </table>
+        </apex:outputPanel>
+        <apex:outputPanel rendered="{!ytd.Type__c=='Others'}">
+            <table width="100%" border="1">
+                <tr><td colspan="4" class="tableCaption"><strong>YTD/Income - {!applicantType}</strong></td></tr>
+                <tr>
+                    <td width="25%" class="labelDate">Start Date</td>
+                    <td width="25%">
+                        <apex:outputField value="{!ytd.Start_Date__c}"/>
+                    </td>
+                    <td width="25%" class="labelDate">End Date</td>
+                    <td width="25%">
+                        <apex:outputField value="{!ytd.End_Date__c}"/>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="labelDate">Gross YTD Income From Payslip</td>
+                    <td>
+                        <apex:outputField value="{!ytd.Gross_YTD_Income__c}"/>
+                    </td>
+                    <td class="labelDate">Annualised Income</td>
+                    <td>
+                        <apex:outputField value="{!ytd.Annualised_Income__c}"/>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="labelDate" valign="top">Net Monthly</td>
+                    <td valign="top">
+                        <apex:outputField value="{!ytd.Net_Monthly_Income__c}"/>
+                    </td>
+                    <td class="labelDate">Gross Annual Income </td>
+                    <td>
+                        <apex:outputField value="{!ytd.Gross_Annual_Income__c}"/>
+                    </td>
+                </tr>
+            </table>
+        </apex:outputPanel>
+        <apex:outputPanel rendered="{!ytd.Type__c=='Self-Employed'}">
+            <table width="100%" border="1">
+                <tr><td colspan="4" class="tableCaption"><strong>YTD/Income - {!applicantType}</strong></td></tr>
+                <tr>
+                    <td width="35%" class="labelDate">
+                        <apex:outputText value="Annual Net Income BT" rendered="{!OR(ytd.Self_Employed_Type__c=='Company Pty Ltd',ytd.Self_Employed_Type__c=='Trust')}"/> 
+                        <apex:outputText value="Annual Net Income AT" rendered="{!ytd.Self_Employed_Type__c=='Sole Trader'}"/> 
+                    </td>
+                    <td width="30%">
+                        <apex:outputField value="{!ytd.Net_Profit_Calc__c}" rendered="{!OR(ytd.Self_Employed_Type__c=='Company Pty Ltd',ytd.Self_Employed_Type__c=='Trust')}"/>
+                        <apex:outputText value="{0, Number, Currency}" rendered="{!ytd.Self_Employed_Type__c=='Sole Trader'}">
+                            <apex:param value="{!ytd.Net_Monthly_Income__c * 12}" />
+                        </apex:outputText>
+                    </td>
+                    <td width="35%"><apex:outputText value="{!ytd.Self_Employed_Class__c} / {!ytd.Self_Employed_Type__c}"/></td>
+                </tr>
+                <tr style="display: {!IF(ytd.Trustees_Number__c=='2', '','none')}">
+                    <td width="35%" class="labelDate">
+                        <apex:outputText value="Annual Net Income BT 2nd Trustee" rendered="{!ytd.Self_Employed_Type__c=='Trust'}"/> 
+                    </td>
+                    <td width="30%">
+                        <apex:outputField value="{!ytd.Net_Profit_Calc_2__c}" rendered="{!ytd.Self_Employed_Type__c=='Trust'}"/>
+                    </td>
+                    <td width="35%"><apex:outputText value="{!ytd.Self_Employed_Class__c} / {!ytd.Self_Employed_Type__c}"/></td>
+                </tr>
+            </table>
+        </apex:outputPanel>
+        <apex:outputPanel rendered="{!OR(numApplicant=1,numApplicant=2)}">
+            <table width="100%" border="1">
+                <tr>
+                    <td colspan="4" class="cellHeading">Other Income - {!numApplicant}</td>
+                </tr>
+                <tr>
+                    <td width="5%">#</td>
+                    <td width="20%">Income Type</td>
+                    <td width="50%">After Tax Income</td>
+                    <td width="25%">Frequency</td>
+                </tr>
+                <apex:repeat value="{!IncomesApp}" var="a">
+                    <tr>
+                        <td>{!a.Order__c})</td>
+                        <td><apex:outputField styleClass="dataInput" value="{!a.Type__c}"/></td>
+                        <td><apex:outputField styleClass="dataInput" value="{!a.Income__c}"/></td>
+                        <td><apex:outputField styleClass="dataInput" value="{!a.Frequency__c}"/></td>
+                    </tr>
+                </apex:repeat>
+            </table>
+        </apex:outputPanel>
+    </apex:repeat>    
+</apex:component>

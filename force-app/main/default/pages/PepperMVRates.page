@@ -1,0 +1,33 @@
+<apex:page docType="html-5.0" standardController="Custom_Opportunity__c" extensions="PepperCalculatorMVExtension" sidebar="false" showHeader="false" id="PepperCalcMV">
+    <style type="text/css">
+        .ratesInfoForm {
+            display: inline-block;
+            width:298px;
+        }
+        .pepperRates {
+            display:inline-block;
+        }
+        .bPageBlock .list {
+            width:88px;
+        }
+    </style>
+    <apex:form id="ratesInfoForm" styleClass="ratesInfoForm">
+        <apex:pageBlock id="ratesInfo">
+            <apex:pageBlockTable value="{!tierAValues}" var="a" styleClass="pepperRates" id="tierARates" >
+                <apex:facet name="header">Tier A</apex:facet>
+                <apex:column value="{!a.Rates__c}" />
+                <apex:column value="{!a.Comms__c}" />
+            </apex:pageBlockTable>
+            <apex:pageBlockTable value="{!tierBValues}" var="b" styleClass="pepperRates" id="tierBRates" >
+                <apex:facet name="header">Tier B</apex:facet>
+                <apex:column value="{!b.Rates__c}" />
+                <apex:column value="{!b.Comms__c}" />
+            </apex:pageBlockTable>
+            <apex:pageBlockTable value="{!tierCValues}" var="c" styleClass="pepperRates" id="tierCRates" >
+                <apex:facet name="header">Tier C</apex:facet>
+                <apex:column value="{!c.Rates__c}" />
+                <apex:column value="{!c.Comms__c}" />
+            </apex:pageBlockTable>
+        </apex:pageBlock>
+    </apex:form>
+</apex:page>

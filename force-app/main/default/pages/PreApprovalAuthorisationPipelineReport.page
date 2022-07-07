@@ -1,0 +1,266 @@
+<apex:page controller="PreApprovalAuthorisationReportExtension" standardStylesheets="true" cache="true" title="Pre-Approval Authorisation List" id="preAppAuthRpt">
+    <apex:stylesheet value="{!$Resource.PerformanceRptCSS}"/>
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.1/css/all.css" integrity="sha384-50oBUHEmvpQ+1lW4y57PTFmhCaXp0ML5d60M1M7uH2+nqUivzIebhndOJK28anvf" crossorigin="anonymous"/>
+    <style>
+        .section1 .pbSubheader {
+            background-color: #1797c0;
+        }
+        .section2 .pbSubheader {
+            background-color: #0eb58a;
+        }
+        .section3 .pbSubheader {
+            background-color: #999;
+        }
+    </style>
+    <apex:form id="formData">
+        <apex:actionPoller action="{!hideMessages}" reRender="formData" enabled="{!showMessage}" interval="7" id="apoller"/>
+        <apex:actionPoller action="{!refresh}" reRender="formData" interval="600" id="apollerRef" status="strefr" />
+        <apex:pageBlock mode="Detail" id="tableBlock">
+            <!-- <apex:sectionHeader title="Pre-Approval Authorisation List ({!authorised})"  /> -->
+            <div class="bPageTitle">
+                <div class="ptBody secondaryPalette brandSecondaryBrd">
+                    <table width="100%">
+                        <tr>
+                            <td width="50%" valign="top">
+                                <h1 class="noSecondHeader">
+                                    <apex:outputText value="Pre-Approval Authorisation Pipeline Report"/>&nbsp;
+                                    <apex:actionStatus id="stproc" startText="[Processing...]"/>
+                                    <apex:actionStatus id="strefr" startText="[Automatic refreshing...]"/>
+                                </h1>
+                            </td>
+                            <td width="50%" align="right">
+                                <apex:commandButton value="Performance Report (3)" onClick="window.open('/apex/SalesPerformanceReport3');"
+                                        rendered="{!authorised}" />
+                                <apex:commandButton value="Refresh Data" action="{!refresh}" status="stproc" reRender="formData"/>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+            <apex:pageMessages rendered="{!showMessage}" id="msgs"/>
+            <apex:pageMessage severity="ERROR" rendered="{!NOT(authorised)}" id="msgsNotAlloed" 
+                    title="Not Authorised" detail="You are not allowed to authorise any Pre-Approval submission"/>
+            <apex:outputPanel layout="block" styleClass="section1">
+                <!-- Calculate totals -->
+                <apex:variable value="{!0.00}" var="tComm"/>
+                <apex:variable value="{!0.00}" var="tBroke"/>
+                <apex:variable value="{!0.00}" var="tDof"/>
+                <apex:variable value="{!0.00}" var="tIns"/>
+                <apex:variable value="{!0.00}" var="tNAF"/>
+                <apex:repeat var="a" value="{!authorisationData}">
+                    <apex:variable value="{!a['totalComm'] + tComm}" var="tComm"/>
+                    <apex:variable value="{!a['totalBrokerage'] + tBroke}" var="tBroke"/>
+                    <apex:variable value="{!a['totalDof'] + tDof}" var="tDof"/>
+                    <apex:variable value="{!a['totalInsurance'] + tIns}" var="tIns"/>
+                    <apex:variable value="{!a['totalNAF'] + tNAF}" var="tNAF"/>
+                </apex:repeat>
+                <apex:pageBlockSection title="Authorisation Process" columns="1" collapsible="false" >
+                    <apex:pageBlockTable value="{!authorisationData}" var="a" rowClasses="rowOne, rowTwo">
+                        <apex:column headerValue="Status">
+                            <strong><apex:outputLink value="/apex/PreApprovalAuthorisationRptDet?SECTION=Authorisation Process&STATUS={!a['Status__c']}">
+                                <apex:outputText value="{!a['Status__c']}"/></apex:outputLink></strong>
+                        </apex:column>
+                        <apex:column headerValue="Records" styleClass="numbers" headerClass="numbers">
+                                <apex:outputText value="{!a['records']}"/>
+                        </apex:column>
+                        <apex:column styleClass="moneyAndPercentage" headerClass="numbers" footerClass="moneyAndPercentage">
+                            <apex:facet name="header">Total Brokerage</apex:facet>
+                            <apex:facet name="footer">
+                                <apex:outputText value="{0, number, $##,###,##0.00}">
+                                    <apex:param value="{!tBroke}"/>
+                                </apex:outputText>
+                            </apex:facet>
+                            <apex:outputText value="{0, number, $##,###,##0.00}">
+                                <apex:param value="{!a['totalBrokerage']}"/>
+                            </apex:outputText>
+                        </apex:column>
+                        <apex:column styleClass="moneyAndPercentage" headerClass="numbers" footerClass="moneyAndPercentage">
+                            <apex:facet name="header">Total DOF</apex:facet>
+                            <apex:facet name="footer">
+                                <apex:outputText value="{0, number, $##,###,##0.00}">
+                                    <apex:param value="{!tDof}"/>
+                                </apex:outputText>
+                            </apex:facet>
+                            <apex:outputText value="{0, number, $##,###,##0.00}">
+                                <apex:param value="{!a['totalDof']}"/>
+                            </apex:outputText>
+                        </apex:column>
+                        <apex:column styleClass="moneyAndPercentage" headerClass="numbers" footerClass="moneyAndPercentage">
+                            <apex:facet name="header">Total Insurance</apex:facet>
+                            <apex:facet name="footer">
+                                <apex:outputText value="{0, number, $##,###,##0.00}">
+                                    <apex:param value="{!tIns}"/>
+                                </apex:outputText>
+                            </apex:facet>
+                            <apex:outputText value="{0, number, $##,###,##0.00}">
+                                <apex:param value="{!a['totalInsurance']}"/>
+                            </apex:outputText>
+                        </apex:column>
+                        <apex:column styleClass="moneyAndPercentage" headerClass="numbers" footerClass="moneyAndPercentage">
+                            <apex:facet name="header">Total Commission</apex:facet>
+                            <apex:facet name="footer">
+                                <apex:outputText value="{0, number, $##,###,##0.00}">
+                                    <apex:param value="{!tComm}"/>
+                                </apex:outputText>
+                            </apex:facet>
+                            <apex:outputText value="{0, number, $##,###,##0.00}">
+                                <apex:param value="{!a['totalComm']}"/>
+                            </apex:outputText>
+                        </apex:column>
+                        <apex:column styleClass="moneyAndPercentage" headerClass="numbers" footerClass="moneyAndPercentage">
+                            <apex:facet name="header">Total NAF</apex:facet>
+                            <apex:facet name="footer">
+                                <apex:outputText value="{0, number, $##,###,##0.00}">
+                                    <apex:param value="{!tNAF}"/>
+                                </apex:outputText>
+                            </apex:facet>
+                            <apex:outputText value="{0, number, $##,###,##0.00}">
+                                <apex:param value="{!a['totalNAF']}"/>
+                            </apex:outputText>
+                        </apex:column>
+                    </apex:pageBlockTable>
+                </apex:pageBlockSection>
+            </apex:outputPanel>
+            <apex:outputPanel layout="block" styleClass="section2">
+                <!-- Approvals Processes Stats -->
+                <apex:pageBlockSection title="Approvals Processes" columns="1" collapsible="false" id="secApproval">
+                    <apex:pageBlockSectionItem >
+                        <apex:outputPanel >
+                            <table width="100%" cellspacing="10">
+                                <tr>
+                                    <th width="25%">Settlement</th>
+                                    <th width="25%">Formal Approval</th>
+                                    <th width="25%">Amendments</th>
+                                    <th width="25%">Pre-Approval</th>
+                                </tr>
+                                <tr>
+                                    <apex:repeat value="{!approvalDataKeys}" var="k" id="repKeys">
+                                        <td>
+                                            <apex:variable value="{!approvalData[k]}" var="rptList"/  >
+                                            <apex:variable value="{!0.00}" var="tComm"/>
+                                            <apex:variable value="{!0.00}" var="tNAF"/>
+                                            <apex:repeat var="a" value="{!rptList}">
+                                                <apex:variable value="{!a['totalComm'] + tComm}" var="tComm"/>
+                                                <apex:variable value="{!a['totalNAF'] + tNAF}" var="tNAF"/>
+                                            </apex:repeat>
+                                            <apex:pageBlockTable value="{!rptList}" var="a" rowClasses="rowOne, rowTwo">
+                                                <apex:column headerValue="Status">
+                                                    <strong><apex:outputLink value="/apex/PreApprovalAuthorisationRptDet?SECTION={!K}&STATUS={!a['Status__c']}">
+                                                        <apex:outputText value="{!a['Status__c']}"/></apex:outputLink></strong>
+                                                </apex:column>
+                                                <apex:column value="{!a['records']}" headerValue="Records" styleClass="numbers" headerClass="numbers"/>
+                                                <apex:column styleClass="moneyAndPercentage" headerClass="numbers" footerClass="moneyAndPercentage">
+                                                    <apex:facet name="header">Total Comm</apex:facet>
+                                                    <apex:facet name="footer">
+                                                        <apex:outputText value="{0, number, $##,###,##0.00}">
+                                                            <apex:param value="{!tComm}"/>
+                                                        </apex:outputText>
+                                                    </apex:facet>
+                                                    <apex:outputText value="{0, number, $##,###,##0.00}">
+                                                        <apex:param value="{!a['totalComm']}"/>
+                                                    </apex:outputText>
+                                                </apex:column>
+                                                <apex:column styleClass="moneyAndPercentage" headerClass="numbers" footerClass="moneyAndPercentage">
+                                                    <apex:facet name="header">Total NAF</apex:facet>
+                                                    <apex:facet name="footer">
+                                                        <apex:outputText value="{0, number, $##,###,##0.00}">
+                                                            <apex:param value="{!tNAF}"/>
+                                                        </apex:outputText>
+                                                    </apex:facet>
+                                                    <apex:outputText value="{0, number, $##,###,##0.00}">
+                                                        <apex:param value="{!a['totalNAF']}"/>
+                                                    </apex:outputText>
+                                                </apex:column>
+                                            </apex:pageBlockTable>
+                                        </td>
+                                    </apex:repeat>
+                                </tr>
+                            </table>
+                        </apex:outputPanel>
+                    </apex:pageBlockSectionItem>
+                </apex:pageBlockSection>
+            </apex:outputPanel>
+            <apex:outputPanel layout="block" styleClass="section3">
+                <!-- Other processes -->
+                <apex:variable value="{!0.00}" var="tComm"/>
+                <apex:variable value="{!0.00}" var="tBroke"/>
+                <apex:variable value="{!0.00}" var="tDof"/>
+                <apex:variable value="{!0.00}" var="tIns"/>
+                <apex:variable value="{!0.00}" var="tNAF"/>
+                <apex:repeat var="a" value="{!otherProcessesData}">
+                    <apex:variable value="{!a['totalComm'] + tComm}" var="tComm"/>
+                    <apex:variable value="{!a['totalBrokerage'] + tBroke}" var="tBroke"/>
+                    <apex:variable value="{!a['totalDof'] + tDof}" var="tDof"/>
+                    <apex:variable value="{!a['totalInsurance'] + tIns}" var="tIns"/>
+                    <apex:variable value="{!a['totalNAF'] + tNAF}" var="tNAF"/>
+                </apex:repeat>
+                <apex:pageBlockSection title="Other Status" columns="1" collapsible="false">
+                    <apex:pageBlockTable value="{!otherProcessesData}" var="a" rowClasses="rowOne, rowTwo">
+                        <apex:column headerValue="Status">
+                            <strong><apex:outputLink value="/apex/PreApprovalAuthorisationRptDet?SECTION=Other Status&STATUS={!a['Status__c']}">
+                                <apex:outputText value="{!a['Status__c']}"/></apex:outputLink></strong>
+                        </apex:column>
+                        <apex:column headerValue="Records" styleClass="numbers" headerClass="numbers">
+                            <apex:outputText value="{!a['records']}"/>
+                        </apex:column>
+                        <apex:column styleClass="moneyAndPercentage" headerClass="numbers" footerClass="moneyAndPercentage">
+                            <apex:facet name="header">Total Brokerage</apex:facet>
+                            <apex:facet name="footer">
+                                <apex:outputText value="{0, number, $##,###,##0.00}">
+                                    <apex:param value="{!tBroke}"/>
+                                </apex:outputText>
+                            </apex:facet>
+                            <apex:outputText value="{0, number, $##,###,##0.00}">
+                                <apex:param value="{!a['totalBrokerage']}"/>
+                            </apex:outputText>
+                        </apex:column>
+                        <apex:column styleClass="moneyAndPercentage" headerClass="numbers" footerClass="moneyAndPercentage">
+                            <apex:facet name="header">Total DOF</apex:facet>
+                            <apex:facet name="footer">
+                                <apex:outputText value="{0, number, $##,###,##0.00}">
+                                    <apex:param value="{!tDof}"/>
+                                </apex:outputText>
+                            </apex:facet>
+                            <apex:outputText value="{0, number, $##,###,##0.00}">
+                                <apex:param value="{!a['totalDof']}"/>
+                            </apex:outputText>
+                        </apex:column>
+                        <apex:column styleClass="moneyAndPercentage" headerClass="numbers" footerClass="moneyAndPercentage">
+                            <apex:facet name="header">Total Insurance</apex:facet>
+                            <apex:facet name="footer">
+                                <apex:outputText value="{0, number, $##,###,##0.00}">
+                                    <apex:param value="{!tIns}"/>
+                                </apex:outputText>
+                            </apex:facet>
+                            <apex:outputText value="{0, number, $##,###,##0.00}">
+                                <apex:param value="{!a['totalInsurance']}"/>
+                            </apex:outputText>
+                        </apex:column>
+                        <apex:column styleClass="moneyAndPercentage" headerClass="numbers" footerClass="moneyAndPercentage">
+                            <apex:facet name="header">Total Commission</apex:facet>
+                            <apex:facet name="footer">
+                                <apex:outputText value="{0, number, $##,###,##0.00}">
+                                    <apex:param value="{!tComm}"/>
+                                </apex:outputText>
+                            </apex:facet>
+                            <apex:outputText value="{0, number, $##,###,##0.00}">
+                                <apex:param value="{!a['totalComm']}"/>
+                            </apex:outputText>
+                        </apex:column>
+                        <apex:column styleClass="moneyAndPercentage" headerClass="numbers" footerClass="moneyAndPercentage">
+                            <apex:facet name="header">Total NAF</apex:facet>
+                            <apex:facet name="footer">
+                                <apex:outputText value="{0, number, $##,###,##0.00}">
+                                    <apex:param value="{!tNAF}"/>
+                                </apex:outputText>
+                            </apex:facet>
+                            <apex:outputText value="{0, number, $##,###,##0.00}">
+                                <apex:param value="{!a['totalNAF']}"/>
+                            </apex:outputText>
+                        </apex:column>
+                    </apex:pageBlockTable>
+                </apex:pageBlockSection>
+            </apex:outputPanel>
+        </apex:pageBlock>
+    </apex:form>
+</apex:page>

@@ -1,0 +1,12 @@
+<apex:page controller="AssignUnsettledOppToSysGenExt" action="{!setOpportunities}">
+<apex:pageMessages /> 
+	<apex:sectionHeader title="Assign Unsettled Opportunity to" subtitle="Sales Consultants" rendered="{!runAgain}" />
+	<apex:form rendered="{!runAgain}">
+		<apex:pageBlock title="Result">
+			<apex:pageBlockButtons location="bottom">
+				<apex:commandButton action="{!setOpportunities}" value="Process" />
+			</apex:pageBlockButtons>
+			<apex:outputText value="There is still some records to be processed, please execute this process again" />
+		</apex:pageBlock>
+	</apex:form>
+</apex:page>

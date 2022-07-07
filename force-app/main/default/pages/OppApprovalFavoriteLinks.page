@@ -1,0 +1,27 @@
+<apex:page showHeader="false" sidebar="false" controller="OppApprovalFavoriteLinksExtension" cache="false" title="Lender Logins">
+	<apex:form id="formData">
+	    <apex:pageBlock title="Approval Useful Links" mode="edit" >
+	    	<apex:pageBlockButtons location="top" rendered="true">
+	                  <apex:commandButton action="{!newLogin}" value="New Login" reRender="formData" rendered="{!!isShowForm}" status="sts"/>
+	                  <apex:commandButton action="{!save}" value="Save" id="btnSave" reRender="formData" rendered="{!isShowForm}" status="sts"/>
+	                  <apex:commandButton action="{!deleteRecord}" value="Delete" id="btnDelete" reRender="formData" rendered="{!AND(isShowForm,obj.Id != null)}" status="sts"/>
+	                  <apex:commandButton action="{!cancel}" value="Cancel" id="btnCancel" immediate="true" reRender="formData" rendered="{!isShowForm}" status="sts"/>
+	                  &nbsp;&nbsp;&nbsp;&nbsp;
+	                  <apex:actionStatus startText="Processing..." id="sts"  />
+	        </apex:pageBlockButtons>
+	        <apex:pageMessages id="msg" />
+	      	<apex:pageBlockSection title="New / Edit" id="pnlForm" rendered="{!isShowForm}" >
+	      		<apex:inputField value="{!obj.Name}" />
+	      		<apex:inputField value="{!obj.Website__c}"  />
+	      	</apex:pageBlockSection>
+	      	<apex:pageBlockTable id="tblData" value="{!data}" var="d" captionClass="captionTable">
+	            <!-- <apex:facet name="caption">Lender Login</apex:facet> -->
+	            <apex:column width="30%" headerValue="Name" value="{!d.Name}"/>
+	            <apex:column width="60%" headerValue="Website" value="{!d.Website__c}"/>
+	            <apex:column width="10%" headerValue="Actions">
+	            	<apex:outputLink value="/apex/OppApprovalFavoriteLinks?IDX={!d.id}">Edit/Delete</apex:outputLink>
+	            </apex:column>
+	        </apex:pageBlockTable>
+	    </apex:pageBlock>
+	</apex:form>
+</apex:page>

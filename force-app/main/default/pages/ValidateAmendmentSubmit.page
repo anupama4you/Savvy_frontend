@@ -1,0 +1,268 @@
+<apex:page standardController="Custom_Opportunity__c" extensions="ValidateAmendmentSubmitExtension" action="{!validateApproval}">
+    <apex:stylesheet value="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css"/>
+    <!-- Lelo                               2016-06-28 -->
+    <style type="text/css">
+    
+        /* Lelo */
+
+        .customInputStyle {
+            width: 20px;
+        }
+      
+        .leftTables {
+            display: inline-block;
+            float: left;
+            width: 48%;
+            padding-left: 20px;
+        }
+        .rightTables {
+            display: inline-block;
+            width: 48%;
+            padding-left: 20px;
+        }
+        
+        .leftTables2 {
+            display: inline-block;
+            float: left;
+            width: 32%;
+            padding-left: 20px;
+        }
+        .leftTables2NotFloat {
+            display: inline-block;
+            width: 64%;
+            padding-left: 20px;
+        }
+        .rightTables2 {
+            display: inline-block;
+            width: 64%;
+            padding-left: 20px;
+        }
+      
+        .oneTables {
+            display: inline-block;
+            /*float: left;*/
+            width: 97.5%;
+            padding-left: 20px;
+        }
+      
+        .section {
+            background: #f8f8f8;
+            border: 1px solid #ddd;
+            padding-bottom: 20px;
+        }
+
+        .subSectionTab {
+            border: 1px solid #ddd;
+            border-bottom: transparent;
+            display: inline-block;
+            background-color: #fff;
+            position: relative;
+            padding: 3px;
+            padding-right: 20px;
+            padding-left: 20px;
+            top: 1px;
+        }
+        
+        .tableSubsection {
+            width: 100%;
+            background: white;
+            border: 1px solid #ddd;
+            /*margin-top: 18px;*/
+            padding: 2px;
+            padding-left: 20px;
+            padding-top: 10px;
+            padding-bottom: 10px;
+        }
+        
+        .labelColumn {
+            width: 25%;
+            /*padding-bottom: 13px;*/
+        }
+        .dataColumn {
+            width: 25%;
+        }
+      
+        .divTitle {
+            background-color: #ddd;
+            padding-top: 1px;
+            padding-bottom: 1px;
+            padding-left: 15px;
+            /*text-transform: uppercase;*/
+            font-weight: bold;
+            border: 1px solid #ddd;
+        }
+        .dataInput {
+            border: 1px solid #e0e0e0;
+            padding: 0.3em !important;;
+            min-width: 173px !important;;
+        }
+        .dataInputFull {
+            border: 1px solid #e0e0e0;
+            padding: 0.3em !important;
+            min-width: 98% !important;
+        }
+        .dataInputCheckBox {
+            border: 1px solid #e0e0e0;
+            padding: 0.3em !important;;
+            min-width: 10px !important;;
+        }
+        .selectList {
+            border: 1px solid #e0e0e0;
+            padding: 0.3em;
+            width:182px;
+            height: 25px !important;
+        }
+        .titleDiv {
+            width: 100%;
+            height: 43px;
+            font-size: 1.0rem;
+        }
+        .toolOptions {
+            float: right;
+            text-align: right;
+            width: 45%;
+        }
+
+        .commandButtons {
+            padding: 9px 10px !important;
+            color: #fff !important;
+            font-size: 11px !important;
+            outline: none !important;
+            text-transform: uppercase !important;
+            background: rgb(125,126,125) !important; /* Old browsers */
+            background: -moz-linear-gradient(top,  rgba(125,126,125,1) 0%, rgba(14,14,14,1) 100%) !important; /* FF3.6-15 */
+            background: -webkit-linear-gradient(top,  rgba(125,126,125,1) 0%,rgba(14,14,14,1) 100%) !important; /* Chrome10-25,Safari5.1-6 */
+            background: linear-gradient(to bottom,  rgba(125,126,125,1) 0%,rgba(14,14,14,1) 100%) !important; /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
+            filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#7d7e7d', endColorstr='#0e0e0e',GradientType=0 ) !important; /* IE6-9 */
+        }
+        .commandButtons:hover {
+            background: rgb(125,126,125) !important; /* Old browsers */
+            background: -moz-linear-gradient(top,  rgba(125,126,125,1) 0%, rgba(14,14,14,1) 41%) !important; /* FF3.6-15 */
+            background: -webkit-linear-gradient(top,  rgba(125,126,125,1) 0%,rgba(14,14,14,1) 41%) !important; /* Chrome10-25,Safari5.1-6 */
+            background: linear-gradient(to bottom,  rgba(125,126,125,1) 0%,rgba(14,14,14,1) 41%) !important; /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
+            filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#7d7e7d', endColorstr='#0e0e0e',GradientType=0 ) !important; /* IE6-9 */
+        }
+
+        .noSidebarCell, .sidebarCell .fixed {
+            height: inherit;
+        }
+        
+        #notesSection .bPageBlock {
+            border-top: 1px solid white !important;
+        	border-color: white !important;
+        }
+        
+        .bPageBlock {
+            border-top: 1px solid white !important;
+        	border-color: white !important;
+        }
+        
+        /* end */
+    </style>
+    <apex:variable value="{!Custom_Opportunity__c}" var="o" />
+    <apex:sectionHeader title="Submit for Amendment" subtitle="{!Custom_Opportunity__c.Name}" />
+    <apex:form styleClass="appForm" id="frmNotes">
+        <apex:pageBlock mode="edit">
+            <apex:pageMessages />
+            <apex:outputPanel layout="block" style="padding: 10px;" rendered="{!!fieldsValidated.empty}">                        
+                The following fields on the Opportunity need to be entered before it can be processed:<br />
+                <br />            
+                <apex:repeat value="{!fieldsValidated}" var="d">
+                    <b>{!d}</b><br />
+                </apex:repeat>           
+            </apex:outputPanel>
+            <apex:outputPanel layout="block" style="padding: 10px;" rendered="{!docsValidated.size > 0}">                        
+                The following document(s) need to be produced before this Opportunity can be processed:<br />
+                <br />            
+                <apex:repeat value="{!docsValidated}" var="d">
+                    <b>{!d}</b><br />
+                </apex:repeat>            
+            </apex:outputPanel>
+            <apex:outputPanel layout="block" style="padding: 10px;" rendered="{!!ISBLANK(msgSubmitProcess)}">
+                <h3>Process failed:</h3>
+                <p>
+                    <apex:outputText value="{!msgSubmitProcess}" escape="false" />
+                </p>
+            </apex:outputPanel>
+            <!-- Warning Messages -->
+            <apex:repeat value="{!warningMessages}" var="w">
+              <apex:pageMessage severity="warning" title="Note:" summary="{!w}" />
+            </apex:repeat>
+            <!-- Lelo                               2016-08-03 -->
+            <apex:outputPanel id="notesSection" layout="block" style="padding: 10px;" rendered="{!isReadeyToSubmit}">
+                <apex:pageMessages id="msgNotes" />
+               <!-- <apex:form styleClass="appForm" id="frmNotes">-->
+                    <apex:outputPanel layout="block" styleClass="titleDiv">
+                        <h1>Amendment Submission for {!Custom_Opportunity__c.Name}</h1>
+                    </apex:outputPanel>
+                    <apex:pageBlock mode="edit" id="pgBlkNotes">
+                        <apex:outputPanel layout="block" styleClass="section">  
+                            <apex:outputPanel styleClass="leftTables2NotFloat">
+                                <table width="80%" cellspacing="20">
+                                    <tr>
+                                        <td>
+                                            <apex:outputPanel styleClass="subSectionTab"><h3>Lender comments</h3></apex:outputPanel>
+                                            <table class="tableSubsection" width="100%">
+                                                <!-- <tr>
+                                                    <td>To:</td>
+                                                    <td>
+                                                        <apex:selectList value="{!noteCategory}" multiselect="false" size="1" styleClass="selectList">
+                                                            <apex:selectOption itemValue="Lender" itemLabel="Lender" />
+                                                            <apex:selectOption itemValue="Processing" itemLabel="Processing" />
+                                                        </apex:selectList>
+                                                    </td>
+                                                </tr> -->
+                                                <tr>
+                                                    <td colspan="2">
+                                                        <apex:inputTextarea styleClass="dataInput" value="{!noteTextLender}" cols="50" rows="6" id="fldNotes" >
+                                                        </apex:inputTextarea>
+                                                    </td>
+                                                </tr>
+                                            </table>
+                                        </td>
+                                        <td>
+                                            <apex:outputPanel styleClass="subSectionTab"><h3>Processor comments</h3></apex:outputPanel>
+                                            <table class="tableSubsection" width="100%">
+                                                <!-- <tr>
+                                                    <td>To:</td>
+                                                    <td>
+                                                        <apex:selectList value="{!noteCategory}" multiselect="false" size="1" styleClass="selectList">
+                                                            <apex:selectOption itemValue="Lender" itemLabel="Lender" />
+                                                            <apex:selectOption itemValue="Processing" itemLabel="Processing" />
+                                                        </apex:selectList>
+                                                    </td>
+                                                </tr> -->
+                                                <tr>
+                                                    <td colspan="2">
+                                                        <apex:inputTextarea styleClass="dataInput" value="{!noteText}" cols="50" rows="6" id="fldNotes2" >
+                                                        </apex:inputTextarea>
+                                                    </td>
+                                                </tr>
+                                            </table>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td colspan="2">
+                                            <apex:commandButton value="Submit for Amendment" action="{!submit}" styleClass="commandButtons" 
+                                                reRender="fldNotes, msgNotes, msgProcess" status="processingNotes" />&nbsp;&nbsp;&nbsp;
+                                            <apex:actionStatus startText="processing... " id="processingNotes"  />
+                                        </td>
+                                    </tr>
+                                </table>
+                                <apex:outputPanel layout="block" style="padding: 10px;" rendered="{!!ISBLANK(msgSubmitProcess)}" id="msgProcess">
+                                    <h3>Process failed</h3>
+                                    <p>
+                                        {!msgSubmitProcess}
+                                    </p>
+                                </apex:outputPanel>
+                            </apex:outputPanel>
+                        </apex:outputPanel>
+                    </apex:pageBlock>
+                <!--</apex:form>-->
+            </apex:outputPanel>
+            <apex:pageBlockButtons location="bottom">
+                <apex:commandButton value="Return" action="{!Cancel}" />
+            </apex:pageBlockButtons>
+        </apex:pageBlock>
+    </apex:form>
+</apex:page>

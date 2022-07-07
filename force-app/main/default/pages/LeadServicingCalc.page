@@ -1,0 +1,806 @@
+<apex:page docType="html-5.0" standardController="Lead__c" extensions="LeadServicingCalcExtension" sidebar="true" showHeader="true" id="pgLeadServicing">
+    <!-- Lelo                               2016-06-28 -->
+    <style type="text/css">
+    
+        /* Lelo */
+
+        .customInputStyle {
+            width: 20px;
+        }
+        .leftTablesNotFloat {
+            display: inline-block;
+            width: 48%;
+            padding-left: 20px;
+        }
+        .leftTables {
+            display: inline-block;
+            float: left;
+            width: 48%;
+            padding-left: 20px;
+        }
+        .rightTables {
+            display: inline-block;
+            width: 48%;
+            padding-left: 20px;
+        }
+        
+        .leftTables2 {
+            display: inline-block;
+            float: left;
+            width: 32%;
+            padding-left: 20px;
+        }
+        .leftTables2NotFloat {
+            display: inline-block;
+            width: 32%;
+            padding-left: 20px;
+        }
+        .leftTables3NotFloat {
+            display: inline-block;
+            width: 48%;
+            padding-left: 20px;
+        }
+        .rightTables2 {
+            display: inline-block;
+            width: 64%;
+            padding-left: 20px;
+        }
+      
+        .oneTables {
+            display: inline-block;
+            /*float: left;*/
+            width: 97.5%;
+            padding-left: 20px;
+        }
+      
+        .section {
+            background: #f8f8f8;
+            border: 1px solid #ddd;
+            padding-bottom: 20px;
+        }
+
+        .subSectionTab {
+            border: 1px solid #ddd;
+            border-bottom: transparent;
+            display: inline-block;
+            background-color: #fff;
+            position: relative;
+            padding: 3px;
+            padding-right: 20px;
+            padding-left: 20px;
+            top: 20px;
+        }
+        
+        .tableSubsection {
+            width: 100%;
+            background: white;
+            border: 1px solid #ddd;
+            margin-top: 18px;
+            padding: 2px;
+            padding-left: 20px;
+            padding-top: 10px;
+            padding-bottom: 10px;
+        }
+        
+        .labelColumn {
+            width: 25%;
+            /*padding-bottom: 13px;*/
+        }
+        .dataColumn {
+            width: 25%;
+        }
+      
+        .divTitle {
+            background-color: #ddd;
+            padding-top: 1px;
+            padding-bottom: 1px;
+            padding-left: 15px;
+            /*text-transform: uppercase;*/
+            font-weight: bold;
+            border: 1px solid #ddd;
+        }
+        .dataInput {
+            border: 1px solid #e0e0e0;
+            padding: 0.3em !important;;
+            min-width: 173px !important;;
+        }
+        .dataInputFull {
+            border: 1px solid #e0e0e0;
+            padding: 0.3em !important;
+            min-width: 98% !important;
+        }
+        .dataInputCheckBox {
+            border: 1px solid #e0e0e0;
+            padding: 0.3em !important;;
+            min-width: 10px !important;;
+        }
+        .selectList {
+            border: 1px solid #e0e0e0;
+            padding: 0.3em;
+            width:182px;
+            height: 25px !important;
+        }
+        .titleDiv {
+            width: 100%;
+            height: 43px;
+            font-size: 1.0rem;
+        }
+        .toolOptions {
+            float: right;
+            text-align: right;
+            width: 45%;
+        }
+
+        #main .bPageBlock {
+            border-top: 1px solid white !important;
+        }
+
+        .commandButtons {
+            padding: 9px 10px !important;
+            color: #fff !important;
+            font-size: 11px !important;
+            outline: none !important;
+            text-transform: uppercase !important;
+            background: rgb(125,126,125) !important; /* Old browsers */
+            background: -moz-linear-gradient(top,  rgba(125,126,125,1) 0%, rgba(14,14,14,1) 100%) !important; /* FF3.6-15 */
+            background: -webkit-linear-gradient(top,  rgba(125,126,125,1) 0%,rgba(14,14,14,1) 100%) !important; /* Chrome10-25,Safari5.1-6 */
+            background: linear-gradient(to bottom,  rgba(125,126,125,1) 0%,rgba(14,14,14,1) 100%) !important; /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
+            filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#7d7e7d', endColorstr='#0e0e0e',GradientType=0 ) !important; /* IE6-9 */
+        }
+        .commandButtons:hover {
+            background: rgb(125,126,125) !important; /* Old browsers */
+            background: -moz-linear-gradient(top,  rgba(125,126,125,1) 0%, rgba(14,14,14,1) 41%) !important; /* FF3.6-15 */
+            background: -webkit-linear-gradient(top,  rgba(125,126,125,1) 0%,rgba(14,14,14,1) 41%) !important; /* Chrome10-25,Safari5.1-6 */
+            background: linear-gradient(to bottom,  rgba(125,126,125,1) 0%,rgba(14,14,14,1) 41%) !important; /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
+            filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#7d7e7d', endColorstr='#0e0e0e',GradientType=0 ) !important; /* IE6-9 */
+        }
+
+        .noSidebarCell, .sidebarCell .fixed {
+            height: inherit;
+        }
+        
+        /* Servicing Calculator*/
+        
+        #ServicingCalc .bPageBlock {
+            border-top: 1px solid white !important;
+        }
+        .cellMultiTables {
+            vertical-align: top;
+        }
+        .cellExtraRigthPading {
+            padding-right: 18px;
+        }
+        .incomeValue {
+            color: #1a75ff !important;
+        }
+        .notIncomeValue {
+            color: #cc0000 !important;
+        }     
+        
+        #YtdCalc .bPageBlock {
+            border-top: 1px solid white !important;
+        }
+        
+        #notesSection .bPageBlock {
+            border-top: 1px solid white !important;
+        }
+        
+        /* end */
+    </style>
+    <!-- end -->
+    <div id="ServicingCalc">
+        <apex:pageMessages id="msgServicingCalc" />    
+        <apex:variable value="{!Lead__c}" var="o" />
+          <apex:form styleClass="appForm" id="servicingcalc">
+            <apex:actionFunction action="{!servCalculateTotalNetMonthlyIncome}" name="servCalculateTotalNetMonthlyIncome" 
+                                 reRender="fldCalcTotNetMonthlyIncome, fldCalcTotAmountLoanPayment" status="totalAmountStatus" />
+            <apex:actionFunction action="{!servCalculateRentMtgePaid}" name="servCalculateRentMtgePaid" 
+                                 reRender="fldCalcTotRentMtgPaid, fldCalcTotAmountLoanPayment, fldCalcNetPartnerIncome, msgServicingCalc, fldTotRentMorg" status="totalAmountStatus"/>
+            <apex:actionFunction action="{!servCalculateCentreLink}" name="servCalculateCentreLink" status="totalAmountStatus"
+                                 reRender="fldCalcCLinkIncome, fldCalcCLinkTotalIncome, fldCalcCLinkIncomePercentage, fldCalcCLinkAnnualToLoannet, fldCalcTotAmountLoanPayment" />
+            <apex:actionFunction action="{!servCalculateCreditCard}" name="servCalculateCreditCard" 
+                                 reRender="fldCalcTotOtherDebts, fldCalcCCardMonthlyPayment, fldCalcTotAmountLoanPayment" status="totalAmountStatus" />
+            <apex:actionFunction action="{!servCalculateLiabilities}" name="servCalculateLiabilities" 
+                                 reRender="fldCalcTotLiabilities, fldCalcTotAmountLoanPayment, msgServicingCalc" status="totalAmountStatus" />
+              <!--  
+            
+            
+            
+            
+            
+            <apex:actionFunction action="{!calculateAmountAvalilableLoanPayment}" name="calculateAmountAvalilableLoanPayment" 
+                                 reRender="fldCalcTotAmountLoanPayment, msgServicingCalc" status="totalAmountStatus" />
+            -->
+			<apex:outputPanel layout="block" styleClass="titleDiv">
+                <h1>Savvy Finance Lead Servicing Calculator for {!o.Name}</h1>
+                
+                <apex:outputPanel layout="block" styleClass="toolOptions">
+                    <apex:actionStatus startText="processing... " id="genPdfDocument"  />
+                    <!--<apex:commandButton value="Calculate" action="{!servCalculateV2}" styleClass="commandButtons" rendered="false" />-->
+                    <apex:commandButton value="Save Calculation" action="{!ServicingPdf2}" styleClass="commandButtons" reRender="msgServicingCalc" status="genPdfDocument" />
+                    <!--<apex:commandButton value="Save Pre-approval" action="{!sericingSavePreApproval}" styleClass="commandButtons" reRender="msgServicingCalc" status="genPdfDocument" />-->
+                </apex:outputPanel>
+            </apex:outputPanel> 
+        <apex:pageBlock mode="edit" id="servicingCalc">
+            
+            <!-- SECTION: INITIAL PARAMETERS -->
+            <apex:outputPanel layout="block" styleClass="section">  
+                <div class="divTitle">CALCULATOR</div>
+                <apex:outputPanel styleClass="leftTables">
+                    <apex:outputPanel styleClass="subSectionTab"><h3>Lender</h3></apex:outputPanel>
+                    <table class="tableSubsection">
+                        <tr>
+                            <td width="50%" class="cellMultiTables">
+                                <table width="100%">
+                                    <tr>
+                                        <td class="labelColumn">Lender</td>
+                                        <td class="dataColumn">
+                                            <apex:outputPanel styleClass="requiredInput"><apex:outputPanel styleClass="requiredBlock"></apex:outputPanel></apex:outputPanel>
+                                            <apex:selectList value="{!dto.lender}" multiselect="false" size="1" styleClass="selectList">
+                                                <apex:actionSupport event="onchange" status="totalAmountStatus" action="{!servCalculateLivingExpenses}"
+                                                                    reRender="fldServCalcNoDependents, fldCalcRentPayAmount, fldCalcNetPartnerIncome, fldNaf, pnltotals"/>
+                                                <apex:selectOptions value="{!lenderSelectValues}" />
+                                            </apex:selectList>
+                                        </td>
+                                    </tr>
+                                    
+                                    <!-- <tr>
+                                        <td class="labelColumn">State</td>
+                                        <td class="dataColumn">
+                                            <apex:selectList value="{!dto.state}" multiselect="false" size="1" styleClass="selectList"
+                                                             disabled="{!dto.lender != 'GEO'}" id="fldCalcState">
+                                                <apex:actionSupport event="onchange" action="{!servCalculateLivingExpenses}" reRender="fldCalcRentPayAmount, pnltotals" status="totalAmountStatus" />
+                                                <apex:selectOption itemValue="" itemLabel="--None--" />
+                                                <apex:selectOption itemValue="SA" itemLabel="SA" />
+                                                <apex:selectOption itemValue="WA" itemLabel="WA" />
+                                                <apex:selectOption itemValue="NSW" itemLabel="NSW" />
+                                                <apex:selectOption itemValue="QLD" itemLabel="QLD" />
+                                                <apex:selectOption itemValue="VIC" itemLabel="VIC" />
+                                                <apex:selectOption itemValue="NT" itemLabel="NT" />
+                                                <apex:selectOption itemValue="ACT" itemLabel="ACT" />
+                                                <apex:selectOption itemValue="TAS" itemLabel="TAS" />
+                                            </apex:selectList>
+                                        </td>
+                                    </tr> -->
+                                    <!-- <tr>
+                                        <td class="labelColumn">Area</td>
+                                        <td class="dataColumn">
+                                            <apex:selectList value="{!dto.area}" multiselect="false" size="1" styleClass="selectList"
+                                                             disabled="{!dto.lender != 'GEO'}" id="fldCalcArea">
+                                                <apex:actionSupport event="onchange" action="{!servCalculateLivingExpenses}" reRender="fldCalcRentPayAmount, pnltotals" status="totalAmountStatus" />
+                                                <apex:selectOption itemValue="" itemLabel="--None--" />
+                                                <apex:selectOption itemValue="Metro" itemLabel="Metro" />
+                                                <apex:selectOption itemValue="Regional" itemLabel="Regional" />
+                                            </apex:selectList>
+                                        </td>
+                                    </tr> -->
+                                    <tr>
+                                        <td class="labelColumn">Marital Status</td> <!-- type was originally -->
+                                        <td class="dataColumn">
+                                            <apex:outputPanel styleClass="requiredInput"><apex:outputPanel styleClass="requiredBlock"></apex:outputPanel></apex:outputPanel>
+                                            <apex:selectList value="{!dto.maritalStatus}" multiselect="false" size="1" styleClass="selectList">
+                                                <apex:actionSupport event="onchange" action="{!servCalculateLivingExpenses}" reRender="fldCalcRentPayAmount, fldCalcNetPartnerIncome, pnltotals" status="totalAmountStatus"/>
+                                                <apex:selectOption itemValue="" itemLabel="--None--" />
+                                                <apex:selectOption itemValue="Single" itemLabel="Single" />
+                                                <apex:selectOption itemValue="De Facto" itemLabel="De Facto" />
+                                                <apex:selectOption itemValue="Married" itemLabel="Married" />
+                                            </apex:selectList>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td class="labelColumn" valign="top">NAF <span class="comment1">*(Only mandatory for Green Light)</span></td>
+                                        <td class="dataColumn">
+                                            <apex:input type="number" value="{!dto.naf}" html-step="0.01" html-placeholder="$" styleClass="dataInput"
+                                                id="fldNaf" >
+                                                <apex:actionSupport event="onchange" status="totalAmountStatus" action="{!servCalculateLivingExpenses}"
+                                                                    reRender="fldCalcNetPartnerIncome, pnltotals, msgServicingCalc"/>
+                                            </apex:input>
+                                        </td>
+                                    </tr>
+                                </table>
+                            </td>
+                            <td width="50%" class="cellMultiTables">
+                                <table width="100%">
+                                    <tr>
+                                        <td class="labelColumn">No. of Dependents</td>
+                                        <td class="dataColumn">
+                                            <apex:outputPanel styleClass="requiredInput"><apex:outputPanel styleClass="requiredBlock"></apex:outputPanel></apex:outputPanel>
+                                            <apex:selectList value="{!dto.noDependents}" multiselect="false" size="1" styleClass="selectList" id="fldServCalcNoDependents">
+                                                <apex:actionSupport event="onchange" action="{!servCalculateLivingExpenses}" reRender="fldCalcRentPayAmount, pnltotals" status="totalAmountStatus" />
+                                                <apex:selectOptions value="{!noDependentsSelectOptions}" id="fldServCalcNoDependentsOpt"/>
+                                            </apex:selectList>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td class="labelColumn">Are you splitting expenses?</td>
+                                        <td class="dataColumn">
+                                            <apex:selectList value="{!dto.splittingExpenses}" multiselect="false" size="1" styleClass="selectList" >
+                                                <apex:actionSupport event="onchange" status="totalAmountStatus" action="{!calculateSplitExpenses}"
+                                                                    reRender="fldCalcNetPartnerIncome, pnltotals"/>
+                                                <apex:selectOption itemValue="No" itemLabel="No" />
+                                                <apex:selectOption itemValue="Yes" itemLabel="Yes" />
+                                            </apex:selectList>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td class="labelColumn">Partner's income</td>
+                                        <td class="dataColumn">
+                                            <apex:input type="number" value="{!dto.partnerIncome}" html-step="0.01" html-placeholder="$" styleClass="dataInput" 
+                                                        id="fldCalcPartnerIncome">
+                                                <apex:actionSupport event="onblur" status="totalAmountStatus" action="{!calculateSplitExpenses}"
+                                                                    reRender="fldCalcNetPartnerIncome, pnltotals, msgServicingCalc"/>
+                                            </apex:input>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td class="labelColumn">Net Partner's Income</td>
+                                        <td class="dataColumn">
+                                        	<h4>
+                                                <apex:outputText value="{0, Number, Currency}" id="fldCalcNetPartnerIncome">
+                                                    <apex:param value="{!dto.splitNetPartIncomeTotal}" />
+                                                </apex:outputText></h4>&nbsp;&nbsp;&nbsp;<apex:actionStatus startText="   calculating..." id="totalSplitStatus"  />
+                                        </td>
+                                    </tr>
+                                </table>
+                            </td>
+                        </tr>
+                    </table>
+                </apex:outputPanel>
+                <apex:outputPanel styleClass="rightTables" id="pnltotals">
+                    <apex:outputPanel styleClass="subSectionTab"><h3>TOTAL</h3></apex:outputPanel>
+                    <table class="tableSubsection">
+                        <tr>
+                            <td width="45%">NET MONTHLY INCOME</td>
+                            <td width="20%" class="incomeValue"><h4>
+                                <apex:outputText value="{0, Number, Currency}" id="fldCalcTotNetMonthlyIncome">
+                                    <apex:param value="{!dto.totNetMonthlyIncome}" />
+                                </apex:outputText></h4>
+                            </td>
+                            <td width="35%">&nbsp;</td>
+                        </tr>
+                        <tr>
+                            <td>Liabilities</td>
+                            <td class="notIncomeValue">
+                                <apex:outputText value="{0, Number, Currency}" id="fldCalcTotLiabilities">
+                                    <apex:param value="{!dto.totLiabilities}" />
+                                </apex:outputText>
+                            </td>
+                            <td>&nbsp;</td>
+                        </tr>
+                        <tr>
+                            <td>Rent/Mortgage</td>
+                            <td class="notIncomeValue">
+                                <apex:outputText value="{0, Number, Currency}" id="fldCalcTotRentMtgPaid">
+                                    <apex:param value="{!dto.splitRentMortgageTotal}" />
+                                </apex:outputText>
+                            </td>
+                            <td><apex:inputCheckbox value="{!dto.splitRentMortgage}" id="fldServSplitRent" 
+                                                    disabled="{!OR(dto.splittingExpenses != 'Yes',AND(dto.maritalStatus != 'De Facto',dto.maritalStatus != 'Married'))}" styleClass="dataInputCheckBox">
+                                	<apex:actionSupport event="onclick" status="totalAmountStatus" action="{!calculateSplitExpenses}"
+                                                        reRender="fldCalcNetPartnerIncome, fldCalcTotRentMtgPaid, fldCalcTotLivingExpenses, fldCalcTotAmountLoanPayment, msgServicingCalc, fldTotRentMorg"/>
+                                </apex:inputCheckbox>Split
+                                &nbsp;&nbsp;&nbsp;<i>Total:&nbsp;
+                                <apex:outputText value="({0, Number, Currency})" id="fldTotRentMorg">
+                                    <apex:param value="{!dto.totRentMtgPaid}" />
+                                </apex:outputText></i>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Living Expenses</td>
+                            <td class="notIncomeValue">
+                                <apex:outputText value="{0, Number, Currency}" id="fldCalcTotLivingExpenses">
+                                    <apex:param value="{!dto.splitLivingExpensesTotal}" />
+                                </apex:outputText>
+                            </td>
+                            <td><apex:inputCheckbox value="{!dto.splitLivingExpenses}" id="fldServSplitLiving" 
+                                                    disabled="{!OR(dto.splittingExpenses != 'Yes',AND(dto.maritalStatus != 'De Facto',dto.maritalStatus != 'Married'))}" styleClass="dataInputCheckBox" >
+                                	<apex:actionSupport event="onclick" status="totalAmountStatus" action="{!calculateSplitExpenses}"
+                                                        reRender="fldCalcTotLivingExpenses, fldCalcTotRentMtgPaid, fldCalcNetPartnerIncome, fldCalcTotAmountLoanPayment, msgServicingCalc, fldTotLivExpenses"/>
+                                </apex:inputCheckbox>Split
+                                &nbsp;&nbsp;&nbsp;<i>Total:&nbsp;
+                                <apex:outputText value="({0, Number, Currency})" id="fldTotLivExpenses">
+                                    <apex:param value="{!dto.totLivingExpenses}" />
+                                </apex:outputText></i>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Credit Cards</td>
+                            <td class="notIncomeValue">
+                                <apex:outputText value="{0, Number, Currency}" id="fldCalcTotOtherDebts">
+                                    <apex:param value="{!dto.totOtherDebts}" />
+                                </apex:outputText>
+                            </td>
+                            <td>&nbsp;</td>
+                        </tr>
+                        <tr>
+                            <td>Amount available for loan payment</td>
+                            <td><h3>
+
+                                <apex:outputText value="{0, Number, Currency}" id="fldCalcTotAmountLoanPayment">
+                                    <apex:param value="{!dto.totAmountLoanPayment}" />
+                                </apex:outputText></h3>&nbsp;&nbsp;&nbsp;
+                                <apex:actionStatus startText="(calculating...)" id="totalAmountStatus"  />
+                            </td>
+                            <td>&nbsp;</td>
+                        </tr>
+                    </table>
+                    <p>&nbsp;</p>
+                </apex:outputPanel>
+            </apex:outputPanel>    
+            
+            <!-- SECTION: INCOME-->
+            <apex:outputPanel layout="block" styleClass="section" id="pnlServIncome">  
+                <div class="divTitle">INCOME</div>
+                <apex:outputPanel styleClass="leftTables">
+                    <apex:outputPanel styleClass="subSectionTab"><h3>Applicant 1</h3></apex:outputPanel>
+                    <table class="tableSubsection">
+                        <tr>
+                            <td width="50%">
+                                <table width="100%">
+                                    <tr>
+                                        <td colspan="6" class="labelColumn"><strong>Employment Income</strong></td>
+                                    </tr>
+                                    <tr>
+                                        <td class="labelColumn">Pay Frequency</td>
+                                        <td class="dataColumn">
+                                            <apex:outputPanel styleClass="requiredInput"><apex:outputPanel styleClass="requiredBlock"></apex:outputPanel></apex:outputPanel>
+                                            <apex:selectList value="{!dto.servCalcIncomePayFrecuency1}" multiselect="false" size="1" styleClass="selectList"
+                                                             onchange="servCalculateTotalNetMonthlyIncome()" >
+                                                <apex:selectOption itemValue="Weekly" itemLabel="Weekly" />
+                                                <apex:selectOption itemValue="Fortnightly" itemLabel="Fortnightly" />
+                                                <apex:selectOption itemValue="Monthly" itemLabel="Monthly" />
+                                            </apex:selectList>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td class="labelColumn">Amount</td>
+                                        <td class="dataColumn">
+                                            <apex:outputPanel styleClass="requiredInput"><apex:outputPanel styleClass="requiredBlock"></apex:outputPanel></apex:outputPanel>
+                                            <apex:input type="number" value="{!dto.servCalcIncomeAmount1}" html-step="0.01" html-placeholder="$" styleClass="dataInput"
+                                                        onblur="servCalculateTotalNetMonthlyIncome()"/>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td colspan="2">&nbsp;</td>
+                                    </tr>
+                                </table>
+                            </td>
+                            <td width="50%">
+                                <table width="96%">
+                                    <tr>
+                                        <td colspan="6" class="dataColumn"><strong>Other Income</strong></td>
+                                    </tr>
+                                    <tr>
+                                        <td class="labelColumn">Pay Frequency</td>
+                                        <td class="dataColumn">
+                                            <apex:selectList value="{!dto.servCalcOtherIncomePayFrecuency1}" multiselect="false" size="1" styleClass="selectList"
+                                                             onclick="servCalculateTotalNetMonthlyIncome()">
+                                                <apex:selectOption itemValue="" itemLabel="--None--" />
+                                                <apex:selectOption itemValue="Weekly" itemLabel="Weekly" />
+                                                <apex:selectOption itemValue="Fortnightly" itemLabel="Fortnightly" />
+                                                <apex:selectOption itemValue="Monthly" itemLabel="Monthly" />
+                                            </apex:selectList>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td class="labelColumn">Type</td>
+                                        <td class="dataColumn">
+                                            <apex:selectList value="{!dto.servCalcOtherIncomeType1}" multiselect="false" size="1" styleClass="selectList">
+                                                <apex:selectOptions value="{!otherIncomeTypeSelect}"  />
+                                            </apex:selectList>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td class="labelColumn">Amount</td>
+                                        <td class="dataColumn">
+                                            <apex:input type="number" value="{!dto.servCalcOtherIncomeAmount1}" html-step="0.01" html-placeholder="$" styleClass="dataInput"
+                                                        onblur="servCalculateTotalNetMonthlyIncome()" />
+                                        </td>
+                                    </tr>
+                                </table>
+                            </td>
+                        </tr>
+                    </table>
+                    
+                </apex:outputPanel>
+                <apex:outputPanel styleClass="rightTables">
+                    <apex:outputPanel styleClass="subSectionTab"><h3>Applicant 2</h3></apex:outputPanel>
+                    <table class="tableSubsection">
+                        <tr>
+                            <td width="50%">
+                                <table width="100%">
+                                    <tr>
+                                        <td colspan="6" class="labelColumn"><strong>Employment Income</strong></td>
+                                    </tr>
+                                    <tr>
+                                        <td class="labelColumn">Pay Frequency</td>
+                                        <td class="dataColumn">
+                                            <apex:selectList value="{!dto.servCalcIncomePayFrecuency2}" multiselect="false" size="1" styleClass="selectList"
+                                                             onclick="servCalculateTotalNetMonthlyIncome()" >
+                                                <apex:selectOption itemValue="" itemLabel="--None--" />
+                                                <apex:selectOption itemValue="Weekly" itemLabel="Weekly" />
+                                                <apex:selectOption itemValue="Fortnightly" itemLabel="Fortnightly" />
+                                                <apex:selectOption itemValue="Monthly" itemLabel="Monthly" />
+                                            </apex:selectList>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td class="labelColumn">Amount</td>
+                                        <td class="dataColumn">
+                                            <apex:input type="number" value="{!dto.servCalcIncomeAmount2}" html-step="0.01" html-placeholder="$" styleClass="dataInput"
+                                                        onblur="servCalculateTotalNetMonthlyIncome()" />
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td colspan="2">&nbsp;</td>
+                                    </tr>
+                                </table>
+                            </td>
+                            <td width="50%">
+                                <table width="96%">
+                                    <tr>
+                                        <td colspan="6" class="dataColumn"><strong>Other Income</strong></td>
+                                    </tr>
+                                    <tr>
+                                        <td class="labelColumn">Pay Frequency</td>
+                                        <td class="dataColumn">
+                                            <apex:selectList value="{!dto.servCalcOtherIncomePayFrecuency2}" multiselect="false" size="1" styleClass="selectList"
+                                                             onclick="servCalculateTotalNetMonthlyIncome()" >
+                                                <apex:selectOption itemValue="" itemLabel="--None--" />
+                                                <apex:selectOption itemValue="Weekly" itemLabel="Weekly" />
+                                                <apex:selectOption itemValue="Fortnightly" itemLabel="Fortnightly" />
+                                                <apex:selectOption itemValue="Monthly" itemLabel="Monthly" />
+                                            </apex:selectList>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td class="labelColumn">Type</td>
+                                        <td class="dataColumn">
+                                            <apex:selectList value="{!dto.servCalcOtherIncomeType2}" multiselect="false" size="1" styleClass="selectList" 
+                                                             >
+                                                <apex:selectOptions value="{!otherIncomeTypeSelect}"/>
+                                            </apex:selectList>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td class="labelColumn">Amount</td>
+                                        <td class="dataColumn">
+                                            <apex:input type="number" value="{!dto.servCalcOtherIncomeAmount2}" html-step="0.01" html-placeholder="$" styleClass="dataInput"
+                                                        onblur="servCalculateTotalNetMonthlyIncome()" />
+                                        </td>
+                                    </tr>
+                                </table>
+                            </td>
+                        </tr>
+                    </table>
+                </apex:outputPanel>
+            </apex:outputPanel>  
+            
+            
+            <!-- SECTION: LIABILITY-->
+			<apex:outputPanel layout="block" styleClass="section">  
+                <div class="divTitle">EXPENSES</div>
+                <apex:outputPanel styleClass="oneTables">
+                    <table width="100%">
+                        <tr>
+                            <td width="50%" class="cellMultiTables cellExtraRigthPading">
+                                <apex:outputPanel styleClass="subSectionTab"><h3>Liability</h3></apex:outputPanel>
+                                <table class="tableSubsection">
+                                    <tr>
+                                    	<td width="30%">Loan Type</td>
+                                        <td width="30%">Frequency</td>
+                                        <td width="30%">Amount</td>
+                                        <td width="10%">&nbsp;</td>
+                                    </tr>
+                                    <tr>
+                                        <td colspan="4">
+                                            <table width="100%">
+                                                <tr>
+                                                    <td width="30%">
+                                                        <apex:selectList value="{!dto.servCalcLoanType}" multiselect="false" size="1" styleClass="selectList" >
+                                                            <apex:selectOptions value="{!loanTypeSelect}" />
+                                                        </apex:selectList>
+                                                    </td>
+                                                    <td width="30%">
+                                                        <apex:selectList value="{!dto.servCalcLoanPayFrecuency}" multiselect="false" size="1" styleClass="selectList"
+                                                                         onclick="servCalculateLiabilities()">
+                                                            <apex:selectOption itemValue="" itemLabel="--None--" />
+                                                            <apex:selectOption itemValue="Weekly" itemLabel="Weekly" />
+                                                            <apex:selectOption itemValue="Fortnightly" itemLabel="Fortnightly" />
+                                                            <apex:selectOption itemValue="Monthly" itemLabel="Monthly" />
+                                                        </apex:selectList>
+                                                    </td>
+                                                    <td width="30%">
+                                                        <apex:input type="number" value="{!dto.servCalcLoanPayAmount}" html-step="0.01" html-placeholder="$" styleClass="dataInput"
+                                                                    onblur="servCalculateLiabilities()"/>
+                                                    </td>
+                                                    <td width="10%">&nbsp;</td>
+                                                </tr>
+                                        	</table>
+                                            	<table width="100%">
+                                                    <tr>
+                                                        <td width="30%">
+                                                            <apex:selectList value="{!dto.servCalcLoanType2}" multiselect="false" size="1" styleClass="selectList" >
+                                                                <apex:selectOptions value="{!loanTypeSelect}" />
+                                                            </apex:selectList>
+                                                        </td>
+                                                        <td width="30%">
+                                                            <apex:selectList value="{!dto.servCalcLoanPayFrecuency2}" multiselect="false" size="1" styleClass="selectList"
+                                                                             onclick="servCalculateLiabilities()">
+                                                                <apex:selectOption itemValue="" itemLabel="--None--" />
+                                                                <apex:selectOption itemValue="Weekly" itemLabel="Weekly" />
+                                                                <apex:selectOption itemValue="Fortnightly" itemLabel="Fortnightly" />
+                                                                <apex:selectOption itemValue="Monthly" itemLabel="Monthly" />
+                                                            </apex:selectList>
+                                                        </td>
+                                                        <td width="30%">
+                                                            <apex:input type="number" value="{!dto.servCalcLoanPayAmount2}" html-step="0.01" html-placeholder="$" styleClass="dataInput"
+                                                                        onblur="servCalculateLiabilities()"/>
+                                                        </td>
+                                                        <td width="10%">&nbsp;</td>
+                                                    </tr>
+                                        		</table>
+                                                <table width="100%">
+                                                    <tr>
+                                                        <td width="30%">
+                                                            <apex:selectList value="{!dto.servCalcLoanType3}" multiselect="false" size="1" styleClass="selectList" >
+                                                                <apex:selectOptions value="{!loanTypeSelect}" />
+                                                            </apex:selectList>
+                                                        </td>
+                                                        <td width="30%">
+                                                            <apex:selectList value="{!dto.servCalcLoanPayFrecuency3}" multiselect="false" size="1" styleClass="selectList"
+                                                                             onclick="servCalculateLiabilities()">
+                                                                <apex:selectOption itemValue="" itemLabel="--None--" />
+                                                                <apex:selectOption itemValue="Weekly" itemLabel="Weekly" />
+                                                                <apex:selectOption itemValue="Fortnightly" itemLabel="Fortnightly" />
+                                                                <apex:selectOption itemValue="Monthly" itemLabel="Monthly" />
+                                                            </apex:selectList>
+                                                        </td>
+                                                        <td width="30%">
+                                                            <apex:input type="number" value="{!dto.servCalcLoanPayAmount3}" html-step="0.01" html-placeholder="$" styleClass="dataInput"
+                                                                        onblur="servCalculateLiabilities()"/>
+                                                        </td>
+                                                        <td width="10%">&nbsp;</td>
+                                                    </tr>
+                                                </table>
+                                                <table width="100%">
+                                                    <tr>
+                                                        <td width="30%">
+                                                            <apex:selectList value="{!dto.servCalcLoanType4}" multiselect="false" size="1" styleClass="selectList" >
+                                                                <apex:selectOptions value="{!loanTypeSelect}" />
+                                                            </apex:selectList>
+                                                        </td>
+                                                        <td width="30%">
+                                                            <apex:selectList value="{!dto.servCalcLoanPayFrecuency4}" multiselect="false" size="1" styleClass="selectList"
+                                                                             onclick="servCalculateLiabilities()">
+                                                                <apex:selectOption itemValue="" itemLabel="--None--" />
+                                                                <apex:selectOption itemValue="Weekly" itemLabel="Weekly" />
+                                                                <apex:selectOption itemValue="Fortnightly" itemLabel="Fortnightly" />
+                                                                <apex:selectOption itemValue="Monthly" itemLabel="Monthly" />
+                                                            </apex:selectList>
+                                                        </td>
+                                                        <td width="30%">
+                                                            <apex:input type="number" value="{!dto.servCalcLoanPayAmount4}" html-step="0.01" html-placeholder="$" styleClass="dataInput"
+                                                                        onblur="servCalculateLiabilities()"/>
+                                                        </td>
+                                                        <td width="10%">&nbsp;</td>
+                                                    </tr>
+                                                </table>
+                                        </td>
+                                    </tr>
+                                </table>
+                            </td>
+                            <td width="50%" class="cellMultiTables">
+                                <apex:outputPanel styleClass="subSectionTab"><h3>Rent / Mortgage</h3></apex:outputPanel>
+                                <table class="tableSubsection">
+                                    <tr>
+                                        <td class="labelColumn">Frequency</td>
+                                        <td class="dataColumn">
+                                            <apex:selectList value="{!dto.servCalcRentPayFrecuency}" multiselect="false" size="1" styleClass="selectList"
+                                                             onclick="servCalculateRentMtgePaid()">
+                                                <apex:selectOption itemValue="" itemLabel="--None--" />
+                                                <apex:selectOption itemValue="Weekly" itemLabel="Weekly" />
+                                                <apex:selectOption itemValue="Fortnightly" itemLabel="Fortnightly" />
+                                                <apex:selectOption itemValue="Monthly" itemLabel="Monthly" />
+                                            </apex:selectList>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td class="labelColumn">Amount</td>
+                                        <td class="dataColumn">
+                                            <apex:input type="number" value="{!dto.servCalcRentPayAmount}" html-step="0.01" html-placeholder="$" styleClass="dataInput"
+                                                        id="fldCalcRentPayAmount" onblur="servCalculateRentMtgePaid()"/>
+                                        </td>
+                                    </tr>
+                                </table>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="cellMultiTables cellExtraRigthPading">
+                                <apex:outputPanel styleClass="subSectionTab"><h3>Credit Cards</h3></apex:outputPanel>
+                                <table class="tableSubsection">
+                                    <tr>
+                                        <td class="labelColumn">Issuer</td>
+                                        <td class="dataColumn">
+                                            <apex:input type="text" value="{!dto.servCalcCCardIssuer}" styleClass="dataInput" />
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td class="labelColumn">Credit Limit</td>
+                                        <td class="dataColumn">
+                                            <apex:input type="number" value="{!dto.servCalcCCardCreditLimit}" html-step="0.01" html-placeholder="$" styleClass="dataInput"
+                                                        onblur="servCalculateCreditCard()" />
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td class="labelColumn">Amount Owing</td>
+                                        <td class="dataColumn">
+                                            <apex:input type="number" value="{!dto.servCalcCCardAmountOwing}" html-step="0.01" html-placeholder="$" styleClass="dataInput" />
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td class="labelColumn">Monthly Payment</td>
+                                        <td class="dataColumn">
+                                            <apex:outputText value="{0, Number, Currency}" id="fldCalcCCardMonthlyPayment">
+                                                <apex:param value="{!dto.servCalcCCardMonthlyPayment}" />
+                                            </apex:outputText>
+                                        </td>
+                                    </tr>
+                                </table>
+                            </td>
+                            <td class="cellMultiTables">
+                                <apex:outputPanel styleClass="subSectionTab"><h3>Liberty Calculator</h3></apex:outputPanel>
+                                <table class="tableSubsection">
+                                    <tr>
+                                        <td class="labelColumn">Net - Non Centrelink Income</td>
+                                        <td class="dataColumn">
+                                            <apex:input type="number" value="{!dto.servCalcCLinkNetNonCentIncome}" html-step="0.01" html-placeholder="$" styleClass="dataInput"
+                                                        onblur="servCalculateCentreLink()" />
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td class="labelColumn">Centrelink Income</td>
+                                        <td class="dataColumn">
+                                            <apex:outputText value="{0, Number, Currency}" id="fldCalcCLinkIncome">
+                                                <apex:param value="{!dto.servCalcCLinkIncome}" />
+                                            </apex:outputText>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td class="labelColumn">Total Assessable Income</td>
+                                        <td class="dataColumn">
+                                            <apex:outputText value="{0, Number, Currency}" id="fldCalcCLinkTotalIncome">
+                                                <apex:param value="{!dto.servCalcCLinkTotalIncome}" />
+                                            </apex:outputText>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td class="labelColumn">Centrelink Income %</td>
+                                        <td class="dataColumn">
+                                            <apex:outputText value="{0, Number, ##}%" id="fldCalcCLinkIncomePercentage">
+                                                <apex:param value="{!dto.servCalcCLinkIncomePercentage}" />
+                                            </apex:outputText>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td class="labelColumn">Annual C/L to Loannet</td>
+                                        <td class="dataColumn">
+                                            <apex:outputText value="{0, Number, Currency}" id="fldCalcCLinkAnnualToLoannet">
+                                                <apex:param value="{!dto.servCalcCLinkAnnualToLoannet}" />
+                                            </apex:outputText>
+                                        </td>
+                                    </tr>
+                                </table>
+                            </td>
+                        </tr>
+                    </table>
+                </apex:outputPanel>
+            </apex:outputPanel> 
+			
+        </apex:pageBlock>
+    </apex:form>
+    
+    
+    </div>
+    
+</apex:page>

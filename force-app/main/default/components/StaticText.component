@@ -1,0 +1,9 @@
+<apex:component controller="StaticTextController">
+	<apex:attribute name="code" description="Text code to display."
+                    type="String" required="required" assignTo="{!codeParam}"/>
+    <apex:attribute name="attribute1" description="Text code to display."
+                    type="String" assignTo="{!attr1}"/>
+    <apex:attribute name="attribute2" description="Text code to display."
+                    type="String" assignTo="{!attr2}"/>
+    <apex:outputField value="{!contentObj.Content__c}" />
+</apex:component>

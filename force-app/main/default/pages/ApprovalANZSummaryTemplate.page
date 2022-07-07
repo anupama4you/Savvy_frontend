@@ -1,0 +1,77 @@
+<apex:page docType="html-5.0" standardController="Custom_Opportunity__c" extensions="ApprovalSummaryTmplExtension" sidebar="false" showHeader="false" title="ANZ Interview Guide" renderAs="PDF" contentType="application/pdf;charset=UTF-8">
+    <apex:stylesheet value="{!$Resource.ApprovalDocTmplCSS}"/>
+    <apex:variable value="{!Custom_Opportunity__c}" var="o" />
+    <div class="header">
+        <table width="100%">
+            <tr>
+                <td width="50%" align="left">
+                    <br/>
+                    <apex:outputText value="{!o.Loan_Product__r.Lender__c} Summary" styleClass="headingTitle1" />&nbsp;&nbsp; - &nbsp;&nbsp; 
+                    <apex:outputField value="{!o.Owner_Name__c}"/>
+                    <br/>
+                    Date: {!DAY(TODAY())}/{!MONTH(TODAY())}/{!YEAR(TODAY())}
+                </td>
+                <td width="50%" align="right">
+                    <br/>
+                    <apex:image url="{!$Resource.newSavvyLogo}" height="40" />
+                </td>
+            </tr>
+        </table>
+    </div>
+    <div class="footer">
+        <div class="footerContent">Page <span class="pagenumber"/> of <span class="pagecount"/></div>
+    </div>
+    <table width="100%" cellpadding="5">
+        <tr>
+            <td width="40%" valign="top">
+                <c:SummaryDetails opp="{!o}" app="{!o.Application__r}" quo="{!quoting}" title="{!o.Loan_Product__r.Lender__c} Summary" />
+                <br/>
+                <c:VendorDetails opp="{!o}"/>
+                <br/>
+                <c:AssetDetails asset="{!assetDetail}"/>
+                <br/>
+                <!--<c:IncomeDetails app="{!o.Application__r}" ytd="{!o.ApplicationYTD__r}" srv="{!o.ApplicationServicing__r}" numApplicant="1" incomesApp="{!IncomesApp1}" rendered="{!!hasYTDIncome}"/>
+                <apex:outputPanel rendered="{!o.Application__r.No_of_People__c==2}">
+                    <br/>
+                    <c:IncomeDetails app="{!o.Application__r}" ytd="{!o.ApplicationYTD__r}" srv="{!o.ApplicationServicing__r}" numApplicant="2" incomesApp="{!IncomesApp2}" rendered="{!!hasYTDIncome}"/>
+                </apex:outputPanel>
+                <br/>
+                <c:YTDIncomeDetails srv="{!o.ApplicationServicing__r}" applicantType="Applicant 1" numApplicant="1" YTDincomesApp="{!YTDincomesApp1}" incomesApp="{!IncomesApp1}" rendered="{!hasYTDIncome}"/>
+                <c:YTDIncomeDetails srv="{!o.ApplicationServicing__r}" applicantType="Applicant 1 Second Job" numApplicant="3" YTDincomesApp="{!YTDincomesApp1SecondJob}" incomesApp="{!IncomesApp1}" rendered="{!hasYTDIncome}"/>
+                <c:YTDIncomeDetails srv="{!o.ApplicationServicing__r}" applicantType="Applicant 2" numApplicant="2" YTDincomesApp="{!YTDincomesApp2}" incomesApp="{!IncomesApp2}" rendered="{!hasYTDIncome}"/>
+                <c:YTDIncomeDetails srv="{!o.ApplicationServicing__r}" applicantType="Applicant 2 Second Job" numApplicant="4" YTDincomesApp="{!YTDincomesApp2SecondJob}" incomesApp="{!IncomesApp2}" rendered="{!hasYTDIncome}"/>-->
+                <c:IncomeDetails srv="{!o.ApplicationServicing__r}" applicantType="Applicant 1" incomesApp="{!IncomesApp1}"/>
+                <c:IncomeDetails srv="{!o.ApplicationServicing__r}" applicantType="Applicant 1 Second Job" isSecondJobApplic1="{!isSecondJobApplic1}" rendered="{!isSecondJobApplic1}"/>
+                <c:IncomeDetails srv="{!o.ApplicationServicing__r}" applicantType="Applicant 2" incomesApp="{!IncomesApp2}" app="{!o.Application__r}" rendered="{!o.Application__r.No_of_People__c==2}"/>
+                <c:IncomeDetails srv="{!o.ApplicationServicing__r}" applicantType="Applicant 2 Second Job" app="{!o.Application__r}" isSecondJobApplic2="{!isSecondJobApplic2}" rendered="{!AND(isSecondJobApplic2,o.Application__r.No_of_People__c==2)}"/>
+                <c:PersonalAssetDetails app="{!o.Application__r}" otherAssetsTotal="{!otherAssetsTotal}" propertyList="{!propertyList}" vehicleList="{!vehicleList}" />
+            </td>
+            <td width="60%" valign="top">
+                <apex:outputPanel rendered="{!o.Application__r.Application_Type__c=='Business'}">
+                    <c:CompanyDetails app="{!o.Application__r}"/> 
+                    <br/>
+                </apex:outputPanel>
+                <c:AppApplicantDetails app="{!o.Application__r}" numApplicant="1" prevEmployApp="{!prevEmployApp1}" secondJobApplic1="{!secondJobApplic1}" isSecondJobApplic1="{!isSecondJobApplic1}"/>
+                <apex:outputPanel rendered="{!o.Application__r.No_of_People__c==2}">
+                    <br/>
+                    <c:AppApplicantDetails app="{!o.Application__r}" numApplicant="2" prevEmployApp="{!prevEmployApp2}" secondJobApplic2="{!secondJobApplic2}" isSecondJobApplic2="{!isSecondJobApplic2}"/>
+                </apex:outputPanel>
+                <br/>
+                <c:ExpensesDetails app="{!o.Application__r}" srv="{!o.ApplicationServicing__r}"/>
+                <br/>
+                <c:LiabilityDetails app="{!o.Application__r}" srv="{!o.ApplicationServicing__r}" assetLoanList="{!assetLoanList}" loanList="{!loanList}"/>
+                <br/>
+                <c:CreditCardDetails creditCards="{!creditCardsList}" lenderCode="{!o.ApplicationServicing__r.Lender_Code__c}"/>
+                <br/>
+                <c:ReferenceDetails app="{!o.Application__r}"/>
+                <apex:outputPanel rendered="{!!ISBLANK(o.Application__r.Landlord_Name_1__c)}">
+                    <br/>
+                    <c:LandLordDetails app="{!o.Application__r}"/>
+                </apex:outputPanel>
+            </td>
+        </tr>
+        <tr><td colspan="2"><c:NoteDetails notes="{!notes}"/></td></tr>
+    </table>
+    <!-- Opp Fields -->
+    <apex:outputField value="{!o.Application__c}" rendered="false"/>
+</apex:page>

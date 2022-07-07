@@ -1,0 +1,61 @@
+<apex:component >
+	<apex:attribute name="app" type="Application__c" description="Application Data" required="true"/>
+	<apex:attribute name="srv" type="Application_Servicing__c" description="Servicing Calculation Data" required="true"/>
+  	<table width="100%" border="1">
+        <tr><td colspan="4" class="tableCaption"><strong>Expenses</strong></td></tr>
+        <tr>
+            <td width="25%" class="labelDate">Rent / Board (<apex:outputText value="{!app.Residential_Payment_Frequency_1__c}" rendered="{!NOT(ISBLANK(app.Residential_Payment_Frequency_1__c))}"/>
+                            <apex:outputText value="Monthly" rendered="{!ISBLANK(app.Residential_Payment_Frequency_1__c)}"/>)</td>
+            <td width="25%">
+                <apex:outputText value="{0, Number, Currency}" rendered="{!!srv.Is_Split_Rent_Mortgage__c}">
+                    <apex:param value="{!IF(app.Rent_per_month_1__c != null,app.Rent_per_month_1__c,0)+IF(app.Board_per_Month_1__c != null,app.Board_per_Month_1__c,0)}" />
+                </apex:outputText>
+                <apex:outputText value="{0, Number, Currency} (Split)" rendered="{!srv.Is_Split_Rent_Mortgage__c}">
+                    <apex:param value="{!(IF(app.Rent_per_month_1__c != null,app.Rent_per_month_1__c,0)+IF(app.Board_per_Month_1__c != null,app.Board_per_Month_1__c,0))/2}" />
+                </apex:outputText>
+            </td>
+            <td width="25%" class="labelDate">Living Expenses</td>
+            <td width="25%">
+                <apex:outputField value="{!srv.Total_Living_Expenses__c}"/>
+                &nbsp;
+                <apex:outputText value="(Split)" rendered="{!srv.Is_Split_Living_Expenses__c}"/>
+            </td>
+        </tr>
+        <!-- <tr style= "display: {!IF(app.Loan_Type_1__c=='Mortgage', '', 'none')}">
+            <td class="labelDate">Mortgage Payments</td>
+            <td>
+                <apex:outputField value="{!app.Loans_Monthly_Payments_1__c}"/>
+            </td>
+        </tr>
+        <tr style= "display: {!IF(app.Loan_Type_2__c=='Mortgage', '', 'none')}">
+            <td class="labelDate">Mortgage Payments</td>
+            <td>
+                <apex:outputField value="{!app.Loans_Monthly_Payments_2__c}"/>
+            </td>
+        </tr>
+        <tr style= "display: {!IF(app.Loan_Type_3__c=='Mortgage', '', 'none')}">
+            <td class="labelDate">Mortgage Payments</td>
+            <td>
+                <apex:outputField value="{!app.Loans_Monthly_Payments_3__c}"/>
+            </td>
+        </tr>
+        <tr style= "display: {!IF(app.Loan_Type_4__c=='Mortgage', '', 'none')}">
+            <td class="labelDate">Mortgage Payments</td>
+            <td>
+                <apex:outputField value="{!app.Loans_Monthly_Payments_4__c}"/>
+            </td>
+        </tr>
+        <tr style= "display: {!IF(app.Loan_Type_5__c=='Mortgage', '', 'none')}">
+            <td class="labelDate">Mortgage Payments</td>
+            <td>
+                <apex:outputField value="{!app.Loans_Monthly_Payments_5__c}"/>
+            </td>
+        </tr>
+        <tr style= "display: {!IF(app.Loan_Type_6__c=='Mortgage', '', 'none')}">
+            <td class="labelDate">Mortgage Payments</td>
+            <td>
+                <apex:outputField value="{!app.Loans_Monthly_Payments_6__c}"/>
+            </td>
+        </tr> -->
+    </table>
+</apex:component>

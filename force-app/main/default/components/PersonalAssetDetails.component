@@ -1,0 +1,73 @@
+<apex:component >	
+	<apex:attribute name="app" type="Application__c" description="Application Data" required="true"/>
+	<apex:attribute name="otherAssetsTotal" type="Decimal" description="Total of Other Assets"/>
+	<apex:attribute name="propertyList" type="PersonalAssetDTO[]" description="List of Asset Properties"/>
+	<apex:attribute name="vehicleList" type="PersonalAssetDTO[]" description="List of Asset Vehicles"/>
+	<table width="100%" border="1">
+		<tr><td class="tableCaption"><strong>Assets</strong></td></tr>
+	</table>    
+	<table width="100%" border="1">
+		<tr>
+			<td class="cellHeading">#</td>
+			<td class="cellHeading"><strong>Properties/Land</strong></td>
+			<td class="cellHeading"><strong>Value</strong></td>
+			<td class="cellHeading">Mortgage?</td>
+		</tr>
+		<apex:repeat value="{!propertyList}" var="p">
+			<tr>
+				<td>{!p.order})</td>
+				<td><apex:outputField value="{!p.data['Description__c']}"/></td>
+				<td><apex:outputField value="{!p.data['Value__c']}"/></td>
+				<td>
+					<apex:outputText value="Yes" rendered="{!p.data['Has_Loan__c'] =='Y'}"/>
+					<apex:outputText value="No" rendered="{!p.data['Has_Loan__c'] !='Y'}"/>
+				</td>
+			</tr>
+		</apex:repeat>
+	</table>
+	<table width="100%" border="1">
+		<tr>
+			<td class="cellHeading">#</td>
+			<td class="cellHeading"><strong>Vehicle</strong></td>
+			<td class="cellHeading"><strong>Value</strong></td>
+			<td class="cellHeading">Car Loan?</td>
+		</tr>
+		<apex:repeat value="{!vehicleList}" var="p">
+			<tr>
+				<td>{!p.order})</td>
+				<td><apex:outputField value="{!p.data['Description__c']}"/></td>
+				<td><apex:outputField value="{!p.data['Value__c']}"/></td>
+				<td>
+					<apex:outputText value="Yes" rendered="{!p.data['Has_Loan__c'] =='Y'}"/>
+					<apex:outputText value="No" rendered="{!p.data['Has_Loan__c'] !='Y'}"/>
+				</td>
+			</tr>
+		</apex:repeat>
+	</table>
+	<table width="100%" border="1">
+		<tr>
+			<td class="cellHeading" colspan="4"><strong>Savings</strong></td>
+		</tr>
+		<tr>
+			<td width="25%" class="labelDate">Saving Bank</td>
+			<td width="25%"><apex:outputField value="{!app.Bank_Name__c}"/></td>
+			<td width="25%" class="labelDate">Saving value</td>
+			<td width="25%"><apex:outputField value="{!app.Bank_Value__c}"/></td>
+		</tr>
+		<tr>
+			<td class="labelDate">Furniture</td>
+			<td><apex:outputField value="{!app.Furniture_Value__c}"/></td>
+			<td class="labelDate">Super</td>
+			<td><apex:outputField value="{!app.Super_Value_How_Much__c}"/></td>
+		</tr>
+		<tr>
+			<td class="labelDate">Others</td>
+			<td>
+				<apex:outputText value="{0, Number, Currency}">
+					<apex:param value="{!otherAssetsTotal}" />
+				</apex:outputText>
+			</td>
+			<td colspan="2">&nbsp;</td>
+		</tr>
+	</table>
+</apex:component>

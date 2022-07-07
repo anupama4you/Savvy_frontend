@@ -1,0 +1,16 @@
+<apex:page showHeader="false" sidebar="false" controller="CustomReportExtension">
+	<style type="text/css">
+		.title1 {
+			font-size: 10em;
+			font-weight: bold;
+			color: #808080;
+		}
+	</style>	
+	<table width="100%">
+		<tr>
+			<td align="center" class="title1">
+				{!totalUnassignedBCCLLeads}
+			</td>
+		</tr>
+	</table>
+</apex:page>

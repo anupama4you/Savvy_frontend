@@ -1,0 +1,31 @@
+<apex:page showHeader="false" sidebar="false" standardStylesheets="false">
+	<strong>Purchase Type</strong> 
+	Dealer only.
+
+	<hr/><strong>Employment Type </strong> 
+	FT must not be in probationary period.  
+	PT must not be in probationary period.  
+	Because casual automatically becomes a Tier C, 5’Oh won’t apply.
+
+	<hr/><strong>Credit History</strong> 
+	Clean history, paid non-financial defaults as long as profile supports. Will consider small unpaid defaults. 
+
+	<hr/><strong>Financed Assets </strong> 
+	Cars only.
+
+	<hr/><strong>Loan Terms </strong> 
+	0-84 months.
+
+	<hr/><strong>Term End</strong> 
+	Max is 12 years at term end, max based on car not being able to be older than 5 years. 
+
+	<hr/><strong>LTV Ratios</strong> 
+	N/A. 
+
+	<hr/><strong>Why? &amp; When?</strong> 
+	New to 5-year-old cars, dealer sales only, Tier A &amp; B only. Cheaper interest rates than Pepper MV and can earn up to 12% commission, consumer or commercial. 
+
+	<hr/><strong>Early repayment fees</strong> 
+	$600 amortised over the term plus $150 fee.
+
+</apex:page>

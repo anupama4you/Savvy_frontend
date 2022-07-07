@@ -1,0 +1,269 @@
+<apex:page controller="DisplayTVReport" showHeader="false" sidebar="false" standardStylesheets="true" cache="true" >
+<!-- Lelo                               2016-06-28 -->
+    <style type="text/css">
+      .rowOne {
+        background: #FFFFFF;
+      }
+      .rowTwo {
+        background: #E8E8E8;
+      }
+    </style>
+
+<apex:sectionHeader title="Performance Progress Report" />
+
+    <apex:form >
+    <apex:pageBlock >
+        <apex:pageBlockSection columns="3" >
+            <apex:pageBlockSectionItem >
+                <apex:outputLabel value="Month" />
+                <!--  &nbsp;&nbsp; -->
+                <apex:actionRegion >
+                    <apex:selectList value="{!Month}" size="1">
+                        <apex:selectOption itemValue="1" itemLabel="January" />
+                        <apex:selectOption itemValue="2" itemLabel="February" />
+                        <apex:selectOption itemValue="3" itemLabel="March" />
+                        <apex:selectOption itemValue="4" itemLabel="April" />
+                        <apex:selectOption itemValue="5" itemLabel="May" />
+                        <apex:selectOption itemValue="6" itemLabel="June" />
+                        <apex:selectOption itemValue="7" itemLabel="July" />
+                        <apex:selectOption itemValue="8" itemLabel="August" />
+                        <apex:selectOption itemValue="9" itemLabel="September" />
+                        <apex:selectOption itemValue="10" itemLabel="October" />
+                        <apex:selectOption itemValue="11" itemLabel="November" />
+                        <apex:selectOption itemValue="12" itemLabel="December" />
+                        <apex:actionSupport event="onchange" reRender="main,oppLst,totalSect" action="{!getConsultants}" status="stMo" />
+                    </apex:selectList>
+                    &nbsp;&nbsp;&nbsp;&nbsp;
+                    <apex:actionStatus id="stMo" startText="(processing...)" />
+                </apex:actionRegion>
+            </apex:pageBlockSectionItem>
+            <apex:pageBlockSectionItem >
+                <apex:outputLabel value="Year" />
+                <apex:actionRegion >
+                    <apex:selectList value="{!Year}" size="1">
+                        <apex:selectOptions value="{!Years}" />
+                        <apex:actionSupport event="onchange" reRender="main,oppLst,totalSect" action="{!getConsultants}" status="stYe"/>
+                    </apex:selectList>
+                    &nbsp;&nbsp;&nbsp;&nbsp;
+                    <apex:actionStatus id="stYe" startText="(processing...)" />
+                </apex:actionRegion>                
+            </apex:pageBlockSectionItem>
+            <apex:pageBlockSectionItem >
+              <apex:actionStatus id="stf5" startText="(processing...)" />
+              <apex:commandButton value="Refresh" action="{!getConsultants}" reRender="main,oppLst,totalSect" status="stf5" />              
+            </apex:pageBlockSectionItem>
+        </apex:pageBlockSection>
+        
+        <apex:outputPanel id="main">  
+           
+           <apex:pageBlockSection title="Totals" collapsible="false" id="totalSect" rendered="true">
+                <apex:pageBlockSectionItem >
+                    <apex:outputLabel value="Total Commission (ex GST)" />
+                     <apex:outputText value="{0, number, $##,###,###.00}">                
+                        <apex:param value="{!dsOverallCommission}"/>
+                    </apex:outputText>   
+                </apex:pageBlockSectionItem>
+                <apex:pageBlockSectionItem >
+                    <apex:outputLabel value="Total Net Amount Financed" /> 
+                     <apex:outputText value="{0, number, $##,###,###.00}">
+                      <apex:param value="{!dsOverallNAF}" />
+                    </apex:outputText>
+                </apex:pageBlockSectionItem>
+                <apex:pageBlockSectionItem >
+                    <apex:outputLabel value="Total Brokerage/DOF (ex GST)" />                
+                     <apex:outputText value="{0, number, $##,###,###.00}">
+                      <apex:param value="{!dsOverallBrokerageAndDOF}" />
+                    </apex:outputText>  
+                </apex:pageBlockSectionItem>
+                <apex:pageBlockSectionItem >
+                    <apex:outputLabel value="Total Insurance Commission (ex GST)" />                
+                     <apex:outputText value="{0, number, $##,###,###.00}">
+                      <apex:param value="{!dsOverallInsuranceCommission}" />
+                    </apex:outputText>  
+                </apex:pageBlockSectionItem>
+                 <apex:pageBlockSectionItem >
+                    <apex:outputLabel value="# of Opportunities" />
+                    <apex:outputLabel value="{!OverallLeads}" />
+                </apex:pageBlockSectionItem>
+                 <apex:pageBlockSectionItem >
+                    <apex:outputLabel value="% of Budget" />
+                    <apex:outputText value="{0, number, #,###.##%}">
+                        <apex:param value="{!dsOverallPctBudget }" />
+                    </apex:outputText>                                         
+                </apex:pageBlockSectionItem>
+                <apex:pageBlockSectionItem >
+                    <apex:outputLabel value="# of Loan Sales" />
+                    <apex:outputLabel value="{!dsOverallLoanSales}" />
+                </apex:pageBlockSectionItem>
+                 <!-- <apex:pageBlockSectionItem >
+                    <apex:outputLabel value="# of Insurance Sales" />
+                    <apex:outputLabel value="{!dsOverallInsuranceSales}" />
+                </apex:pageBlockSectionItem> -->
+                <!-- <apex:pageBlockSectionItem >
+                    <apex:outputLabel value="Insurance Conversion" />
+                    <apex:outputText value="{0, number, ###.##%}">
+                        <apex:param value="{!dsOverallInsuranceConversion}" />
+                    </apex:outputText> 
+                </apex:pageBlockSectionItem> -->
+                <apex:pageBlockSectionItem >
+                    <!-- <apex:outputLabel value="Lead Conversion" />                 -->
+                    <apex:outputLabel value="Opportunity Conversion" />
+                    <apex:outputText value="{0, number, #,###.##%}">
+                        <apex:param value="{!dsOverallLeadConversion}" />
+                    </apex:outputText>
+                </apex:pageBlockSectionItem>
+                <apex:pageBlockSectionItem >
+                    <apex:outputLabel value="Total budget (ex GST)" /> 
+                     <apex:outputText value="{0, number, $##,###,###.00}">
+                      <apex:param value="{!dsOverallBudget}" />
+                    </apex:outputText>                      
+                </apex:pageBlockSectionItem>
+                <apex:pageBlockSectionItem />
+                <!-- <apex:pageBlockSectionItem >
+                    <apex:outputLabel value="# of VD Sales" />
+                    <apex:outputLabel value="{!dsOverallVDSales}" />
+                </apex:pageBlockSectionItem>
+                <apex:pageBlockSectionItem >
+                    <apex:outputLabel value="VD Conversion Rate" />                
+                    <apex:outputText value="{0, number, #,###.##%}">
+                        <apex:param value="{!overallVDConversion}" />
+                    </apex:outputText>
+                </apex:pageBlockSectionItem> -->
+                <apex:pageBlockSectionItem >
+                    <apex:outputLabel value="Total # of Full-Comp" />
+                    <apex:outputLabel value="{!totalFullCompInsSales}" />
+                </apex:pageBlockSectionItem>
+                <apex:pageBlockSectionItem >
+                    <apex:outputLabel value="Total # of Add-Ons" />
+                    <apex:outputLabel value="{!totalOtherInsSales}" />
+                </apex:pageBlockSectionItem>
+                <apex:pageBlockSectionItem >
+                    <apex:outputLabel value="Total % of Full-Comp" />
+                    <apex:outputText value="{0, number, #,###.##%}">
+                        <apex:param value="{!totalFullCompConversionRate}" />
+                    </apex:outputText>
+                </apex:pageBlockSectionItem>
+                <apex:pageBlockSectionItem >
+                    <apex:outputLabel value="Total % of Add-Ons" />
+                    <apex:outputText value="{0, number, #,###.##%}">
+                        <apex:param value="{!totalOtherConversionRate}" />
+                    </apex:outputText>
+                </apex:pageBlockSectionItem>
+              </apex:pageBlockSection>
+           
+           
+          <apex:pageBlockTable value="{!ConsWrapperList}" var="r" id="oppLst" rowClasses="rowOne, rowTwo" >
+              <apex:column value="{!r.userObj.State}" headerValue="State"  />
+                    <apex:column value="{!r.userObj.name}" headerValue="Consultant Name"  />
+                    
+                <apex:column headerValue="Total Leads" >
+                  <apex:outputText Value="{!r.ldCount}" >
+                   <apex:param value="{!r.ldCount}" /> 
+                  </apex:outputText>                
+                </apex:column>
+                <apex:column headerValue="Pre-Approved">
+                   <apex:facet name="footer">{!totalCurrentPreApproved}</apex:facet>
+                   <apex:outputText value="{!r.PreApprovedOpps}"/>
+                </apex:column>
+                <apex:column headerValue="Budget">
+                <apex:outputText value="{0, number, $##,###,###.00}">
+                   <apex:param value="{!r.urbudget}" />
+                       </apex:outputText>
+                   </apex:column>
+                <apex:column headerValue="No of Loan sales" >
+                   <apex:outputText value="{!r.oppCount}"/>           
+                </apex:column>
+                <apex:column headerValue="Commission" >
+                <apex:outputText value="{0, number, $##,###,###.00}">
+                  <apex:Param value="{!r.totalAmtVal}" />
+                  </apex:outputText>
+                </apex:column>
+                <apex:column headerValue="% of Budget" >
+                   <apex:outputText value="{0, number, #,###.##%}">
+                        <apex:param value="{!r.totalBudget}" />
+                    </apex:outputText>               
+                </apex:column>
+                <apex:column headerValue="Total NAF" >
+                <apex:outputText value="{0, number, $##,###,###.00}">
+                  <apex:Param value="{!r.totalNaf}" />
+                  </apex:outputText>
+                 </apex:column>
+                <apex:column headerValue="# of Comp" >
+                   <apex:outputText value="{!r.fullCompInsuranceSales}"/>              
+                </apex:column>
+                <apex:column headerValue="% of Comp " >
+                <apex:OutputText value="{0, number, #,###.##%}" >
+                   <apex:param value="{!r.fullCompInsConversion}" />
+                  </apex:outputText>
+                </apex:column>
+                <apex:column headerValue="# of Insurance" >
+                   <apex:outputText value="{!r.otherInsuranceSales}"/>              
+                </apex:column>
+                <apex:column headerValue="% of Insurance" >
+                 <apex:OutputText value="{0, number, #,###.##%}" >
+                   <apex:param value="{!r.otherInsConversion}" />
+                  </apex:outputText>
+                </apex:column>
+                <!-- <apex:column headerValue="Total of Ins sales" >
+                   <apex:outputText value="{!r.totalInsuranceSales}"/>              
+                </apex:column>
+                <apex:column headerValue="% Ins Conversion" >
+                   <apex:OutputText value="{0, number, #,###.##%}" >
+                     <apex:param value="{!r.insuranceConversion}" />
+                    </apex:outputText>
+                  </apex:column> -->
+                <apex:column headerValue="Lead Conversion" >
+                    <apex:outputText value="{0, number, #,###.##%}">
+                        <apex:param value="{!r.leadConversion}" />
+                    </apex:outputText>         
+                </apex:column>    
+                <!-- <apex:column headerValue="Rev per Lead">
+                    <apex:outputText value="{0, number, $##,###,###.00}">
+                        <apex:param value="{!r.RevenuePerLead}"/>
+                    </apex:outputText>
+                </apex:column>       -->
+                <apex:column headerValue="Total PA for Month">
+                   <apex:facet name="footer">{!totalPreApproved}</apex:facet>
+                   <apex:outputText value="{!r.TotPreApprovedOpps}"/>
+                </apex:column>
+                <!-- <apex:column headerValue="# PA into New/Demo VD" >
+                  <apex:facet name="footer">{!totalVDNewDemoSent}</apex:facet>
+                    <apex:outputText value="{!r.vdNewDemoCount}"/>    
+                </apex:column>
+                <apex:column headerValue="# PA into VD" >
+                  <apex:facet name="footer">{!totalVDSent}</apex:facet>
+                    <apex:outputText value="{!r.vdCount}"/>    
+                </apex:column>
+                <apex:column headerValue="% PA into New/Demo VD" >
+                    <apex:outputText value="{0, number, #,###.##%}">
+                        <apex:param value="{!r.vdNewDemoConversionRate}" />
+                    </apex:outputText>
+                </apex:column>   
+                <apex:column headerValue="% PA into VD" >
+                    <apex:outputText value="{0, number, #,###.##%}">
+                        <apex:param value="{!r.vDConversionRate}" />
+                    </apex:outputText>
+                </apex:column> -->   
+                <apex:column headerValue="Total PA into VD" >
+                  <apex:facet name="footer">
+                    {!totalVDSent + totalVDNewDemoSent}
+                  </apex:facet>
+                  <apex:outputText value="{!r.totalVDDeals}"/>    
+                </apex:column>
+                <apex:column headerValue="Total % PA into VD" >
+                    <apex:facet name="footer">
+                        <apex:outputText value="{0, number, #,###.##%}">
+                            <apex:param value="{!totalPAIntoVD}" />
+                        </apex:outputText>
+                    </apex:facet>
+                    <apex:outputText value="{0, number, #,###.##%}">
+                        <apex:param value="{!r.totalVDConversionRate}" />
+                    </apex:outputText>
+                </apex:column>   
+          </apex:pageBlockTable>  <br/>
+           
+          </apex:outputPanel>
+             
+  </apex:pageBlock>
+    </apex:form>
+</apex:page>

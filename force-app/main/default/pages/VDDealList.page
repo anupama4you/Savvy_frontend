@@ -1,0 +1,14 @@
+<apex:page docType="html-5.0" Controller="VDDealListExtension" sidebar="false" showHeader="false">
+        
+    <apex:pageBlock >
+        <apex:pageBlockTable value="{!VDTasks}" var="task" >
+            <apex:column value="{!task.id}" styleClass="oppId" rendered="false" />
+            <apex:column headerValue="Name">
+                <apex:outputLink value="/{!task.id}" target="_blank" >{!task.Name}</apex:outputLink>
+            </apex:column>
+            <apex:column value="{!task.VD_Status__c}" />
+            <apex:column value="{!task.VD_Owner__c}" />
+            <apex:column value="{!task.VD_Notes__c}" />
+        </apex:pageBlockTable>
+    </apex:pageBlock>
+</apex:page>

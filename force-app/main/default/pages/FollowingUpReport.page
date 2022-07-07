@@ -1,0 +1,338 @@
+<apex:page controller="FollowingUpReportController" showHeader="true" sidebar="false" standardStylesheets="true" cache="true" title="Following Up Report" id="FollowingUpRpt">
+	<apex:stylesheet value="{!$Resource.PerformanceRptCSS}"/>
+	<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.1/css/all.css" integrity="sha384-50oBUHEmvpQ+1lW4y57PTFmhCaXp0ML5d60M1M7uH2+nqUivzIebhndOJK28anvf" crossorigin="anonymous"/>
+    <!-- <apex:sectionHeader title="Consultant Following Up Report" /> -->
+    <apex:form id="formReport">
+	    <div class="bPageTitle">
+	    	<div class="ptBody secondaryPalette brandSecondaryBrd">
+		    	<table width="100%">
+		    		<tr>
+		    			<td width="50%" valign="top">
+		    				<h1 class="noSecondHeader">
+		    					<apex:outputText value="{!reportTitle}"/>
+		    					&nbsp;&nbsp;&nbsp;<apex:actionStatus startText="(Processing...)" id="sttRptProcessing"/>
+		    				</h1>
+		    			</td>
+		    			<td width="50%" align="right" valign="middle">
+		    				<apex:outputPanel rendered="{!displayClosedOpps}">
+		    					<strong>Select a team</strong>&nbsp;
+		    					<apex:selectList value="{!teamSel}" size="1">
+		    						<apex:selectOptions value="{!teamOptions}"/>
+		    						<apex:actionSupport event="onchange" action="{!buildReport}" reRender="formData" status="sttRptProcessing"/>
+		    					</apex:selectList>
+		    				</apex:outputPanel>&nbsp;&nbsp;&nbsp;&nbsp;
+		    				<!-- <apex:commandButton value="Close Opportunities Following Up Report" 
+		    					action="{!loadClosedOppsProfile}" reRender="formReport, formData" status="sttRptProcessing"
+		    					rendered="{!reportProfile!='CO'}" />&nbsp;&nbsp; -->
+		    				<apex:commandButton value="Closed Opportunities Report" 
+	    						action="{!loadClosedOppsProfile}" rendered="{!reportProfile!='CO'}"/>&nbsp;&nbsp;
+	    					<apex:commandButton value="Future Follow Up Report" 
+	    						action="{!loadFollowUpProfile}" rendered="{!reportProfile!='FU'}"/>&nbsp;&nbsp;
+	    					<apex:commandButton value="Back to General Following Up Report" 
+	    						action="{!loadGeneralProfile}" rendered="{!reportProfile!='G'}"/>&nbsp;&nbsp;
+		    				<!-- <apex:commandButton value="Follow Up Opportunities Report" 
+		    					action="{!loadFollowUpProfile}" reRender="formReport, formData" status="sttRptProcessing"
+		    					rendered="{!reportProfile!='FU'}" />&nbsp;&nbsp;
+		    				<apex:commandButton value="Back to General Following Up Report" 
+		    					action="{!loadGeneralProfile}" reRender="formReport, formData" status="sttRptProcessing"
+		    					rendered="{!reportProfile!='G'}" /> -->
+		    			</td>
+		    		</tr>
+		    	</table>
+		    </div>
+		</div>
+	</apex:form>
+    <apex:form id="formData">
+        <apex:pageBlock mode="Detail" id="tableBlock">
+        	<apex:repeat value="{!reportKeys}" var="k">
+        		<apex:variable value="{!0}" var="tot"/>
+        		<apex:variable value="{!0}" var="zed"/>
+        		<apex:variable value="{!0}" var="ond"/>
+        		<apex:variable value="{!0}" var="twd"/>
+        		<apex:variable value="{!0}" var="thd"/>
+        		<apex:variable value="{!0}" var="nod"/>
+        		<apex:variable value="{!reportMap[k]}" var="rptList"/  >
+        		<apex:repeat value="{!rptList}" var="d">
+        			<apex:variable value="{!tot + d.totalOpps}" var="tot"/>
+        			<apex:variable value="{!zed + d.zeroDayOpps}" var="zed"/>
+        			<apex:variable value="{!ond + d.oneDayOpps}" var="ond"/>
+        			<apex:variable value="{!twd + d.twoDayOpps}" var="twd"/>
+        			<apex:variable value="{!thd + d.threeDayOpps}" var="thd"/>
+        			<apex:variable value="{!nod + d.notCallOpps}" var="nod"/>
+        		</apex:repeat>
+        		<!-- <apex:sectionHeader title="{!k} ({!rptList.size} records)"  /> -->
+        		<div class="bPageTitle">
+			    	<div class="ptBody secondaryPalette brandSecondaryBrd">
+				    	<table width="100%">
+				    		<tr>
+				    			<td width="100%" valign="top">
+				    				<h1 class="noSecondHeader">
+										<apex:outputText value="{!k} ({!rptList.size} records)"/>
+									</h1>&nbsp;&nbsp;&nbsp;
+									<apex:outputPanel layout="block" rendered="{!displayClosedOpps}">
+										<i>(Note: This report displays closed oppotunities wihtin the last 7 days)</i>
+									</apex:outputPanel>
+				    			</td>
+				    		</tr>
+				    	</table>
+				    </div>
+				</div>
+		        <apex:pageBlockTable value="{!rptList}" var="d" id="tblData" rowClasses="rowOne, rowTwo">
+		            <apex:column width="5%">
+		                <apex:facet name="header">Action</apex:facet>
+		                <apex:commandButton value="Details" action="{!showDetails}" reRender="pnlDetails" status="sttRptProcessing">
+		                	<apex:param name="ownerSelected" assignTo="{!ownerSelected}" value="{!d.ownerId}"/>
+		            	</apex:commandButton>
+		            </apex:column>
+		            <apex:column value="{!d.state}" width="5%">
+		                <apex:facet name="header">State</apex:facet>
+		            </apex:column>
+		            <apex:column value="{!d.ownerName}">
+		                <apex:facet name="header">Consultant Name</apex:facet>
+		            </apex:column>
+		            <apex:column value="{!d.totalOpps}" styleClass="numbers" headerClass="numbers"  footerClass="numbers FUtotalRow" width="12%">
+		                <apex:facet name="header">Total <br/>Opportunities</apex:facet>
+		                <apex:facet name="footer">
+		                    <apex:outputText value="{!tot}"></apex:outputText>
+		                </apex:facet>
+		            </apex:column>
+		            <!-- Follow Up Opps -->
+		            <!-- Green -->
+		            <apex:column value="{!d.zeroDayOpps}" styleClass="numbers" headerClass="numbers"  footerClass="numbers FUtotalRowD0" width="12%" rendered="{!displayFollowUpOpps}">
+		                <apex:facet name="header">Active Tasks</apex:facet>
+		                <apex:facet name="footer">
+		                    <apex:outputLabel value="{!zed}" />
+		                </apex:facet>
+		            </apex:column>
+		            <!-- Red -->
+		            <apex:column value="{!d.oneDayOpps}" styleClass="numbers" headerClass="numbers"  footerClass="numbers FUtotalRowD3" width="12%" rendered="{!displayFollowUpOpps}">
+		                <apex:facet name="header">Overdued Tasks</apex:facet>
+		                <apex:facet name="footer">
+		                    <apex:outputLabel value="{!ond}" />
+		                </apex:facet>
+		            </apex:column>
+		            <!-- Red -->
+		            <apex:column value="{!d.twoDayOpps}" styleClass="numbers" headerClass="numbers"  footerClass="numbers FUtotalRowD3" width="12%" rendered="{!displayFollowUpOpps}">
+		                <apex:facet name="header">No Task</apex:facet>
+		                <apex:facet name="footer">
+		                    <apex:outputLabel value="{!twd}" />
+		                </apex:facet>
+		            </apex:column>
+		            <!-- Other opps -->
+		            <!-- Green -->
+		            <apex:column value="{!d.zeroDayOpps}" styleClass="numbers" headerClass="numbers"  footerClass="numbers FUtotalRowD0" width="12%" rendered="{!NOT(displayFollowUpOpps)}">
+		                <apex:facet name="header">0 days calls</apex:facet>
+		                <apex:facet name="footer">
+		                    <apex:outputLabel value="{!zed}" />
+		                </apex:facet>
+		            </apex:column>
+		            <!-- Yellow  -->
+		            <apex:column value="{!d.oneDayOpps}" styleClass="numbers" headerClass="numbers"  footerClass="numbers FUtotalRowD1" width="12%" rendered="{!NOT(displayFollowUpOpps)}">
+		                <apex:facet name="header">1 day calls</apex:facet>
+		                <apex:facet name="footer">
+		                    <apex:outputLabel value="{!ond}" />
+		                </apex:facet>
+		            </apex:column>
+		            <!-- Orange -->
+		            <apex:column value="{!d.twoDayOpps}" styleClass="numbers" headerClass="numbers"  footerClass="numbers FUtotalRowD2" width="12%" rendered="{!NOT(displayFollowUpOpps)}">
+		                <apex:facet name="header">2 days calls</apex:facet>
+		                <apex:facet name="footer">
+		                    <apex:outputLabel value="{!twd}" />
+		                </apex:facet>
+		            </apex:column>
+		            <!-- Red -->
+		            <apex:column value="{!d.threeDayOpps}" styleClass="numbers" headerClass="numbers"  footerClass="numbers FUtotalRowD3" width="12%" rendered="{!NOT(displayFollowUpOpps)}">
+		                <apex:facet name="header">+3 days calls</apex:facet>
+		                <apex:facet name="footer">
+		                    <apex:outputLabel value="{!thd}" />
+		                </apex:facet>
+		            </apex:column>
+		            <apex:column value="{!d.notCallOpps}" styleClass="numbers" headerClass="numbers"  footerClass="numbers FUtotalRow" width="12%" rendered="{!NOT(displayFollowUpOpps)}">
+		                <apex:facet name="header">Not calls</apex:facet>
+		                <apex:facet name="footer">
+		                    <apex:outputLabel value="{!nod}" />
+		                </apex:facet>
+		            </apex:column>
+		        </apex:pageBlockTable>
+		    </apex:repeat>
+    	</apex:pageBlock>
+    	<apex:outputPanel id="pnlDetails">
+    		<apex:pageBlock mode="Detail" title="Opportunity Details for {!consultantSelected.ownerName}" rendered="{!NOT(ISBLANK(consultantSelected.ownerName))}" id="blkDetail">
+    			<apex:pageBlockButtons >
+    				<apex:commandButton action="{!hideDetails}" value="Hide Details" reRender="pnlDetails" id="bntHide" />
+    				<apex:commandButton value="Prepare Notification to Consultant" action="{!prepareNotification}" id="bntNotify" status="sttProcessing">
+    					<apex:actionSupport event="oncomplete" reRender="blkDetail" focus="fldNotes"/>
+    				</apex:commandButton>
+    				<apex:commandButton value="Open Previous Notifications" styleClass="commandButtons" 
+                    onClick="window.open('/apex/FollowingUpReportDetail?U={!consultantSelected.ownerId}');" />
+    				<apex:actionStatus startText="(Processing...)" id="sttProcessing"/>
+    				<apex:actionStatus startText="(Selecting...)" id="sttSelecting"/>
+    			</apex:pageBlockButtons>
+    			<apex:pageMessages id="pageMessage"/>
+    			<apex:pageBlockSection title="Consultat Notification" columns="1" rendered="{!isNotifying}" collapsible="false" id="secNotify">
+    				<apex:outputField value="{!notification.User__c}" label="Consultant"/>
+    				<apex:inputTextarea value="{!notification.Notes__c}" cols="80" rows="10" id="fldNotes" />
+    				<apex:pageBlockSectionItem >
+    					<apex:outputLabel value="Total selected Opps"/>
+    					<apex:outputText value="{!totalSelectedOpps}"/>
+    				</apex:pageBlockSectionItem>
+    				<apex:pageBlockSectionItem >
+    					<apex:outputLabel value=" "/>
+    					<apex:outputPanel >
+    						<apex:commandButton value="Send Notification" action="{!sendNotification}" reRender="blkDetail" status="sttProcessing"/>&nbsp;&nbsp;&nbsp;
+    						<apex:commandButton value="Cancel" action="{!cancelNotification}" status="sttProcessing"/>
+    						<p>&nbsp;</p>
+    					</apex:outputPanel>
+    				</apex:pageBlockSectionItem>
+    			</apex:pageBlockSection>
+    			<apex:repeat value="{!detailReportKeys}" var="k">
+    				<apex:variable value="{!detailData[k]}" var="rptList"/  >
+    				<!-- Calculate totasl -->
+    				<apex:variable value="{!0.00}" var="tComm"/>
+    				<apex:variable value="{!0.00}" var="tBroke"/>
+    				<apex:variable value="{!0.00}" var="tDof"/>
+    				<apex:variable value="{!0.00}" var="tIns"/>
+    				<apex:variable value="{!0.00}" var="tFina"/>
+    				<apex:repeat var="a" value="{!rptList}">
+    					<apex:variable value="{!a.opp.Total_Commission__c + tComm}" var="tComm"/>
+    					<!-- <apex:variable value="{!a.opp.Total_Brokerage__c + tBroke}" var="tBroke"/>
+    					<apex:variable value="{!a.opp.Total_DOF__c + tDof}" var="tDof"/>
+    					<apex:variable value="{!a.opp.Total_Insurance_Commission__c + tIns}" var="tIns"/> -->
+    					<apex:variable value="{!IF(a.opp.Finance_Amount__c==NULL,0,a.opp.Finance_Amount__c) + tFina}" var="tFina"/>
+    				</apex:repeat>
+    				<!-- <apex:sectionHeader title="{!k} ({!rptList.size} records)" /> -->
+    				<div class="bPageTitle">
+    					<div class="ptBody secondaryPalette brandSecondaryBrd">
+    						<div class="content">
+    							<!-- <span class="pageType sectionTitle">{!k} ({!rptList.size} records)</span> -->
+    							<apex:outputPanel layout="inline" rendered="{!NOT(displayClosedOpps)}" styleClass="pageType sectionTitle">
+    								{!k} ({!rptList.size} records)
+    							</apex:outputPanel>
+    							<apex:outputPanel layout="inline" rendered="{!displayClosedOpps}" styleClass="pageType sectionTitle">
+    								{!k} ({!pageDetailData[k].fullSize} records)
+    							</apex:outputPanel>
+	    						&nbsp;&nbsp;&nbsp;&nbsp;
+	    						<apex:outputPanel rendered="{!AND(isNotifying,rptList.size>0)}">
+		    						<apex:commandButton value="Select All" action="{!selectAllCategory}" reRender="blkDetail" status="sttSelecting" >
+										<apex:param name="catSelectedTrue" assignTo="{!catSelected}" value="{!k}"/>
+									</apex:commandButton>&nbsp;&nbsp;
+									<apex:commandButton value="Unselect All" action="{!unselectAllCategory}" reRender="blkDetail" status="sttSelecting">
+										<apex:param name="catSelectedTrue" assignTo="{!catSelected}" value="{!k}"/>
+									</apex:commandButton>&nbsp;&nbsp;
+								</apex:outputPanel>
+								<apex:outputPanel rendered="{!displayClosedOpps}">
+									<apex:commandButton value="<<" action="{!firstPage}" reRender="blkDetail" status="sttProcessing" 
+										disabled="{!NOT(pageDetailData[k].hasPrevious)}" alt="First page">
+										<apex:param name="catSelected" assignTo="{!catSelected}" value="{!k}"/>
+									</apex:commandButton>
+									<apex:commandButton value="<" action="{!previousPage}" reRender="blkDetail" status="sttProcessing" 
+										disabled="{!NOT(pageDetailData[k].hasPrevious)}" alt="Previous page">
+										<apex:param name="catSelected" assignTo="{!catSelected}" value="{!k}"/>
+									</apex:commandButton>&nbsp;&nbsp;Page {!pageDetailData[k].currentPage} of {!pageDetailData[k].totalPages}&nbsp;&nbsp;
+									<apex:commandButton value=">" action="{!nextPage}" reRender="blkDetail" status="sttProcessing" 
+										disabled="{!NOT(pageDetailData[k].hasNext)}" alt="Next page">
+										<apex:param name="catSelected" assignTo="{!catSelected}" value="{!k}"/>
+									</apex:commandButton>
+									<apex:commandButton value=">>" action="{!lastPage}" reRender="blkDetail" status="sttProcessing" 
+										disabled="{!NOT(pageDetailData[k].hasNext)}" alt="Last page">
+										<apex:param name="catSelected" assignTo="{!catSelected}" value="{!k}"/>
+									</apex:commandButton>&nbsp;&nbsp;&nbsp;&nbsp;Display&nbsp;
+									<apex:selectList value="{!pageDetailData[k].pageSize}" size="1">
+										<apex:selectOption itemValue="10" itemLabel="10 records"/>
+										<apex:selectOption itemValue="20" itemLabel="20 records"/>
+										<apex:selectOption itemValue="50" itemLabel="50 records"/>
+										<apex:actionSupport event="onchange" action="{!resetPage}" reRender="blkDetail" status="sttProcessing">
+											<apex:param name="catSelected" assignTo="{!catSelected}" value="{!k}"/>
+										</apex:actionSupport>
+									</apex:selectList>
+								</apex:outputPanel>
+	    					</div>
+	    				</div>
+	    			</div>
+					<apex:pageBlockTable value="{!rptList}" var="d" rowClasses="rowOne, rowTwo" width="100%" rendered="{!rptList.size>0}">
+						<apex:column width="1%" rendered="{!isNotifying}">
+							<!-- <apex:inputCheckbox value="{!oppSelMap[d.opp.Id]}"/> -->
+							<apex:commandButton value="+" action="{!addOppNotification}" reRender="blkDetail" status="sttSelecting" rendered="{!NOT(d.sel)}">
+								<apex:param name="oppSelected" assignTo="{!oppSelected}" value="{!d.opp.Id}"/>
+							</apex:commandButton>
+							<apex:commandButton value="x" action="{!remOppNotification}" reRender="blkDetail" status="sttSelecting" rendered="{!d.sel}">
+								<apex:param name="oppSelected" assignTo="{!oppSelected}" value="{!d.opp.Id}"/>
+							</apex:commandButton>
+						</apex:column>
+						<apex:column width="10%" styleClass="{!IF(d.sel,'selectedCell','')}">
+			                <apex:facet name="header">Opp Name</apex:facet>
+			                <apex:outputLink value="/{!d.opp.Id}" target="_top"><apex:outputField value="{!d.opp.Name}"/></apex:outputLink>
+			            </apex:column>
+			            <apex:column width="5%" value="{!d.opp.Mobile_Number__c}" styleClass="numbers {!IF(d.sel,'selectedCell','')}" headerClass="numbers">
+			                <apex:facet name="header">Mobil</apex:facet>
+			            </apex:column>
+			            <apex:column width="10%" value="{!d.opp.Email_Address__c}" styleClass="{!IF(d.sel,'selectedCell','')}">
+			                <apex:facet name="header">Email</apex:facet>
+			            </apex:column>
+			            <apex:column width="8%" value="{!d.opp.Status__c}" rendered="{!reportProfile!='CO'}">
+			                <apex:facet name="header">Status</apex:facet>
+			            </apex:column>
+			            <apex:column width="7%" styleClass="numbers" headerClass="numbers">
+			                <apex:facet name="header">Created Date</apex:facet>
+			                <apex:outputText value="{!d.opp.CreatedDate} "/>
+			            </apex:column> 
+			            <!-- 40% -->
+			            <apex:column width="7%" value="{!d.opp.Date_Closed_or_Settled__c}" rendered="{!reportProfile=='CO'}">
+			                <apex:facet name="header">Closed Date</apex:facet>
+			            </apex:column>
+			            <apex:column width="7%" value="{!d.opp.Reason_for_Closure__c}" rendered="{!reportProfile=='CO'}">
+			                <apex:facet name="header">Closure Reason</apex:facet>
+			            </apex:column>
+			            <apex:column width="7%" rendered="{!reportProfile=='FU'}">
+			                <apex:facet name="header">Task</apex:facet>
+			                <c:TaskCellLabel task="{!d.task}"/>
+			            </apex:column>
+			            <!-- 14 -->
+			            <apex:column width="7%" styleClass="numbers" headerClass="numbers">
+			                <apex:facet name="header">Last Call</apex:facet>
+			                <apex:outputText value="{!d.LastCallDate} "/>
+			            </apex:column>
+			            <apex:column width="4%" styleClass="numbers" headerClass="numbers">
+			                <apex:facet name="header">Total Calls</apex:facet>
+			                <apex:outputText value="{!d.totalCalls} "/>
+			            </apex:column>
+			            <apex:column width="7%" styleClass="numbers" headerClass="numbers">
+			                <apex:facet name="header">Last SMS</apex:facet>
+			                <apex:outputText value="{!d.LastSMSDate} "/>
+			            </apex:column>
+			            <apex:column width="4%" styleClass="numbers" headerClass="numbers">
+			                <apex:facet name="header">Total SMS</apex:facet>
+			                <apex:outputText value="{!d.totalSMS} "/>
+			            </apex:column>
+			            <apex:column width="7%" styleClass="numbers" headerClass="numbers">
+			                <apex:facet name="header">Last Email</apex:facet>
+			                <apex:outputText value="{!d.LastEmailDate} "/>
+			            </apex:column>
+			            <apex:column width="4%" styleClass="numbers" headerClass="numbers">
+			                <apex:facet name="header">Total Emails</apex:facet>
+			                <apex:outputText value="{!d.totalEmails} "/>
+			            </apex:column>
+			            <apex:column width="7%" value="{!d.opp.Finance_Amount__c}" styleClass="moneyAndPercentage" headerClass="numbers" footerClass="moneyAndPercentage">
+			                <apex:facet name="header">Lead Finance Amount</apex:facet>
+			                <apex:facet name="footer">
+			            		<apex:outputText value="{0, number, $##,###,##0.00}">
+				                  <apex:param value="{!tFina}"/>
+				                </apex:outputText>
+				            </apex:facet>
+			            </apex:column>
+			            <apex:column width="6%" value="{!d.opp.Total_Commission__c}" styleClass="moneyAndPercentage" headerClass="numbers" footerClass="moneyAndPercentage">
+			                <apex:facet name="header">Total Commission</apex:facet>
+			                <apex:facet name="footer">
+			            		<apex:outputText value="{0, number, $##,###,##0.00}">
+				                  <apex:param value="{!tComm}"/>
+				                </apex:outputText>
+				            </apex:facet>
+			            </apex:column>
+			            <!-- 46 -->
+					</apex:pageBlockTable>
+					<hr/>
+    			</apex:repeat>
+    		</apex:pageBlock>
+    	</apex:outputPanel>
+	</apex:form>
+</apex:page>

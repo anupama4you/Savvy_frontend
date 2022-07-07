@@ -314,6 +314,46 @@
                 </a>
               </div>
             </lightning:layoutItem>
+
+            <lightning:layoutItem size="6" padding="around-medium">
+              <div style="text-align: center">
+                <a href="{!v.redirectUrlWrapper.ume}" target="_parent">
+                  <strong>Ume Loans</strong>
+                  <br />
+                  <img
+                    src="{!$Resource.UMELoansLogo}"
+                    onclick="{!c.handleClick}"
+                    style="max-width: 80%"
+                  />
+                </a>
+              </div>
+            </lightning:layoutItem>
+            <lightning:layoutItem size="6" padding="around-medium">
+              <div style="text-align: center">
+                <a href="{!v.redirectUrlWrapper.societyOne}" target="_parent">
+                  <strong>Society One</strong>
+                  <br />
+                  <img
+                    src="{!$Resource.SocietyOneLogo}"
+                    onclick="{!c.handleClick}"
+                    style="max-width: 80%"
+                  />
+                </a>
+              </div>
+            </lightning:layoutItem>
+            <lightning:layoutItem size="6" padding="around-medium">
+              <div style="text-align: center">
+                <a href="{!v.redirectUrlWrapper.apf}" target="_parent">
+                  <strong>APF</strong>
+                  <br />
+                  <img
+                    src="{!$Resource.APFLogo}"
+                    onclick="{!c.handleClick}"
+                    style="max-width: 80%"
+                  />
+                </a>
+              </div>
+            </lightning:layoutItem>
           </lightning:layout>
         </lightning:layoutItem>
         <lightning:layoutItem
@@ -463,7 +503,7 @@
               padding="around-medium"
             >
               <div style="text-align: center">
-                <a href="{!v.redirectUrlWrapper.Finance_One}" target="_parent">
+                <a href="{!v.redirectUrlWrapper.Finance_One_Comm}" target="_parent">
                   <strong>Finance One</strong>
                   <br />
                   <img
@@ -741,6 +781,24 @@
                   <br />
                   <img
                     src="{!$Resource.CommercialEquityGroupLogo}"
+                    onclick="{!c.handleClick}"
+                  />
+                </a>
+              </div>
+            </lightning:layoutItem>
+            <lightning:layoutItem
+              size="6"
+              smallDeviceSize="6"
+              largeDeviceSize="6"
+              mediumDeviceSize="6"
+              padding="around-medium"
+            >
+              <div style="text-align: center">
+                <a href="{!v.redirectUrlWrapper.westpac}" target="_parent">
+                  <strong>Westpac</strong>
+                  <br />
+                  <img
+                    src="{!$Resource.WestpacLogo}"
                     onclick="{!c.handleClick}"
                   />
                 </a>

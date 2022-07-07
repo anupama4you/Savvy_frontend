@@ -1,0 +1,267 @@
+<apex:page docType="html-5.0" standardController="Custom_Opportunity__c" sidebar="false" showHeader="false" title="DOF Invoice" renderAs="PDF" contentType="application/pdf;charset=UTF-8">
+	<apex:stylesheet value="{!$Resource.PrivateTaxInvoiceCSS}"/>
+	<apex:variable value="{!Custom_Opportunity__c}" var="o" />
+	<apex:variable value="{!Custom_Opportunity__c.Application_AssetDetail__r}" var="asset" />
+    <!-- <div class="header">
+        <table width="100%">
+            <tr>
+            	<td width="50%" align="left">
+                    <br/>
+                    <apex:image url="{!$Resource.newSavvyLogo}" height="60" />
+                    <p>
+                    	LEVEL 1, 145 THE PARADE<br/>
+                    	NORWOOD, SA 5067<br/>
+                    	Ph 08 7324 3700 Fax 08 8127 9030
+                    </p>
+
+                </td>
+                <td width="25%" align="left">
+                	&nbsp;
+                </td>
+                <td width="25%" align="left">
+                    <br/>
+                    <span class="subTitle1">Invoice No.</span>
+                    <br/>
+                    <!-- Date:  -->
+                <!-- </td>
+            </tr>
+        </table>
+    </div> --> 
+    <!-- <div class="footer"> -->
+        <!-- <div class="footerContent">Page <span class="pagenumber"/> of <span class="pagecount"/></div> -->
+    <!-- </div> -->
+    <div class="content">
+	    <table width="100%" border="1">
+	    	<tr>
+	    		<td width="75%" valign="top">
+	    			<apex:outputField value="{!o.Dealer_Name__c}"/>&nbsp;&nbsp;&nbsp;
+	    			<apex:outputText value="/   {!o.Vendor_Name_2__c}" rendered="{!!ISBLANK(o.Vendor_Name_2__c)}" /><br/>
+	    			<apex:outputPanel rendered="{!o.Is_Vendor_Company__c}"><apex:outputText value="ABN: {!o.Vendor_ABN__c}"/><br/></apex:outputPanel>
+	    			<apex:outputField value="{!o.Dealer_Address__c}"/><br/>
+	    		</td>
+	    		<td width="40%" valign="top" align="center">
+	    			<apex:outputText value="Tax Invoice" rendered="{!o.Is_Vendor_Company__c}" />
+	    			<apex:outputText value="Invoice" rendered="{!!o.Is_Vendor_Company__c}" /><br/>
+	    		</td>
+	    	</tr>
+	    	<tr>
+	    		<td>Date: {!DAY(TODAY())}/{!MONTH(TODAY())}/{!YEAR(TODAY())}</td>
+	    		<td>&nbsp;</td>
+	    	</tr>
+	    </table>
+	    <br/>
+	    <table width="100%" border="1">
+	    	<tr>
+	    		<td width="50%">
+	    			Invoice To:<br/>
+	    			<apex:outputField value="{!o.Application__r.First_Name__c}"/>&nbsp;<apex:outputField value="{!o.Application__r.Middle_Name__c}"/>&nbsp;<apex:outputField value="{!o.Application__r.Last_Name__c}"/><br/>
+	    			<apex:outputField value="{!o.Application__r.Street_Address__c}"/>, 
+                    <apex:outputLabel value="{!o.Application__r.Suburb__c}" />, 
+                    <apex:outputLabel value="{!o.Application__r.State__c}" /> 
+                    <apex:outputLabel value="{!o.Application__r.Postcode__c}" /><br/>
+                    <!-- Phone:&nbsp;<apex:outputField value="{!o.Application__r.Home_Phone__c}"/>&nbsp;/&nbsp;<apex:outputField value="{!o.Application__r.Work_Phone__c}"/>&nbsp;/&nbsp;<apex:outputField value="{!o.Application__r.Mobile_Number__c}"/> -->
+	    		</td>
+	    		<td width="50%">
+	    			Supply To:<br/>
+	    			<apex:outputField value="{!o.Application__r.First_Name__c}"/>&nbsp;<apex:outputField value="{!o.Application__r.Middle_Name__c}"/>&nbsp;<apex:outputField value="{!o.Application__r.Last_Name__c}"/><br/>
+	    			<apex:outputField value="{!o.Application__r.Street_Address__c}"/>, 
+                    <apex:outputLabel value="{!o.Application__r.Suburb__c}" />, 
+                    <apex:outputLabel value="{!o.Application__r.State__c}" /> 
+                    <apex:outputLabel value="{!o.Application__r.Postcode__c}" /><br/>
+                    <!-- Phone:&nbsp;<apex:outputField value="{!o.Application__r.Home_Phone__c}"/>&nbsp;/&nbsp;<apex:outputField value="{!o.Application__r.Work_Phone__c}"/>&nbsp;/&nbsp;<apex:outputField value="{!o.Application__r.Mobile_Number__c}"/> -->
+	    		</td>
+	    	</tr>
+	    </table>
+		<table width="100%" border="1">
+			<tr>
+				<td>
+					<span class="subTitle2">&nbsp;&nbsp;&nbsp;&nbsp;THE VENDOR WARRANTS:</span>
+					<apex:outputPanel rendered="{!!o.Is_Vendor_Company__c}">
+						<ol>
+							<li>That the Vendor has possession of and is free to sell the motor vehicle which is beneficially owned by the Vendor.</li>
+							<li>That the Motor Vehicle is free from any claim, mortgage, lien or pledge of any sort <u>except as detailed below</u> (where applicable).</li>
+							<li>That the Motor Vehicle corresponds with the below description.</li>
+							<li>That the supply of the Motor Vehicle is Private or Domestic in nature or relate to a hobby and as such is GST Exempt.</li>
+						</ol>
+					</apex:outputPanel>
+					<apex:outputPanel rendered="{!o.Is_Vendor_Company__c}">
+						<ol>
+							<li>That the Vendor has possession of and is free to sell the motor vehicle which is beneficially owned by the Vendor.</li>
+							<li>That the Motor Vehicle is free from any claim, mortgage, lien or pledge of any sort <u>except as detailed below</u> (where applicable).</li>
+							<li>That the Motor Vehicle corresponds with the below description.</li>
+						</ol>
+					</apex:outputPanel>
+				</td>
+			</tr>
+		</table>
+		<br/>
+		<table width="100%" border="1" class="border2">
+			<tr>
+				<td colspan="3" class="caption">Goods</td>
+			</tr>
+			<tr>
+				<td width="20%">Description</td>
+				<td colspan="2"><apex:outputField value="{!asset.Invoice_Description__c}"/></td>
+			</tr>
+			<tr>
+				<td>Rego No</td>
+				<td colspan="2"><apex:outputField value="{!asset.Rego__c}"/></td>
+			</tr>
+			<tr>
+				<td>VIN</td>
+				<td colspan="2"><apex:outputField value="{!asset.VIN__c}"/></td>
+			</tr>
+			<tr>
+				<td>Engine No</td>
+				<td colspan="2"><apex:outputField value="{!asset.Engine_No__c}"/></td>
+			</tr>
+			<tr>
+				<td>Colour</td>
+				<td colspan="2"><apex:outputField value="{!asset.Colour__c}"/></td>
+			</tr>
+			<tr>
+				<td>Odometer</td>
+				<td colspan="2"><apex:outputField value="{!asset.Actual_KM__c}"/></td>
+			</tr>
+			<tr>
+				<td colspan="2">Invoice Amount</td>
+				<td width="20%" align="right" class="subTitle2">
+					<apex:outputField value="{!o.Tax_Invoice_Amount__c}"/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+					<!-- <apex:outputText value="{0, Number, Currency}">
+                        <apex:param value="{!o.NAF_Net_Amount_Financed__c - o.Loan_Product__r.Deposit__c}" />
+                    </apex:outputText>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; -->
+				</td>
+			</tr>
+			<tr style="display: {!IF(o.Is_Vendor_Company__c, '','none')}">
+				<td colspan="2">GST</td>
+				<td align="right" class="subTitle2"><apex:outputField value="{!o.Tax_Invoice_GST__c}"/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td>
+			</tr>
+			<tr>
+				<td colspan="2">Deposit</td>
+				<td align="right" class="subTitle2"><apex:outputField value="{!o.Tax_Invoice_Deposit__c}"/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td>
+			</tr>
+			<tr>
+				<td colspan="2">Deposit to be paid / refund</td>
+				<td align="right" class="subTitle2"><apex:outputField value="{!o.Tax_Invoice_Deposit_2__c}"/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td>
+			</tr>
+			<tr>
+				<td colspan="2">TOTAL AMOUNT DUE</td>
+				<td align="right" class="subTitle1">
+					<apex:outputField value="{!o.Tax_Invoice_Total__c}"/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+					<!-- <apex:outputText value="{0, Number, Currency}" id="fldTotalDis">
+                        <apex:param value="{!IF(o.Tax_Invoice_Amount__c==null,0,o.Tax_Invoice_Amount__c) + 
+                                             IF(o.Tax_Invoice_GST__c==null,0,o.Tax_Invoice_GST__c) -
+                                             IF(o.Tax_Invoice_Deposit__c==null,0,o.Tax_Invoice_Deposit__c) -
+                                             IF(o.Tax_Invoice_Deposit_2__c==null,0,o.Tax_Invoice_Deposit_2__c)}" />
+                    </apex:outputText> -->
+				</td>
+			</tr>
+		</table>
+		<br/>
+		<table width="100%" border="1" class="border2">
+			<tr>
+				<td colspan="2" class="caption">DISBURSEMENT AUTHORITY</td>
+			</tr>
+			<tr>
+				<td width="80%">
+					<table width="100%">
+						<tr style="display: {!IF(ISBLANK(o.Financier__c), 'none','')}">
+							<td width="25%">Financier</td>
+							<td width="5%">:</td>
+							<td width="70%"><apex:outputField value="{!o.Financier__c}"/></td>
+						</tr>
+						<tr>
+							<td width="25%">Account Name</td>
+							<td width="5%">:</td>
+							<td width="70%"><apex:outputField value="{!o.Account_Name_1__c}"/></td>
+						</tr>
+						<tr>
+							<td width="25%">BSB</td>
+							<td width="5%">:</td>
+							<td width="70%"><apex:outputField value="{!o.account_bsb_1__c}"/></td>
+						</tr>
+						<tr>
+							<td width="25%">Account Number</td>
+							<td width="5%">:</td>
+							<td width="70%"><apex:outputField value="{!o.Account_Number_1__c}"/></td>
+						</tr>
+						<tr style="display: {!IF(ISBLANK(o.Account_Reference_1__c), 'none','')}">
+							<td width="25%">Ref Number</td>
+							<td width="5%">:</td>
+							<td width="70%"><apex:outputField value="{!o.Account_Reference_1__c}"/></td>
+						</tr>
+					</table>
+				</td>
+				<td width="20%" valign="top" align="right" class="subTitle2">
+					<apex:outputField value="{!o.Account_Amount_1__c}"/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+				</td>
+			</tr>
+			<tr>
+				<td colspan="2">&nbsp;</td>
+			</tr>
+			<tr>
+				<td>
+					<table width="100%">
+						<tr>
+							<td width="25%">Account Name</td>
+							<td width="5%">:</td>
+							<td width="70%"><apex:outputField value="{!o.Account_Name_2__c}"/></td>
+						</tr>
+						<tr>
+							<td width="25%">BSB</td>
+							<td width="5%">:</td>
+							<td width="70%"><apex:outputField value="{!o.account_bsb_2__c}"/></td>
+						</tr>
+						<tr>
+							<td width="25%">Account Number</td>
+							<td width="5%">:</td>
+							<td width="70%"><apex:outputField value="{!o.Account_Number_2__c}"/></td>
+						</tr>
+					</table>
+				</td>
+				<td valign="top" align="right" class="subTitle2">
+					<apex:outputField value="{!o.Account_Amount_2__c}"/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+				</td>
+			</tr>
+			<tr>
+				<td>TOTAL AMOUNT DUE</td>
+				<td class="subTitle1" align="right">
+					<apex:outputText value="{0, Number, Currency}">
+                        <apex:param value="{!IF(o.Account_Amount_1__c==null,0,o.Account_Amount_1__c) + IF(o.Account_Amount_2__c==null,0,o.Account_Amount_2__c)}" />
+                    </apex:outputText>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+				</td>
+			</tr>
+		</table>
+		<p>&nbsp;</p>
+		<p>&nbsp;</p>
+		<table width="100%">
+			<tr>
+				<td width="47%">
+					<p>
+						<u>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+						   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+						   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+						   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+						   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+						   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</u><br/>
+						Signed:&nbsp;&nbsp;<apex:outputField value="{!o.Dealer_Name__c}"/>
+					</p>
+				</td>
+				<td width="6%">&nbsp;</td>
+				<td width="47%">
+					<apex:outputPanel rendered="{!!ISBLANK(o.Vendor_Name_2__c)}">
+						<p>
+							<u>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+							   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+							   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+							   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+							   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+							   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</u><br/>
+							Signed:&nbsp;&nbsp;<apex:outputField value="{!o.Vendor_Name_2__c}"/>
+						</p>
+					</apex:outputPanel>
+				</td>
+			</tr>
+		</table>
+	</div>
+</apex:page>

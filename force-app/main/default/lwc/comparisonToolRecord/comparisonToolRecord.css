@@ -1,0 +1,33 @@
+:host {
+  --slds-c-card-body-spacing-block: 0rem;
+  --slds-c-card-header-spacing-block-start: 0rem;
+}
+
+.c-lender-logo {
+  width: 140px;
+  height: 50px;
+  object-fit: contain;
+}
+
+.c-row {
+  border-bottom: 2px solid #e5e5e5;
+}
+
+.c-cols .slds-col {
+  border-right: 1px solid #e5e5e5;
+  padding-top: 20px;
+  text-align: center;
+}
+
+.c-cols .slds-col:last-child {
+  border-right: 0px solid #e5e5e5;
+  padding-top: 10px;
+}
+
+.c-actions {
+  
+}
+
+.c-record-card .slds-card__header {
+  padding: 0px;
+}

@@ -1,0 +1,730 @@
+<apex:page showHeader="true" sidebar="false" standardController="Custom_Opportunity__c" extensions="InsuranceBuyPolicyStep1Extension" title="Buy Policy">
+	<apex:stylesheet value="{! $Resource.BuyPolicyCSS }"/>
+	<apex:stylesheet value="{!$Resource.EricInsuranceCSS}"/>
+	<apex:variable value="{!Custom_Opportunity__c}" var="o" />
+	<apex:sectionHeader title="Quotation Number: {!quote.Quotation_Number__c} ({!quoteStatus})" subtitle="Buy Policy for {!o.Name}" id="pnlHeader" />
+	<apex:form id="pnlForm">
+		<apex:actionFunction action="{!performFullAssessment}" name="UpdateRecords_JS" reRender="pnlPage, pnlHeader" status="Status1" oncomplete="CallWebService_JS();"/>
+        <apex:actionFunction action="{!invokeWS}" name="CallWebService_JS" status="Status2" reRender="pnlPage, pnlHeader"/>
+        <!-- New Full assessment -->
+        <apex:actionFunction action="{!performFullAssessment}" name="UpdateRecords_JSV2" reRender="pnlPage, pnlHeader" status="Status1" oncomplete="CallWebService_JSV2();"/>
+        <apex:actionFunction action="{!invokeRestWS}" name="CallWebService_JSV2" status="Status2" reRender="pnlPage, pnlHeader"/>
+        <!-- End Full Assessment -->
+        <apex:actionFunction action="{!buyPolicy}" name="BuyPolicy_JS" reRender="pnlPage, pnlHeader" status="Status1" oncomplete="BuyPolicyCallWebService_JS();"/>
+        <apex:actionFunction action="{!invokePaymentWS}" name="BuyPolicyCallWebService_JS" status="Status2" reRender="pnlPage, pnlHeader" oncomplete="downloadMvPolicyDocument();"/>
+        <!-- New Buy -->
+        <apex:actionFunction action="{!buyPolicy}" name="BuyPolicy_JSV2" reRender="pnlPage, pnlHeader" status="Status1" oncomplete="BuyPolicyCallWebService_JSV2();"/>
+        <apex:actionFunction action="{!invokePaymentRestWS}" name="BuyPolicyCallWebService_JSV2" status="Status2" reRender="pnlPage, pnlHeader" oncomplete="downloadMvPolicyDocument();"/>
+        <!--  -->
+        <!-- <apex:actionFunction action="{!downloadPolicyDocuments}" name="downloadPolicyDocuments" status="Status3" reRender="pnlPage"/> -->
+        <!-- Process Policy Documents  -->
+        <apex:actionFunction action="{!downloadMvPolicyDocument}" name="downloadMvPolicyDocument" status="Status3" reRender="pnlPage, pnlHeader" oncomplete="downloadGapPolicyDocument();"/>
+        <apex:actionFunction action="{!downloadGapPolicyDocument}" name="downloadGapPolicyDocument" status="Status3" reRender="pnlPage, pnlHeader" oncomplete="downloadLtiPolicyDocument();"/>
+        <!--Jesus Mora 2020-06-01 start-->
+        <apex:actionFunction action="{!downloadLtiPolicyDocument}" name="downloadLtiPolicyDocument" status="Status3" reRender="pnlPage, pnlHeader" oncomplete="downloadLpiPolicyDocument();"/>
+        <apex:actionFunction action="{!downloadLpiPolicyDocument}" name="downloadLpiPolicyDocument" status="Status3" reRender="pnlPage, pnlHeader" oncomplete="downloadWarrantyPolicyDocument();"/>
+        <!--Jesus Mora 2020-06-01 end-->
+        <apex:actionFunction action="{!downloadWarrantyPolicyDocument}" name="downloadWarrantyPolicyDocument" status="Status3" reRender="pnlPage, pnlHeader" oncomplete="downloadRtiPolicyDocument();"/>
+        <apex:actionFunction action="{!downloadRtiPolicyDocument}" name="downloadRtiPolicyDocument" status="Status3" reRender="pnlPage, pnlHeader" />
+        <apex:pageBlock title="Step {!stepNumber} of 6 - {!sectionName}" id="pnlPage">
+			<apex:pageBlockButtons location="bottom">
+				<apex:commandButton action="{!goToQuotingTool}" value="Return to Quoting Tool" />
+				&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+				<apex:commandButton value="Previous" action="{!previousAction}" reRender="pnlPage, pnlHeader" disabled="{!OR(stepNumber==1,stepNumber==6)}" status="Status1" immediate="true" />
+				<apex:commandButton value="Next" action="{!nextAction}" reRender="pnlPage, pnlHeader" disabled="{!stepNumber==6}" rendered="{!OR(stepNumber<4,AND(stepNumber>=4,quote.Status__c=='P'))}" status="Status1" />
+				<apex:commandButton value="Save" action="{!saveAction}" reRender="pnlPage, pnlHeader" rendered="{!stepNumber==5}" disabled="{!quote.Status__c=='P'}" status="Status1" />
+				<!-- <apex:outputPanel rendered="{!AND(stepNumber==4,NOT(quote.Status__c=='P'))}">
+					<input name="DoAction" class="btn" type="button" value="Full Assessment and Next" onclick="UpdateRecords_JS();return false;"/>
+				</apex:outputPanel> -->
+				<apex:outputPanel rendered="{!AND(stepNumber==4,NOT(quote.Status__c=='P'))}">
+					<input name="DoAction" class="btn" type="button" value=">> Full Assessment and Next <<" onclick="UpdateRecords_JSV2();return false;"/>
+				</apex:outputPanel>
+				<!-- <apex:outputPanel rendered="{!AND(stepNumber==5,NOT(quote.Status__c=='P'))}">
+					<input name="DoBuyPolicy" class="btn" type="button" value="Buy Policy" onclick="BuyPolicy_JS();return false;" />
+				</apex:outputPanel> -->
+				<apex:outputPanel rendered="{!AND(stepNumber==5,NOT(quote.Status__c=='P'))}">
+					<input name="DoBuyPolicy" class="btn" type="button" value=">> Buy Policy <<" onclick="BuyPolicy_JSV2();return false;" />
+				</apex:outputPanel>
+				<apex:outputPanel rendered="{!AND(stepNumber==5,quote.Status__c=='P',NOT(quote.Is_Lodged__c))}">
+					<input name="DoBuyPolicy" class="btn" type="button" value=">> Buy Policy (Lodge) <<" onclick="BuyPolicy_JSV2();return false;" />
+				</apex:outputPanel>
+				<apex:outputPanel rendered="{!AND(stepNumber==6,quote.Status__c=='P',displayDownloadPolicyButton)}">
+					<input name="DoBuyPolicy" class="btn" type="button" value="Download Policy Documents to Salesforce" onclick="downloadMvPolicyDocument();return false;" />
+				</apex:outputPanel>
+				<!-- <apex:commandButton value="Performs a Full Assessment" action="{!nextAction}" reRender="pnlPage" rendered="{!stepNumber==5}" status="Status1" /> -->
+				&nbsp;&nbsp;&nbsp;
+		        <apex:actionStatus id="Status1" startText="... Updating records ..." />
+		        <apex:actionStatus id="Status2" startText="... Connecting with insurance provider service ..." />
+		        <apex:actionStatus id="Status3" startText="... Downloading Policy Document(s) to Salesforce..." />
+			</apex:pageBlockButtons>
+			<apex:pageBlockSection title="Currently Selected Cover Types" collapsible="false" columns="1" rendered="{!stepNumber<5}">
+				<apex:outputField label="Motor Vehicle (MV)" value="{!quote.Motor_Vehicle__c}" 
+								  rendered="{!AND(!ISBLANK(quote.Motor_Vehicle__c), quote.MV_Acceptance__c=='A')}" />
+				<apex:outputField value="{!quote.Gap__c}" 
+								  rendered="{!AND(!ISBLANK(quote.Gap__c), quote.GAP_Acceptance__c=='A')}" />
+				<apex:outputField value="{!quote.Total_assist_RTI__c}" 
+								  rendered="{!AND(!ISBLANK(quote.Total_assist_RTI__c), quote.TAS_Acceptance__c=='A')}" />
+				<apex:outputField label="LTI/BRI" value="{!quote.LTI_BRI__c}" 
+								  rendered="{!AND(!ISBLANK(quote.LTI_BRI__c), quote.LTI_Acceptance__c=='A')}" />
+                <apex:outputField label="LPI" value="{!quote.LPI__c}" 
+								  rendered="{!AND(!ISBLANK(quote.LPI__c), quote.LPI_Acceptance__c=='A')}" />
+				<apex:outputField label="Warranty - Insurance" value="{!quote.Warranty_Insurance__c}" 
+								  rendered="{!AND(!ISBLANK(quote.Warranty_Insurance__c), quote.WRR_Acceptance__c=='A')}" />
+			</apex:pageBlockSection>
+			<!-- STEP 1 -->
+			<apex:outputPanel rendered="{!stepNumber==1}">
+				<apex:pageBlockSection title="Cover Details" collapsible="false" columns="1">
+					<apex:inputField value="{!quote.Cover_Start_Date__c}" />
+				</apex:pageBlockSection>
+				<apex:pageBlockSection title="Warranty" collapsible="false" columns="1" id="pnlWrr" rendered="{!AND(!ISBLANK(quote.Warranty_Insurance__c), quote.WRR_Acceptance__c=='A')}">
+					<apex:inputField value="{!quote.Vehicle_Under_Warranty__c}"
+									 label="Is The Vehicle Under Manufacturer Or Seller Statutory Warranty?">
+						<apex:actionSupport event="onchange" reRender="pnlWrr" />
+					</apex:inputField>
+					<apex:inputField value="{!quote.Vehicle_Warranty_End_Date__c}" label="Manufacturer/Statutory Warranty End Date"
+									 rendered="{!quote.Vehicle_Under_Warranty__c == 'Y'}" />
+				</apex:pageBlockSection>
+				<apex:pageBlockSection title="Financial Details" collapsible="false" columns="2">
+					<apex:inputField value="{!quote.Vehicle_Purchase_Date__c}" />
+					<apex:outputField value="{!quote.MV_Amount_Covered__c}" rendered="{!quote.MV_Acceptance__c=='A'}" />
+					<apex:outputField value="{!quote.Amount_Financed__c}" />
+					<apex:outputField value="{!quote.Finance_Term__c}" />
+					<apex:outputField value="{!quote.Financier_Name__c}" />
+				</apex:pageBlockSection>
+			</apex:outputPanel>
+			<!-- STEP 2 -->
+			<apex:outputPanel rendered="{!stepNumber==2}">
+				<apex:pageBlockSection title="Main Insured Details" collapsible="false" columns="2">
+					<apex:inputField value="{!mainDriver.Title__c}" />
+					<apex:pageBlockSectionItem />
+					<apex:inputField label="Given Names" value="{!mainDriver.First_Name__c}" />
+					<apex:inputField value="{!mainDriver.Last_Name__c}" />
+					<apex:outputField value="{!mainDriver.Date_of_Birth__c}" />
+					<apex:outputField value="{!mainDriver.Gender__c}" />
+					<apex:inputField value="{!mainDriver.Occupation__c}" />
+					<!-- <apex:inputField value="{!mainDriver.Registered_for_GST__c}" /> -->
+					<apex:selectList label="{!$ObjectType.Application_Additional_Driver__c.fields.Registered_for_GST__c.Label}"
+									 value="{!mainDriver.Registered_for_GST__c}" size="1" >
+						<apex:selectOption itemLabel="No" itemValue="false"/>
+						<apex:selectOption itemLabel="Yes" itemValue="true"/>
+					</apex:selectList>
+					<apex:inputField value="{!mainDriver.ABN__c}" />
+					<apex:inputField value="{!mainDriver.Input_Tax_Credit__c}" />
+				</apex:pageBlockSection>
+				<apex:pageBlockSection title="Correspondence Address" collapsible="false" columns="2">
+					<apex:pageBlockSection collapsible="false" columns="2" id="pnlCorres">
+						<apex:inputField label="Address Line 1" value="{!mainDriver.Address_Line_1__c}" id="fldAdd1" />
+						<apex:inputField label="Suburb" value="{!mainDriver.Suburb__c}" styleClass="inputShortB" />
+						<apex:inputField label="Address Line 2" value="{!mainDriver.Address_Line_2__c}"/>
+						<apex:inputField label="State" value="{!mainDriver.State__c}" />
+						<apex:pageBlockSectionItem />
+						<apex:inputField label="Postcode" value="{!mainDriver.Postcode__c}" styleClass="inputShortA" />
+					</apex:pageBlockSection>
+					<apex:pageBlockSection collapsible="false" columns="2" >
+						<apex:pageBlockSectionItem >
+							<apex:outputLabel value="Current Residential Address" />
+							<apex:outputPanel >
+								<apex:outputText value="{!o.Application__r.Unit_Number__c} / " rendered="{!!ISBLANK(o.Application__r.Unit_Number__c)}"/> 
+			                    <apex:outputText value="{!o.Application__r.Street_Number__c} "/> 
+			                    <apex:outputField value="{!o.Application__r.Street_Address__c}"/>
+			                    <apex:outputText value=" " rendered="{!!ISBLANK(o.Application__r.Street_Type__c)}"/> 
+			                    <apex:outputField value="{!o.Application__r.Street_Type__c}"/>,&nbsp;
+			                    <apex:outputField value="{!o.Application__r.Suburb__c}" />,&nbsp; 
+			                    <apex:outputField value="{!o.Application__r.State__c}" />&nbsp;
+			                    <apex:outputField value="{!o.Application__r.Postcode__c}" />
+							</apex:outputPanel>
+						</apex:pageBlockSectionItem>
+						<apex:commandButton value="Copy Residential Address" action="{!copyResidentialAddress}" reRender="pnlCorres, msg"/>
+						<apex:pageBlockSectionItem />
+						<apex:pageBlockSectionItem />
+						<apex:pageBlockSectionItem >
+							<apex:outputLabel value="Current Working Address" />
+							<apex:outputPanel >
+								<apex:outputText value="{!o.Application__r.Current_Work_Unit_Number_1__c} / " rendered="{!!ISBLANK(o.Application__r.Current_Work_Unit_Number_1__c)}"/> 
+			                    <apex:outputText value="{!o.Application__r.Current_Work_Street_Number_1__c} "/> 
+			                    <apex:outputField value="{!o.Application__r.Current_Work_Address_1__c}"/>
+			                    <apex:outputText value=" " rendered="{!!ISBLANK(o.Application__r.Current_Work_Street_Type_1__c)}"/> 
+			                    <apex:outputField value="{!o.Application__r.Current_Work_Street_Type_1__c}"/>,&nbsp;
+			                    <apex:outputField value="{!o.Application__r.Current_Work_Suburb_1__c}" />,&nbsp; 
+			                    <apex:outputField value="{!o.Application__r.Current_Work_State_1__c}" />&nbsp;
+			                    <apex:outputField value="{!o.Application__r.Current_Work_Postcode_1__c}" />
+							</apex:outputPanel>
+						</apex:pageBlockSectionItem>
+						<apex:commandButton value="Copy Working Address" action="{!copyWorkingAddress}" reRender="pnlCorres, msg"/>
+					</apex:pageBlockSection>
+				</apex:pageBlockSection>
+				<apex:pageBlockSection title="Contact Details" collapsible="false" columns="2" id="pnlContDet">
+					<apex:inputField value="{!mainDriver.Email__c}" />
+					<apex:pageBlockSectionItem />
+					<!-- <apex:inputField value="{!mainDriver.Hasnt_Mobile_Number__c}">
+						<apex:actionSupport event="onchange" reRender="pnlContDet" />
+					</apex:inputField> -->
+					<apex:selectList label="{!$ObjectType.Application_Additional_Driver__c.fields.Hasnt_Mobile_Number__c.Label}"
+									 value="{!mainDriver.Hasnt_Mobile_Number__c}" size="1" >
+						<apex:selectOption itemLabel="No" itemValue="false"/>
+						<apex:selectOption itemLabel="Yes" itemValue="true"/>
+						<!-- <apex:actionSupport event="onchange" reRender="pnlContDet" /> -->
+					</apex:selectList>
+					<apex:inputField value="{!mainDriver.Mobile__c}"/>
+					<apex:inputField value="{!mainDriver.Home_Phone__c}" />
+					<apex:inputField value="{!mainDriver.Work_Phone__c}" />
+				</apex:pageBlockSection>
+				<!-- <apex:pageBlockSection title="Health Information" collapsible="false" columns="1"> -->
+				<apex:pageBlockSection title="Health Information" collapsible="false" columns="2" rendered="{!quote.LTI_Acceptance__c=='A'}">
+					<!--<apex:inputField label="Do you have any condition caused directly or indirectly by 
+					                        illness or injury that you had symptoms of, or was the subject of, 
+					                        a medical consultation in the past 12 months?" 
+									 value="{!mainDriver.Health_Info_Question_1__c}" />
+					<apex:inputField label="Are you presently suffering from any illness, or injury, or condition?" 
+					                 value="{!mainDriver.Health_Info_Question_2__c}" />
+					<apex:outputText value="If You Have Answered Yes To To Above Question Please Give Full Details" />
+					<apex:inputTextarea value="{!mainDriver.Health_Full_Details__c}" cols="60" rows="3" /> -->
+					<apex:inputField label="Understanding that any pre-existing medical condition may be excluded 
+											from being covered under any eligible products" 
+									 value="{!mainDriver.Health_Info_Question_1__c}" />
+				</apex:pageBlockSection>
+			</apex:outputPanel>
+			<!-- STEP 3 -->
+			<apex:outputPanel rendered="{!AND(stepNumber==3,NOT(quote.MV_Acceptance__c=='A'))}" id="pnlSec3a">
+				<apex:pageBlockSection title="Main Driver Details" collapsible="false" columns="2">
+					<apex:outputField value="{!mainDriver.First_Name__c}" />
+					<apex:outputField value="{!mainDriver.Last_Name__c}" />
+					<apex:outputField value="{!mainDriver.Date_of_Birth__c}" />
+					<apex:outputField value="{!mainDriver.Gender__c}" />
+					<apex:outputField value="{!mainDriver.Driver_Licence__c}" />
+					<!-- <apex:outputField value="{!mainDriver.Year_First_Licence__c}" /> -->
+					<apex:outputText value="{!mainDriver.Year_First_Licence__c}" />
+				</apex:pageBlockSection>
+			</apex:outputPanel>
+			<apex:outputPanel rendered="{!AND(stepNumber==3,quote.MV_Acceptance__c=='A')}" id="pnlSec3" >
+				<apex:pageBlockSection title="Main Driver Details" collapsible="false" columns="2">
+					<apex:outputField value="{!mainDriver.First_Name__c}" />
+					<apex:outputField value="{!mainDriver.Last_Name__c}" />
+					<apex:outputField value="{!mainDriver.Date_of_Birth__c}" />
+					<apex:outputField value="{!mainDriver.Gender__c}" />
+					<apex:inputField value="{!mainDriver.Driver_Licence__c}" />
+					<apex:outputField value="{!mainDriver.Year_First_Licence__c}" />
+					<apex:outputField value="{!mainDriver.Time_Last_Fault_Accident__c}" />
+					<!-- <apex:inputField value="{!mainDriver.Has_International_Licence__c}" /> -->
+					<apex:selectList label="{!$ObjectType.Application_Additional_Driver__c.fields.Has_International_Licence__c.Label}"
+									 value="{!mainDriver.Has_International_Licence__c}" size="1" >
+						<apex:selectOption itemLabel="No" itemValue="false"/>
+						<apex:selectOption itemLabel="Yes" itemValue="true"/>
+					</apex:selectList>
+					<apex:inputField value="{!mainDriver.Relationship_To_Insured__c}" />
+				</apex:pageBlockSection>
+				<apex:repeat value="{!additionalDrivers}" var="a" id="addRepeat" rendered="{!AND(quote.Has_Additional_Driver__c,additionalDrivers.size >= 1)}">
+					<apex:pageBlockSection id="pnlDrivers" title="{!a.idx}) Additional Driver Details" collapsible="false">
+						<apex:inputField value="{!a.data.First_Name__c}" />
+						<apex:inputField value="{!a.data.Last_Name__c}" />
+						<apex:outputField value="{!a.data.Date_of_Birth__c}" />
+						<apex:outputField value="{!a.data.Gender__c}" />
+						<apex:inputField value="{!a.data.Driver_Licence__c}" />
+						<apex:outputField value="{!a.data.Year_First_Licence__c}" />
+						<apex:inputField value="{!a.data.Relationship_To_Insured__c}" />
+						<!-- <apex:inputField value="{!a.data.Has_International_Licence__c}" /> -->
+						<apex:selectList label="{!$ObjectType.Application_Additional_Driver__c.fields.Has_International_Licence__c.Label}"
+									 value="{!a.data.Has_International_Licence__c}" size="1" >
+						<apex:selectOption itemLabel="No" itemValue="false"/>
+						<apex:selectOption itemLabel="Yes" itemValue="true"/>
+					</apex:selectList>
+					</apex:pageBlockSection>
+				</apex:repeat>
+				<!-- Motoring Offences -->
+				<apex:pageBlockSection title="Motoring Offenses" collapsible="false" columns="1" id="pnlMotoring">
+					<!-- <apex:inputField label="In the last 5 years have you or anyone who is likely 
+					                         to drive the car been charged or convicted or issued 
+					                         with an infringement notice for any motoring offence? 
+					                         If Yes, please add the details below" 
+					                 value="{!quote.Has_Motoring_Offences__c}">
+						<apex:actionSupport event="onchange" reRender="pnlMotoring, msg" action="{!activateMotoringOffence}" />
+					</apex:inputField> -->
+					<apex:selectList label="In the last 5 years have you or anyone who is likely 
+					                         to drive the car been charged or convicted or issued 
+					                         with an infringement notice for any motoring offence? 
+					                         If Yes, please add the details below"
+									 value="{!quote.Has_Motoring_Offences__c}" size="1" >
+						<apex:selectOption itemLabel="No" itemValue="false"/>
+						<apex:selectOption itemLabel="Yes" itemValue="true"/>
+						<apex:actionSupport event="onchange" reRender="pnlMotoring, msg" action="{!activateMotoringOffence}" />
+					</apex:selectList>
+					<apex:outputPanel styleClass="sectionLevel2" layout="block">
+						<apex:repeat value="{!motoringOffences}" var="a" rendered="{!AND(quote.Has_Motoring_Offences__c,motoringOffences.size >= 1)}">
+							<apex:pageBlockSection id="pnlDrivers" title="{!a.idx}) Motoring Offence" collapsible="false" >
+								<apex:selectList value="{!a.data.Driver__c}" required="false" size="1" multiselect="false">
+									<apex:selectOptions value="{!driverOptions}" />
+								</apex:selectList>
+								<apex:inputField label="Date Of Offence (dd/mm/yyyy)" value="{!a.data.Date__c}" required="false" />
+								<apex:inputField label="Details Of Offence" value="{!a.data.Detail__c}" />
+								<apex:inputField label="Number Of Demerit Points" value="{!a.data.Number__c}" />
+								<apex:pageBlockSectionItem />
+								<apex:pageBlockSectionItem >
+									<apex:outputPanel >
+										<apex:commandButton value="Remove" action="{!removeMotoringOffence}" status="stRemDrivers" reRender="pnlMotoring">
+											<apex:param name="quoteAnnotationSelected" assignTo="{!quoteAnnotationSelected}" value="{!a.idx}" />
+										</apex:commandButton>
+										&nbsp;&nbsp;&nbsp;&nbsp;
+						            	<apex:actionStatus id="stRemDrivers" startText="(processing...)" />
+									</apex:outputPanel>
+								</apex:pageBlockSectionItem>
+							</apex:pageBlockSection>
+						</apex:repeat>
+					</apex:outputPanel>
+					<br/>
+					<apex:commandButton value="Add New Motoring Offence" action="{!addMotoringOffence}"
+										rendered="{!quote.Has_Motoring_Offences__c}" reRender="pnlMotoring, msg" />
+
+				</apex:pageBlockSection>
+				<!-- Licence Sanctioned -->
+				<apex:pageBlockSection title="Licence Refused / Suspended / Cancelled / Endorsed" collapsible="false" columns="1" id="pnlLicence">
+					<!-- <apex:inputField label="In the last 5 years have you or anyone who is likely to drive the car 
+					                        had their driving licence refused, suspended, cancelled or endorsed 
+											(including any Good Behaviour Period)? If Yes, please add the details below" 
+					                 value="{!quote.Has_Licence_Santioned__c}">
+						<apex:actionSupport event="onchange" reRender="pnlLicence, msg" action="{!activateLicenceSanctioned}" />
+					</apex:inputField> -->
+					<apex:selectList label="In the last 5 years have you or anyone who is likely to drive the car 
+					                        had their driving licence refused, suspended, cancelled or endorsed 
+											(including any Good Behaviour Period)? If Yes, please add the details below"
+									 value="{!quote.Has_Licence_Santioned__c}" size="1" >
+						<apex:selectOption itemLabel="No" itemValue="false"/>
+						<apex:selectOption itemLabel="Yes" itemValue="true"/>
+						<apex:actionSupport event="onchange" reRender="pnlLicence, msg" action="{!activateLicenceSanctioned}" />
+					</apex:selectList>
+					<apex:outputPanel styleClass="sectionLevel2" layout="block">
+						<apex:repeat value="{!licenceSantioned}" var="a" rendered="{!AND(quote.Has_Licence_Santioned__c,licenceSantioned.size >= 1)}">
+							<apex:pageBlockSection title="{!a.idx}) Licence Refusal" collapsible="false" >
+								<apex:selectList value="{!a.data.Driver__c}" required="false" size="1" multiselect="false">
+									<apex:selectOptions value="{!driverOptions}" />
+								</apex:selectList>
+								<apex:inputField label="Date Driving Licence Refused (dd/mm/yyyy)" value="{!a.data.Date__c}" required="false" />
+								<apex:inputField label="Period Of Suspension (Months)" value="{!a.data.Number__c}" />
+								<apex:inputField label="Details Of Licence Refusal" value="{!a.data.Detail__c}" />
+								<apex:pageBlockSectionItem />
+								<apex:pageBlockSectionItem >
+									<apex:outputPanel >
+										<apex:commandButton value="Remove" action="{!removeLicenceSanctioned}" status="stRemDrivers2" reRender="pnlLicence">
+											<apex:param name="quoteAnnotationSelected" assignTo="{!quoteAnnotationSelected}" value="{!a.idx}" />
+										</apex:commandButton>
+										&nbsp;&nbsp;&nbsp;&nbsp;
+						            	<apex:actionStatus id="stRemDrivers2" startText="(processing...)" />
+									</apex:outputPanel>
+								</apex:pageBlockSectionItem>
+							</apex:pageBlockSection>
+						</apex:repeat>
+					</apex:outputPanel>
+					<br/>
+					<apex:commandButton value="Add New Licence Endorsement" action="{!addLicenceSanctioned}"
+										rendered="{!quote.Has_Licence_Santioned__c}" reRender="pnlLicence, msg" />
+
+				</apex:pageBlockSection>
+				<!-- Accident History -->
+				<apex:pageBlockSection title="Accident / Claim History" collapsible="false" columns="1" id="pnlAccident">
+					<!-- <apex:inputField label="In the last 5 years have you or anyone who is likely to drive the car had an At fault 
+					                        accident with a motor vehicle or had a motor vehicle stolen, damaged (including hail) or 
+					                        destroyed by fire where recovery of costs was not made by your insurer? If Yes, please 
+					                        add details below" 
+					                 value="{!quote.Has_Accident_History__c}">
+						<apex:actionSupport event="onchange" reRender="pnlAccident, msg" action="{!activateAccidentHistory}" />
+					</apex:inputField> -->
+					<apex:selectList label="In the last 5 years have you or anyone who is likely to drive the car had an At fault 
+					                        accident with a motor vehicle or had a motor vehicle stolen, damaged (including hail) or 
+					                        destroyed by fire where recovery of costs was not made by your insurer? If Yes, please 
+					                        add details below"
+									 value="{!quote.Has_Accident_History__c}" size="1" >
+						<apex:selectOption itemLabel="No" itemValue="false"/>
+						<apex:selectOption itemLabel="Yes" itemValue="true"/>
+						<apex:actionSupport event="onchange" reRender="pnlAccident, msg" action="{!activateAccidentHistory}" />
+					</apex:selectList>
+					<apex:outputPanel styleClass="sectionLevel2" layout="block">
+						<apex:repeat value="{!accidentHistory}" var="a" rendered="{!AND(quote.Has_Accident_History__c,accidentHistory.size >= 1)}">
+							<apex:pageBlockSection title="{!a.idx}) Accident" collapsible="false" >
+								<apex:selectList value="{!a.data.Driver__c}" required="false" size="1" multiselect="false">
+									<apex:selectOptions value="{!driverOptions}" />
+								</apex:selectList>
+								<apex:inputField label="Date Of Accident (dd/mm/yyyy)" value="{!a.data.Date__c}" required="false" />
+								<apex:inputField label="Details Of Accident" value="{!a.data.Detail__c}" />
+								<apex:inputField label="Amount Of Loss $" value="{!a.data.Amount__c}" />
+								<apex:inputField label="Name Of Insurer At Accident" value="{!a.data.Name_Insurer__c}" />
+								<apex:pageBlockSectionItem />
+								<apex:inputField label="Was This Driver At Fault" value="{!a.data.Is_Driver_Fault__c}" />
+								<apex:inputField label="Was The Vehicle Stolen, Damaged (Inc Hail) Or Destroyed By Fire" value="{!a.data.Was_Vehicle_Affected__c}" />
+								<apex:pageBlockSectionItem />
+								<apex:pageBlockSectionItem >
+									<apex:outputPanel >
+										<apex:commandButton value="Remove" action="{!removeAccidentHistory}" status="stRemDrivers3" reRender="pnlAccident">
+											<apex:param name="quoteAnnotationSelected" assignTo="{!quoteAnnotationSelected}" value="{!a.idx}" />
+										</apex:commandButton>
+										&nbsp;&nbsp;&nbsp;&nbsp;
+						            	<apex:actionStatus id="stRemDrivers3" startText="(processing...)" />
+									</apex:outputPanel>
+								</apex:pageBlockSectionItem>
+							</apex:pageBlockSection>
+						</apex:repeat>
+					</apex:outputPanel>
+					<br/>
+					<apex:commandButton value="Add New Accident" action="{!addAccidentHistory}"
+										rendered="{!quote.Has_Accident_History__c}" reRender="pnlAccident, msg" />
+
+				</apex:pageBlockSection>
+				<!-- Other Information -->
+				<apex:pageBlockSection title="Other Information" collapsible="false" columns="2" id="pnlOtherInfo">
+					<!-- <apex:inputField label="In the last five years have you or anyone who is likely to drive the car 
+					                        ever been charged or convicted of a criminal offence, including drug and 
+					                        alcohol related offences?" 
+					                 value="{!quote.Other_Info_Question_1__c}">
+						<apex:actionSupport event="onchange" reRender="pnlOtherInfo, msg"/>
+					</apex:inputField> -->
+					<apex:selectList label="In the last five years have you or anyone who is likely to drive the car 
+					                        ever been charged or convicted of a criminal offence, including drug and 
+					                        alcohol related offences?"
+									 value="{!quote.Other_Info_Question_1__c}" size="1" >
+						<apex:selectOption itemLabel="No" itemValue="false"/>
+						<apex:selectOption itemLabel="Yes" itemValue="true"/>
+						<apex:actionSupport event="onchange" reRender="pnlOtherInfo, msg"/>
+					</apex:selectList>
+					<!-- <apex:inputField label="In the last five years have you or anyone who is likely to drive the car ever 
+					                        had an insurance policy refused, denied or cancelled or special conditions 
+					                        applied, endorsed or excess imposed by an insurer" 
+					                 value="{!quote.Other_Info_Question_2__c}">
+						<apex:actionSupport event="onchange" reRender="pnlOtherInfo, msg"/>
+					</apex:inputField> -->
+					<apex:selectList label="In the last five years have you or anyone who is likely to drive the car ever 
+					                        had an insurance policy refused, denied or cancelled or special conditions 
+					                        applied, endorsed or excess imposed by an insurer"
+									 value="{!quote.Other_Info_Question_2__c}" size="1" >
+						<apex:selectOption itemLabel="No" itemValue="false"/>
+						<apex:selectOption itemLabel="Yes" itemValue="true"/>
+						<apex:actionSupport event="onchange" reRender="pnlOtherInfo, msg"/>
+					</apex:selectList>
+					<apex:inputTextarea label="Details on criminal offence (include driver, date, and description)" value="{!quote.Other_Info_Details_1__c}" 
+								 rendered="{!quote.Other_Info_Question_1__c}" cols="50" />
+					<apex:pageBlockSectionItem rendered="{!!quote.Other_Info_Question_1__c}" />
+					<apex:inputTextarea label="Details on insurance policy refused (include driver, date, and description)" value="{!quote.Other_Info_Details_2__c}" 
+									 rendered="{!quote.Other_Info_Question_2__c}" cols="50" />					
+					<apex:pageBlockSectionItem rendered="{!!quote.Other_Info_Question_2__c}" />
+				</apex:pageBlockSection>
+			</apex:outputPanel>
+			<!-- STEP 4 -->
+			<apex:outputPanel rendered="{!stepNumber==4}">
+				<apex:pageBlockSection title="Specific Vehicle Details" collapsible="false" columns="2">
+					<apex:inputField value="{!o.Application_AssetDetail__r.Rego__c}" required="true"/>
+					<apex:outputField value="{!quote.Vehicle_Condition__c}" rendered="{!quote.MV_Acceptance__c=='A'}" />
+					<apex:inputField value="{!quote.Vehicle_Date_First_Registered__c}" rendered="{!quote.WRR_Acceptance__c=='A'}" required="true"/>
+					<apex:inputField value="{!o.Application_AssetDetail__r.Engine_No__c}" rendered="{!OR(quote.MV_Acceptance__c=='A',quote.WRR_Acceptance__c=='A')}" required="true"/>
+					<apex:inputField value="{!o.Application_AssetDetail__r.VIN__c}" rendered="{!OR(quote.MV_Acceptance__c=='A',quote.WRR_Acceptance__c=='A')}" required="true"/>
+					<apex:inputField value="{!quote.Odometer__c}" rendered="{!OR(quote.MV_Acceptance__c=='A',quote.WRR_Acceptance__c=='A')}" required="true"/>
+					<!-- <apex:inputField label="Does The Vehicle Have Existing Damage Including Accident, Rust And Hail?" value="{!quote.Has_Existing_Damage__c}"
+					                 rendered="{!quote.MV_Acceptance__c=='A'}"/> -->
+					<apex:selectList label="Does The Vehicle Have Existing Damage Including Accident, Rust And Hail?"
+									 value="{!quote.Has_Existing_Damage__c}" size="1" rendered="{!quote.MV_Acceptance__c=='A'}">
+						<apex:selectOption itemLabel="No" itemValue="false"/>
+						<apex:selectOption itemLabel="Yes" itemValue="true"/>
+					</apex:selectList>
+					<apex:inputTextarea value="{!quote.Existing_Damage_Details__c}" cols="50" rendered="{!quote.MV_Acceptance__c=='A'}"/>
+				</apex:pageBlockSection>
+				<!-- 
+				<apex:pageBlockSection title="Comprehensive Insurer Details" collapsible="false" columns="2" 
+									   rendered="{!AND(NOT(quote.MV_Acceptance__c=='A'),quote.GAP_Acceptance__c=='A',quote.TAS_Acceptance__c=='A',quote.LTI_Acceptance__c=='A')}">
+					<apex:inputField value="{!quote.Comprehensive_Insurer_Name__c}"/>
+					<apex:inputField value="{!quote.Comprehensive_Insurance_Expiry_Date__c}" required="true"/>
+				</apex:pageBlockSection>  -->
+				<apex:pageBlockSection title="Insurer Details" collapsible="false" columns="2" 
+									   rendered="{!AND(NOT(quote.MV_Acceptance__c=='A'),OR(quote.GAP_Acceptance__c=='A',quote.TAS_Acceptance__c=='A',quote.LTI_Acceptance__c=='A'))}">
+					<apex:outputField value="{!quote.Comprehensive_Insurer_Name__c}"/>
+					<apex:inputField value="{!quote.Comprehensive_Insurance_Expiry_Date__c}" required="true"/>
+				</apex:pageBlockSection>
+			</apex:outputPanel>
+			<!-- STEP 5 -->
+			<apex:outputPanel rendered="{!stepNumber==5}" id="pnlReview">
+				<apex:pageBlockSection title="Premiums" collapsible="false" columns="1">
+					<apex:panelGrid columns="7" cellpadding="5" cellspacing="2" width="80%" rowClasses="row1, row2" styleClass="tableResult" id="pnlPremiums">
+						<apex:outputText value="Product" styleClass="columnHeader" />
+						<!-- <apex:outputText value="Preminum" styleClass="columnHeader"/>
+						<apex:outputText value="Establishment Fee" styleClass="columnHeader"/> -->
+						<apex:outputText value="Total Payable" styleClass="columnHeader"/>
+						<apex:outputText value="Cover Term (months)" styleClass="columnHeader"/>
+						<apex:outputText value="Cover Start Date" styleClass="columnHeader"/>
+						<apex:outputText value="Approval State" styleClass="columnHeader"/>
+						<apex:outputText value="Payment Method" styleClass="columnHeader"/>
+						<apex:outputText value="" styleClass="columnHeader"/>
+						
+						<!-- Motor Vehicle -->
+						<apex:outputPanel rendered="{!quote.MV_Acceptance__c=='A'}">
+							<apex:outputText value="Motor Vehicle - " />
+							<apex:outputField value="{!quote.Motor_Vehicle__c}"/>
+							<apex:outputText value="<br/><b>(* This risk is outside our acceptance guidelines)</b>" rendered="{!quote.MV_Total_Payable__c == 0}" escape="false" />
+						</apex:outputPanel>
+						<!-- <apex:outputField value="{!quote.MV_Premium__c}" rendered="{!quote.MV_Acceptance__c=='A'}"/>
+						<apex:outputField value="{!quote.MV_Establishment_Fee__c}" rendered="{!quote.MV_Acceptance__c=='A'}"/> -->
+						<apex:outputField value="{!quote.MV_Total_Payable__c}" rendered="{!quote.MV_Acceptance__c=='A'}"/>
+						<apex:outputField value="{!quote.Motor_Cover_Term__c}" rendered="{!quote.MV_Acceptance__c=='A'}"/>
+						<apex:outputField value="{!quote.Cover_Start_Date__c}" rendered="{!quote.MV_Acceptance__c=='A'}"/>
+						<apex:outputText value="Approved" rendered="{!quote.MV_Acceptance__c=='A'}"/>
+						<apex:inputField value="{!quote.MV_Payment_Method__c}" rendered="{!quote.MV_Acceptance__c=='A'}">	
+							<apex:actionSupport event="onchange" reRender="pnlPremiums" />
+						</apex:inputField>
+						<apex:outputText value="" id="fldMVBlankPD"
+										 rendered="{!AND(quote.MV_Acceptance__c=='A',!requireMVPaymentDetail)}" />
+						<apex:selectList value="{!quote.MV_Payment_Detail__c}" required="false" size="1" multiselect="false" id="fldMVPD"
+										 rendered="{!AND(quote.MV_Acceptance__c=='A',requireMVPaymentDetail)}">
+							<apex:selectOptions value="{!mVPaymentMethodOptions}" />
+						</apex:selectList>
+
+						<!-- GAP -->
+						<apex:pageBlockSectionItem rendered="{!quote.GAP_Acceptance__c=='A'}">
+							<apex:outputText value="GAP - " />
+							<apex:outputField value="{!quote.Gap__c}"/>	
+						</apex:pageBlockSectionItem>
+						<!-- <apex:outputField value="{!quote.GAP_Premium__c}" rendered="{!quote.GAP_Acceptance__c=='A'}"/>
+						<apex:outputField value="{!quote.GAP_Establishment_Fee__c}" rendered="{!quote.GAP_Acceptance__c=='A'}"/> -->
+						<apex:outputField value="{!quote.GAP_Total_Payable__c}" rendered="{!quote.GAP_Acceptance__c=='A'}"/>
+						<apex:outputField value="{!quote.Finance_Term__c}" rendered="{!quote.GAP_Acceptance__c=='A'}"/>
+						<apex:outputField value="{!quote.Cover_Start_Date__c}" rendered="{!quote.GAP_Acceptance__c=='A'}"/>
+						<apex:outputText value="Approved" rendered="{!quote.GAP_Acceptance__c=='A'}"/>
+						<apex:inputField value="{!quote.GAP_Payment_Method__c}" rendered="{!quote.GAP_Acceptance__c=='A'}">	
+							<apex:actionSupport event="onchange" reRender="pnlPremiums" />
+						</apex:inputField>
+						<apex:outputText value="" 
+										 rendered="{!AND(quote.GAP_Acceptance__c=='A',!requireGAPPaymentDetail)}" />
+						<apex:selectList value="{!quote.GAP_Payment_Detail__c}" required="false" size="1" multiselect="false" 
+										 rendered="{!AND(quote.GAP_Acceptance__c=='A',requireGAPPaymentDetail)}">
+							<apex:selectOptions value="{!gapPaymentMethodOptions}" />
+						</apex:selectList>
+						<!-- Total Assist -->
+						<apex:pageBlockSectionItem rendered="{!quote.TAS_Acceptance__c=='A'}">
+							<apex:outputText value="RTI - " />
+							<apex:outputField value="{!quote.Total_assist_RTI__c}"/>	
+						</apex:pageBlockSectionItem>
+						<!-- <apex:outputField value="{!quote.TAS_Premium__c}" rendered="{!quote.TAS_Acceptance__c=='A'}"/>
+						<apex:outputField value="{!quote.TAS_Establishment_Fee__c}" rendered="{!quote.TAS_Acceptance__c=='A'}"/> -->
+						<apex:outputField value="{!quote.TAS_Total_Payable__c}" rendered="{!quote.TAS_Acceptance__c=='A'}"/>
+						<apex:outputField value="{!quote.Assist_Cover_Term__c}" rendered="{!quote.TAS_Acceptance__c=='A'}"/>
+						<apex:outputField value="{!quote.Cover_Start_Date__c}" rendered="{!quote.TAS_Acceptance__c=='A'}"/>
+						<apex:outputText value="Approved" rendered="{!quote.TAS_Acceptance__c=='A'}"/>
+						<apex:inputField value="{!quote.TAS_Payment_Method__c}" rendered="{!quote.TAS_Acceptance__c=='A'}">	
+							<apex:actionSupport event="onchange" reRender="pnlPremiums" />
+						</apex:inputField>
+						<apex:outputText value="" 
+										 rendered="{!AND(quote.TAS_Acceptance__c=='A',!requireTASPaymentDetail)}" />
+						<apex:selectList value="{!quote.TAS_Payment_Detail__c}" required="false" size="1" multiselect="false"
+										 rendered="{!AND(quote.TAS_Acceptance__c=='A',requireTASPaymentDetail)}">
+							<apex:selectOptions value="{!tasPaymentMethodOptions}" />
+						</apex:selectList>
+						<!-- LTI -->
+						<apex:pageBlockSectionItem rendered="{!quote.LTI_Acceptance__c=='A'}">
+							<apex:outputText value="LTI/BRI - " />
+							<apex:outputField value="{!quote.LTI_BRI__c}"/>	
+						</apex:pageBlockSectionItem>
+						<!-- <apex:outputField value="{!quote.LTI_Premium__c}" rendered="{!quote.LTI_Acceptance__c=='A'}"/>
+						<apex:outputField value="{!quote.LTI_Establishment_Fee__c}" rendered="{!quote.LTI_Acceptance__c=='A'}"/> -->
+						<apex:outputField value="{!quote.LTI_Total_Payable__c}" rendered="{!quote.LTI_Acceptance__c=='A'}"/>
+						<apex:outputField value="{!quote.Finance_Term__c}" rendered="{!quote.LTI_Acceptance__c=='A'}"/>
+						<apex:outputField value="{!quote.Cover_Start_Date__c}" rendered="{!quote.LTI_Acceptance__c=='A'}"/>
+						<apex:outputText value="Approved" rendered="{!quote.LTI_Acceptance__c=='A'}"/>
+						<apex:inputField value="{!quote.LTI_Payment_Method__c}" rendered="{!quote.LTI_Acceptance__c=='A'}">	
+							<apex:actionSupport event="onchange" reRender="pnlPremiums" />
+						</apex:inputField>
+						<apex:outputText value="" 
+										 rendered="{!AND(quote.LTI_Acceptance__c=='A',!requireLTIPaymentDetail)}" />
+						<apex:selectList value="{!quote.LTI_Payment_Detail__c}" required="false" size="1" multiselect="false"
+										 rendered="{!AND(quote.LTI_Acceptance__c=='A',requireLTIPaymentDetail)}">
+							<apex:selectOptions value="{!ltiPaymentMethodOptions}" />
+						</apex:selectList>
+                        <!--Jesus Mora 2020-06-01 start-->
+                        <!-- LPI -->
+						<apex:pageBlockSectionItem rendered="{!quote.LPI_Acceptance__c=='A'}">
+							<apex:outputText value="LPI - " />
+							<apex:outputField value="{!quote.LPI__c}"/>	
+						</apex:pageBlockSectionItem>
+						<!-- <apex:outputField value="{!quote.LTI_Premium__c}" rendered="{!quote.LTI_Acceptance__c=='A'}"/>
+						<apex:outputField value="{!quote.LTI_Establishment_Fee__c}" rendered="{!quote.LTI_Acceptance__c=='A'}"/> -->
+						<apex:outputField value="{!quote.LPI_Total_Payable__c}" rendered="{!quote.LPI_Acceptance__c=='A'}"/>
+						<apex:outputField value="{!quote.Finance_Term__c}" rendered="{!quote.LPI_Acceptance__c=='A'}"/>
+						<apex:outputField value="{!quote.Cover_Start_Date__c}" rendered="{!quote.LPI_Acceptance__c=='A'}"/>
+						<apex:outputText value="Approved" rendered="{!quote.LPI_Acceptance__c=='A'}"/>
+						<apex:inputField value="{!quote.LPI_Payment_Method__c}" rendered="{!quote.LPI_Acceptance__c=='A'}">	
+							<apex:actionSupport event="onchange" reRender="pnlPremiums" />
+						</apex:inputField>
+						<apex:outputText value="" 
+										 rendered="{!AND(quote.LPI_Acceptance__c=='A',!requireLPIPaymentDetail)}" />
+						<apex:selectList value="{!quote.LPI_Payment_Detail__c}" required="false" size="1" multiselect="false"
+										 rendered="{!AND(quote.LPI_Acceptance__c=='A',requireLPIPaymentDetail)}">
+							<apex:selectOptions value="{!lpiPaymentMethodOptions}" />
+						</apex:selectList>
+                        <!--Jesus Mora 2020-06-01 end-->
+						<!-- Warranty -->
+						<apex:pageBlockSectionItem rendered="{!quote.WRR_Acceptance__c=='A'}">
+							<apex:outputText value="Warranty - " />
+							<apex:outputField value="{!quote.Warranty_Insurance__c}"/>	
+						</apex:pageBlockSectionItem>
+						<!-- <apex:outputField value="{!quote.WRR_Premium__c}" rendered="{!quote.WRR_Acceptance__c=='A'}"/>
+						<apex:outputField value="{!quote.WRR_Establishment_Fee__c}" rendered="{!quote.WRR_Acceptance__c=='A'}"/> -->
+						<apex:outputField value="{!quote.WRR_Total_Payable__c}" rendered="{!quote.WRR_Acceptance__c=='A'}"/>
+						<apex:outputText value="{!quote.Warranty_Insurance_Contract__c}" rendered="{!quote.WRR_Acceptance__c=='A'}"/>
+						<apex:outputText value=" " rendered="{!quote.WRR_Acceptance__c=='A'}"/>
+						<apex:outputText value="Approved" rendered="{!quote.WRR_Acceptance__c=='A'}"/>
+						<apex:inputField value="{!quote.WRR_Payment_Method__c}" rendered="{!quote.WRR_Acceptance__c=='A'}">	
+							<apex:actionSupport event="onchange" reRender="pnlPremiums" />
+						</apex:inputField>
+						<apex:outputText value=""
+										 rendered="{!AND(quote.WRR_Acceptance__c=='A',!requireWRRPaymentDetail)}" />
+						<apex:selectList value="{!quote.WRR_Payment_Detail__c}" required="false" size="1" multiselect="false" 
+										 rendered="{!AND(quote.WRR_Acceptance__c=='A',requireWRRPaymentDetail)}">
+							<apex:selectOptions value="{!wrrPaymentMethodOptions}" />
+						</apex:selectList>
+						<!-- Total -->
+						<apex:outputText value="TOTAL"/>
+						<!-- <apex:pageBlockSectionItem />
+						<apex:pageBlockSectionItem /> -->
+						<apex:outputField value="{!quote.Total_Payable_Accepted__c}"/>
+						<apex:pageBlockSectionItem />
+						<apex:pageBlockSectionItem />
+						<apex:pageBlockSectionItem />
+						<apex:pageBlockSectionItem />
+						<apex:pageBlockSectionItem />
+					</apex:panelGrid>
+				</apex:pageBlockSection>
+				<apex:pageBlockSection title="Payment Methods" collapsible="false" columns="2" id="pnlPayMethods">
+					<apex:outputPanel styleClass="sectionLevel2" layout="block">
+						<apex:repeat value="{!paymentMethods}" var="a">
+							<apex:pageBlockSection id="pnlMethod" title="{!a.idx}) Payment Method" collapsible="false" >
+								<apex:inputField value="{!a.data.Method__c}" required="false">
+									<apex:actionSupport event="onchange" reRender="pnlMethod" />
+								</apex:inputField>
+								<apex:inputField value="{!a.data.Holder_Name__c}" required="false" />
+
+								<!-- Credit Card Fields -->
+								<apex:inputField value="{!a.data.Credit_Card_Number__c}" rendered="{!a.data.Method__c == 'CC'}" />
+								<apex:inputField value="{!a.data.Verification_Code__c}" rendered="{!a.data.Method__c == 'CC'}" />
+								<apex:inputField value="{!a.data.Expiry_Month__c}" rendered="{!a.data.Method__c == 'CC'}" />
+								<apex:selectList value="{!a.data.Expiry_Year__c}" rendered="{!a.data.Method__c == 'CC'}" size="1" multiselect="false">
+									<apex:selectOptions value="{!credidCardYearOptions}" />
+								</apex:selectList>
+
+								<!-- Bank Account Fields -->
+								<apex:inputField value="{!a.data.BSB_Number__c}" rendered="{!a.data.Method__c == 'BA'}" />
+								<apex:inputField value="{!a.data.Account_Number__c}" rendered="{!a.data.Method__c == 'BA'}" />
+								
+								<apex:pageBlockSectionItem />
+								<apex:pageBlockSectionItem >
+									<apex:outputPanel >
+										<apex:commandButton value="Save" action="{!savePaymentMethod}" status="stRemMethod" reRender="pnlReview, msg">
+											<apex:param name="paymentSelected" assignTo="{!paymentSelected}" value="{!a.idx}" />
+										</apex:commandButton>
+										<apex:commandButton value="Remove" action="{!removePaymentMethod}" status="stRemMethod" reRender="pnlReview, msg">
+											<apex:param name="paymentSelected" assignTo="{!paymentSelected}" value="{!a.idx}" />
+										</apex:commandButton>
+										&nbsp;&nbsp;&nbsp;&nbsp;
+						            	<apex:actionStatus id="stRemMethod" startText="(processing...)" />
+									</apex:outputPanel>
+								</apex:pageBlockSectionItem>
+							</apex:pageBlockSection>
+						</apex:repeat>
+					</apex:outputPanel>
+					<br/>
+					<apex:commandButton value="Add New Payment Method" action="{!addPaymentMethod}"
+										reRender="pnlPayMethods, msg" />
+				</apex:pageBlockSection>
+			</apex:outputPanel>
+			<!-- STEP 6 - Payment Results -->
+			<apex:outputPanel rendered="{!stepNumber==6}" id="pnlResults">
+				<apex:pageBlockSection title="Premiums" collapsible="false" columns="1">
+					<apex:panelGrid columns="4" cellpadding="5" cellspacing="2" width="80%" rowClasses="row1, row2" styleClass="tableResult" id="pnlPremiums">
+						<apex:outputText value="Product" styleClass="columnHeader" />
+						<apex:outputText value="Policy Number" styleClass="columnHeader"/>
+						<apex:outputText value="Document" styleClass="columnHeader"/>
+						<apex:outputText value="Document Link" styleClass="columnHeader"/>
+						<!-- <apex:outputText value="Date" styleClass="columnHeader"/> -->
+						
+						<!-- Motor Vehicle -->
+						<apex:outputPanel rendered="{!quote.MV_Acceptance__c=='A'}">
+							<apex:outputText value="Motor Vehicle - " />
+							<apex:outputField value="{!quote.Motor_Vehicle__c}"/>
+							<apex:outputText value="<br/><b>(* This risk is outside our acceptance guidelines)</b>" rendered="{!quote.MV_Total_Payable__c == 0}" escape="false" />
+						</apex:outputPanel>
+						<apex:outputField value="{!mvPolicy.Policy_Number__c}" rendered="{!quote.MV_Acceptance__c=='A'}"/>
+						<apex:outputField value="{!mvPolicy.Document_Description__c}" rendered="{!quote.MV_Acceptance__c=='A'}"/>
+						<apex:outputField value="{!mvPolicy.Document_Url__c}" rendered="{!quote.MV_Acceptance__c=='A'}"/>
+						<!-- <apex:outputField value="{!mvPolicy.CreatedDate}" rendered="{!quote.MV_Acceptance__c=='A'}"/> -->
+
+						<!-- GAP -->
+						<apex:pageBlockSectionItem rendered="{!quote.GAP_Acceptance__c=='A'}">
+							<apex:outputText value="GAP - " />
+							<apex:outputField value="{!quote.Gap__c}"/>	
+						</apex:pageBlockSectionItem>
+						<apex:outputField value="{!gapPolicy.Policy_Number__c}" rendered="{!quote.GAP_Acceptance__c=='A'}"/>
+						<apex:outputField value="{!gapPolicy.Document_Description__c}" rendered="{!quote.GAP_Acceptance__c=='A'}"/>
+						<apex:outputField value="{!gapPolicy.Document_Url__c}" rendered="{!quote.GAP_Acceptance__c=='A'}"/>
+						<!-- <apex:outputField value="{!gapPolicy.CreatedDate}" rendered="{!quote.GAP_Acceptance__c=='A'}"/> -->
+
+						<!-- Total Assist -->
+						<apex:pageBlockSectionItem rendered="{!quote.TAS_Acceptance__c=='A'}">
+							<apex:outputText value="RTI - " />
+							<apex:outputField value="{!quote.Total_assist_RTI__c}"/>	
+						</apex:pageBlockSectionItem>
+						<apex:outputField value="{!rtiPolicy.Policy_Number__c}" rendered="{!quote.TAS_Acceptance__c=='A'}"/>
+						<apex:outputField value="{!rtiPolicy.Document_Description__c}" rendered="{!quote.TAS_Acceptance__c=='A'}"/>
+						<apex:outputField value="{!rtiPolicy.Document_Url__c}" rendered="{!quote.TAS_Acceptance__c=='A'}"/>
+						<!-- <apex:outputField value="{!rtiPolicy.CreatedDate}" rendered="{!quote.TAS_Acceptance__c=='A'}"/> -->
+						<!-- LTI -->
+						<apex:pageBlockSectionItem rendered="{!quote.LTI_Acceptance__c=='A'}">
+							<apex:outputText value="LTI/BRI - " />
+							<apex:outputField value="{!quote.LTI_BRI__c}"/>	
+						</apex:pageBlockSectionItem>
+						<apex:outputField value="{!ltiPolicy.Policy_Number__c}" rendered="{!quote.LTI_Acceptance__c=='A'}"/>
+						<apex:outputField value="{!ltiPolicy.Document_Description__c}" rendered="{!quote.LTI_Acceptance__c=='A'}"/>
+						<apex:outputField value="{!ltiPolicy.Document_Url__c}" rendered="{!quote.LTI_Acceptance__c=='A'}"/>
+						<!-- <apex:outputField value="{!ltiPolicy.CreatedDate}" rendered="{!quote.LTI_Acceptance__c=='A'}"/> -->
+                        <!--Jesus Mora 2020-06-01 start-->
+                        <!-- LPI -->
+						<apex:pageBlockSectionItem rendered="{!quote.LPI_Acceptance__c=='A'}">
+							<apex:outputText value="LPI - " />
+							<apex:outputField value="{!quote.LPI__c}"/>	
+						</apex:pageBlockSectionItem>
+						<apex:outputField value="{!lpiPolicy.Policy_Number__c}" rendered="{!quote.LPI_Acceptance__c=='A'}"/>
+						<apex:outputField value="{!lpiPolicy.Document_Description__c}" rendered="{!quote.LPI_Acceptance__c=='A'}"/>
+						<apex:outputField value="{!lpiPolicy.Document_Url__c}" rendered="{!quote.LPI_Acceptance__c=='A'}"/>
+						<!-- <apex:outputField value="{!ltiPolicy.CreatedDate}" rendered="{!quote.LTI_Acceptance__c=='A'}"/> -->
+                        <!--Jesus Mora 2020-06-01 end-->
+
+						<!-- Warranty -->
+						<apex:pageBlockSectionItem rendered="{!quote.WRR_Acceptance__c=='A'}">
+							<apex:outputText value="Warranty - " />
+							<apex:outputField value="{!quote.Warranty_Insurance__c}"/>	
+						</apex:pageBlockSectionItem>
+						<apex:outputField value="{!warrPolicy.Policy_Number__c}" rendered="{!quote.WRR_Acceptance__c=='A'}"/>
+						<apex:outputField value="{!warrPolicy.Document_Description__c}" rendered="{!quote.WRR_Acceptance__c=='A'}"/>
+						<apex:outputField value="{!warrPolicy.Document_Url__c}" rendered="{!quote.WRR_Acceptance__c=='A'}"/>
+						<!-- <apex:outputField value="{!warrPolicy.CreatedDate}" rendered="{!quote.WRR_Acceptance__c=='A'}"/> -->
+
+					</apex:panelGrid>
+				</apex:pageBlockSection>
+			</apex:outputPanel>
+			<br />
+			<apex:pageMessages id="msg"/>
+		</apex:pageBlock>
+	</apex:form>
+	<apex:outputField value="{!o.Application__c}" rendered="false" />
+	<apex:outputField value="{!o.Application__r.Title_1__c}" rendered="false" />
+	<apex:outputField value="{!o.Application__r.First_Name__c}" rendered="false" />
+	<apex:outputField value="{!o.Application__r.Middle_Name__c}" rendered="false" />
+	<apex:outputField value="{!o.Application__r.Last_Name__c}" rendered="false" />
+	<apex:outputField value="{!o.Application__r.Current_Occupation_1__c}" rendered="false" />
+	<apex:outputField value="{!o.Application__r.Business_ABN__c}" rendered="false" />
+	<apex:outputField value="{!o.Application__r.Email_Address__c}" rendered="false" />
+	<apex:outputField value="{!o.Application__r.Mobile_Number__c}" rendered="false" />
+	<apex:outputField value="{!o.Application__r.Home_Phone__c}" rendered="false" />
+	<apex:outputField value="{!o.Application__r.Work_Phone__c}" rendered="false" />
+	<apex:outputField value="{!o.Application__r.Drivers_License_1__c}" rendered="false" />
+	<apex:outputField value="{!o.Application__r.Application_Type__c}" rendered="false" />
+	<apex:outputField value="{!o.Application__r.Type_of_Asset__c}" rendered="false" />
+	<apex:outputField value="{!o.Application__r.Entity_Name__c}" rendered="false" />
+    <!--Jesus Mora 2020-06-01 start-->
+    <apex:outputField value="{!o.Application__r.Mode_of_Employment_1__c}" rendered="false" />
+    <!--Jesus Mora 2020-06-01 end-->
+	<apex:outputField value="{!o.Application_AssetDetail__r.Rego_State__c}" rendered="false" />
+	<apex:outputField value="{!o.Application_AssetDetail__r.Type__c}" rendered="false" />
+	<apex:outputField value="{!o.Application_AssetDetail__r.Actual_KM__c}" rendered="false" />
+
+</apex:page>

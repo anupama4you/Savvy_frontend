@@ -1,0 +1,208 @@
+<apex:page docType="html-5.0" Controller="OppApprovalMonitoringExtension" sidebar="true" showHeader="true">
+	<style type='text/css'>
+		.captionTable {
+			font-size: 14px;
+			font-weight: bold;
+		}
+		.cellProcessed {
+			font-weight: bold;  
+			/* Permalink - use to edit and share this gradient: http://colorzilla.com/gradient-editor/#f6e6b4+0,ed9017+100;Yellow+3D+%231 */
+			background: rgb(246,230,180); /* Old browsers */
+			background: -moz-linear-gradient(left,  rgba(246,230,180,1) 0%, rgba(237,144,23,1) 100%); /* FF3.6-15 */
+			background: -webkit-linear-gradient(left,  rgba(246,230,180,1) 0%,rgba(237,144,23,1) 100%); /* Chrome10-25,Safari5.1-6 */
+			background: linear-gradient(to right,  rgba(246,230,180,1) 0%,rgba(237,144,23,1) 100%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
+			filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#f6e6b4', endColorstr='#ed9017',GradientType=1 ); /* IE6-9 */
+		}
+		.cellCentered {
+			text-align: center;
+		}
+	</style>
+  <apex:form id="formData">
+    <apex:pageBlock title="Application Progress Monitoring" >
+      <apex:pageBlockButtons location="top" rendered="true">
+                  <apex:commandButton onclick="window.open('OppApprovalSaleConsultantsList');" value="Consultant Detailts"/>
+                  <apex:commandButton onclick="window.open('OppApprovalLenderLogins');" value="Lender Log-Ins"/>
+                  <apex:commandButton onclick="window.open('OppApprovalFavoriteLinks');" value="Favorite Links"/>
+              </apex:pageBlockButtons>
+          <apex:pageBlockSection title="Criteria">
+            <apex:pageBlockSectionItem >
+              <apex:outputLabel value="Month" />
+              <apex:pageBlockSectionItem >
+                <apex:pageBlockSectionItem >
+                  <apex:selectList label="Month" value="{!month}" required="true" size="1">
+                    <apex:actionSupport event="onchange" action="{!search}" reRender="tblSummary, tblDetail, pnlResults" status="stsProcess" />
+                    <apex:selectOptions value="{!monthOptions}" />
+                  </apex:selectList>
+                  <apex:selectList value="{!year}" required="true" size="1">
+                    <apex:actionSupport event="onchange" action="{!search}" reRender="tblSummary, tblDetail, pnlResults" status="stsProcess" />
+                    <apex:selectOptions value="{!yearOptions}" />
+                  </apex:selectList>
+                </apex:pageBlockSectionItem>
+                	<apex:actionStatus id="stsProcess" ><apex:facet name="start">   Please wait ...</apex:facet></apex:actionStatus>
+	            </apex:pageBlockSectionItem>
+	        </apex:pageBlockSectionItem>
+          </apex:pageBlockSection>
+          <br/>
+          <apex:pageBlockTable id="tblSummary" value="{!summaryData}" var="d" captionClass="captionTable">
+            <apex:facet name="caption">Summary</apex:facet>
+            <apex:facet name="header">
+              <table width="100%" cellspacing="0" border="0">
+                <tr class="headerRow">
+                  <th class="headerRow" width="10%" rowspan="2"> </th>
+                  <th class="headerRow" colspan="5" width="28%">Pre-Approval</th>
+                  <th class="headerRow" colspan="5" width="28%">Amendment</th>
+                  <th class="headerRow" colspan="5" width="28%">Formal Approval</th>
+                  <th class="headerRow" width="6%"> </th>
+                </tr>
+              </table>
+            </apex:facet>
+            <apex:column headerValue="Approver Name" width="10%">
+              <apex:facet name="footer">
+                <apex:outputText value="TOTALS" />
+              </apex:facet>
+              <apex:outputLink value="/apex/OppApproverMonitoring?ID={!d.approverId}&M={!month}&Y={!year}"><apex:outputText value="{!d.approverName}"/></apex:outputLink>
+            </apex:column>
+            <!-- Pre-Approvals -->
+            <apex:column headerValue="Pending" value="{!d.pending1}" width="5%" headerClass="cellCentered" footerClass="cellCentered" styleClass="cellCentered">
+              <apex:facet name="footer">
+                <apex:outputText value="{!totals.pending1}" />
+              </apex:facet>
+            </apex:column>
+            <apex:column headerValue="Recalled" value="{!d.recalled1}" width="5%" headerClass="cellCentered" footerClass="cellCentered" styleClass="cellCentered">
+              <apex:facet name="footer">
+                <apex:outputText value="{!totals.recalled1}" />
+              </apex:facet>
+            </apex:column>
+            <apex:column headerValue="Processed" value="{!d.processed1}" width="6%" headerClass="cellCentered" footerClass="cellCentered" styleClass="cellCentered cellProcessed">
+              <apex:facet name="footer">
+                <apex:outputText value="{!totals.processed1}" />
+              </apex:facet>
+            </apex:column>
+            <apex:column headerValue="Awaiting Decision" value="{!d.awaiting1}" width="6%" headerClass="cellCentered" footerClass="cellCentered" styleClass="cellCentered">
+              <apex:facet name="footer">
+                <apex:outputText value="{!totals.awaiting1}" />
+              </apex:facet>
+            </apex:column>
+            <apex:column headerValue="Completed" value="{!d.completed1}" width="6%" headerClass="cellCentered" footerClass="cellCentered" styleClass="cellCentered">
+              <apex:facet name="footer">
+                <apex:outputText value="{!totals.completed1}" />
+              </apex:facet>
+            </apex:column>
+            <!-- Amendments -->
+            <apex:column headerValue="Pending" value="{!d.pending2}" width="5%" headerClass="cellCentered" footerClass="cellCentered" styleClass="cellCentered">
+              <apex:facet name="footer">
+                <apex:outputText value="{!totals.pending2}" />
+              </apex:facet>
+            </apex:column>
+            <apex:column headerValue="Recalled" value="{!d.recalled2}" width="5%" headerClass="cellCentered" footerClass="cellCentered" styleClass="cellCentered">
+              <apex:facet name="footer">
+                <apex:outputText value="{!totals.recalled2}" />
+              </apex:facet>
+            </apex:column>
+            <apex:column headerValue="Processed" value="{!d.processed2}" width="6%"  headerClass="cellCentered" footerClass="cellCentered" styleClass="cellCentered cellProcessed">
+              <apex:facet name="footer">
+                <apex:outputText value="{!totals.processed2}" />
+              </apex:facet>
+            </apex:column>
+            <apex:column headerValue="Awaiting Decision" value="{!d.awaiting2}" width="6%" headerClass="cellCentered" footerClass="cellCentered" styleClass="cellCentered">
+              <apex:facet name="footer">
+                <apex:outputText value="{!totals.awaiting2}" />
+              </apex:facet>
+            </apex:column>
+            <apex:column headerValue="Completed" value="{!d.completed2}" width="6%" headerClass="cellCentered" footerClass="cellCentered" styleClass="cellCentered">
+              <apex:facet name="footer">
+                <apex:outputText value="{!totals.completed2}" />
+              </apex:facet>
+            </apex:column>
+            <!-- Formal Approvals -->
+            <apex:column headerValue="Pending" value="{!d.pending3}" width="5%" headerClass="cellCentered" footerClass="cellCentered" styleClass="cellCentered">
+              <apex:facet name="footer">
+                <apex:outputText value="{!totals.pending3}" />
+              </apex:facet>
+            </apex:column>
+            <apex:column headerValue="Recalled" value="{!d.recalled3}" width="5%" headerClass="cellCentered" footerClass="cellCentered" styleClass="cellCentered">
+              <apex:facet name="footer">
+                <apex:outputText value="{!totals.recalled3}" />
+              </apex:facet>
+            </apex:column>
+            <apex:column headerValue="Processed" value="{!d.processed3}" width="6%" headerClass="cellCentered" footerClass="cellCentered" styleClass="cellCentered cellProcessed">
+              <apex:facet name="footer">
+                <apex:outputText value="{!totals.processed3}" />
+              </apex:facet>
+            </apex:column>
+            <apex:column headerValue="Awaiting Decision" value="{!d.awaiting3}" width="6%" headerClass="cellCentered" footerClass="cellCentered" styleClass="cellCentered">
+              <apex:facet name="footer">
+                <apex:outputText value="{!totals.awaiting3}" />
+              </apex:facet>
+            </apex:column>
+            <apex:column headerValue="Completed" value="{!d.completed3}" width="6%" headerClass="cellCentered" footerClass="cellCentered" styleClass="cellCentered">
+              <apex:facet name="footer">
+                <apex:outputText value="{!totals.completed3}" />
+              </apex:facet>
+            </apex:column>
+            <apex:column headerValue="Total Processed" value="{!d.processed}" width="6%" headerClass="cellCentered" footerClass="cellCentered" styleClass="cellCentered cellProcessed">
+              <apex:facet name="footer">
+                <apex:outputText value="{!totals.processed}" />
+              </apex:facet>
+            </apex:column>
+          </apex:pageBlockTable>
+          <br/>
+          <apex:pageBlockSection id="pnlResults" columns="1">
+            <apex:outputText label="Opportunities processed:" value="{!oppProcesseds}" />
+            <apex:outputText label="Opportunities Settled:" value="{!oppSettleds}" />
+            <apex:outputText label="Percentage:" value="{0, Number, #0.0}%">
+              <apex:param value="{!IF(oppProcesseds > 0,oppSettleds/oppProcesseds*100.0,0)}" />
+            </apex:outputText>
+          </apex:pageBlockSection>
+          <br/>
+          
+		
+		<apex:pageBlockTable id="tblDetail" value="{!dataPage}" var="d" captionClass="captionTable" rendered="true" >
+			<apex:facet name="caption">
+        <apex:outputPanel >
+          Deatils &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+          <apex:commandButton value="Back" action="{!goBack}" reRender="tblDetail" status="stsProcess2" /> 
+          (Page {!currentPage} of {!totalPages})
+          <apex:commandButton value="Next" action="{!goNext}" reRender="tblDetail" status="stsProcess2" />
+          &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+          <apex:actionStatus id="stsProcess2" ><apex:facet name="start">   Please wait ...</apex:facet></apex:actionStatus>
+        </apex:outputPanel>
+      </apex:facet>
+			<!-- <apex:column headerValue="Process ID" value="{!d.appProcessId}"/> -->
+			<apex:column headerValue="Name">
+				<apex:outputLink value="/{!d.oppId}"><apex:outputText value="{!d.oppName}"/></apex:outputLink>
+			</apex:column>
+			<apex:column headerValue="Finance Consultant" value="{!d.oppOwnerName}"/>
+			<apex:column headerValue="Current Status" value="{!d.oppStatus}"/>
+			<apex:column headerValue="Lender" value="{!d.oppLender}"/>
+			<apex:column headerValue="Approver" value="{!d.appApproverName}" />
+			<apex:column headerValue="Type" value="{!d.typeProcess}" />
+			<apex:column headerValue="Submission Date" headerClass="cellCentered" footerClass="cellCentered" styleClass="cellCentered">
+				<apex:outputText value="{0, date, dd/MM/yyyy hh:mm a}" >
+					<apex:param value="{!d.appSubmissionDate + offset}" />
+				</apex:outputText>
+			</apex:column>
+			<apex:column headerValue="Sent to Lender Date" headerClass="cellCentered" footerClass="cellCentered" styleClass="cellCentered">
+				<apex:outputText value="{0, date, dd/MM/yyyy hh:mm a}" >
+					<apex:param value="{!d.appSentToLenderDate + offset}" />
+				</apex:outputText>
+			</apex:column>
+			<apex:column headerValue="Time processing (minutes)" headerClass="cellCentered" footerClass="cellCentered" styleClass="cellCentered">
+				<apex:outputText value="{!d.timeProcessing}"/>
+			</apex:column>
+			<apex:column headerValue="Completed Date" headerClass="cellCentered" footerClass="cellCentered" styleClass="cellCentered">
+				<apex:outputText value="{0, date, dd/MM/yyyy hh:mm a}" >
+					<apex:param value="{!d.appCompletedDate + offset}" />
+				</apex:outputText>
+			</apex:column>
+			<apex:column headerValue="Time Completed (minutes)" headerClass="cellCentered" footerClass="cellCentered" styleClass="cellCentered">
+				<apex:outputText value="{0, Number, ###,##0.0}" rendered="{!OR(d.appStatus == 'Rejected',d.appStatus == 'Approved')}">
+					<apex:param value="{!d.appTimeCompleted}" />
+				</apex:outputText>
+			</apex:column>
+			<apex:column headerValue="Process Status" value="{!d.appStatus}"/>
+		</apex:pageBlockTable>
+		
+      </apex:pageBlock>
+  </apex:form>
+</apex:page>

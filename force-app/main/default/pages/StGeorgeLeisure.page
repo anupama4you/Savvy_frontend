@@ -1,0 +1,964 @@
+<apex:page docType="html-5.0" standardController="Custom_Opportunity__c" extensions="StGeorgeLeisureExtension" sidebar="false" showHeader="false" id="StGeorgeLeisureCalc">
+    <style type="text/css">
+        
+        .titleDiv {
+            width: 100%;
+            height: 43px;
+            font-size: 1.0rem;
+        }
+        .logo {
+            float: right;
+            width: 8%;
+        }
+        .calculatorInput {
+            padding-bottom: 70px;
+            background: #f8f8f8;
+            border: 1px solid #ddd;
+        }
+        .divTitle {
+            background-color: #ddd;
+            padding-top: 2px;
+            padding-bottom: 2px;
+            padding-left: 20px;
+            text-transform: uppercase;
+            border: 1px solid #ddd;
+        }
+        #leftTables {
+            display: inline-block;
+            float: left;
+            width: 60%;
+            padding-left: 20px;
+        }
+        #rightTables {
+            display: inline-block;
+            width: 38%;
+        }
+        #vehicleTab {
+            border: 1px solid #ddd;
+            border-bottom: transparent;
+            display: inline-block;
+            background-color: #fff;
+            position: relative;
+            padding: 6px;
+            top: 17px;
+        }
+        #vehicleDetails {
+            width: 95%;
+            background: white;
+            border: 1px solid #ddd;
+            margin-top: 15px;
+            padding: 2px;
+            padding-left: 20px;
+            padding-top: 10px;
+            padding-bottom: 10px;
+        }
+        #insuranceTab {
+            border: 1px solid #ddd;
+            border-bottom: transparent;
+            display: inline-block;
+            background-color: #fff;
+            position: relative;
+            padding: 6px;
+            top: 17px;
+        }
+        #insuranceProduct {
+            width: 95%;
+            background: white;
+            border: 1px solid #ddd;
+            margin-top: 15px;
+            padding: 2px;
+            padding-left: 20px;
+            padding-top: 0px;
+            padding-bottom: 10px;
+        }
+        #financeTab {
+            border: 1px solid #ddd;
+            border-bottom: transparent;
+            display: inline-block;
+            background-color: #fff;
+            position:relative;
+            padding: 6px;
+            top: 17px;
+        }
+        #financeDetails {
+            width: 95%;
+            background: white;
+            border: 1px solid #ddd;
+            margin-top: 15px;
+            padding: 2px;
+            padding-left: 20px;
+            padding-top: 10px;
+            padding-bottom: 10px;
+        }
+        #buttonPanel {
+            display: block;
+            width:100%;
+            float: left;
+            padding: 10px;
+            padding-left: 18px;
+        }
+        .calculateButtons {
+            padding: 9px 10px !important;
+            color: #fff !important;
+            font-size: 11px !important;
+            outline: none !important;
+            text-transform: uppercase !important;
+            background: rgb(125,126,125) !important; /* Old browsers */
+            background: -moz-linear-gradient(top,  rgba(125,126,125,1) 0%, rgba(14,14,14,1) 100%) !important; /* FF3.6-15 */
+            background: -webkit-linear-gradient(top,  rgba(125,126,125,1) 0%,rgba(14,14,14,1) 100%) !important; /* Chrome10-25,Safari5.1-6 */
+            background: linear-gradient(to bottom,  rgba(125,126,125,1) 0%,rgba(14,14,14,1) 100%) !important; /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
+            filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#7d7e7d', endColorstr='#0e0e0e',GradientType=0 ) !important; /* IE6-9 */
+        }
+        .calculateButtons:hover {
+            background: rgb(125,126,125) !important; /* Old browsers */
+            background: -moz-linear-gradient(top,  rgba(125,126,125,1) 0%, rgba(14,14,14,1) 41%) !important; /* FF3.6-15 */
+            background: -webkit-linear-gradient(top,  rgba(125,126,125,1) 0%,rgba(14,14,14,1) 41%) !important; /* Chrome10-25,Safari5.1-6 */
+            background: linear-gradient(to bottom,  rgba(125,126,125,1) 0%,rgba(14,14,14,1) 41%) !important; /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
+            filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#7d7e7d', endColorstr='#0e0e0e',GradientType=0 ) !important; /* IE6-9 */
+        }
+        #commissionPanel {
+            background: #f8f8f8;
+            border: 1px solid #ddd;
+        }
+        #commissionTab {
+            border: 1px solid #ddd;
+            border-bottom: transparent;
+            display: inline-block;
+            background-color: #fff;
+            position: relative;
+            padding: 6px;
+            top: 17px;
+            margin-left: 20px;
+        }
+        #commission {
+            width: 96%;
+            background: white;
+            border: 1px solid #ddd;
+            margin-top: 15px;
+            padding: 2px;
+            padding-left: 20px;
+            padding-top: 20px;
+            padding-bottom: 20px;
+            margin-left: 20px;
+            margin-bottom: 20px;
+        }
+        #repaymentPanel {
+            background: #f8f8f8;
+            border: 1px solid #ddd;
+        }
+        #repaymentTab {
+            border: 1px solid #ddd;
+            border-bottom: transparent;
+            display: inline-block;
+            background-color: #fff;
+            position: relative;
+            padding: 6px;
+            top: 17px;
+            margin-left: 20px;
+        }
+        #repayment {
+            width: 96%;
+            background: white;
+            border: 1px solid #ddd;
+            margin-top: 15px;
+            padding: 2px;
+            padding-left: 20px;
+            padding-top: 20px;
+            padding-bottom: 20px;
+            margin-left: 20px;
+            margin-bottom: 20px;
+        }
+        .inTableTitle {
+            font-weight: bold;
+            padding-top: 10px;
+            padding-bottom: 10px;
+        }
+        .calcInput {
+            border: 1px solid #e0e0e0;
+            padding: 0.3em;
+            min-width: 173px;
+        }
+        .selectList {
+            border: 1px solid #e0e0e0;
+            padding: 0.3em;
+            width:182px;
+        }
+        .defaultInsurance {
+            text-align: center;
+            width: 25%;
+        }
+        .vehicleColumn {
+            width: 25%;
+        }
+        .insuranceColumn {
+            width: 25%;
+        }
+        .financeColumn {
+            width: 50%;
+        }
+        .commissionLabel {
+            width: 8%;
+            font-weight: bold;
+        }
+        .commissionCotent {
+            width: 17%;
+            font-weight: bold;
+        }
+        .repayColumn {
+            width: 12.5%;
+            font-weight: bold;
+        }
+        .calcLabel {
+            font-weight: 500;
+        }
+        .baseRateColumn {
+            padding: 0.3rem;
+        }
+        .monthlyFeeLabel {
+            width: 5%;
+            font-weight: bold;
+        }
+        .monthlyFeeContent {
+            width: 20%;
+            font-weight: bold;
+        }
+        .referenceTable {
+            
+        }
+        .referenceTitle {
+            padding: 10px;
+        }
+    </style>
+    <apex:includeScript value="{! $Resource.jQuery }"/>
+    <script type="text/javascript">
+        jQuery.noConflict();
+        jQuery(document).ready(function() {});
+    </script>
+    <script>
+        /*
+        {!Custom_Opportunity__c.Loan_Product__c}
+        {!Custom_Opportunity__c.Loan_Product__r.Loan_Purpose__c}
+        */
+    </script>
+    <div id="St George">
+        <apex:pageMessages id="pageMessage" />
+        <!-- <apex:sectionHeader /> -->
+        <!-- <apex:variable value="{!Custom_Opportunity__c}" var="o" /> -->
+        
+        <apex:form id="StGeorgeLeisureForm">
+            <apex:actionFunction action="{!realtimeNafCalc}" name="nafRefresh" reRender="realtimeNaf" />
+            <apex:actionFunction action="{!baseRateCalc}" name="baseRateRefresh" reRender="baseRate" />
+            <apex:actionFunction action="{!monthlyFeeCalc}" name="monthlyFeeRefresh" reRender="monthlyFee" />
+            <apex:actionFunction action="{!warrantyPriceCalc}" name="warrantyRefresh" reRender="warranty,pageMessage" oncomplete="nafRefresh()" />
+            <apex:actionFunction action="{!warrantyIncomeCalc}" name="warrantyIncRefresh" reRender="warrantyIncome,pageMessage" />
+            <apex:actionFunction action="{!validation}" name="messageRefresh" reRender="pageMessage" />
+            <div class="titleDiv">
+                <h1>ST GEORGE LEISURE for {!Custom_Opportunity__c.Name}</h1>
+                <apex:image styleClass="logo" url="{!$Resource.StGeorgeLogo}" />
+            </div>
+            <div class="calculatorInput"  >
+                <div class="divTitle">
+                    <h3>Input</h3>
+                </div>
+                <div id="leftTables">
+                <div id="vehicleTab"><h3>Vehicle Details</h3></div>
+                <table id="vehicleDetails">
+                    <tr>
+                        <td class="vehicleColumn">
+                        <apex:outputLabel styleClass="calcLabel" value="State" for="state" />
+                        </td>
+                        <td class="vehicleColumn">
+                        <apex:selectList label="State" value="{!state}" multiselect="false" size="1" styleClass="selectList" id="state" onchange="warrantyIncRefresh()" >
+                            <apex:selectOptions value="{!stateOptions}" />
+                        </apex:selectList>
+                        </td>
+                        <td class="vehicleColumn">
+                        <apex:outputLabel styleClass="calcLabel" value="4WD/AWD" for="awd" />
+                        </td>
+                        <td class="vehicleColumn">
+                        <apex:selectList label="4WD/AWD" value="{!awd}" multiselect="false" size="1" styleClass="selectList" id="awd" onchange="warrantyRefresh()">
+                            <apex:selectOptions value="{!yesNoOptions}" />
+                        </apex:selectList>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="vehicleColumn">
+                        <apex:outputLabel styleClass="calcLabel" value="Vehicle Group" for="vehicleGroup" />
+                        </td>
+                        <td class="vehicleColumn">
+                        <apex:selectList label="Vehicle Group" value="{!vehicleGroup}" multiselect="false" size="1" styleClass="selectList" id="vehicleGroup" onchange="warrantyRefresh();warrantyIncRefresh();">
+                            <apex:selectOptions value="{!vehicleGroupTypes}" />
+                        </apex:selectList>
+                        </td>
+                        <td class="vehicleColumn">
+                        <apex:outputLabel styleClass="calcLabel" value="Turbo/Supercharged" for="turbo" />
+                        </td>
+                        <td class="vehicleColumn">
+                        <apex:selectList label="Turbo/Supercharged" value="{!turbo}" multiselect="false" size="1" styleClass="selectList" id="turbo" onchange="warrantyRefresh()">
+                            <apex:selectOptions value="{!yesNoOptions}" />
+                        </apex:selectList>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="vehicleColumn"></td>
+                        <td class="vehicleColumn"></td>
+                        <td class="vehicleColumn">
+                        <apex:outputLabel styleClass="calcLabel" value="Diesel" for="diesel" />
+                        </td>
+                        <td class="vehicleColumn">
+                        <apex:selectList label="Diesel" value="{!diesel}" multiselect="false" size="1" styleClass="selectList" id="diesel" onchange="warrantyRefresh()">
+                            <apex:selectOptions value="{!yesNoOptions}" />
+                        </apex:selectList>
+                        </td>
+                    </tr>
+                </table>
+                <div id="insuranceTab"><h3>Insurance Product</h3></div>
+                <table id="insuranceProduct">
+                    <tr>
+                        <td class="insuranceColumn"></td>
+                        <td class="insuranceColumn"></td>
+                        <td class="inTableTitle">Retail Price</td>
+                        <td class="inTableTitle">Insurance Income</td>
+                    </tr>
+                    <tr>
+                        <td class="insuranceColumn">
+                        <apex:outputLabel styleClass="calcLabel" value="GAP" for="gapLevel" />
+                        </td>
+                        <td class="insuranceColumn">
+                        <apex:selectList label="GAP" value="{!gapLevel}" multiselect="false" size="1" styleClass="selectList" id="gapLevel" >
+                            <apex:selectOptions value="{!gapLevels}" />
+                        </apex:selectList>
+                        </td>
+                        <td class="insuranceColumn">
+                        <apex:input type="number" html-step="0.01" value="{!gap}" html-placeholder="$" id="gap" styleClass="calcInput" onchange="nafRefresh()" />
+                        </td>
+                        <td class="insuranceColumn">
+                        <apex:input type="number" html-step="0.01" value="{!gapIncome}" html-placeholder="$" id="gapIncome" styleClass="calcInput" />
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="insuranceColumn">
+                        <apex:outputLabel styleClass="calcLabel" value="Warranty" for="warrantyLevel" />
+                        </td>
+                        <td class="insuranceColumn">
+                        <apex:selectList label="Warranty" value="{!warrantyLevel}" multiselect="false" size="1" styleClass="selectList" id="warrantyLevel" onchange="warrantyRefresh();warrantyIncRefresh();">
+                            <apex:selectOptions value="{!warrantyLevels}" />
+                        </apex:selectList>
+                        </td>
+                        <td class="insuranceColumn">
+                        <apex:input type="number" html-step="0.01" value="{!warranty}" html-placeholder="$" id="warranty" styleClass="calcInput" onchange="nafRefresh()" />
+                        </td>
+                        <td class="insuranceColumn">
+                        <apex:input type="number" html-step="0.01" value="{!warrantyIncome}" html-placeholder="$" id="warrantyIncome" styleClass="calcInput" />
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="insuranceColumn">
+                        <apex:outputLabel styleClass="calcLabel" value="LTI" for="ltiLevel" />
+                        </td>
+                        <td class="insuranceColumn">
+                        <apex:selectList label="LTI" value="{!ltiLevel}" multiselect="false" size="1" styleClass="selectList" id="ltiLevel" >
+                            <apex:selectOptions value="{!ltiLevels}" />
+                        </apex:selectList>
+                        </td>
+                        <td class="insuranceColumn">
+                        <apex:input type="number" html-step="0.01" value="{!lti}" html-placeholder="$" id="lti" styleClass="calcInput" onchange="nafRefresh()" />
+                        </td>
+                        <td class="insuranceColumn">
+                        <apex:input type="number" html-step="0.01" value="{!ltiIncome}" html-placeholder="$" id="ltiIncome" styleClass="calcInput" />
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="insuranceColumn">
+                        <apex:outputLabel styleClass="calcLabel" value="Truck GAP" for="truckGapLevel" />
+                        </td>
+                        <td class="insuranceColumn">
+                        <apex:selectList label="Truck GAP" value="{!truckGapLevel}" multiselect="false" size="1" styleClass="selectList" id="truckGapLevel" >
+                            <apex:selectOptions value="{!truckGapLevels}" />
+                        </apex:selectList>
+                        </td>
+                        <td class="insuranceColumn">
+                        <apex:input type="number" html-step="0.01" value="{!truckGap}" html-placeholder="$" id="truckGap" styleClass="calcInput" onchange="nafRefresh()" />
+                        </td>
+                        <td class="insuranceColumn">
+                        <apex:input type="number" html-step="0.01" value="{!truckGapIncome}" html-placeholder="$" id="truckGapIncome" styleClass="calcInput" />
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="insuranceColumn">
+                        <apex:outputLabel styleClass="calcLabel" value="TAI/RTI" for="taiLevel" />
+                        </td>
+                        <td class="insuranceColumn">
+                        <apex:selectList label="TAI/RTI" value="{!taiLevel}" multiselect="false" size="1" styleClass="selectList" id="taiLevel" >
+                            <apex:selectOptions value="{!taiLevels}" />
+                        </apex:selectList>
+                        </td>
+                        <td class="insuranceColumn">
+                        <apex:input type="number" html-step="0.01" value="{!tai}" html-placeholder="$" id="tai" styleClass="calcInput" onchange="nafRefresh()" />
+                        </td>
+                        <td class="insuranceColumn">
+                        <apex:input type="number" html-step="0.01" value="{!taiIncome}" html-placeholder="$" id="taiIncome" styleClass="calcInput" />
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="insuranceColumn">
+                        <apex:outputLabel styleClass="calcLabel" value="MV" for="mvLevel" />
+                        </td>
+                        <td class="insuranceColumn">
+                        <!--<apex:inputText label="MV" value="{!mvLevel}" id="mvLevel" styleClass="calcInput" />-->
+                        <apex:selectList label="MV" value="{!mvLevel}" multiselect="false" size="1" styleClass="selectList" id="mvLevel" >
+                            <apex:selectOptions value="{!mvLevels}" />
+                        </apex:selectList>
+                        </td>
+                        <td class="insuranceColumn">
+                        <apex:input type="number" html-step="0.01" value="{!mv}" html-placeholder="$" id="mv" styleClass="calcInput" onchange="nafRefresh()" />
+                        </td>
+                        <td class="insuranceColumn">
+                        <apex:input type="number" html-step="0.01" value="{!mvIncome}" html-placeholder="$" id="mvIncome" styleClass="calcInput" />
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="insuranceColumn">
+                        <apex:outputLabel styleClass="calcLabel" value="CCI" for="cciLevel" />
+                        </td>
+                        <td class="defaultInsurance">
+                        <!--<apex:inputText label="CCI" value="{!cciLevel}" id="cciLevel" styleClass="calcInput" />-->
+                        <apex:outputText label="CCI" value="AIC/Eric" id="cciLevel" />
+                        </td>
+                        <td class="insuranceColumn">
+                        <apex:input type="number" html-step="0.01" value="{!cci}" html-placeholder="$" id="cci" styleClass="calcInput" onchange="nafRefresh()" />
+                        </td>
+                        <td class="insuranceColumn">
+                        <apex:input type="number" html-step="0.01" value="{!cciIncome}" html-placeholder="$" id="cciIncome" styleClass="calcInput" />
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="insuranceColumn">
+                        <apex:outputLabel styleClass="calcLabel" value="NWC Warranty" for="nwcName" />
+                        </td>
+                        <td class="defaultInsurance">
+                        <apex:outputText label="NWC Warranty" value="NWC" id="nwcName" />
+                        </td>
+                        <td class="insuranceColumn">
+                        <apex:input type="number" html-step="0.01" value="{!nwc}" html-placeholder="$" id="nwc" styleClass="calcInput" onchange="nafRefresh()" />
+                        </td>
+                        <td class="insuranceColumn">
+                        <apex:input type="number" html-step="0.01" value="{!nwcIncome}" html-placeholder="$" id="nwcIncome" styleClass="calcInput" />
+                        </td>
+                    </tr>
+                </table>
+                </div>
+                <div id="rightTables">
+                <div id="financeTab"><h3>Finance Details</h3></div>
+                <table id="financeDetails">
+                    <tr>
+                        <td class="financeColumn">
+                        <apex:outputLabel styleClass="calcLabel" value="Loan Type" for="productLoanType" />
+                        </td>
+                        <td class="financeColumn">
+                        <apex:selectList label="Loan Type" value="{!productLoanType}" multiselect="false" size="1" styleClass="selectList" id="productLoanType">
+                            <apex:selectOptions value="{!productLoanTypes}" />
+                        </apex:selectList>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="financeColumn">
+                        <apex:outputLabel styleClass="calcLabel" value="Goods Type" for="productGoodsType" />
+                        </td>
+                        <td class="financeColumn">
+                        <apex:selectList label="Goods Type" value="{!productGoodsType}" multiselect="false" size="1" styleClass="selectList" id="productGoodsType">
+                            <apex:selectOptions value="{!productGoodsTypes}" />
+                        </apex:selectList>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="financeColumn">
+                        <apex:outputLabel styleClass="calcLabel" value="Car Price" for="carPrice" />
+                        </td>
+                        <td class="financeColumn">
+                        <apex:input type="number" html-step="0.01" label="Car Price" value="{!carPrice}" html-placeholder="$" id="carPrice" styleClass="calcInput" onchange="nafRefresh()" />
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="financeColumn">
+                        <apex:outputLabel styleClass="calcLabel" value="Deposit" for="deposit" />
+                        </td>
+                        <td class="financeColumn">
+                        <apex:input type="number" html-step="0.01" label="Deposit" value="{!deposit}" html-placeholder="$" id="deposit" styleClass="calcInput" onchange="nafRefresh()" />
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="financeColumn">
+                        <apex:outputLabel styleClass="calcLabel" value="Application Fee" for="applicationFee" />
+                        </td>
+                        <td class="financeColumn">
+                        <apex:input type="number" html-step="0.01" label="Application Fee" value="{!applicationFee}" html-placeholder="$" id="applicationFee" styleClass="calcInput" onchange="nafRefresh()" />
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="financeColumn">
+                        <apex:outputLabel styleClass="calcLabel" value="DOF" for="dof" />
+                        </td>
+                        <td class="financeColumn">
+                        <apex:input type="number" html-step="0.01" label="DOF" value="{!dof}" html-placeholder="$" id="dof" styleClass="calcInput" onchange="nafRefresh()" />
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="financeColumn">
+                        <apex:outputLabel styleClass="calcLabel" value="PPSR" for="ppsr" />
+                        </td>
+                        <td class="financeColumn">
+                        <apex:input type="number" html-step="0.01" label="PPSR" value="{!ppsr}" html-placeholder="$" id="ppsr" styleClass="calcInput" onchange="nafRefresh()" />
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="financeColumn">
+                        <apex:outputLabel styleClass="calcLabel" value="Residual Value" for="residualValue" />
+                        </td>
+                        <td class="financeColumn">
+                        <apex:input type="number" html-step="0.01" label="Residual Value" value="{!residualValue}" html-placeholder="$" id="residualValue" styleClass="calcInput" />
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="financeColumn">
+                        <apex:outputLabel styleClass="calcLabel" value="Base Rate" for="baseRate" />
+                        </td>
+                        <td class="baseRateColumn">
+                        <apex:outputText label="Base Rate" value="{0, number, ##,###,##0.00%}" id="baseRate" >
+                            <apex:param value="{!baseRate/100}" />
+                        </apex:outputText>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="financeColumn">
+                        <apex:outputLabel styleClass="calcLabel" value="Client Rate" for="clientRate" />
+                        </td>
+                        <td class="financeColumn">
+                        <apex:input type="number" html-step="0.01" label="Client Rate" value="{!clientRate}" html-placeholder="%" id="clientRate" styleClass="calcInput" />
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="inTableTitle">Loan Details</td>
+                        <td class="financeColumn"></td>
+                    </tr>
+                    <tr>
+                        <td class="financeColumn">
+                        <apex:outputLabel styleClass="calcLabel" value="Term (months)" for="term" />
+                        </td>
+                        <td class="financeColumn">
+                        <apex:input type="number" label="Term" value="{!term}" id="term" onchange="baseRateRefresh();messageRefresh();" styleClass="calcInput"/>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="financeColumn">
+                        <apex:outputLabel styleClass="calcLabel" value="Loan Type" for="loanType" />
+                        </td>
+                        <td class="financeColumn">
+                        <apex:selectList label="Loan Type" value="{!loanType}" multiselect="false" size="1" styleClass="selectList" id="loanType" onchange="baseRateRefresh();messageRefresh();">
+                            <apex:selectOptions value="{!loanTypes}" />
+                        </apex:selectList>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="financeColumn">
+                        <apex:outputLabel styleClass="calcLabel" value="Payment Type" for="paymentFrequency" />
+                        </td>
+                        <td class="financeColumn">
+                        <apex:selectList label="Payment Type" value="{!paymentFrequency}" multiselect="false" size="1" styleClass="selectList" id="paymentFrequency" onchange="monthlyFeeRefresh();" >
+                            <apex:selectOptions value="{!paymentFrequencies}" />
+                        </apex:selectList>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="financeColumn">
+                        <apex:outputLabel styleClass="calcLabel" value="Type" for="carType" />
+                        </td>
+                        <td class="financeColumn">
+                        <apex:selectList label="Type" value="{!carType}" multiselect="false" size="1" styleClass="selectList" id="carType" onchange="baseRateRefresh()" >
+                            <apex:selectOptions value="{!carTypes}" />
+                        </apex:selectList>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="financeColumn">
+                        <apex:outputLabel styleClass="calcLabel" value="Payment" for="paymentType" />
+                        </td>
+                        <td class="financeColumn">
+                        <apex:selectList label="Payment" value="{!paymentType}" multiselect="false" size="1" styleClass="selectList" id="paymentType">
+                            <apex:selectOptions value="{!paymentTypes}" />
+                        </apex:selectList>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="financeColumn">
+                        <apex:outputLabel styleClass="calcLabel" value="NAF" for="realtimeNaf" />
+                        </td>
+                        <td class="baseRateColumn">
+                        <apex:outputText label="NAF" value="{0, number, $##,###,##0.00}" id="realtimeNaf" >
+                            <apex:param value="{!realtimeNaf}" />
+                        </apex:outputText>
+                        </td>
+                    </tr>
+                </table>
+                </div>
+                <div id="buttonPanel">
+                    <apex:commandButton styleClass="calculateButtons" value="Calculate" action="{!calculate}"/>
+                    <apex:commandButton styleClass="calculateButtons" value="Reset" action="{!reset}"/>
+                    <apex:commandButton styleClass="calculateButtons" value="Save Quoting" action="{!saveQuoting}"/>
+                    <apex:commandButton styleClass="calculateButtons" value="Save Pre-approval" action="{!savePreApproval}"/>
+                    <apex:commandButton styleClass="calculateButtons" value="Save Amendment" action="{!saveAmendment}"/>
+                    <apex:commandButton styleClass="calculateButtons" value="Save Formal Approval" action="{!saveFormalApproval}"/>
+                </div>
+            </div>
+            <div id="commissionPanel">
+                <div class="divTitle">
+                    <h3>Commission</h3>
+                </div>
+                <div id="commissionTab"><h3>Commission</h3></div>
+                <table id="commission">
+                    <tr>
+                        <td class="commissionLabel">
+                        <apex:outputLabel style="display:inline-block;" value="Estimated Commission" for="estimatedCommission" />
+                        </td>
+                        <td class="commissionCotent">
+                        <apex:outputText label="Estimated Commission" value="{0, number, $##,###,##0.00}" id="estimatedCommission" >
+                            <apex:param value="{!estimatedCommission}" />
+                        </apex:outputText>
+                        </td>
+                        <td class="commissionLabel">
+                        <apex:outputLabel style="display:inline-block;" value="Insurance Income" for="insuranceIncome" />
+                        </td>
+                        <td class="commissionCotent">
+                        <apex:outputText label="Insurance Income" value="{0, number, $##,###,##0.00}" id="insuranceIncome" >
+                            <apex:param value="{!insuranceIncome}" />
+                        </apex:outputText>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="commissionLabel">
+                        <apex:outputLabel style="display:inline-block;" value="DOF" for="dofResult" />
+                        </td>
+                        <td class="commissionCotent">
+                        <apex:outputText label="DOF" value="{0, number, $##,###,##0.00}" id="dofResult" >
+                            <apex:param value="{!dofResult}" />
+                        </apex:outputText>
+                        </td>
+                        <td class="commissionLabel">
+                        
+                        </td>
+                        <td class="commissionCotent">
+                        
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="commissionLabel">
+                        <apex:outputLabel style="display:inline-block;" value="TOTAL Commission (GST Exc)" for="totalCommission" />
+                        </td>
+                        <td class="commissionCotent">
+                        <apex:outputText label="TOTAL Commission (GST Exc)" value="{0, number, $##,###,##0.00}" id="totalCommission" >
+                            <apex:param value="{!totalCommission}" />
+                        </apex:outputText>
+                        </td>
+                        <td class="commissionLabel">
+                        <apex:outputLabel style="display:inline-block;" value="TOTAL Commission (GST Inc)" for="totalCommissionGst" />
+                        </td>
+                        <td class="commissionCotent">
+                        <apex:outputText label="TOTAL Commission (GST Inc)" value="{0, number, $##,###,##0.00}" id="totalCommissionGst" >
+                            <apex:param value="{!totalCommissionGst}" />
+                        </apex:outputText>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+            <div id="repaymentPanel">
+                <div class="divTitle">
+                    <h3>Repayment</h3>
+                </div>
+                <div id="repaymentTab"><h3>Repayment</h3></div>
+                <table id="repayment">
+                    <tr>
+                        <td class="repayColumn">
+                        <apex:outputLabel style="display:inline-block;" value="NAF" for="naf" />
+                        </td>
+                        <td class="repayColumn">
+                        <apex:outputText label="NAF" value="{0, number, $##,###,##0.00}" id="naf" >
+                            <apex:param value="{!naf}" />
+                        </apex:outputText>
+                        </td>
+                        <td class="monthlyFeeLabel">
+                        <apex:outputLabel style="display:inline-block;" value="Monthly Fee" for="monthlyFee" />
+                        </td>
+                        <td class="monthlyFeeContent">
+                        <apex:input type="number" html-step="0.01" label="Monthly Fee" value="{!monthlyFee}" html-placeholder="$" id="monthlyFee" styleClass="calcInput" style="font-weight:bold;"/>
+                        </td>
+                        <td class="repayColumn">
+                        <apex:outputLabel style="display:inline-block;" value="Rental" for="rental" />
+                        </td>
+                        <td class="repayColumn">
+                        <apex:outputText label="Rental" value="{0, number, $##,###,##0.00}" id="rental" >
+                            <apex:param value="{!rental}" />
+                        </apex:outputText>
+                        </td>
+                        <apex:outputPanel rendered="{!monthlyRender}">
+                        <td class="repayColumn">
+                        <apex:outputLabel style="display:inline-block;" value="Monthly Payment" for="monthlyPayment" rendered="{!monthlyRender}" />
+                        </td>
+                        <td class="repayColumn">
+                        <apex:outputText label="Monthly Payment" value="{0, number, $##,###,##0.00}" id="monthlyPayment" rendered="{!monthlyRender}" >
+                            <apex:param value="{!monthlyPayment}" />
+                        </apex:outputText>
+                        </td>
+                        </apex:outputPanel>
+                        <apex:outputPanel rendered="{!fortnightlyRender}">
+                        <td class="repayColumn">
+                        <apex:outputLabel style="display:inline-block;" value="Fortnightly Payment" for="fortnightlyPayment" rendered="{!fortnightlyRender}" />
+                        </td>
+                        <td class="repayColumn">
+                        <apex:outputText label="Fortnightly Payment" value="{0, number, $##,###,##0.00}" id="fortnightlyPayment" rendered="{!fortnightlyRender}" >
+                            <apex:param value="{!fortnightlyPayment}" />
+                        </apex:outputText>
+                        </td>
+                        </apex:outputPanel>
+                        <apex:outputPanel rendered="{!weeklyRender}">
+                        <td class="repayColumn">
+                        <apex:outputLabel style="display:inline-block;" value="Weekly Payment" for="weeklyPayment" rendered="{!weeklyRender}" />
+                        </td>
+                        <td class="repayColumn">
+                        <apex:outputText label="Weekly Payment" value="{0, number, $##,###,##0.00}" id="weeklyPayment" rendered="{!weeklyRender}" >
+                            <apex:param value="{!weeklyPayment}" />
+                        </apex:outputText>
+                        </td>
+                        </apex:outputPanel>
+                    </tr>
+                </table>
+            </div>
+        </apex:form>
+        
+        <!--<apex:form id="calculatorForm" >
+            <apex:actionFunction action="{!baseRateCalc}" name="baseRateRefresh" reRender="baseRate" />
+            <apex:actionFunction action="{!monthlyFeeCalc}" name="monthlyFeeRefresh" reRender="monthlyFee" />
+            <apex:actionFunction action="{!warrantyPriceCalc}" name="warrantyRefresh" reRender="warranty,pageMessage" />
+            <apex:actionFunction action="{!warrantyIncomeCalc}" name="warrantyIncRefresh" reRender="warrantyIncome,pageMessage" />
+            
+            <apex:pageBlock mode="edit" id="calculatorBlock" title="St George Calculator Leisure" >
+                <apex:pageBlockButtons >
+                    <apex:commandButton value="Calculate" action="{!calculate}"/>
+                </apex:pageBlockButtons>
+                <apex:outputPanel id="calculator" >
+                    <apex:pageBlockSection title="Input" id="financeInput" columns="4">
+                        <apex:pageBlockSectionItem ><h1>Vehicle Details</h1></apex:pageBlockSectionItem>
+                        <apex:pageBlockSectionItem ></apex:pageBlockSectionItem>
+                        <apex:pageBlockSectionItem ></apex:pageBlockSectionItem>
+                        <apex:pageBlockSectionItem ><h1>Finance Details</h1></apex:pageBlockSectionItem>
+                        
+                        <apex:selectList label="State" value="{!state}" multiselect="false" size="1" styleClass="selectList" id="state" onchange="warrantyIncRefresh()" >
+                            <apex:selectOptions value="{!stateOptions}" />
+                        </apex:selectList>
+                        <apex:pageBlockSectionItem ></apex:pageBlockSectionItem>
+                        <apex:pageBlockSectionItem ></apex:pageBlockSectionItem>
+                        <apex:input type="number" html-step="0.01" label="Car Price" value="{!carPrice}" html-placeholder="$" id="carPrice" />
+                        
+                        <apex:selectList label="Vehicle Group" value="{!vehicleGroup}" multiselect="false" size="1" styleClass="selectList" id="vehicleGroup" onchange="warrantyRefresh();warrantyIncRefresh();">
+                            <apex:selectOptions value="{!vehicleGroupTypes}" />
+                        </apex:selectList>
+                        <apex:pageBlockSectionItem ></apex:pageBlockSectionItem>
+                        <apex:pageBlockSectionItem ></apex:pageBlockSectionItem>
+                        <apex:input type="number" html-step="0.01" label="Deposit" value="{!deposit}" html-placeholder="$" id="deposit" />
+                        
+                        <apex:selectList label="4WD/AWD" value="{!awd}" multiselect="false" size="1" styleClass="selectList" id="awd" onchange="warrantyRefresh()">
+                            <apex:selectOptions value="{!yesNoOptions}" />
+                        </apex:selectList>
+                        <apex:pageBlockSectionItem ></apex:pageBlockSectionItem>
+                        <apex:pageBlockSectionItem ></apex:pageBlockSectionItem>
+                        <apex:input type="number" html-step="0.01" label="Application Fee" value="{!applicationFee}" html-placeholder="$" id="applicationFee" />
+                        
+                        <apex:selectList label="Turbo/Supercharged" value="{!turbo}" multiselect="false" size="1" styleClass="selectList" id="turbo" onchange="warrantyRefresh()">
+                            <apex:selectOptions value="{!yesNoOptions}" />
+                        </apex:selectList>
+                        <apex:pageBlockSectionItem ></apex:pageBlockSectionItem>
+                        <apex:pageBlockSectionItem ></apex:pageBlockSectionItem>
+                        <apex:input type="number" html-step="0.01" label="DOF" value="{!dof}" html-placeholder="$" id="dof" />
+                        
+                        <apex:selectList label="Diesel" value="{!diesel}" multiselect="false" size="1" styleClass="selectList" id="diesel" onchange="warrantyRefresh()">
+                            <apex:selectOptions value="{!yesNoOptions}" />
+                        </apex:selectList>
+                        <apex:pageBlockSectionItem ></apex:pageBlockSectionItem>
+                        <apex:pageBlockSectionItem ></apex:pageBlockSectionItem>
+                        <apex:input type="number" html-step="0.01" label="PPSR" value="{!ppsr}" html-placeholder="$" id="ppsr" />
+                        
+                        <apex:pageBlockSectionItem ><h1>Insurance Product</h1></apex:pageBlockSectionItem>
+                        <apex:pageBlockSectionItem ><h1>Retails Price</h1></apex:pageBlockSectionItem>
+                        <apex:pageBlockSectionItem ><h1>Insurance Income</h1></apex:pageBlockSectionItem>
+                        <apex:input type="number" html-step="0.01" label="Residual Value" value="{!residualValue}" html-placeholder="$" id="residualValue" />
+                        
+                        <apex:outputText label="Warranty" value="NWC" id="nwcName" />
+                        <apex:input type="number" html-step="0.01" value="{!nwc}" html-placeholder="$" id="nwc" />
+                        <apex:input type="number" html-step="0.01" value="{!nwcIncome}" html-placeholder="$" id="nwcIncome" />
+                        <apex:outputText label="Base Rate" value="{!baseRate}" id="baseRate" />
+                        
+                        <apex:selectList label="GAP" value="{!gapLevel}" multiselect="false" size="1" styleClass="selectList" id="gapLevel" >
+                            <apex:selectOptions value="{!gapLevels}" />
+                        </apex:selectList>
+                        <apex:input type="number" html-step="0.01" value="{!gap}" html-placeholder="$" id="gap" />
+                        <apex:input type="number" html-step="0.01" value="{!gapIncome}" html-placeholder="$" id="gapIncome" />
+                        <apex:input type="number" html-step="0.01" label="Client Rate" value="{!clientRate}" html-placeholder="%" id="clientRate" />
+                        
+                        <apex:selectList label="Warranty" value="{!warrantyLevel}" multiselect="false" size="1" styleClass="selectList" id="warrantyLevel" onchange="warrantyRefresh();warrantyIncRefresh();">
+                            <apex:selectOptions value="{!warrantyLevels}" />
+                        </apex:selectList>
+                        <apex:input type="number" html-step="0.01" value="{!warranty}" html-placeholder="$" id="warranty" />
+                        <apex:input type="number" html-step="0.01" value="{!warrantyIncome}" html-placeholder="$" id="warrantyIncome" />
+                        <apex:pageBlockSectionItem ><h1>Loan Details</h1></apex:pageBlockSectionItem>
+                        
+                        <apex:selectList label="LTI" value="{!ltiLevel}" multiselect="false" size="1" styleClass="selectList" id="ltiLevel" >
+                            <apex:selectOptions value="{!ltiLevels}" />
+                        </apex:selectList>
+                        <apex:input type="number" html-step="0.01" value="{!lti}" html-placeholder="$" id="lti" />
+                        <apex:input type="number" html-step="0.01" value="{!ltiIncome}" html-placeholder="$" id="ltiIncome" />
+                        <apex:input type="number" label="Term" value="{!term}" id="term" onchange="baseRateRefresh()"/>
+                        
+                        <apex:selectList label="Truck GAP" value="{!truckGapLevel}" multiselect="false" size="1" styleClass="selectList" id="truckGapLevel" >
+                            <apex:selectOptions value="{!truckGapLevels}" />
+                        </apex:selectList>
+                        <apex:input type="number" html-step="0.01" value="{!truckGap}" html-placeholder="$" id="truckGap" />
+                        <apex:input type="number" html-step="0.01" value="{!truckGapIncome}" html-placeholder="$" id="truckGapIncome" />
+                        <apex:selectList label="Loan Type" value="{!loanType}" multiselect="false" size="1" styleClass="selectList" id="loanType" onchange="baseRateRefresh()">
+                            <apex:selectOptions value="{!loanTypes}" />
+                        </apex:selectList>
+                        
+                        <apex:selectList label="TAI/RTI" value="{!taiLevel}" multiselect="false" size="1" styleClass="selectList" id="taiLevel" >
+                            <apex:selectOptions value="{!taiLevels}" />
+                        </apex:selectList>
+                        <apex:input type="number" html-step="0.01" value="{!tai}" html-placeholder="$" id="tai" />
+                        <apex:input type="number" html-step="0.01" value="{!taiIncome}" html-placeholder="$" id="taiIncome" />
+                        <apex:selectList label="Payment Type" value="{!paymentFrequency}" multiselect="false" size="1" styleClass="selectList" id="paymentFrequency" onchange="monthlyFeeRefresh();" >
+                            <apex:selectOptions value="{!paymentFrequencies}" />
+                        </apex:selectList>
+                        
+                        <apex:inputText label="MV" value="{!mvLevel}" id="mvLevel" />
+                        <apex:input type="number" html-step="0.01" value="{!mv}" html-placeholder="$" id="mv" />
+                        <apex:input type="number" html-step="0.01" value="{!mvIncome}" html-placeholder="$" id="mvIncome" />
+                        <apex:selectList label="Type" value="{!carType}" multiselect="false" size="1" styleClass="selectList" id="carType" onchange="baseRateRefresh()" >
+                            <apex:selectOptions value="{!carTypes}" />
+                        </apex:selectList>
+                        
+                        <apex:inputText label="CCI" value="{!cciLevel}" id="cciLevel" />
+                        <apex:input type="number" html-step="0.01" value="{!cci}" html-placeholder="$" id="cci" />
+                        <apex:input type="number" html-step="0.01" value="{!cciIncome}" html-placeholder="$" id="cciIncome" />
+                        <apex:selectList label="Payment" value="{!paymentType}" multiselect="false" size="1" styleClass="selectList" id="paymentType">
+                            <apex:selectOptions value="{!paymentTypes}" />
+                        </apex:selectList>
+                    </apex:pageBlockSection>
+                    <apex:pageBlockSection title="Commission" id="commission" columns="4" >
+                        <apex:pageBlockSectionItem dataStyle="width:17%" labelStyle="width:13%">
+                            <apex:outputLabel style="display:inline-block;" value="Estimated Commission" for="estimatedCommission" />
+                            <apex:outputText label="Estimated Commission" value="{0, number, $##,###,###.##}" id="estimatedCommission" >
+                                <apex:param value="{!estimatedCommission}" />
+                            </apex:outputText>
+                        </apex:pageBlockSectionItem>
+                        <apex:pageBlockSectionItem dataStyle="width:17%" labelStyle="width:13%">
+                            
+                        </apex:pageBlockSectionItem>
+                        <apex:pageBlockSectionItem dataStyle="width:17%" labelStyle="width:13%">
+                            
+                        </apex:pageBlockSectionItem>
+                        <apex:pageBlockSectionItem dataStyle="width:17%" labelStyle="width:13%">
+                            <apex:outputLabel style="display:inline-block;" value="Insurance Income" for="insuranceIncome" />
+                            <apex:outputText label="Insurance Income" value="{0, number, $##,###,###.##}" id="insuranceIncome" >
+                                <apex:param value="{!insuranceIncome}" />
+                            </apex:outputText>
+                        </apex:pageBlockSectionItem>
+                        <apex:pageBlockSectionItem dataStyle="width:17%" labelStyle="width:13%">
+                            <apex:outputLabel style="display:inline-block;" value="DOF" for="dofResult" />
+                            <apex:outputText label="DOF" value="{0, number, $##,###,###.##}" id="dofResult" >
+                                <apex:param value="{!dofResult}" />
+                            </apex:outputText>
+                        </apex:pageBlockSectionItem>
+                        <apex:pageBlockSectionItem dataStyle="width:17%" labelStyle="width:13%">
+                            
+                        </apex:pageBlockSectionItem>
+                        <apex:pageBlockSectionItem dataStyle="width:17%" labelStyle="width:13%">
+                            
+                        </apex:pageBlockSectionItem>
+                        <apex:pageBlockSectionItem dataStyle="width:17%" labelStyle="width:13%">
+                            
+                        </apex:pageBlockSectionItem>
+                        <apex:pageBlockSectionItem dataStyle="width:17%" labelStyle="width:13%">
+                            <apex:outputLabel style="display:inline-block;" value="TOTAL Commission (GST Exc)" for="totalCommission" />
+                            <apex:outputText label="TOTAL Commission (GST Exc)" value="{0, number, $##,###,###.##}" id="totalCommission" >
+                                <apex:param value="{!totalCommission}" />
+                            </apex:outputText>
+                        </apex:pageBlockSectionItem>
+                        <apex:pageBlockSectionItem dataStyle="width:17%" labelStyle="width:13%">
+                            
+                        </apex:pageBlockSectionItem>
+                        <apex:pageBlockSectionItem dataStyle="width:17%" labelStyle="width:13%">
+                            
+                        </apex:pageBlockSectionItem>
+                        <apex:pageBlockSectionItem dataStyle="width:17%" labelStyle="width:13%">
+                            <apex:outputLabel style="display:inline-block;" value="TOTAL Commission (GST Inc)" for="totalCommissionGst" />
+                            <apex:outputText label="TOTAL Commission (GST Inc)" value="{0, number, $##,###,###.##}" id="totalCommissionGst" >
+                                <apex:param value="{!totalCommissionGst}" />
+                            </apex:outputText>
+                        </apex:pageBlockSectionItem>
+                    </apex:pageBlockSection>
+                        
+                    <apex:pageBlockSection title="Repayment" id="output" columns="4">
+                        <apex:pageBlockSectionItem dataStyle="width:17%" labelStyle="width:15%">
+                            <apex:outputLabel style="display:inline-block;" value="NAF" for="naf" />
+                            <apex:outputText label="NAF" value="{0, number, $##,###,###.##}" id="naf" >
+                                <apex:param value="{!naf}" />
+                            </apex:outputText>
+                        </apex:pageBlockSectionItem>
+                        <apex:pageBlockSectionItem dataStyle="width:15%;padding-left:0px;" labelStyle="width:3%">
+                            <apex:outputLabel style="display:inline-block;" value="Monthly Fee" for="monthlyFee" />
+                            <apex:input type="number" html-step="0.01" label="Monthly Fee" value="{!monthlyFee}" html-placeholder="$" id="monthlyFee" />
+                        </apex:pageBlockSectionItem>
+                        <apex:pageBlockSectionItem dataStyle="width:17%" labelStyle="width:3%">
+                            <apex:outputLabel style="display:inline-block;" value="Rental" for="rental" />
+                            <apex:outputText label="Rental" value="{0, number, $##,###,###.##}" id="rental" >
+                                <apex:param value="{!rental}" />
+                            </apex:outputText>
+                        </apex:pageBlockSectionItem>
+                        <apex:pageBlockSectionItem dataStyle="width:17%" labelStyle="width:7%">
+                            <apex:outputLabel style="display:inline-block;" value="Monthly Payment" for="monthlyPayment" id="monthlyPaymentLabel" rendered="{!monthlyRender}"/>
+                            <apex:outputText label="Monthly Payment" value="{0, number, $##,###,###.##}" id="monthlyPayment" rendered="{!monthlyRender}">
+                                <apex:param value="{!monthlyPayment}" />
+                            </apex:outputText>
+                        </apex:pageBlockSectionItem>
+                        <apex:pageBlockSectionItem dataStyle="width:17%" labelStyle="width:13%">
+                            
+                        </apex:pageBlockSectionItem>
+                        <apex:pageBlockSectionItem dataStyle="width:17%" labelStyle="width:13%">
+                            
+                        </apex:pageBlockSectionItem>
+                        <apex:pageBlockSectionItem dataStyle="width:17%" labelStyle="width:13%">
+                            
+                        </apex:pageBlockSectionItem>
+                        <apex:pageBlockSectionItem dataStyle="width:17%" labelStyle="width:13%">
+                            <apex:outputLabel style="display:inline-block;" value="Fortnightly Payment" for="fortnightlyPayment" id="fortnightlyPaymentLabel" rendered="{!fortnightlyRender}"/>
+                            <apex:outputText label="Fortnightly Payment" value="{0, number, $##,###,###.##}" id="fortnightlyPayment" rendered="{!fortnightlyRender}">
+                                <apex:param value="{!fortnightlyPayment}" />
+                            </apex:outputText>
+                        </apex:pageBlockSectionItem>
+                        <apex:pageBlockSectionItem dataStyle="width:17%" labelStyle="width:13%">
+                            
+                        </apex:pageBlockSectionItem>
+                        <apex:pageBlockSectionItem dataStyle="width:17%" labelStyle="width:13%">
+                            
+                        </apex:pageBlockSectionItem>
+                        <apex:pageBlockSectionItem dataStyle="width:17%" labelStyle="width:13%">
+                            
+                        </apex:pageBlockSectionItem>
+                        <apex:pageBlockSectionItem dataStyle="width:17%" labelStyle="width:13%">
+                            <apex:outputLabel style="display:inline-block;" value="Weekly Payment" for="weeklyPayment" id="weeklyPaymentLabel" rendered="{!weeklyRender}" />
+                            <apex:outputText label="Weekly Payment" value="{0, number, $##,###,###.##}" id="weeklyPayment" rendered="{!weeklyRender}">
+                                <apex:param value="{!weeklyPayment}" />
+                            </apex:outputText>
+                        </apex:pageBlockSectionItem>
+                    </apex:pageBlockSection>
+                </apex:outputPanel>
+            </apex:pageBlock>
+        </apex:form>-->
+    </div>
+</apex:page>

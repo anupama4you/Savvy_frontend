@@ -1,0 +1,1 @@
+<apex:page standardController="Custom_Opportunity__c"><apex:outputField value="{!Custom_Opportunity__c.Lead__r.Notes__c}" /></apex:page>

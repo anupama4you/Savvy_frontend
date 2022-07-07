@@ -1,0 +1,35 @@
+<apex:page standardController="Required_Document__c" extensions="RequiredDocumentEditExtension" title="Required Document">
+    <apex:variable value="{!Required_Document__c}" var="d" />
+    <apex:sectionHeader title="Required Document" subtitle="{!IF(ISBLANK(d.Id), 'Attach Document', d.Name)}" />
+    <apex:pageMessages />
+    <apex:form >
+    <apex:pageBlock mode="edit">
+        <apex:pageBlockButtons >
+            <apex:commandButton value="Save" action="{!SaveOverride}" />
+            <apex:commandButton value="Cancel" action="{!Cancel}" />
+        </apex:pageBlockButtons>
+        <apex:pageBlockSection title="Information" columns="2">
+            <apex:inputField value="{!d.Type__c}" required="true" />
+            <apex:outputField value="{!d.Opportunity__c}" />
+            </apex:pageBlockSection>
+            <apex:pageBlockSection >
+            <apex:pageBlockSectionItem >
+            <apex:outputLabel value="Attachment"/>
+            <apex:selectList size="1" value="{!strSelectedattachmentValue}" id="attachmentSelectList">
+                <apex:selectOptions value="{!oppAttachmentOptions}"/>
+                <apex:actionSupport event="onchange" />
+            </apex:selectList>
+            </apex:pageBlockSectionItem>
+        </apex:pageBlockSection> 
+        <apex:pageBlockSection >
+        </apex:pageBlockSection>       
+        <apex:pageBlockSection >
+            <apex:pageBlockSectionItem >
+            <apex:outputLabel value="Document" /> 
+            <apex:inputFile value="{!File}" fileName="{!FileName}" />
+            </apex:pageBlockSectionItem>
+        </apex:pageBlockSection>    
+    </apex:pageBlock>    
+    </apex:form>
+   <apex:relatedList subject="{!$CurrentPage.parameters.id}"   list="CombinedAttachments" />
+</apex:page>

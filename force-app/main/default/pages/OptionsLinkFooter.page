@@ -1,0 +1,176 @@
+<apex:page controller="OptionsLinksFooterController" showHeader="false" sidebar="true" standardStylesheets="true" cache="false" >
+     <apex:includeScript value="/support/console/20.0/integration.js"/>
+    <apex:stylesheet value="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css"/>
+    <script type="text/javascript">   
+    	function openOpportunitty(redirectUrl, name){
+            sforce.console.openPrimaryTab(null, '/' + redirectUrl, true, name, '')
+       }
+    
+    </script>
+    <style type="text/css">
+        .column{
+        	padding: 1px;
+        	text-align: left;
+        	width: 100%;
+        }
+        
+        .divList{
+        	width: 100%; 
+        	background: rgb(244, 246, 249); 
+        	padding: 0.5rem;
+        	position:fixed;
+        	top:42px;
+        	right:0;
+        	bottom:0;
+        	left:0;
+        }
+    </style>
+    
+    <apex:slds />
+    <apex:form >
+        <div class="slds-tabs_scoped" width="100%">
+            <ul class="slds-tabs_scoped__nav" role="tablist" width="100%">
+                <li class="tab zen-unit zen-size1of2 selected" title="Item One" role="presentation">
+                    <a class="slds-tabs_scoped__link" href="javascript:void(0);" role="tab" tabindex="0" aria-selected="true" aria-controls="tab-scoped-1" id="tab-scoped-1__item">
+                    <i class="fa fa-link fa-lg" aria-hidden="true"></i>&nbsp;&nbsp;Links for {!$Profile.Name} - {!$UserRole.Name}</a>
+                </li>
+            </ul>
+            <apex:outputPanel layout="block" styleClass="divList" rendered="{!$Profile.Name='Sales Consultant 3'}">
+                <ul class="slds-list--dotted">
+                    <!-- <li class="slds-form-element slds-hint-parent slds-border_bottom">
+                        <span class="slds-form-element__label"> &nbsp;</span>
+                        <div class="slds-form-element__label">
+                          <a href="#" onclick="sforce.console.openPrimaryTab(null, '/apex/OpenNextLead?id=00590000001GTJr', true,'Next Lead', 'Next Lead');return false">Next Lead</a>
+                        </div>
+                    </li>
+                    <li class="slds-form-element slds-hint-parent slds-border_bottom">
+                        <span class="slds-form-element__label"> &nbsp;</span>
+                        <div class="slds-form-element__label">
+                            <a href="#" onclick="sforce.console.openPrimaryTab(null, '/apex/OpenNextBCCLLead?id=00590000001GTJr', true,'Next BCCL Lead', 'Next Lead');return false">Next BCCL Lead</a>
+                        </div>
+                    </li>
+                    <li class="slds-form-element slds-hint-parent slds-border_bottom">
+                        <span class="slds-form-element__label"> &nbsp;</span>
+                        <div class="slds-form-element__label">
+                            <a href="#" onclick="sforce.console.openPrimaryTab(null, '/apex/OpenNextMoney3Lead?id=00590000001GTJr', true,'Next Money 3 Lead', 'Next Lead');return false">Next Money 3 Lead</a>
+                        </div>
+                    </li> -->
+                    <li class="slds-form-element slds-hint-parent slds-border_bottom">
+                        <span class="slds-form-element__label">&nbsp; </span>
+                        <div class="slds-form-element__label">
+                                <a href="#" onclick="sforce.console.openPrimaryTab(null, '/apex/LeadEdit', true,'Create New Lead', 'Create New Lead');return false">Create New Lead</a>
+                        </div>
+                    </li>
+                    <li class="slds-form-element slds-hint-parent slds-border_bottom">
+                        <span class="slds-form-element__label">&nbsp; </span>
+                        <div class="slds-form-element__label">
+                                <a href="#" onclick="sforce.console.openPrimaryTab(null, '/apex/SalesPerformanceReport3', true,'Performance Report', 'Performance Report');return false">Performance Report</a>
+                        </div>
+                    </li>
+                    <li class="slds-form-element slds-hint-parent slds-border_bottom">
+                        <span class="slds-form-element__label">&nbsp; </span>
+                        <div class="slds-form-element__label">
+                                <a href="#" onclick="sforce.console.openPrimaryTab(null, '/apex/FollowingUpReportDetail', true,'Following Up Report', 'Following Up Report');return false">Following Up Report (Consultant)</a>
+                        </div>
+                    </li>
+                    <li class="slds-form-element slds-hint-parent slds-border_bottom">
+                        <span class="slds-form-element__label"><br/> </span>
+                        <div class="slds-form-element__label">
+                                <a href="#" onclick="sforce.console.openPrimaryTab(null, '/apex/DisplayStaffPartnerContacts', true,'Staff & Partner Contacts', 'Staff & Partner Contacts');return false">Staff / Partner Contacts</a>
+                        </div>
+                    </li>
+                    <li class="slds-form-element slds-hint-parent slds-border_bottom">
+                        <span class="slds-form-element__label"><br/> </span>
+                        <div class="slds-form-element__label">
+                                <a href="#" onclick="sforce.console.openPrimaryTab(null, '/apex/LenderLogins', true,'My Lender Logins', 'My Lender Logins');return false">My Lender Logins</a>
+                        </div>
+                    </li>
+                    
+                </ul>
+            </apex:outputPanel>
+            <apex:outputPanel layout="block" styleClass="divList" rendered="{!$Profile.Name!='Sales Consultant 3'}">
+                <ul class="slds-list--dotted">
+                    <!-- <li class="slds-form-element slds-hint-parent slds-border_bottom">
+                        <span class="slds-form-element__label"> &nbsp;</span>
+                        <div class="slds-form-element__label">
+                          <a href="#" onclick="sforce.console.openPrimaryTab(null, '/apex/OpenNextLead?id=00590000001GTJr', true,'Next Lead', 'Next Lead');return false">Next Lead</a>
+                        </div>
+                    </li>
+                    <li class="slds-form-element slds-hint-parent slds-border_bottom">
+                        <span class="slds-form-element__label"> &nbsp;</span>
+                        <div class="slds-form-element__label">
+                            <a href="#" onclick="sforce.console.openPrimaryTab(null, '/apex/OpenNextBCCLLead?id=00590000001GTJr', true,'Next BCCL Lead', 'Next Lead');return false">Next BCCL Lead</a>
+                        </div>
+                    </li>
+                    <li class="slds-form-element slds-hint-parent slds-border_bottom">
+                        <span class="slds-form-element__label"> &nbsp;</span>
+                        <div class="slds-form-element__label">
+                            <a href="#" onclick="sforce.console.openPrimaryTab(null, '/apex/OpenNextMoney3Lead?id=00590000001GTJr', true,'Next Money 3 Lead', 'Next Lead');return false">Next Money 3 Lead</a>
+                        </div>
+                    </li> -->
+                    <!-- <li class="slds-form-element slds-hint-parent slds-border_bottom">
+                        <span class="slds-form-element__label">&nbsp; </span>
+                        <div class="slds-form-element__label">
+                                <a href="#" onclick="sforce.console.openPrimaryTab(null, '/apex/ipscape', true,'ipSCAPE', 'ipSCAPE');return false">ipSCAPE</a>
+                        </div>
+                    </li> -->
+                    <li class="slds-form-element slds-hint-parent slds-border_bottom">
+                        <span class="slds-form-element__label">&nbsp; </span>
+                        <div class="slds-form-element__label">
+                                <a href="#" onclick="sforce.console.openPrimaryTab(null, '/apex/LeadEdit', true,'Create New Lead', 'Create New Lead');return false">Create New Lead</a>
+                        </div>
+                    </li>
+                    <li class="slds-form-element slds-hint-parent slds-border_bottom">
+                        <span class="slds-form-element__label">&nbsp; </span>
+                        <div class="slds-form-element__label">
+                                <a href="#" onclick="sforce.console.openPrimaryTab(null, '/apex/SalesPerformanceReport', true,'Performance Report', 'Performance Report');return false">Performance Report</a>
+                        </div>
+                    </li>
+                    <li class="slds-form-element slds-hint-parent slds-border_bottom">
+                        <span class="slds-form-element__label">&nbsp; </span>
+                        <div class="slds-form-element__label">
+                                <a href="#" onclick="sforce.console.openPrimaryTab(null, '/apex/FollowingUpReportDetail', true,'Following Up Report', 'Following Up Report');return false">Following Up Report (Consultant)</a>
+                        </div>
+                    </li>
+                    <li class="slds-form-element slds-hint-parent slds-border_bottom">
+                        <span class="slds-form-element__label"><br/> </span>
+                        <div class="slds-form-element__label">
+                                <a href="#" onclick="sforce.console.openPrimaryTab(null, '/apex/LenderLogins', true,'My Lender Logins', 'My Lender Logins');return false">My Lender Logins</a>
+                        </div>
+                    </li>
+                    <li class="slds-form-element slds-hint-parent slds-border_bottom">
+                        <span class="slds-form-element__label"><br/> </span>
+                        <div class="slds-form-element__label">
+                                <a href="#" onclick="sforce.console.openPrimaryTab(null, '/apex/DisplayStaffPartnerContacts', true,'Staff & Partner Contacts', 'Staff & Partner Contacts');return false">Staff / Partner Contacts</a>
+                        </div>
+                    </li>
+                    <li class="slds-form-element slds-hint-parent slds-border_bottom">
+                        <span class="slds-form-element__label"><br/> </span>
+                        <div class="slds-form-element__label">
+                                <a href="#" onclick="sforce.console.openPrimaryTab(null, 'apex/CommissionConversionReport', true,'Comms & Conversion Report', 'Comms & Conversion Report');return false">Comms / Conversion Report</a>
+                        </div>
+                    </li>
+                    <li class="slds-form-element slds-hint-parent slds-border_bottom">
+                        <span class="slds-form-element__label"><br/> </span>
+                        <div class="slds-form-element__label">
+                                <a class="subtabDropdownButton subtabDropdown" href="#" onclick="sforce.console.openPrimaryTab(null, '/apex/OpportunityPipelineReport', true,'Opportunity pipeline', 'Opportunity pipeline');return false">Opportunity pipeline</a>
+                        </div>
+                        <!--slds-form-element__control-->
+                    </li>
+                </ul>
+                <apex:outputPanel layout="block" styleClass="slds-tabs_scoped" rendered="{!isReportManager}">
+                    <p>&nbsp;</p>
+                    <p><strong><span class="fa fa-users fa-lg" aria-hidden="true"></span>&nbsp;&nbsp;Manager Reports</strong></p>
+                    <ul class="slds-list--dotted">
+                        <li class="slds-form-element slds-hint-parent slds-border_bottom">
+                            <span class="slds-form-element__label">&nbsp; </span>
+                            <div class="slds-form-element__label">
+                                    <a href="#" onclick="sforce.console.openPrimaryTab(null, '/apex/FollowingUpReport', true,'Manager - Following Up Report', 'Manager - Following Up Report');return false">Following Up Report (Manager)</a>
+                            </div>
+                        </li>
+                    </ul>
+                </apex:outputPanel>
+            </apex:outputPanel>
+        </div>
+    </apex:form>
+</apex:page>

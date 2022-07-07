@@ -1,0 +1,167 @@
+<apex:component >
+	<apex:attribute name="lead" type="Lead__c" description="Display a Lead basic details" required="true"/>
+	<apex:attribute name="app" type="Application__c" description="Application basic details"/>
+	<apex:attribute name="mainDivStyleClass" type="String" description="CSS Style class for the main div of the component"/>
+	<apex:attribute name="title" default="Client details:" type="String" description="Title of the table"/>
+	<apex:attribute name="infoType" default="full" type="String" description="How much info display (basic,full)"/>
+	<apex:outputPanel layout="block" styleClass="{!mainDivStyleClass}">
+		<h5>{!title}</h5>
+		<apex:outputPanel rendered="{!infoType=='full'}">
+			<apex:outputPanel rendered="{!app == null}">
+				<table width="100%" cellpadding="4">
+					<tr class="lead-comp-cell">
+						<td width="17%">Name</td>
+						<td width="1%">:</td>
+						<td width="27%"><strong><apex:outputField value="{!lead.Account__c}"/></strong></td>
+						<td width="20%">Mobile</td>
+						<td width="1%">:</td>
+						<td width="34%"><strong><apex:outputField value="{!lead.Mobile_Number__c}"/></strong></td>
+					</tr>
+					<tr class="lead-comp-cell">
+						<td>Loan Type</td>
+						<td>:</td>
+						<td><strong><apex:outputField value="{!lead.Loan_Type__c}"/></strong></td>
+						<td>Email</td>
+						<td>:</td>
+						<td><strong><apex:outputField value="{!lead.Email_Address__c}"/></strong></td>
+					</tr>
+					<tr class="lead-comp-cell">
+						<td>Loan For</td>
+						<td>:</td>
+						<td><strong><apex:outputField value="{!lead.Loan_For__c}"/></strong></td>
+						<td>Employment Status</td>
+						<td>:</td>
+						<td><strong><apex:outputField value="{!lead.Employment_Status__c}"/></strong></td>
+					</tr>
+					<tr class="lead-comp-cell">
+						<td>Loan Amount</td>
+						<td>:</td>
+						<td><strong><apex:outputField value="{!lead.Finance_Amount__c}"/></strong></td>
+						<td rowspan="2" valign="top">Asset details</td>
+						<td rowspan="2" valign="top">:</td>
+						<td rowspan="2" valign="top"><strong>
+								{!lead.Vehicle_Make__c}<br/>
+								{!lead.Vehicle_Model__c}<br/>
+								{!lead.Vehicle_Year__c}
+							</strong>
+						</td>
+					</tr>
+					<tr class="lead-comp-cell">
+						<td>Length of Term</td>
+						<td>:</td>
+						<td><strong><apex:outputField value="{!lead.Length_of_Term__c}"/></strong></td>
+					</tr>
+				</table>
+			</apex:outputPanel>
+			<apex:outputPanel rendered="{!app != null}">
+				<table width="100%" cellpadding="4">
+					<tr class="lead-comp-cell">
+						<td width="17%">Name</td>
+						<td width="1%">:</td>
+						<td width="27%"><strong><apex:outputField value="{!lead.Account__c}"/></strong></td>
+						<td width="20%">Mobile</td>
+						<td width="1%">:</td>
+						<td width="34%"><strong><apex:outputField value="{!lead.Mobile_Number__c}"/></strong></td>
+					</tr>
+					<tr class="lead-comp-cell">
+						<td>Type of Asset</td>
+						<td>:</td>
+						<td><strong><apex:outputField value="{!app.Type_of_Asset__c}"/></strong></td>
+						<td>Email</td>
+						<td>:</td>
+						<td><strong><apex:outputField value="{!lead.Email_Address__c}"/></strong></td>
+					</tr>
+					<tr class="lead-comp-cell">
+						<td>Loan For</td>
+						<td>:</td>
+						<td><strong><apex:outputField value="{!lead.Loan_For__c}"/></strong></td>
+						<td>Employment Status</td>
+						<td>:</td>
+						<td><strong><apex:outputField value="{!lead.Employment_Status__c}"/></strong></td>
+					</tr>
+					<tr class="lead-comp-cell">
+						<td>Loan Amount</td>
+						<td>:</td>
+						<td><strong><apex:outputField value="{!app.Finance_Amount__c}"/></strong></td>
+						<td rowspan="2" valign="top">Asset details</td>
+						<td rowspan="2" valign="top">:</td>
+						<td rowspan="2" valign="top"><strong>
+								{!app.Vehicle_Make__c}<br/>
+								{!app.Vehicle_Model__c}<br/>
+								{!app.Vehicle_Year__c}
+							</strong>
+						</td>
+					</tr>
+					<tr class="lead-comp-cell">
+						<td>Length of Term</td>
+						<td>:</td>
+						<td><strong><apex:outputField value="{!app.Length_of_Term__c}"/></strong></td>
+					</tr>
+				</table>
+			</apex:outputPanel>
+		</apex:outputPanel>
+		<apex:outputPanel rendered="{!infoType=='basic'}">
+			<apex:outputPanel rendered="{!app == null}">
+				<table width="100%" cellpadding="4">
+					<tr class="lead-comp-cell">
+						<td width="17%">Name</td>
+						<td width="1%">:</td>
+						<td width="27%"><strong><apex:outputField value="{!lead.Account__c}"/></strong></td>
+						<td width="20%">Mobile</td>
+						<td width="1%">:</td>
+						<td width="34%"><strong><apex:outputField value="{!lead.Mobile_Number__c}"/></strong></td>
+					</tr>
+					<tr class="lead-comp-cell">
+						<td>Loan Type</td>
+						<td>:</td>
+						<td><strong><apex:outputField value="{!lead.Loan_Type__c}"/></strong></td>
+						<td>Email</td>
+						<td>:</td>
+						<td><strong><apex:outputField value="{!lead.Email_Address__c}"/></strong></td>
+					</tr>
+					<tr class="lead-comp-cell">
+						<td>Loan For</td>
+						<td>:</td>
+						<td><strong><apex:outputField value="{!lead.Loan_For__c}"/></strong></td>
+						<td>Vehicle details</td>
+						<td>:</td>
+						<td><strong>{!lead.Vehicle_Make__c}, {!lead.Vehicle_Model__c}, {!lead.Vehicle_Year__c}</strong></td>
+					</tr>
+				</table>
+			</apex:outputPanel>
+			<apex:outputPanel rendered="{!app != null}">
+				<table width="100%" cellpadding="4">
+					<tr class="lead-comp-cell">
+						<td width="17%">Name</td>
+						<td width="1%">:</td>
+						<td width="27%"><strong><apex:outputField value="{!lead.Account__c}"/></strong></td>
+						<td width="20%">Mobile</td>
+						<td width="1%">:</td>
+						<td width="34%"><strong><apex:outputField value="{!lead.Mobile_Number__c}"/></strong></td>
+					</tr>
+					<tr class="lead-comp-cell">
+						<td>Type of Asset</td>
+						<td>:</td>
+						<td><strong><apex:outputField value="{!app.Type_of_Asset__c}"/></strong></td>
+						<td>Email</td>
+						<td>:</td>
+						<td><strong><apex:outputField value="{!lead.Email_Address__c}"/></strong></td>
+					</tr>
+					<tr class="lead-comp-cell">
+						<td>Loan For</td>
+						<td>:</td>
+						<td><strong><apex:outputField value="{!lead.Loan_For__c}"/></strong></td>
+						<td>Vehicle details</td>
+						<td>:</td>
+						<td><strong>{!app.Vehicle_Make__c}, {!app.Vehicle_Model__c}, {!app.Vehicle_Year__c}</strong></td>
+					</tr>
+				</table>
+			</apex:outputPanel>
+		</apex:outputPanel>
+		<p>&nbsp;</p>
+	</apex:outputPanel>
+	<apex:outputPanel layout="block" styleClass="alert alert-success">
+		<h5>Power Statement</h5>
+		<p>We act as your personal broker by comparing loan options from a range of different banks and financiers in the country, we do this to find you the very best deal that fits within your requirements.</p>
+	</apex:outputPanel>
+</apex:component>

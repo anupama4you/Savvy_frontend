@@ -1,0 +1,22 @@
+<apex:page controller="OppApprovalLenderLoginsExtension" showHeader="false" sidebar="false" standardStylesheets="true" cache="false">
+    <apex:sectionHeader title="Lender Logins for Consultants" />
+    <apex:form >
+    <apex:pageBlock >
+        <apex:outputPanel id="main">   
+            <apex:repeat value="{!dataList}" var="c">
+            	<a href="#{!c.Name}"></a>
+                <apex:pageBlockSection title="{!c.Name}" collapsible="false" />                
+                <apex:pageBlockTable id="tblData" value="{!c.rows}" var="d" captionClass="captionTable">
+		            <!-- <apex:facet name="caption">Lender Login</apex:facet> -->
+		            <apex:column width="17%" headerValue="Lender" value="{!d.dto.Lender__c}"/>
+		            <apex:column width="16%" headerValue="Username" value="{!d.dto.User_Name__c}"/>
+		            <apex:column width="16%" headerValue="Password" value="{!d.dto.Password__c}"/>
+		            <apex:column width="16%" headerValue="State" value="{!d.dto.State__c}"/>
+		            <apex:column width="16%" headerValue="Password Two" value="{!d.dto.Password_Two__c}"/>
+		            <apex:column width="16%" headerValue="Share with" value="{!d.sahedUserName}"/>
+		        </apex:pageBlockTable>
+            </apex:repeat>
+        </apex:outputPanel>                               
+    </apex:pageBlock>
+    </apex:form>
+</apex:page>

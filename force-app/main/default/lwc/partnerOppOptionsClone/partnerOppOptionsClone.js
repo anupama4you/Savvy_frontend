@@ -10,8 +10,8 @@ import getOppQuoting from "@salesforce/apex/PartnerCommunityController.getOppQuo
 const fields = [NAME_FIELD, STATUS_FIELD];
 
 export default class PartnerOppOptionsClone extends NavigationMixin(LightningElement)  {
-    @api recordId;
-    @api componentId;
+  @api recordId;
+  @api componentId;
   appUrl;
   @track record;
   @track error;
@@ -52,19 +52,19 @@ export default class PartnerOppOptionsClone extends NavigationMixin(LightningEle
     }
     // console.log(JSON.stringify(this.record));
     // console.log(JSON.stringify(this.error));
-    console.log(
-      `Record id: ${this.recordId} [${this.oppName}] > ${document.title}`
-    );
+    // console.log(
+    //   `Record id: ${this.recordId} [${this.oppName}] > ${document.title}`
+    // );
   }
 
   @wire(getOppQuoting, { oppId: "$recordId", fields: ["Id", "Name"] })
   wireQuoting({ error, data }) {
-    console.log(`wiring quoting...`);
+    // console.log(`wiring quoting...`);
     if (data) {
-      console.log(JSON.stringify(data, null, 2));
+      // console.log(JSON.stringify(data, null, 2));
       this.quoting = data;
     } else if (error) {
-      console.log(error);
+      console.error(error);
       this.quoting = undefined;
     }
   }

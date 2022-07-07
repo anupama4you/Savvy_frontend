@@ -1,0 +1,76 @@
+<apex:page controller="MyNotesController" action="{!init}" sidebar="true" showheader="false">
+    <apex:stylesheet value="/sCSS/40.0/sprites/1498159010000/Theme3/default/gc/ServiceDeskListReskin.css" />
+    <apex:stylesheet value="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css"/>
+    <apex:includescript value="/support/console/40.0/integration.js" />
+    <style type="text/css">
+        .textArea {
+        	border:none;
+        	background-color:rgb(253,219,51); 
+        	width:100%; 
+        	heigth: 100%;
+        	overflow-y: scroll; 
+        	overflow-x: hidden;
+        	align-content:left;
+        	position:fixed;
+        	top:42px;
+        	right:0;
+        	bottom:0;
+        	left:0;
+        }
+        
+        .divTextArea {
+        	width:100%; 
+        	heigth: 100%; 
+        	min-height: 100px;
+        	overflow-y: scroll; 
+        	overflow-x: hidden;
+        	background-color:rgb(89,219,51);
+        	background-size:cover;
+        	position:fixed;
+        	top:42px;
+        	right:0;
+        	bottom:0;
+        	left:0;
+        }
+    </style>
+    
+    <apex:slds />
+    <apex:form >
+        
+    <div class="slds-tabs_scoped" width="100%">
+          <ul class="slds-tabs_scoped__nav" role="tablist" width="100%">
+            <li class="tab zen-unit zen-size1of2 selected" title="Item One" role="presentation">
+                
+                <a class="slds-tabs_scoped__link" href="javascript:void(0);" role="tab" tabindex="0" aria-selected="true" aria-controls="tab-scoped-1" id="tab-scoped-1__item">
+                    <i class="fa fa-book fa-lg" aria-hidden="true"></i>&nbsp;&nbsp;My Notes</a>
+            	
+            </li>
+                
+          </ul>
+          <div class="divTextArea">
+              <!--background-color:rgb(244, 246, 249); -->
+              <textarea id="notesInput" class="textArea"
+                    onkeyup="saveNotes();" >{!Notes}</textarea>
+        </div>
+    </div>
+    
+        <apex:actionFunction action="{!setNotes}" name="setNotesJS" reRender="">
+            <apex:param name="note" assignTo="{!Notes}" value=""/>
+        </apex:actionFunction> 
+    </apex:form>
+    <script>
+    	var notesTextArea = document.getElementById('notesInput');   
+    	function saveNotes() {
+            setNotesJS(notesTextArea.value);
+        }
+    	
+    	var listener = function (result) {
+            sforce.console.setCustomConsoleComponentWindowVisible(true);
+            //document.getElementById('notesInput').innerHTML += '\nMessage Received: ' + result.message;
+        };
+    
+    	// add a listener for the 'SampleEvent' event type
+    	sforce.console.addEventListener('updateMyNotes', listener);
+    </script>
+    
+</apex:page>

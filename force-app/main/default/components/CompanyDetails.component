@@ -1,0 +1,46 @@
+<apex:component >
+    <apex:attribute name="app" type="Application__c" description="Application Data" required="true"/>
+    <table width="100%" border="1">
+        <tr><td colspan="4" class="tableCaption"><strong>Company Details</strong></td></tr>
+        <tr>
+            <td width="20%" class="labelDate">Name</td>
+            <td width="30%">
+                <apex:outputField value="{!app.Entity_Name__c}"/>
+            </td>
+            <td width="20%" class="labelDate">ABN</td>
+            <td width="30%">
+                <apex:outputField value="{!app.Business_ABN__c}"/>
+            </td>
+        </tr>
+        <tr>
+            <td class="labelDate">Trading Name</td>
+            <td>
+                <apex:outputField value="{!app.Trading_Name__c}"/>
+            </td>
+            <td class="labelDate">A.C.N.</td>
+            <td>
+                <apex:outputField value="{!app.Business_ACN__c}"/>
+            </td>
+        </tr>
+        <tr>
+            <td class="labelDate">Business Address</td>
+            <td>
+                <apex:outputField value="{!app.Trading_Address__c}"/>
+            </td>
+            <td class="labelDate">Business Phone</td>
+            <td>
+                <apex:outputField value="{!app.Work_Phone__c}"/>
+            </td>
+        </tr>
+        <tr>
+            <td class="labelDate">Trust Name</td>
+            <td>
+                <apex:outputField value="{!app.Trust_Name__c}"/>
+            </td>
+            <td class="labelDate">Nature of Business</td>
+            <td>
+                <apex:outputField value="{!app.Nature_of_Business__c}"/>
+            </td>
+        </tr>
+    </table>
+</apex:component>

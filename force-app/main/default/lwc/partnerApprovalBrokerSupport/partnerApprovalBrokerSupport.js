@@ -12,6 +12,7 @@ export default class PartnerApprovalBrokerSupport extends LightningElement {
   @api showModal;
   @api lenderSettings;
   @api hasLenderApi;
+  @api isExternal;
 
   submissionResults;
   showSpinner = false;
@@ -31,10 +32,10 @@ export default class PartnerApprovalBrokerSupport extends LightningElement {
   }
 
   get lenderLabel() {
-    return "N/A";
-    // return (
-    //   this.lenderSettings && this.lenderSettings.Label__c
-    // ) ? this.lenderSettings.Label__c : "N/A";
+    // return "N/A";
+    return this.lenderSettings && this.lenderSettings.Label__c
+      ? this.lenderSettings.Label__c
+      : "N/A";
   }
 
   get displayIntro() {
@@ -51,6 +52,15 @@ export default class PartnerApprovalBrokerSupport extends LightningElement {
 
   get displayResultErrors() {
     return this.submissionResults && this.submissionResults.status === "1";
+  }
+
+  get displayNoCloseButton() {
+    return !this.displaySubmission && !this.isExternal;
+  }
+
+  get yesLabel() {
+    return this.processStage === STAGE_INTRO && this.isExternal 
+      ? "Accept & Proceed" : "Yes";
   }
 
   get closeLabel() {
@@ -72,7 +82,12 @@ export default class PartnerApprovalBrokerSupport extends LightningElement {
 
   handleYes() {
     // this.dispatchEvent(new CustomEvent("yes"));
-    this.processStage = STAGE_SUBMISSION;
+    if (this.isExternal) {
+      this.dispatchEvent(new CustomEvent("close"));
+      this.processStage = STAGE_INTRO;
+    } else {
+      this.processStage = STAGE_SUBMISSION;
+    }
   }
 
   isValidForm() {

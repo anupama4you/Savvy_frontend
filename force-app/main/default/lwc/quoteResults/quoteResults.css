@@ -1,0 +1,12 @@
+/* Styles */
+@import 'c/quoteCommonsStyles';
+
+.c-result-data {
+  padding-right: 25px;
+  padding-left: 15px;
+}
+
+.c-total-field {
+  font-weight: 600;
+  font-size: 0.8rem;
+}

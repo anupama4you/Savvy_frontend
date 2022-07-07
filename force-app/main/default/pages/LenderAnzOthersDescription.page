@@ -1,0 +1,53 @@
+<apex:page showHeader="false" sidebar="false" standardStylesheets="false">
+	<strong>Minimum Loan size</strong>
+	$10,000 
+
+	<hr/><strong>Purchase Type </strong>
+	Dealer and private sales are available on all types of finance. 
+	Dealer or Private sales, Refinancing, Sale and leaseback are available on leisure items only.
+
+	<hr/><strong>Employment Type </strong>
+	<u><i>Consumer:</i></u> 
+	FT will require 3 month’s pay history. 
+	PT will require 3 month’s pay history. 
+	No min with casual but must supply 12 months of history with no GAP of 4 weeks. 
+	<u><i>Commercial</i></u>
+	Leisure can provide tax return no older than 18 months or low doc. 
+	Truck, plant and equipment need tax return no older than 18 months.
+
+	<hr/><strong>Credit History </strong>
+	Clean credit 
+
+	<hr/><strong>Financed Assets </strong>
+	Cars, bikes, boats, watercraft, caravans, trucks, plant and equipment.
+
+	<hr/><strong>Loan Terms </strong>
+	0-60 months 
+
+	<hr/><strong>Term End  </strong>
+	Flexible with age of goods.  
+
+	<hr/><strong>LTV Ratios </strong>
+	Fair market value
+
+
+	<hr/><strong>Why? &amp; When? </strong>
+	Provide rates that are better than the carded rate.  Submit the loan and email the BDM for a rate discount. 
+	Flexible with age of goods.  They do older boats, trucks and caravans. 
+	Can do self declaration on leisure goods. 
+	Can do self declaration on trucks but more difficult. 
+
+	<hr/><strong>Early repayment fees</strong>
+	<u><i>Consumer:</i></u> 
+	Early repayment fee (ERF) $680. 
+	Administration fee $50. 
+	This fee reduces every month that the loan is in existence.  So on a 60 month term the ERF drops by $11.33 per month. 
+	So if a client paid out their loan 12 months early the fee would be (12 x $11.33) +$50 = $186. 
+	<u><i>Commercial:</i></u> 
+	Commercial loans are not meant to be paid out early.  They are a tax effective facility and the penalties for early repayment can be high. 
+	With ANZ commercial they don’t have an early repayment fee but the cost to exit can be very high.  The following is not to be discussed with the customers as it is commercial in confidence. 
+	<br/>
+	Essentially ANZ will charge <u>70% of the remaining interest charges to the client</u>.
+	So if they pay the loan out 12 months early they will pay a penalty which is 70% of the interest charges which would have occurred had the loan run to expiry.
+
+</apex:page>

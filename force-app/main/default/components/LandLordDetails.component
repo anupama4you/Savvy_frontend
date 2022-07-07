@@ -1,0 +1,16 @@
+<apex:component >
+	<apex:attribute name="app" type="Application__c" description="Application Data" required="true"/>
+	<table width="100%" border="1">
+        <tr><td colspan="4" class="tableCaption"><strong>Landlord</strong></td></tr>
+        <tr>
+        	<td width="20%" class="labelDate">Name</td>
+            <td width="30%"><apex:outputField value="{!app.Landlord_Name_1__c}"/></td>
+            <td width="20%" class="labelDate">Phone</td>
+            <td width="30%"><apex:outputField value="{!app.Landlord_Phone_1__c}"/></td>
+        </tr>
+        <tr>
+        	<td class="labelDate">Address</td>
+            <td colspan="3">&nbsp;</td>
+        </tr>
+    </table>
+</apex:component>

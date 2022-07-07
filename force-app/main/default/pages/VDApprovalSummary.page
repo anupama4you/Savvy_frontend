@@ -1,0 +1,104 @@
+<apex:page controller="VDApprovalSummaryExtension" cache="false" readOnly="true" title="VD Approval Summary">
+    <style type='text/css'>
+        .labelTableBeside {
+            font-size: 25px;
+            font-weight: bold;
+            vertical-align: middle !important;
+        }
+        .labelTableResult {
+            font-size: 16px;
+            font-weight: bold;
+        }
+        .labelTableResultOthers {
+            font-size: 14px;
+            font-weight: bold;
+        }
+        .labelTableResultTotals {
+            font-size: 14px;
+            font-weight: bold;
+            color: blue !important;
+        }
+    </style>
+    <apex:form id="formData">
+        <apex:pageBlock title="{!userProfile} Processes" mode="edit">
+        	
+            <table align="center" width="90%">
+                <tr>
+                    <td width="30%">
+                        <table width="90%">
+                            <tr>
+                                <td rowspan="3" class="labelTableBeside" width="60%" align="center">{!statusDTO1.Status}</td>
+                                <th width="40%" align="center">
+                                	<apex:outputLink target="_top" value="{!$Page.VDApprovalList}?idx=1&g=0">Own</apex:outputLink>
+                                </th>
+                                <td class="labelTableResult" align="center">{!statusDTO1.own}</td>
+                            </tr>
+                            <tr>
+                            	<th width="40%" align="center">
+                            		<apex:outputLink target="_top" value="{!$Page.VDApprovalList}?idx=1&g=1">Others</apex:outputLink>
+                            	</th>
+                                <td class="labelTableResult" align="center">{!statusDTO1.others}</td>
+                            </tr>
+                            <tr>
+                                <th width="40%" align="center">Total</th>
+                                <td class="labelTableResult" align="center">{!statusDTO1.total}</td>
+                            </tr>
+                            <tr>
+                            	<td>&nbsp;</td>
+                            </tr>
+                        </table>
+                    </td>
+                    <td width="30%">
+                        <table width="90%">
+                            <tr>
+                                <td rowspan="3" class="labelTableBeside" width="60%" align="center">{!statusDTO2.Status}</td>
+                                <th width="40%" align="center">
+                                	<apex:outputLink target="_top" value="{!$Page.VDApprovalList}?idx=2&g=0">Own</apex:outputLink>
+                                </th>
+                                <td class="labelTableResult" align="center">{!statusDTO2.own}</td>
+                            </tr>
+                            <tr>
+                            	<th width="40%" align="center">
+                            		<apex:outputLink target="_top" value="{!$Page.VDApprovalList}?idx=2&g=1">Others</apex:outputLink>
+                            	</th>
+                                <td class="labelTableResult" align="center">{!statusDTO2.others}</td>
+                            </tr>
+                            <tr>
+                                <th width="40%" align="center">Total</th>
+                                <td class="labelTableResult" align="center">{!statusDTO2.total}</td>
+                            </tr>
+                            <tr>
+                            	<td>&nbsp;</td>
+                            </tr>
+                        </table>
+                    </td>
+                    <td width="40%">
+                        <table width="90%">
+                            <tr>
+                                <td rowspan="3" class="labelTableBeside" width="60%" align="center">{!statusDTO3.Status}</td>
+                                <th width="40%" align="center">
+                                	<apex:outputLink target="_top" value="{!$Page.VDApprovalList}?idx=3&g=0">Own</apex:outputLink>
+                                </th>
+                                <td class="labelTableResult" align="center">{!statusDTO3.own}</td>
+                            </tr>
+                            <tr>
+                            	<th width="40%" align="center">
+                            		<apex:outputLink target="_top" value="{!$Page.VDApprovalList}?idx=3&g=1">Others</apex:outputLink>
+                            	</th>
+                                <td class="labelTableResult" align="center">{!statusDTO3.others}</td>
+                            </tr>
+                            <tr>
+                                <th width="40%" align="center">Total</th>
+                                <td class="labelTableResult" align="center">{!statusDTO3.total}</td>
+                            </tr>
+                            <tr>
+                            	<td>&nbsp;</td>
+                            </tr>
+                        </table>
+                    </td>
+                </tr>
+            </table>
+            <br/>
+    	</apex:pageBlock>
+    </apex:form>
+</apex:page>

@@ -1,0 +1,174 @@
+<apex:page standardController="Lead__c" extensions="LeadEditExtension" id="pg" title="Lead Edit">
+    <apex:variable value="{!Lead__c}" var="l" />
+    <apex:sectionHeader title="Lead Edit" subtitle="{!IF(ISBLANK(l.Id), 'New Lead', l.Name)}" />
+    <style>
+        textarea
+        {
+            width: 250px;
+        }
+    </style>        
+    <script>
+        // override the open lookup page
+        function openLookup(a, b, c, d)
+        {
+            if (a.substr(a.length - 3, 3) == '{!$ObjectType.Account}')
+            {                           
+                // create the parameters that pass through the lead info
+                var params = '';
+                params += '&fn=' + escape(fn.value);
+                params += '&ln=' + escape(ln.value);
+                params += '&dob=' + escape(dob.value);            
+                params += '&hp=' + escape(hp.value);
+                params += '&num=' + escape(num.value);
+                params += '&addr=' + escape(addr.value);
+                params += '&st=' + escape(st.value);
+                params += '&wp=' + escape(wp.value);
+                params += '&su=' + escape(su.value);            
+                params += '&mp=' + escape(mp.value);
+                params += '&sta=' + escape(sta.value);
+                params += '&em=' + escape(em.value);
+                params += '&pc=' + escape(pc.value);
+                            
+              window.open('/apex/LeadAccountLookup?srch=' + acc.value + params, '_blank', 'height=500,width=800,top=300,top=300,location=0,menubar=0,resizable=0,scrollbars=0,status=0,titlebar=0,toolbar=0');                                   
+            
+            }
+            else
+            {            
+                "1"==c&&(a+=d);
+                openPopup(a,"lookup",350,480,"width="+b+",height=480,toolbar=no,status=no,directories=no,menubar=no,resizable=yes,scrollable=no",!0);                                 
+            }                 
+        }        
+        
+    </script>
+    <apex:pageMessages />       
+    <apex:form id="frm">
+        <apex:outputPanel rendered="{!NOT(HasEditAccess)}">       
+            <apex:pageMessage severity="ERROR" strength="2" summary="You do not have permission to edit this record." />
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<apex:commandButton value="Return" action="{!cancel}" />
+        </apex:outputPanel>        
+        <apex:outputPanel rendered="{!NOT(IsOldestSysGen) && HasEditAccess}">       
+            <apex:pageMessage severity="ERROR" strength="2" summary="This is not the oldest unassigned lead." />
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<apex:commandButton value="Return" action="{!cancel}" />
+        </apex:outputPanel>        
+        
+        <apex:outputPanel rendered="{!HasEditAccess && IsOldestSysGen}" id="op">
+            <apex:pageBlock title="Lead Edit" mode="edit" id="pb">
+                <apex:pageBlockButtons >
+                    <apex:commandButton value="Save" action="{!SaveOverride}" />
+                    <apex:commandButton value="Submit" action="{!Submit}" rendered="{!IsPortal}" />
+                </apex:pageBlockButtons>
+                <apex:pageBlockSection title="Information" id="pbsInfo" rendered="{!NOT(IsPortal)}">
+                    <apex:inputField value="{!l.Lead_Source__c}" taborderhint="10" />
+                    <apex:outputField value="{!l.OwnerId}" />
+                    <apex:pageBlockSectionItem >
+                        <apex:outputLabel value="Status" />
+                        <apex:outputPanel layout="block" styleClass="requiredInput">
+                            <apex:outputPanel layout="block" styleClass="requiredBlock" />
+                            <apex:selectList value="{!l.Status__c}" size="1" tabindex="200">
+                                <apex:selectOption itemValue="" itemLabel="--None--" />
+                                <apex:selectOption itemValue="New Lead" itemLabel="New Lead" />
+                                <apex:selectOption itemValue="Attempted Contact 1" itemLabel="Attempted Contact 1" />
+                                <apex:selectOption itemValue="Attempted Contact 2" itemLabel="Attempted Contact 2" />
+                                <apex:selectOption itemValue="Attempted Contact 3" itemLabel="Attempted Contact 3" />
+                                <apex:selectOption itemValue="Attempted Contact 4" itemLabel="Attempted Contact 4" />
+                                <apex:selectOption itemValue="Attempted Contact 5" itemLabel="Attempted Contact 5" />
+                                <apex:selectOption itemValue="Attempted Contact 6" itemLabel="Attempted Contact 6" />
+                                <apex:selectOption itemValue="Become Opportunity" itemLabel="Become Opportunity" />
+                                <apex:selectOption itemValue="Sales Flow/Become Opportunity" itemLabel="Sales Flow/Become Opportunity" />
+                                <apex:selectOption itemValue="Closed Lead" itemLabel="Closed Lead" />                                         
+                            </apex:selectList>
+                        </apex:outputPanel>
+                    </apex:pageBlockSectionItem>                    
+                    <apex:inputField value="{!l.Campaign__c}" taborderhint="30" />
+                    <apex:inputField value="{!l.Reason_for_closure__c}" taborderhint="40" />
+                    <apex:inputField value="{!l.Comments__c}" taborderhint="50" />                    
+                    <apex:inputField value="{!l.Notes__c}" taborderhint="150" />                       
+                    <apex:inputField value="{!l.UTM_Campaign__c}" taborderhint="150" /> 
+                    <!-- <apex:inputField value="{!l.Account__c}" required="true" id="acc"  taborderhint="70">                    
+                        <script>var acc = document.getElementById('{!$Component.acc}');</script>
+                    </apex:inputField>                     -->
+                </apex:pageBlockSection>
+                <apex:pageBlockSection title="Lead Information">
+                    <apex:inputField value="{!l.First_Name__c}" required="true" id="fn" taborderhint="80" />
+                    <apex:inputField value="{!l.Home_Phone__c}" id="hp" taborderhint="180" />
+                    <apex:inputField value="{!l.Last_Name__c}" required="true" id="ln" taborderhint="90" />
+                    <apex:inputField value="{!l.Work_Phone__c}" id="wp" taborderhint="190" />            
+                    <apex:inputField value="{!l.Date_of_Birth__c}" id="dob" taborderhint="100" />
+                    <apex:inputField value="{!l.Mobile_Number__c}" id="mp" taborderhint="200" required="true"/>
+                    <apex:inputField value="{!l.Unit_House_Number__c}" id="num" taborderhint="110" />
+                    <apex:inputField value="{!l.Email_Address__c}" id="em" taborderhint="210" required="true"/>
+                    <apex:inputField value="{!l.Street_Address__c}" id="addr" taborderhint="120" />
+                    <apex:inputField value="{!l.Loan_Type__c}" taborderhint="220" required="true" />
+                    <apex:inputField value="{!l.Street_Type__c}" id="st" taborderhint="130" />
+                    <apex:inputField value="{!l.Loan_For__c}" taborderhint="320" required="true" />
+                    <apex:inputField value="{!l.Suburb__c}" id="su" taborderhint="140" />
+                    <apex:pageBlockSectionItem />
+                    <apex:inputField value="{!l.State__c}" id="sta" taborderhint="150" required="true"/>
+                    <apex:pageBlockSectionItem />
+                    <apex:inputField value="{!l.Postcode__c}" id="pc" taborderhint="160" />
+                    <apex:pageBlockSectionItem />
+                    <apex:inputField value="{!l.Comments__c}" rendered="{!IsPortal}" taborderhint="170" />                    
+                    <script>
+                        var fn = document.getElementById('{!$Component.fn}');
+                        var ln = document.getElementById('{!$Component.ln}');
+                        var dob = document.getElementById('{!$Component.dob}');
+                        var hp = document.getElementById('{!$Component.hp}');
+                        var num = document.getElementById('{!$Component.num}');
+                        var addr = document.getElementById('{!$Component.addr}');
+                        var st = document.getElementById('{!$Component.st}');
+                        var sta = document.getElementById('{!$Component.sta}');
+                        var wp = document.getElementById('{!$Component.wp}');
+                        var su = document.getElementById('{!$Component.su}');
+                        var mp = document.getElementById('{!$Component.mp}');                        
+                        var em = document.getElementById('{!$Component.em}');
+                        var pc = document.getElementById('{!$Component.pc}');
+                    </script>                                                             
+                </apex:pageBlockSection>
+                <apex:pageBlockSection title="Finance Details Requested" rendered="{!OR(l.Owner.Name != 'System Generated',IsAdminProfile)}">
+                    <apex:inputField value="{!l.Finance_Amount__c}" taborderhint="220" required="true" />           
+                    <apex:inputField value="{!l.Length_of_Term__c}" required="{!IsPortal}" taborderhint="230" />
+                    <apex:inputField value="{!l.Property_Owner__c}" taborderhint="240" />
+                    <!-- <apex:inputField value="{!l.Credit_History__c}" taborderhint="250" /> -->
+                    <apex:pageBlockSectionItem >
+                        <apex:outputLabel value="Credit History" />
+                        <apex:outputPanel layout="block">
+                            <apex:outputPanel layout="block"/>
+                            <apex:selectList value="{!l.Credit_History__c}" size="1" tabindex="200">
+                                <apex:selectOption itemValue="" itemLabel="--None--" />
+                                <apex:selectOption itemValue="Excelent" itemLabel="Excelent" />
+                                <apex:selectOption itemValue="Average" itemLabel="Average" />
+                                <apex:selectOption itemValue="Poor" itemLabel="Poor" />
+                                <apex:selectOption itemValue="Not Sure" itemLabel="Not Sure" />
+                                <apex:selectOption itemValue="Current or Discharged Bankrupt Part 10" itemLabel="Current or Discharged Bankrupt (Part 10)" />
+                                <apex:selectOption itemValue="Current or Discharged Debt Agreement Part 9" itemLabel="Current or Discharged Debt Agreement (Part 9)" />
+                                <apex:selectOption itemValue="Discharged Bankrupt Part 10" itemLabel="Discharged Bankrupt (Part 10)" />
+                                <apex:selectOption itemValue="Discharged Debt Agreement Part 9" itemLabel="Discharged Debt Agreement (Part 9)" />
+                                <apex:selectOption itemValue="Current Bankrupt Part 10" itemLabel="Current Bankrupt (Part 10)" />
+                                <apex:selectOption itemValue="Currently in Debt Agreement Part 9" itemLabel="Currently in Debt Agreement (Part 9)" />
+                            </apex:selectList>
+                        </apex:outputPanel>
+                    </apex:pageBlockSectionItem>
+                    <apex:inputField value="{!l.Vehicle_Make__c}" taborderhint="260" />
+                    <apex:inputField value="{!l.Vehicle_Model__c}" taborderhint="270" />
+                    <apex:inputField value="{!l.Vehicle_Year__c}" taborderhint="280" />
+                    <apex:inputField value="{!l.Employment_Status__c}" taborderhint="290" />                    
+                </apex:pageBlockSection>
+                <apex:pageBlockSection title="Other Details (Admin)" rendered="{!isAdminProfile}" >
+                    <apex:inputField value="{!l.Bucket_Type__c}"/>
+                    <apex:inputField value="{!l.CC_Campaign_ID__c}"/>
+                    <apex:inputField value="{!l.Is_Call_Center__c}"/>                    
+                    <apex:inputField value="{!l.CC_Campaign_ID__c}"/>
+                    <apex:pageBlockSectionItem />
+                    <apex:inputField value="{!l.CC_List_ID__c}"/>
+                    <apex:pageBlockSectionItem />
+                    <apex:inputField value="{!l.CC_Lead_ID__c}"/>
+                    <apex:pageBlockSectionItem />
+                    <apex:inputField value="{!l.CC_Sent_Date__c}"/>
+                    <apex:pageBlockSectionItem />
+                    <apex:inputField value="{!l.CC_Completed_Date__c}"/>
+                </apex:pageBlockSection>
+            </apex:pageBlock>
+        </apex:outputPanel>
+        
+    </apex:form>     
+</apex:page>

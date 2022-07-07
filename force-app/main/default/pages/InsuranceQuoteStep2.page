@@ -1,0 +1,330 @@
+<apex:page docType="html-5.0" showHeader="true" sidebar="false" standardController="Custom_Opportunity__c" extensions="InsuranceQuoteStep2Extension" title="Create Quote 2" action="{!insuranceProductsMessage}">
+    <apex:variable value="{!Custom_Opportunity__c}" var="o" />
+    <apex:sectionHeader title="Insurance" subtitle="Quote for {!o.Name}" />
+    <apex:form >
+        <apex:actionFunction action="{!nextAction}" name="UpdateRecords_JS" reRender="statuses, msg" status="Status1" oncomplete="CallWebService_JS();"/>
+        <apex:actionFunction action="{!invokeWS}" name="CallWebService_JS" status="Status2" reRender="statuses, msg"/>
+        <apex:actionFunction action="{!nextAction}" name="TestUpdateRecords_JS" Rerender="statuses" status="Status1" oncomplete="TestCallWebService_JS();"/>
+        <!-- begin - V2 -->
+        <apex:actionFunction action="{!nextAction}" name="UpdateRecords2_JS" reRender="statuses, msg" status="Status1" oncomplete="CallRestService_JS();"/>
+        <apex:actionFunction action="{!invokeRestWS}" name="CallRestService_JS" status="Status2" reRender="statuses, msg"/>
+        <!-- end -->
+        <apex:pageBlock id="pgBlk" title="Step 2 - Cover Information">
+            <apex:pageBlockButtons location="bottom">
+                <apex:commandButton action="{!goToQuotingTool}" value="Return to Quoting Tool" />
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                <apex:commandButton value="Previous" action="{!previousAction}" />
+                <!-- <input name="DoAction" class="btn" type="button" value="Next (old)" onclick="UpdateRecords_JS();return false;"/>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; -->
+                <input name="DoAction" class="btn" type="button" value=">> Next <<" onclick="UpdateRecords2_JS();return false;"/>
+                <apex:outputPanel id="statuses">
+                    &nbsp;&nbsp;&nbsp;
+                    <apex:actionStatus id="Status1" startText="... Updating records ..." />
+                    <apex:actionStatus id="Status2" startText="... Connecting with insurance provider service ..." />
+                </apex:outputPanel>
+            </apex:pageBlockButtons>
+            <apex:pageBlockSection title="Currently Selected Cover Types" collapsible="false" columns="1">
+                <apex:pageBlockSectionItem rendered="{!!ISBLANK(quote.Motor_Vehicle__c)}">
+                    <apex:outputLabel value="Motor Vehicle (MV)"/>
+                    <apex:outputPanel >
+                        <apex:outputField label="Motor Vehicle (MV)" value="{!quote.Motor_Vehicle__c}"  />
+                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<apex:commandButton value="Remove" action="{!removeMV}" reRender="pgBlk, msg" status="stsMenMV"/>
+                        &nbsp;&nbsp;&nbsp;<apex:actionStatus id="stsMenMV" startText="... Removing ..." />
+                    </apex:outputPanel>
+                </apex:pageBlockSectionItem>
+                <apex:outputField value="{!quote.Gap__c}" rendered="{!!ISBLANK(quote.Gap__c)}" />
+                <apex:pageBlockSectionItem rendered="{!!ISBLANK(quote.Total_assist_RTI__c)}">
+                    <apex:outputLabel value="RTI"/>
+                    <apex:outputPanel >
+                        <apex:outputField label="RTI" value="{!quote.Total_assist_RTI__c}"  />
+                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<apex:commandButton value="Remove" action="{!removeRTI}" reRender="pgBlk" status="stsRTIMV"/>
+                        &nbsp;&nbsp;&nbsp;<apex:actionStatus id="stsRTIMV" startText="... Removing ..." />
+                    </apex:outputPanel>
+                </apex:pageBlockSectionItem>
+                <!--<apex:outputField value="{!quote.Total_assist_RTI__c}" rendered="{!!ISBLANK(quote.Total_assist_RTI__c)}" />-->
+                <!-- <apex:outputField label="Truck GAP" value="{!quote.Truck_GAP__c}" rendered="{!!ISBLANK(quote.Truck_GAP__c)}" /> -->
+                <apex:outputField label="LTI/BRI" value="{!quote.LTI_BRI__c}" rendered="{!!ISBLANK(quote.LTI_BRI__c)}" />
+                <!--Jesus Mora 2020-03-26 start-->
+                <apex:pageBlockSectionItem rendered="{!!ISBLANK(quote.LPI__c)}">
+                    <apex:outputLabel value="LPI"/>
+                    <apex:outputPanel >
+                        <apex:outputField label="LPI" value="{!quote.LPI__c}"  />
+                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<apex:commandButton value="Remove" action="{!removeLPI}" reRender="pgBlk, msg" status="stsLPIMV"/>
+                        &nbsp;&nbsp;&nbsp;<apex:actionStatus id="stsLPIMV" startText="... Removing ..." />
+                    </apex:outputPanel>
+                </apex:pageBlockSectionItem>
+                <!--Jesus Mora 2020-03-26 end-->
+                <apex:outputField label="Warranty - Insurance" value="{!quote.Warranty_Insurance__c}" rendered="{!!ISBLANK(quote.Warranty_Insurance__c)}" />
+            </apex:pageBlockSection>
+            <!-- MV - Vehicle Details -->
+            <apex:pageBlockSection title="Vehicle Details" collapsible="false" rendered="{!AND(o.Application_AssetDetail__r.Type__c == 'Car',!ISNULL(quote.Motor_Vehicle__c))}" columns="2" id="pnlMV">
+                <apex:outputText label="Type" value="Motor Vehicle" rendered="{!quote.Motor_Vehicle__c=='MVCMP'}" />
+                <apex:outputField label="Make" value="{!vehicleMake.Name}" rendered="{!quote.Motor_Vehicle__c=='MVCMP'}" />
+                <apex:outputField label="Model" value="{!glassVariant.Family__c}" rendered="{!quote.Motor_Vehicle__c=='MVCMP'}" />
+                <apex:outputField value="{!o.Application_AssetDetail__r.Year__c}" rendered="{!quote.Motor_Vehicle__c=='MVCMP'}" />
+                <apex:outputField label="Variant" value="{!glassVariant.Name}" rendered="{!quote.Motor_Vehicle__c=='MVCMP'}" />
+                <apex:outputField value="{!glassVariant.NVIC__c}" rendered="{!quote.Motor_Vehicle__c=='MVCMP'}" />
+                <apex:outputField value="{!glassVariant.Release_Date__c}"/>
+                <apex:pageBlockSectionItem rendered="{!quote.Motor_Vehicle__c=='MVCMP'}">
+                    <apex:outputLabel value="RedBook Key"/>
+                    <apex:outputPanel >
+                        <apex:inputField value="{!o.Application_AssetDetail__r.Redbook_Key__c}" />
+                        <!-- <apex:commandButton styleClass="commandButtons" value="Open RedBook Web Lookup"  onClick="window.open('https://express.redbook.com.au/');"/> -->
+                        <apex:commandButton styleClass="commandButtons" value="Open RedBook Lookup" reRender="pgBlk" status="stsRedBookLookup2">
+                            <apex:param name="disRedbookLookup" assignTo="{!displayRedbookLookup}" value="true" />
+                        </apex:commandButton>
+                        &nbsp;&nbsp;&nbsp;
+                        <apex:actionStatus id="stsRedBookLookup" startText="Opening ..." />
+                    </apex:outputPanel>
+                </apex:pageBlockSectionItem>
+                <apex:outputField label="Purchase Price" value="{!quoting.Vehicle_Price__c}" />
+                <apex:pageBlockSectionItem >
+                    <apex:outputLabel value="Suburb" />
+                    <apex:outputPanel >
+                        <apex:outputField value="{!o.Application__r.Suburb__c}" />, &nbsp;
+                        <apex:outputField value="{!o.Application__r.State__c}" /> &nbsp;
+                        <apex:outputField value="{!o.Application__r.Postcode__c}" />
+                    </apex:outputPanel>
+                </apex:pageBlockSectionItem>
+                <apex:inputField label="Usage" value="{!quote.Vehicle_Usage__c}">
+                    <apex:actionSupport event="onchange" reRender="pnlMV" />
+                </apex:inputField>
+                <apex:inputField value="{!quote.Vehicle_Usage_For__c}" rendered="{!quote.Vehicle_Usage__c == 'Business'}" />
+            </apex:pageBlockSection>
+            <!-- Warranty - Vehicle Details -->
+            <apex:pageBlockSection title="Vehicle Details" collapsible="false" rendered="{!AND(o.Application_AssetDetail__r.Type__c == 'Car',!ISNULL(quote.Warranty_Insurance__c),ISNULL(quote.Motor_Vehicle__c))}" columns="2">
+                <apex:outputText label="Type" value="Motor Vehicle" />
+                <apex:outputField label="Make" value="{!vehicleMake.Name}" />
+                <apex:outputField label="Model" value="{!glassVariant.Family__c}" />
+                <apex:outputField value="{!o.Application_AssetDetail__r.Year__c}" />
+                <apex:outputField label="Variant" value="{!glassVariant.Name}"/>
+                <apex:outputField value="{!glassVariant.NVIC__c}" />
+                <apex:outputField value="{!glassVariant.Release_Date__c}"/>
+                <apex:pageBlockSectionItem >
+                    <apex:outputLabel value="RedBook Key"/>
+                    <apex:outputPanel >
+                        <apex:inputField value="{!o.Application_AssetDetail__r.Redbook_Key__c}" />
+                        <!-- <apex:commandButton styleClass="commandButtons" value="Open RedBook Web Lookup"  onClick="window.open('https://express.redbook.com.au/');"/> -->
+                        <apex:commandButton styleClass="commandButtons" value="Open RedBook Lookup" reRender="pgBlk" status="stsRedBookLookup2">
+                            <apex:param name="disRedbookLookup" assignTo="{!displayRedbookLookup}" value="true" />
+                        </apex:commandButton>
+                        &nbsp;&nbsp;&nbsp;
+                        <apex:actionStatus id="stsRedBookLookup2" startText="Opening ..." />
+                    </apex:outputPanel>
+                </apex:pageBlockSectionItem>
+                <apex:outputField label="Purchase Price" value="{!quoting.Vehicle_Price__c}" />
+                <apex:pageBlockSectionItem >
+                    <apex:outputLabel value="Suburb" />
+                    <apex:outputPanel >
+                        <apex:outputField value="{!o.Application__r.Suburb__c}" />, &nbsp;
+                        <apex:outputField value="{!o.Application__r.State__c}" /> &nbsp;
+                        <apex:outputField value="{!o.Application__r.Postcode__c}" />
+                    </apex:outputPanel>
+                </apex:pageBlockSectionItem>
+            </apex:pageBlockSection>
+            <!-- REDBOOK LOOK UP -->
+            <apex:pageBlockSection title="Redbook Vehicle Lookup" collapsible="false" rendered="{!displayRedbookLookup}" columns="1" id="pnlRBLookup">
+                <apex:selectList label="Model"
+                                 value="{!redbookFamilyCode}" size="1" id="fldRBFamCod" >
+                    <apex:selectOptions value="{!redbookFamilyOptions}" />
+                    <apex:actionSupport event="onchange" action="{!loadRedbookVehicles}" reRender="pnlRBLookup" focus="fldRBFamCod" />
+                </apex:selectList>
+                <apex:selectList label="Badge"
+                                 value="{!redbookBadge}" size="1" id="fldRBBadCod" >
+                    <apex:selectOptions value="{!redbookBadgeOptions}" />
+                    <apex:actionSupport event="onchange" action="{!loadRedbookVehicles}" reRender="pnlRBLookup" focus="fldRBBadCod" />
+                </apex:selectList>
+                <apex:outputPanel >
+                    <apex:pageBlockTable value="{!redBookVehicleList}" var="item">
+                        <apex:column headerValue="Vehicle Key">
+                            <!-- <strong><apex:outputLink value="/{!item.Id}" target="_blank">{!item.Name}</apex:outputLink></strong> -->
+                            <apex:commandButton styleClass="commandButtons" value="Select" reRender="pgBlk">
+                                <apex:param name="paramRedbookCode" assignTo="{!o.Application_AssetDetail__r.Redbook_Key__c}" value="{!item.Name}" />
+                                <apex:param name="disRedbookLookup" assignTo="{!displayRedbookLookup}" value="false" />
+                            </apex:commandButton>
+                            &nbsp;&nbsp;&nbsp;
+                            <apex:outputText value="{!item.Name}" />
+                        </apex:column>
+                        <apex:column value="{!item.Family_Code__c}"/>
+                        <apex:column value="{!item.Badge_Description__c}"/>
+                        <apex:column value="{!item.Series_Public__c}"/>
+                        <apex:column value="{!item.Description__c}"/>
+                        <apex:column value="{!item.Year_Group__c}"/>
+                        <apex:column value="{!item.Month_Group__c}"/>
+                        <apex:column value="{!item.Gear_Type_Description__c}"/>
+                        <apex:column value="{!item.Engine_Description__c}"/>
+                        <apex:column value="{!item.Cylinders__c}"/>
+                        <apex:column value="{!item.Fuel_Type_Description__c}"/>
+                    </apex:pageBlockTable>
+                </apex:outputPanel>
+            </apex:pageBlockSection>
+            <apex:pageBlockSection title="Vehicle Details" collapsible="false" rendered="{!OR(!ISNULL(quote.Gap__c),!ISNULL(quote.Total_assist_RTI__c))}" columns="2">
+                <apex:pageBlockSectionItem >
+                    <apex:outputLabel value="Suburb" />
+                    <apex:outputPanel >
+                        <apex:outputField value="{!o.Application__r.Suburb__c}" />, &nbsp;
+                        <apex:outputField value="{!o.Application__r.State__c}" /> &nbsp;
+                        <apex:outputField value="{!o.Application__r.Postcode__c}" />
+                    </apex:outputPanel>
+                </apex:pageBlockSectionItem>
+            </apex:pageBlockSection>
+            <apex:pageBlockSection title="Financier" collapsible="false">
+                <apex:outputField label="Financier" value="{!quoting.Name}"/>               
+            </apex:pageBlockSection>
+            <apex:pageBlockSection title="Employment Information" collapsible="false" columns="1" rendered="{!!ISNULL(quote.LTI_BRI__c) && displayLTIProduct}">
+                <apex:outputText label="Are you currently employed?" value="YES" rendered="{!isApplicantEmployed}" />
+                <apex:outputText label="Are you currently employed?" value="NO" rendered="{!!isApplicantEmployed}" />
+                <apex:outputText label="Is Your employment Permanent full-time or Permanent Part-time 
+                                        for at least twenty (20) hours per week, that is not Seasonal 
+                                        or Intermittent?" value="YES" rendered="{!isApplicantFullTimeOrPartTime}" />
+                <apex:outputText label="Is Your employment Permanent full-time or Permanent Part-time 
+                                        for at least twenty (20) hours per week, that is not Seasonal 
+                                        or Intermittent?" value="NO" rendered="{!!isApplicantFullTimeOrPartTime}" />
+                <apex:outputText label="Have You been continuously employed for the last six (6) months? " 
+                                 value="YES" rendered="{!isEmployed6Months}" />
+                <apex:outputText label="Have You been continuously employed for the last six (6) months? " 
+                                 value="NO" rendered="{!!isEmployed6Months}" />                              
+            </apex:pageBlockSection>
+            <!--Jesus Mora 2020-03-26 start-->
+            <apex:pageBlockSection title="Employment Information" collapsible="false" columns="1" rendered="{!!ISNULL(quote.LPI__c) && displayLPIProduct}">
+                <apex:outputText label="Are all insured persons currently employed?" value="YES" rendered="{!isApplicantEmployed}" />
+                <apex:outputText label="Are all insured persons currently employed?" value="NO" rendered="{!!isApplicantEmployed}" />
+                <apex:outputText label="Are all insured persons employed as Permanent full-time, Permanent part-time for at least twenty (20) hours per week, or Casual employment for at least twenty (20) hours per week having been with the same employer for at least the past twelve (12) months? " 
+                                 value="YES" rendered="{!isEmployed6Months}" />
+                <apex:outputText label="Are all insured persons employed as Permanent full-time, Permanent part-time for at least twenty (20) hours per week, or Casual employment for at least twenty (20) hours per week having been with the same employer for at least the past twelve (12) months? " 
+                                 value="NO" rendered="{!!isEmployed6Months}" />
+                <apex:outputText label="Are any insured persons self-employed? " 
+                                 value="YES" rendered="{!isSelfEmployed}" />
+                <apex:outputText label="Are any insured persons self-employed? " 
+                                 value="NO" rendered="{!!isSelfEmployed}" />
+            </apex:pageBlockSection>
+            <!--Jesus Mora 2020-03-26 end-->
+            <apex:pageBlockSection title="Vehicle Usage" collapsible="false" columns="1" rendered="{!!ISNULL(quote.Warranty_Insurance__c)}">
+                <!-- <apex:inputField label="During the period of ownership, will the vehicle be used for any of the following purposes?"
+                                  value="{!quote.Is_Vehicle_Commercial_Usage__c}"/> -->
+                <apex:selectList label="During the period of ownership, will the vehicle be used for any of the following purposes?"
+                                 value="{!quote.Is_Vehicle_Commercial_Usage__c}" size="1" >
+                        <apex:selectOption itemLabel="No" itemValue="false"/>
+                        <apex:selectOption itemLabel="Yes" itemValue="true"/>
+                    </apex:selectList>
+                <apex:outputPanel >
+                    <ul>
+                        <li>Competitions, Rallies, Racing, Pace making, Reliability trials, Speed or Hill climbing</li>
+                        <li>Car Rental</li>
+                        <li>Conveying passengers for hire or reward</li>
+                        <li>Delivery or courier use</li>
+                        <li>Police or emergency vehicles</li>
+                        <li>Driver instruction or tuition for hire or reward</li>
+                        <li>In connection with mining or excavation activity</li>
+                        <li>Activity outside of Australia</li>
+                        <li>Carrying and/or towing loads above the gross combination weight of the trailer and your Vehicle as specified by the Manufacturer</li>
+                    </ul>
+                </apex:outputPanel>
+            </apex:pageBlockSection>
+            <apex:pageBlockSection title="Motor Cover Term" collapsible="false" rendered="{!!ISNULL(quote.Motor_Vehicle__c)}">
+                <apex:outputField label="Cover Term (months)" value="{!quote.Motor_Cover_Term__c}" />
+            </apex:pageBlockSection>
+            <apex:pageBlockSection title="RTI Cover Term" collapsible="false" rendered="{!!ISNULL(quote.Total_assist_RTI__c)}">
+                <apex:outputField label="Cover Term (months)" value="{!quote.Assist_Cover_Term__c}" />
+            </apex:pageBlockSection>
+            <apex:pageBlockSection title="Warranty - Insurance Contract" collapsible="false" rendered="{!!ISNULL(quote.Warranty_Insurance__c)}">
+                <apex:outputField label="Cover Term (months)" value="{!quote.Warranty_Insurance_Contract__c}" />
+            </apex:pageBlockSection>
+            <apex:pageBlockSection title="Other Information" collapsible="false" rendered="{!!ISNULL(quote.Warranty_Insurance__c)}">
+                <apex:inputField label="Odometer reading" value="{!o.Application_AssetDetail__r.Actual_KM__c}"/>
+                <apex:inputField label="Date First Registered" value="{!o.Application_AssetDetail__r.Date_First_Registered__c}"/>
+            </apex:pageBlockSection>
+            <apex:pageBlockSection title="Main Driver Details" collapsible="false" rendered="{!!ISNULL(quote.Motor_Vehicle__c)}">
+                <apex:inputField value="{!mainDriver.Date_of_Birth__c}" />
+                <apex:inputField value="{!mainDriver.Gender__c}" />
+                <apex:inputField value="{!mainDriver.Title__c}" />
+                <apex:outputField value="{!mainDriver.Driver_Licence__c}" />
+                <apex:outputField value="{!mainDriver.First_Name__c}" />
+                <apex:inputField value="{!mainDriver.Year_First_Licence__c}" />
+                <apex:outputField value="{!mainDriver.Last_Name__c}" />
+
+                <apex:inputField label="How long since you had an at fault accident/claim (including theft, hail, fire)" 
+                                 value="{!mainDriver.Time_Last_Fault_Accident__c}" />
+                <apex:outputPanel >
+                    <apex:outputText value="Are there any additional drivers?" />
+                    <apex:inputField value="{!quote.Has_Additional_Driver__c}">
+                        <apex:actionSupport event="onchange" action="{!activateAddDriver}" reRender="pgBlk" status="stDrivers" />
+                    </apex:inputField>
+                    &nbsp;&nbsp;&nbsp;&nbsp;
+                    <apex:actionStatus id="stDrivers" startText="(processing...)" />
+                </apex:outputPanel>
+            </apex:pageBlockSection>
+            <apex:repeat value="{!additionalDrivers}" var="a" id="addRepeat" rendered="{!AND(quote.Has_Additional_Driver__c,additionalDrivers.size >= 1)}">
+                <apex:pageBlockSection id="pnlDrivers" title="{!a.idx}) Additional Driver Details" collapsible="false">
+                    <apex:inputField value="{!a.data.Date_of_Birth__c}" />
+                    <apex:inputField value="{!a.data.Gender__c}" />
+                    <apex:inputField value="{!a.data.First_Name__c}" />
+                    <apex:inputField value="{!a.data.Last_Name__c}" />
+                    <apex:inputField value="{!a.data.Title__c}" />
+                    <apex:inputField value="{!a.data.Year_First_Licence__c}" />
+                    <apex:inputField value="{!a.data.Driver_Licence__c}" />
+                    <apex:inputField label="How long since you had an at fault accident/claim (including theft, hail, fire)" 
+                                     value="{!a.data.Time_Last_Fault_Accident__c}" />
+                    <apex:pageBlockSectionItem />
+                    <apex:pageBlockSectionItem />
+                    <apex:pageBlockSectionItem >
+                        <apex:outputPanel >
+                            <apex:commandButton value="Remove" action="{!removeDriver}" status="stRemDrivers" reRender="pgBlk">
+                                <apex:param name="driverSelected" assignTo="{!driverSelected}" value="{!a.idx}" />
+                            </apex:commandButton>
+                            &nbsp;&nbsp;&nbsp;&nbsp;
+                            <apex:actionStatus id="stRemDrivers" startText="(processing...)" />
+                        </apex:outputPanel>
+                    </apex:pageBlockSectionItem>
+                </apex:pageBlockSection>
+            </apex:repeat>
+            <apex:outputPanel rendered="{!AND(quote.Has_Additional_Driver__c)}">
+                <apex:commandButton value="Add Driver" action="{!addDriver}" status="stDrivers2" reRender="pgBlk" />
+                &nbsp;&nbsp;&nbsp;&nbsp;
+                <apex:actionStatus id="stDrivers2" startText="(processing...)" />
+            </apex:outputPanel>
+            <br/>
+            <apex:pageMessages id="msg"/>
+        </apex:pageBlock>
+    </apex:form>
+    
+    <apex:outputField value="{!o.Application__c}" rendered="false" />
+    <apex:outputField value="{!o.Application__r.Application_Type__c}" rendered="false" />
+    <apex:outputField value="{!o.Application__r.Mode_of_Employment_1__c}" rendered="false" />
+    <apex:outputField value="{!o.Application__r.Date_Started_1__c}" rendered="false" />
+    <apex:outputField value="{!o.Application__r.First_Name__c}" rendered="false" />
+    <apex:outputField value="{!o.Application__r.Last_Name__c}" rendered="false" />
+    <apex:outputField value="{!o.Application__r.Title_1__c}" rendered="false" />
+    <apex:outputField value="{!o.Application__r.Drivers_License_1__c}" rendered="false" />
+    <apex:outputField value="{!o.Application__r.Date_of_Birth_1__c }" rendered="false" />
+    <apex:outputField value="{!o.Application__r.Gender_1__c}" rendered="false" />
+    <apex:outputField value="{!o.Application__r.Email_Address__c }" rendered="false" />
+    
+    <apex:outputField value="{!o.Application__r.Mobile_Number__c}" rendered="false" />
+    <apex:outputField value="{!o.Application__r.Home_Phone__c}" rendered="false" />
+    <apex:outputField value="{!o.Application__r.Work_Phone__c}" rendered="false" />
+    <apex:outputField value="{!o.Application__r.Business_ABN__c}" rendered="false" />
+    <apex:outputField value="{!o.Application__r.Time_Last_Fault_1__c}" rendered="false" />
+    <apex:outputField value="{!o.Application__r.Year_First_Licensed_1__c}" rendered="false" />
+    <apex:outputField value="{!o.Application__r.Start_Date_1__c}" rendered="false" />
+    <apex:outputField value="{!o.Application__r.Finish_Date_1__c}" rendered="false" />
+    <apex:outputField value="{!o.Application__r.Type_of_Asset__c}" rendered="false" />
+    <apex:outputField value="{!o.Application__r.Entity_Name__c}" rendered="false" />
+    <apex:outputField value="{!o.Application__r.Unit_Number__c}" rendered="false" />
+    <apex:outputField value="{!o.Application__r.Street_Number__c}" rendered="false" />
+    <apex:outputField value="{!o.Application__r.Street_Address__c}" rendered="false" />
+    <apex:outputField value="{!o.Application__r.Street_Type__c}" rendered="false" />
+
+    <apex:outputField value="{!o.Application_AssetDetail__r.Make__c}" rendered="false" />
+    <apex:outputField value="{!o.Application_AssetDetail__r.Model__c}" rendered="false" />
+    <apex:outputField value="{!o.Application_AssetDetail__r.Variant__c}" rendered="false" />
+    <apex:outputField value="{!o.Application_AssetDetail__r.Condition__c}" rendered="false" />
+    <apex:outputField value="{!o.Application_AssetDetail__r.Rego__c}" rendered="false" />
+    <apex:outputField value="{!o.Application_AssetDetail__r.Rego_State__c}" rendered="false" />
+    <apex:outputField value="{!o.Application_AssetDetail__r.VIN__c}" rendered="false" />
+    <apex:outputField value="{!o.Application_AssetDetail__r.Engine_No__c}" rendered="false" />
+
+    <apex:outputField value="{!o.Vehicle_Registration__c}" rendered="false" />
+    <apex:outputField value="{!o.First_Name__c}" rendered="false" />
+    <apex:outputField value="{!o.Last_Name__c}" rendered="false" />
+</apex:page>

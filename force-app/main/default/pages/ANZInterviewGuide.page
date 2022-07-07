@@ -1,0 +1,692 @@
+<apex:page docType="html-5.0" standardController="Custom_Opportunity__c" extensions="ANZInterviewGuideExtension" sidebar="false" showHeader="false" title="ANZ Interview Guide" renderAs="PDF" contentType="application/pdf;charset=UTF-8">
+    <apex:stylesheet value="{!$Resource.InterviewGuidePdf}"/>
+    <apex:variable value="{!Custom_Opportunity__c}" var="o" />
+    <div class="header">
+        <table width="100%">
+            <tr>
+                <td width="50%" align="left">
+                    <br/>
+                    <apex:outputText value="INTERACTIVE INTERVIEW GUIDE" styleClass="headingTitle1" /><br/>
+                    <apex:outputText value="CONSUMER ASSET FINANCE" styleClass="headingTitle2" />
+                </td>
+                <td width="50%" align="right">
+                    <br/>
+                    <apex:image url="{!$Resource.ANZLogo}" height="40" />
+                </td>
+            </tr>
+        </table>
+    </div>
+    <div class="footer">
+        <div class="footerContent">Page <span class="pagenumber"/> of <span class="pagecount"/></div>
+    </div>
+    <apex:outputPanel rendered="{!showDocument}">
+        <table id="data" width="100%" class="mainTable">
+            <tr>
+                <td width="50%" valign="top">
+                    <!-- Applicant 1 -->
+                    <apex:outputText value="Applicant 1 details" styleClass="subTitle1" /><br/>
+                    <table width="100%">
+                        <tr>
+                            <td >Date</td>
+                            <td colspan="3" class="dataReadOnly">
+                                <apex:outputText value="{0, date, dd/MM/yyyy}" label="Date" styleClass="dataReadOnly">
+                                    <apex:param value="{!TODAY()}" />
+                                </apex:outputText>
+                            </td>
+                        </tr>
+                        <tr class="dataReadOnly">
+                            <td>First Name</td>
+                            <td colspan="3"><apex:outputText value="{!o.Application__r.First_Name__c}"/></td>
+                        </tr>
+                        <tr class="dataReadOnly">
+                            <td>Middle Name</td>
+                            <td colspan="3"><apex:outputText value="{!o.Application__r.Middle_Name__c}"/></td>
+                        </tr>
+                        <tr class="dataReadOnly">
+                            <td>Last Name</td>
+                            <td colspan="3"><apex:outputText value="{!o.Application__r.Last_Name__c}"/></td>
+                        </tr>
+                        <tr>
+                            <td>Date of Birth</td>
+                            <td colspan="3" class="dataReadOnly">
+                                <apex:outputText value="{!o.Application__r.Date_of_Birth_1__c}"/>
+                            </td>
+                        </tr>
+                        <tr class="dataReadOnly">
+                            <td>Drivers License #</td>
+                            <td colspan="3"><apex:outputText value="{!o.Application__r.Drivers_License_1__c}"/></td>
+                        </tr>
+                        <tr class="dataReadOnly">
+                            <td width="30%">Unit Number</td>
+                            <td width="25%"><apex:outputText value="{!o.Application__r.Unit_Number__c}"/></td>
+                            <td width="25%">Street Number</td>
+                            <td width="20%"><apex:outputText value="{!o.Application__r.Street_Number__c}"/></td>
+                        </tr>
+                        <tr class="dataReadOnly">
+                            <td>Street Name</td>
+                            <td colspan="3"><apex:outputText value="{!o.Application__r.Street_Address__c}"/></td>
+                        </tr>
+                        <tr class="dataReadOnly">
+                            <td>Suburb</td>
+                            <td colspan="3"><apex:outputText value="{!o.Application__r.Suburb__c}"/></td>
+                        </tr>
+                        <tr class="dataReadOnly">
+                            <td>State</td>
+                            <td><apex:outputText value="{!o.Application__r.State__c}"/></td>
+                            <td>Postcode</td>
+                            <td><apex:outputText value="{!o.Application__r.Postcode__c}"/></td>
+                        </tr>
+                    </table>
+                    <!-- Applicant 2 -->
+                    <br/>
+                    <apex:outputText value="Applicant 1 details" styleClass="subTitle1" /><br/>
+                    <table width="100%">
+                        <tr>
+                            <td >Date</td>
+                            <td colspan="3" class="dataReadOnly">
+                                <apex:outputText value="{0, date, dd/MM/yyyy}" label="Date" styleClass="dataReadOnly">
+                                    <apex:param value="{!TODAY()}" />
+                                </apex:outputText>
+                            </td>
+                        </tr>
+                        <tr class="dataReadOnly">
+                            <td>First Name</td>
+                            <td colspan="3"><apex:outputText value="{!o.Application__r.First_Name_2__c}"/></td>
+                        </tr>
+                        <tr class="dataReadOnly">
+                            <td>Middle Name</td>
+                            <td colspan="3"><apex:outputText value="{!o.Application__r.Middle_Name_2__c}"/></td>
+                        </tr>
+                        <tr class="dataReadOnly">
+                            <td>Last Name</td>
+                            <td colspan="3"><apex:outputText value="{!o.Application__r.Last_Name_2__c}"/></td>
+                        </tr>
+                        <tr>
+                            <td>Date of Birth</td>
+                            <td colspan="3" class="dataReadOnly">
+                                <apex:outputText value="{!o.Application__r.Date_of_Birth_2__c}"/>
+                            </td>
+                        </tr>
+                        <tr class="dataReadOnly">
+                            <td>Drivers License #</td>
+                            <td colspan="3"><apex:outputText value="{!o.Application__r.Drivers_License_2__c}"/></td>
+                        </tr>
+                        <tr class="dataReadOnly">
+                            <td width="30%">Unit Number</td>
+                            <td width="25%"><apex:outputText value="{!o.Application__r.Unit_Number_2__c}"/></td>
+                            <td width="25%">Street Number</td>
+                            <td width="20%"><apex:outputText value="{!o.Application__r.Street_Number_2__c}"/></td>
+                        </tr>
+                        <tr class="dataReadOnly">
+                            <td>Street Name</td>
+                            <td colspan="3"><apex:outputText value="{!o.Application__r.Street_Address_2__c}"/></td>
+                        </tr>
+                        <tr class="dataReadOnly">
+                            <td>Suburb</td>
+                            <td colspan="3"><apex:outputText value="{!o.Application__r.Suburb_2__c}"/></td>
+                        </tr>
+                        <tr class="dataReadOnly">
+                            <td>State</td>
+                            <td><apex:outputText value="{!o.Application__r.State_2__c}"/></td>
+                            <td>Postcode</td>
+                            <td><apex:outputText value="{!o.Application__r.Postcode_2__c}"/></td>
+                        </tr>
+                    </table>
+                    <br/>
+                    <table width="100%">
+                        <tr>
+                            <td>
+                                <apex:outputText value="ASSET DETAILS" styleClass="title1" /><br/>
+                                <apex:outputText value="Is the asset for personal or business use?" styleClass="subTitle1" /><br/>
+                                <apex:outputText value="(If asset for 50% or greater business use AND customer holds an ABN, choose business use)"/>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <apex:image url="{!$Resource.CheckIcon}" height="14" rendered="{!assetPersUse}"/>
+                                <apex:image url="{!$Resource.CheckBlankIcon}" height="14" rendered="{!!assetPersUse}"/>
+                                &nbsp; Asset is for Personal Use 
+                                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                                <apex:image url="{!$Resource.CheckIcon}" height="14" rendered="{!assetBusiUse}"/>
+                                <apex:image url="{!$Resource.CheckBlankIcon}" height="14" rendered="{!!assetBusiUse}"/>
+                                &nbsp; Asset is for Business Use
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <apex:outputText value="What is the type of asset to be financed?" styleClass="subTitle1" />
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="dataReadOnly">
+                                <apex:outputField value="{!q.Goods_type__c}"/>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <apex:outputText value="Is the asset being purchased new or used?" styleClass="subTitle1" />
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <apex:image url="{!$Resource.CheckIcon}" height="14" rendered="{!assetNew}"/>
+                                <apex:image url="{!$Resource.CheckBlankIcon}" height="14" rendered="{!!assetNew}"/>
+                                &nbsp;&nbsp; New
+                                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                                <apex:image url="{!$Resource.CheckIcon}" height="14" rendered="{!assetUsed}"/>
+                                <apex:image url="{!$Resource.CheckBlankIcon}" height="14" rendered="{!!assetUsed}"/>
+                                &nbsp;&nbsp; Used
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <apex:outputText value="Supplier Details" styleClass="subTitle1" /><br/>
+                                <apex:outputText value="What is the Supplier's name:" styleClass="subTitle1" />
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="dataReadOnly">
+                                <apex:outputText value="{!o.Dealer_Name__c}" label=" "/>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <apex:outputText value="Type of supplier:" styleClass="subTitle1" />
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="dataReadOnly">
+                                <apex:outputText value="{!o.Purchase_Type__c}" label=" "/>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="checkText">
+                                <apex:image url="{!$Resource.CheckIcon}" height="14"/>
+                                &nbsp;&nbsp; I have informed that customer that they may encounter cost, fees and/or charges associated when paying out another loan prior to the maturity date
+                            </td>
+                        </tr>
+                    </table>
+                </td>
+                <td width="50%" valign="top">
+                    <table width="100%">
+                        <tr>
+                            <td>
+                                <apex:outputText value="CUSTOM NEEDS AND OBJECTIVES" styleClass="title1" /><br/>
+                                <apex:outputText value="What is the value of the Asset being purchased?" styleClass="subTitle1"/>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="dataReadOnly">
+                                <apex:outputField value="{!q.Vehicle_Price__c}" label=" "/>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="dataReadOnly">
+                                <apex:outputText value="Comments"/><br/><br/>
+                            </td>
+                        </tr>
+                        <!-- Deposit -->
+                        <tr>
+                            <td>
+                                <apex:outputText value="Is customer intending to make a cash contribution (deposit) to the purchase?" styleClass="subTitle1"/>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="dataReadOnly">
+                                <apex:outputText value="Comments"/><br/><br/>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <apex:image url="{!$Resource.CheckIcon}" height="14" rendered="{!depositYes}"/>
+                                <apex:image url="{!$Resource.CheckBlankIcon}" height="14" rendered="{!!depositYes}"/>
+                                &nbsp;&nbsp; Yes &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                                <apex:image url="{!$Resource.CheckIcon}" height="14" rendered="{!depositNo}"/>
+                                <apex:image url="{!$Resource.CheckBlankIcon}" height="14" rendered="{!!depositNo}"/>
+                                &nbsp;&nbsp; No
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <apex:outputText value="If yes, what is the amount?"/>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="dataReadOnly">
+                                <apex:outputField value="{!q.Deposit__c}" label=" " rendered="{!depositYes}"/>
+                                <apex:outputText value="$" label=" " rendered="{!depositNo}"/>
+                            </td>
+                        </tr>
+                        <!-- Trade in value -->
+                        <tr>
+                            <td>
+                                <apex:outputText value="Is customer intending to trade in an existing asset (state amount)?" styleClass="subTitle1"/>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="dataReadOnly">
+                                <apex:outputText value="Comments"/><br/><br/>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <apex:image url="{!$Resource.CheckIcon}" height="13" rendered="{!tradeInYes}"/>
+                                <apex:image url="{!$Resource.CheckBlankIcon}" height="13" rendered="{!!tradeInYes}"/>
+                                &nbsp;&nbsp; Yes &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                                <apex:image url="{!$Resource.CheckIcon}" height="13" rendered="{!tradeInNo}"/>
+                                <apex:image url="{!$Resource.CheckBlankIcon}" height="13" rendered="{!!tradeInNo}"/>
+                                &nbsp;&nbsp; No
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <apex:outputText value="If yes, what is the amount?"/>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="dataReadOnly">
+                                <apex:outputField value="{!q.Trade_In__c}" label=" " rendered="{!tradeInYes}"/>
+                                <apex:outputText value="$" label=" " rendered="{!tradeInNo}"/>
+                            </td>
+                        </tr>
+                        <!-- Payout on Trade In -->
+                        <tr>
+                            <td>
+                                <apex:outputText value="Does the customer have an existing loan on the asset they are trading in?" styleClass="subTitle1"/>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="dataReadOnly">
+                                <apex:outputText value="Comments"/><br/><br/>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <apex:image url="{!$Resource.CheckIcon}" height="13" rendered="{!payoutYes}"/>
+                                <apex:image url="{!$Resource.CheckBlankIcon}" height="13" rendered="{!!payoutYes}"/>
+                                &nbsp;&nbsp; Yes &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                                <apex:image url="{!$Resource.CheckIcon}" height="13" rendered="{!payoutNo}"/>
+                                <apex:image url="{!$Resource.CheckBlankIcon}" height="13" rendered="{!!payoutNo}"/>
+                                &nbsp;&nbsp; No
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <apex:outputText value="If yes, what is the amount?"/>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="dataReadOnly">
+                                <apex:outputField value="{!q.Payout_On__c}" label=" " rendered="{!payoutYes}"/>
+                                <apex:outputText value="$" label=" " rendered="{!payoutNo}"/>
+                            </td>
+                        </tr>
+                        <!--  -->
+                        <tr>
+                            <td>
+                                <apex:outputText value="Will there be a balance after trade in to be wholly/partly be included in this new loan application?" styleClass="subTitle1"/>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="dataReadOnly">
+                                <apex:outputText value="Comments"/><br/><br/>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <apex:image url="{!$Resource.CheckIcon}" height="13" rendered="{!balanceYes}"/>
+                                <apex:image url="{!$Resource.CheckBlankIcon}" height="13" rendered="{!!balanceYes}"/>
+                                &nbsp;&nbsp; Yes &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                                <apex:image url="{!$Resource.CheckIcon}" height="13" rendered="{!balanceNo}"/>
+                                <apex:image url="{!$Resource.CheckBlankIcon}" height="13" rendered="{!!balanceNo}"/>
+                                &nbsp;&nbsp; No
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <apex:outputText value="If yes, what is the amount?"/>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="dataReadOnly">
+                                <apex:outputText value="{0, Number, Currency}" label=" " rendered="{!balanceYes}">
+                                    <apex:param value="{!((q.Deposit__c + q.Trade_In__c) - q.Payout_On__c)}" />
+                                </apex:outputText>
+                                <apex:outputText value="$ " label=" " rendered="{!balanceNo}"/>
+                            </td>
+                        </tr>
+                        <!-- NAF -->
+                        <tr>
+                            <td>
+                                <apex:outputText value="What is the required amount to be financed under this new loan application?" styleClass="subTitle1"/>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="dataReadOnly">
+                                <apex:outputField value="{!q.NAF__c}" label=" "/>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="dataReadOnly">
+                                <apex:outputText value="Comments"/><br/><br/>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="checkText">
+                                <apex:image url="{!$Resource.CheckIcon}" height="13"/>
+                                &nbsp;&nbsp; I have informed customer that they may encounter costs, fees and/or charges associated when paying out another loan prior to the maturity date and customer has confirmed they understad
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="checkText">
+                                <apex:image url="{!$Resource.CheckIcon}" height="13"/>
+                                &nbsp;&nbsp; I have informed the customer that where the new loan is refinancing / paying out an existing credit contract, ANZ will confirm the amount payable and it will be factored into ANZs assessment
+                            </td>
+                        </tr>
+                    </table>
+                </td>
+            </tr>
+            <tr>
+                <td valign="top">
+                    <table width="100%">
+                        <tr>
+                            <td>
+                                <apex:outputText value="Are there any products/extras being financed?" styleClass="subTitle1" />
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="dataReadOnly">
+                                <apex:outputText value="Comments"/><br/><br/>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <apex:image url="{!$Resource.CheckIcon}" height="14" rendered="{!insuranceYes}"/>
+                                <apex:image url="{!$Resource.CheckBlankIcon}" height="14" rendered="{!!insuranceYes}"/>
+                                &nbsp;&nbsp; Yes &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                                <apex:image url="{!$Resource.CheckIcon}" height="14" rendered="{!insuranceNo}"/>
+                                <apex:image url="{!$Resource.CheckBlankIcon}" height="14" rendered="{!!insuranceNo}"/>
+                                &nbsp;&nbsp; No
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <apex:outputText value="Asset add ons"/>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="dataReadOnly">
+                                <apex:outputText value="$ " label=" "/>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="dataReadOnly">
+                                <apex:outputText value="Comments"/><br/><br/>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <apex:outputText value="Comprehensive car insurance"/>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="dataReadOnly">
+                                <apex:outputField value="{!q.Insurance_MV_Retail_Price__c}" label=" "/>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="dataReadOnly">
+                                <apex:outputText value="Comments"/><br/><br/>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <apex:outputText value="Other insurances"/>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="dataReadOnly">
+                                <apex:outputText value="{0, Number, Currency}" label=" ">
+                                    <apex:param value="{!totalOtherInsurances}" />
+                                </apex:outputText>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="dataReadOnly">
+                                <apex:outputText value="Comments"/><br/><br/>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <apex:outputText value="Originator and/or other fees"/>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="dataReadOnly">
+                                <apex:outputField value="{!q.DOF__c}" label=" "/>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="dataReadOnly">
+                                <apex:outputText value="Comments"/><br/><br/>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="checkText">
+                                <apex:image url="{!$Resource.CheckIcon}" height="14"/>
+                                &nbsp;&nbsp; I have confirmed the customer understand and accepts the extent to which the 'add-on' features, insurances and fees have contributed to their credit contract financed amount, repayment and overall term
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <apex:outputText value="Net amount to finance?" styleClass="subTitle1" />
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="dataReadOnly">
+                                <apex:outputField value="{!q.NAF__c}" label=" "/>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <br/>
+                                <apex:outputText value="PREFERRED LOAN STRUCTURE (APPLICANT INPUT)" styleClass="title1" /><br/>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="dataReadOnly">
+                                Term (12-84 months) &nbsp;&nbsp;&nbsp;&nbsp; <apex:outputField value="{!q.Term__c}" label=" "/>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="dataReadOnly">
+                                <apex:outputText value="Comments"/><br/><br/>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="checkText">
+                                <apex:image url="{!$Resource.CheckIcon}" height="14"/>
+                                &nbsp;&nbsp; I have explained to the consequences electing a short versus longer term with respect to repayments made over the term and total interst paid
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="checkText">
+                                <apex:image url="{!$Resource.CheckIcon}" height="14"/>
+                                &nbsp;&nbsp; I have explained if they terminate the loan early or make extra payments, they may incur early termination fees and early repayment costs and I have provided Early Repayment PDF
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <apex:outputText value="Preferred payment frequency" styleClass="subTitle1" />
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <apex:image url="{!$Resource.CheckBlankIcon}" height="14"/>
+                                &nbsp;&nbsp; Fortnightly &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                                <apex:image url="{!$Resource.CheckIcon}" height="14"/>
+                                &nbsp;&nbsp; Monthly
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="dataReadOnly">
+                                <apex:outputText value="Comments"/><br/><br/>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <apex:image url="{!$Resource.CheckIcon}" height="14"/>
+                                &nbsp;&nbsp; I have considered the source and frequency of customers income
+                            </td>
+                        </tr>
+                    </table>
+                </td>
+                <td valign="top">
+                    <table width="100%">
+                        <tr>
+                            <td>
+                                <apex:outputText value="Is a balloon payment requested on this new loan?" styleClass="subTitle1" />
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <apex:image url="{!$Resource.CheckIcon}" height="14" rendered="{!balloonYes}"/>
+                                <apex:image url="{!$Resource.CheckBlankIcon}" height="14" rendered="{!!balloonYes}"/>
+                                &nbsp;&nbsp; Yes &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                                <apex:image url="{!$Resource.CheckIcon}" height="14" rendered="{!balloonNo}"/>
+                                <apex:image url="{!$Resource.CheckBlankIcon}" height="14" rendered="{!!balloonNo}"/>
+                                &nbsp;&nbsp; No
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <apex:outputText value="What is the amount?"/>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="dataReadOnly">
+                                <apex:outputField value="{!q.Residual_Value__c}" label=" " rendered="{!AND(q.Residual_Value__c != NULL,q.Residual_Value__c > 0)}"/>&nbsp;
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <apex:outputText value="Please record the reason for balloon:"/>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="dataReadOnly">
+                                <apex:outputText value="Payment structure." label=" " rendered="{!balloonYes}" />&nbsp;<br/><br/>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="checkText">
+                                <apex:image url="{!$Resource.CheckIcon}" height="14" rendered="{!balloonYes}"/>
+                                <apex:image url="{!$Resource.CheckBlankIcon}" height="14" rendered="{!!balloonYes}"/>
+                                &nbsp;&nbsp; I have explained this is a lump sum payment at the end of a loan that the customer must pay to settle the debt. This enables payment of lower instalments during the term of the loan and can be paid in full at the end of the term, or refinanced into another loan (subject to credit approval) - however this will incur interest costs.
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <apex:outputText value="if a balloon repayment is included, does the customer intend to sell or trade in the asset at the end of the loan term to meet the balloon payment?" label=" "/>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <apex:image url="{!$Resource.CheckIcon}" height="14"/>
+                                &nbsp;&nbsp; Yes &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                                <apex:image url="{!$Resource.CheckBlankIcon}" height="14"/>
+                                &nbsp;&nbsp; No
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <apex:outputText value="if no, what is the plan to clear the balloon?"/>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <apex:image url="{!$Resource.CheckBlankIcon}" height="14"/>
+                                &nbsp;&nbsp; Payout &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                                <apex:image url="{!$Resource.CheckBlankIcon}" height="14"/>
+                                &nbsp;&nbsp; Refinance
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <apex:image url="{!$Resource.CheckBlankIcon}" height="14"/>
+                                &nbsp;&nbsp; I have explained to customer this will be subject to approval and will incur interest costs
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <apex:image url="{!$Resource.CheckBlankIcon}" height="14"/>
+                                &nbsp;&nbsp; Customer has confirmed they still wish to continue with balloon
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <strong>Note:</strong> Balloons will be assessed based on estimated value of the asset at the end of the loan term.
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <br/>
+                                <apex:outputText value="AKNOWLEDGEMENTS" styleClass="title1" /><br/><br/>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="dataReadOnly">
+                                <apex:outputText value="Customer name"/>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="dataReadOnly">
+                                Date &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <apex:outputText value="_____/_____/__________"/>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="dataReadOnly">
+                                <apex:outputText value="Customer name"/>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="dataReadOnly">
+                                Date &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <apex:outputText value="_____/_____/__________"/>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="dataReadOnly">
+                                <apex:outputText value="Introducer name"/>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="dataReadOnly">
+                                Date &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <apex:outputText value="_____/_____/__________"/>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="dataReadOnly">
+                                <apex:outputText value="Customer signature"/><br/><br/><br/>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="dataReadOnly">
+                                <apex:outputText value="Customer signature"/><br/><br/><br/>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="dataReadOnly">
+                                <apex:outputText value="Introducer signature"/><br/><br/><br/>
+                            </td>
+                        </tr>
+                    </table>
+                </td>
+            </tr>
+        </table>
+    </apex:outputPanel>
+    <apex:outputPanel rendered="{!!showDocument}">
+        <h1>This document can only be generated when an ANZ Calculation has already been saved.</h1>
+        <!-- <h1>This document can only be generated when an ANZ Calculation has already been saved for Formal Approval.</h1> -->
+    </apex:outputPanel>
+    <apex:outputField value="{!o.New_Used__c}" rendered="false"/>
+</apex:page>

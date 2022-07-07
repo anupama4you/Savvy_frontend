@@ -1,0 +1,112 @@
+<apex:page controller="DisplayStaffPartnerContactsExtension" showHeader="true" sidebar="true" standardStylesheets="true"
+  cache="false">
+  <apex:includeScript value="/support/console/28.0/integration.js" />
+  <!-- Partner Portal Styles -->
+  <apex:outputPanel rendered="{!isBrokerPartnerUser}">
+    <style type="text/css">
+      html .brandQuaternaryBgr,
+      .titleDiv {
+        background: #ffffff !important;
+      }
+      .bPageBlock {
+        border: 1px solid white !important;
+      }
+    </style>
+  </apex:outputPanel>
+  <apex:sectionHeader title="Staff & Partner Contacts" />
+  <apex:form id="formData">
+    <apex:pageBlock >
+      <apex:outputPanel id="main">
+        <apex:tabPanel switchType="list" id="tbPnlContactList">
+          <apex:tab label="Partner" name="tbPartner" id="tab1">
+            <apex:pageBlock >
+              <apex:pageBlockButtons location="top" rendered="true">
+                <apex:commandButton action="{!newPartner}" value="New Partner" reRender="formData" rendered="{!!isShowForm}" status="sts"
+                />
+                <apex:commandButton action="{!save}" value="Save" id="btnSave" reRender="formData" rendered="{!isShowForm}" status="sts"
+                />
+                <apex:commandButton action="{!deletePartner}" value="Delete" id="btnDelete" reRender="formData" rendered="{!isShowForm}"
+                  status="sts" />
+                <apex:commandButton action="{!cancel}" value="Cancel" id="btnCancel" immediate="true" reRender="formData" rendered="{!isShowForm}"
+                  status="sts" /> &nbsp;&nbsp;&nbsp;&nbsp;
+                <apex:actionStatus startText="Processing..." id="sts" />
+
+              </apex:pageBlockButtons>
+              <apex:pageMessages id="msg" />
+              <apex:pageBlockSection title="New / Edit" id="pnlForm" rendered="{!isShowForm}">
+                <apex:inputField value="{!objPartner.name}" style="font-weight: bold " />
+                <apex:inputField value="{!objPartner.department__c}" />
+                <apex:inputField value="{!objPartner.contact__c}" />
+                <apex:inputField value="{!objPartner.title__c}" />
+                <apex:inputField value="{!objPartner.phone__c}" />
+                <apex:inputField value="{!objPartner.email__c }" />
+                <apex:inputField value="{!objPartner.description__c }" />
+                <br/>
+              </apex:pageBlockSection>
+
+
+              <apex:repeat value="{!mapPartnerContacts}" var="stringKey">
+                <apex:outputText value="{!stringKey}" style="font-weight: bold; font-size: 12px " />
+                <apex:pageBlockTable value="{!mapPartnerContacts[stringKey]}" var="d" id="oppLst">
+                  <apex:column headerValue="Department" value="{!d.department__c}" width="10%" />
+                  <apex:column headerValue="Contact" value="{!d.contact__c}" width="15%" />
+                  <apex:column headerValue="Title" value="{!d.title__c}" width="10%" />
+                  <apex:column headerValue="Phone" value="{!d.phone__c}" width="10%" />
+                  <apex:column headerValue="Email" value="{!d.email__c}" width="15%" />
+                  <apex:column headerValue="Description" value="{!d.description__c}" width="30%" />
+                  <apex:column headerValue="Actions" width="10%">
+                    <apex:outputLink target="_self" value="/{!d.id}">View</apex:outputLink>&nbsp;&nbsp;&nbsp;
+                    <apex:commandLink action="{!loadForm}" reRender="main" status="sts" value="Edit/Delete">
+                      <apex:param name="paramId" value="{!d.Id}" assignTo="{!recordId}" />
+                    </apex:commandLink>
+                  </apex:column>
+                </apex:pageBlockTable>
+                <br/>
+              </apex:repeat>
+
+
+            </apex:pageBlock>
+
+          </apex:tab>
+
+          <apex:tab label="Staff" name="tbStaff" id="tab2">
+            <apex:outputPanel id="mainContacts">
+              <div class="pBody">
+                <apex:actionRegion >
+                  <apex:inputText value="{!searchContact}" size="20" title="Name" />
+                  <apex:commandButton id="goStaff" value="Go!" action="{!loadConsultants}" reRender="mainContacts" status="stsSearch" />
+                  <apex:commandButton action="{!cancelSearchConsultants}" value="Cancel" id="btnCancelSearch" immediate="true" reRender="mainContacts"
+                    status="stsSearch" />
+                </apex:actionRegion>
+                &nbsp;&nbsp;&nbsp;&nbsp;
+                <apex:actionStatus startText="Processing..." id="stsSearch" />
+                <br/>
+                <apex:outputText >You can use "*" as a wildcard next to other characters to improve your search results.</apex:outputText>
+              </div>
+              <br/>
+
+              <apex:repeat value="{!mapStaffContacts}" var="stringKey">
+                <apex:outputText value="{!stringKey}" style="font-weight: bold; font-size: 12px " />
+                <apex:pageBlockTable value="{!mapStaffContacts[stringKey]}" var="r" id="oppLst">
+                  <!-- <apex:column headerValue="Action">
+                                        <apex:outputLink value="/{!r.id}?noredirect=1&isUserEntityOverride=1">View</apex:outputLink>&nbsp;&nbsp;&nbsp;
+                                    </apex:column> -->
+                  <apex:column value="{!r.name}" headerValue="Name" width="25%" />
+                  <apex:column value="{!r.extension}" headerValue="Extension" width="10%" />
+                  <apex:column value="{!r.phone}" headerValue="Direct" width="10%" />
+                  <apex:column value="{!r.mobilephone}" headerValue="Mobile" width="10%" />
+                  <apex:column value="{!r.email }" headerValue="Email" width="25%" />
+                  <apex:column value="{!r.title }" headerValue="Title" width="20%" />
+                </apex:pageBlockTable>
+                <br/>
+              </apex:repeat>
+            </apex:outputPanel>
+          </apex:tab>
+
+        </apex:tabPanel>
+
+        <br/>
+      </apex:outputPanel>
+    </apex:pageBlock>
+  </apex:form>
+</apex:page>

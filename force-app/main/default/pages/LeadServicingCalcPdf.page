@@ -1,0 +1,264 @@
+<apex:page standardController="Lead__c" extensions="LeadServicingCalcPdfExtension" renderAs="pdf">
+<apex:stylesheet value="{!$Resource.AppPdfCss}"/>    
+    <apex:variable value="{!Lead__c}" var="o" />
+    <div class="header">
+        <table width="100%">
+            <tr style="border: 0px;" width="100%">
+                <td style="border: 0px;" width="30%" align="left">
+                    <apex:image url="{!$Resource.newSavvyLogo}" alt="Logo" />
+                </td>
+                <td style="border: 0px;" width="70%" align="left">
+                    <p><span style="color:#ee245f;">FINANCE APPLICATION</span><br/>
+                        <span style="font-size:0.8em;"><span style="color:#ee245f;">E</span> applications@savvy.com.au <font>|</font> <span style="color:#ee245f;">P</span> 1300 974 066 <font>|</font> <span style="color:#ee245f;">F</span> 1300 978 066<br/>
+                            <span style="color:#ee245f;">A</span> Level 1, 145 The Parade, Norwood, SA 5067 <font>|</font> <span style="color:#ee245f;">www</span>.savvy.<span style="color:#ee245f;">com.au</span></span></p>
+                </td>
+            </tr>
+        </table>
+    </div>
+    <div class="footer">
+        <div class="footerContent">Page <span class="pagenumber"/> of <span class="pagecount"/></div>
+    </div>
+    <div class="content">
+        <h3>Lead Servicing Calculation for &nbsp;<apex:outputField id="oppName" value="{!o.name}"/></h3>
+        <table width="100%">
+            <tr>
+                <td width="25%"><apex:outputLabel style="display:inline-block;" value="Lender: "/></td>
+                <td width="20%"><apex:outputText value="{!dto.lenderName}"/></td>
+                <td width="25%"><apex:outputLabel style="display:inline-block;" value="NET MONTHLY INCOME: "/></td>
+                <td width="30%"><h3><apex:outputText value="{0, Number, Currency}" id="fldCalcTotNetMonthlyIncome">
+                                    <apex:param value="{!dto.totNetMonthlyIncome}" />
+                                </apex:outputText></h3></td>
+            </tr>
+            <tr>
+                <!-- <td><apex:outputLabel style="display:inline-block;" value="State / Area: "/></td>
+                <td><apex:outputText value="{!dto.state}"/> / <apex:outputText value="{!dto.area}"/></td> -->
+                <td><apex:outputLabel style="display:inline-block;" value="NAF: "/></td>
+                <td>
+                    <apex:outputText value="{0, Number, Currency}" >
+                        <apex:param value="{!dto.naf}" />
+                    </apex:outputText>
+                </td>
+                <td><apex:outputLabel style="display:inline-block;" value="Liabilities: "/></td>
+                <td><strong><apex:outputText value="{0, Number, Currency}" >
+                                    <apex:param value="{!dto.totLiabilities}" />
+                                </apex:outputText></strong></td>
+            </tr>
+            <tr>
+                <td><apex:outputLabel style="display:inline-block;" value="Type: "/></td>
+                <td><apex:outputText value="{!dto.maritalStatus}"/></td>
+                <td><apex:outputLabel style="display:inline-block;" value="Rent/Mtge Paid: " /></td>
+                <td width="25%">
+                    <strong><apex:outputText value="{0, Number, Currency}" >
+                            <apex:param value="{!dto.splitRentMortgageTotal}" />
+                        </apex:outputText></strong>&nbsp;&nbsp;
+                    <apex:outputText value="(Split, total: {0, Number, Currency})" rendered="{!dto.splitRentMortgage}">
+                        <apex:param value="{!dto.totRentMtgPaid}" />
+                    </apex:outputText>
+                </td>
+            </tr>
+            <tr>
+                <td><apex:outputLabel style="display:inline-block;" value="No. of Dependents: "/></td>
+                <td><apex:outputText value="{!dto.noDependents}"/></td>
+                <td><apex:outputLabel style="display:inline-block;" value="Living Expenses: "/></td>
+                <td>
+                    <apex:outputText value="{0, Number, Currency}" >
+                        <apex:param value="{!dto.splitLivingExpensesTotal}" />
+                    </apex:outputText>&nbsp;&nbsp;                    
+                    <apex:outputText value="(Split, total: {0, Number, Currency})" rendered="{!dto.splitLivingExpenses}">
+                        <apex:param value="{!dto.totLivingExpenses}" />
+                    </apex:outputText>
+                </td>
+            </tr>
+            <tr>
+                <td><apex:outputLabel style="display:inline-block;" value="Splitting expenses?: "/></td>
+                <td><apex:outputText value="{!dto.splittingExpenses}"/></td>
+                <td><apex:outputLabel style="display:inline-block;" value="Credit Cards: "/></td>
+                <td><apex:outputText value="{0, Number, Currency}" id="fldCalcTotOtherDebts">
+                                    <apex:param value="{!dto.totOtherDebts}" />
+                                </apex:outputText></td>
+            </tr>
+            <tr>
+                <td><apex:outputLabel style="display:inline-block;" value="Partner's income: "/></td>
+                <td><apex:outputText value="{0, Number, Currency}" >
+                                    <apex:param value="{!dto.partnerIncome}" />
+                                </apex:outputText></td>
+                <td rowspan="2"><apex:outputLabel style="display:inline-block;" value="Amount available for loan payment: "/></td>
+                <td rowspan="2"><h3><apex:outputText value="{0, Number, Currency}" >
+                                    <apex:param value="{!dto.totAmountLoanPayment}" />
+                                </apex:outputText></h3></td>
+            </tr>
+            <tr>
+                <td><apex:outputLabel style="display:inline-block;" value="Net Partner's Income: "/></td>
+                <td><apex:outputText value="{0, Number, Currency}" id="fldCalcNetPartnerIncome">
+                                                    <apex:param value="{!dto.splitNetPartIncomeTotal}" />
+                                                </apex:outputText></td>
+            </tr>
+           
+        </table>
+        <h3>Income (Monthly)</h3>
+        <table width="100%">
+            <tr>
+                <td width="35%"><apex:outputLabel style="display:inline-block;" value="Applicant 1 Income: "/></td>
+                <td width="15%"><apex:outputText value="{0, Number, Currency}" >
+                                    <apex:param value="{!dto.applicantIncome1}" />
+                                </apex:outputText></td>
+                <td width="35%"><apex:outputLabel style="display:inline-block;" value="Applicant 2 Income: "/></td>
+                <td width="15%"><apex:outputText value="{0, Number, Currency}" >
+                                    <apex:param value="{!dto.applicantIncome2}" />
+                                </apex:outputText></td>
+            </tr>
+            <tr>
+                <td><apex:outputLabel style="display:inline-block;" value="Applicant 1 Other Income: "/></td>
+                <td><apex:outputText value="{0, Number, Currency}" >
+                                    <apex:param value="{!dto.applicantOtherIncome1}" />
+                                </apex:outputText></td>
+                <td><apex:outputLabel style="display:inline-block;" value="Applicant 2 Other Income: " /></td>
+                <td><apex:outputText value="{0, Number, Currency}" >
+                                    <apex:param value="{!dto.applicantOtherIncome2}" />
+                                </apex:outputText></td>
+            </tr>
+        </table>
+        <h3>Expenses</h3>
+        <apex:outputPanel rendered="{!!ISBLANK(dto.servCalcLoanType) || !ISBLANK(dto.servCalcLoanType2) || !ISBLANK(dto.servCalcLoanType3) || !ISBLANK(dto.servCalcLoanType4)}">
+            <strong>Liability</strong>
+            <apex:outputPanel layout="block" rendered="{!!ISBLANK(dto.servCalcLoanType)}">
+            <table width="100%">
+                <tr>
+                    <td width="30%">Loan Type</td>
+                    <td width="30%">Frequency</td>
+                    <td width="30%">Amount</td>
+                </tr>
+                <tr>
+                    <td width="30%">
+                        <apex:outputText value="{!dto.servCalcLoanType}"/>
+                    </td>
+                    <td width="30%">
+                        <apex:outputText value="{!dto.servCalcLoanPayFrecuency}"/>
+                    </td>
+                    <td width="30%">
+                        <apex:outputText value="{0, Number, Currency}" >
+                                    <apex:param value="{!dto.servCalcLoanPayAmount}" />
+                                </apex:outputText>
+                    </td>
+                </tr>
+            </table>
+            </apex:outputPanel>
+            <apex:outputPanel layout="block" rendered="{!!ISBLANK(dto.servCalcLoanType2)}">
+                <table width="100%">
+                    <tr>
+                        <td width="30%">
+                            <apex:outputText value="{!dto.servCalcLoanType2}"/>
+                        </td>
+                        <td width="30%">
+                            <apex:outputText value="{!dto.servCalcLoanPayFrecuency2}"/>
+                        </td>
+                        <td width="30%">
+                            <apex:outputText value="{0, Number, Currency}" >
+                                    <apex:param value="{!dto.servCalcLoanPayAmount2}" />
+                                </apex:outputText>
+                        </td>
+                    </tr>
+                </table>
+            </apex:outputPanel>
+            <apex:outputPanel layout="block" rendered="{!!ISBLANK(dto.servCalcLoanType3)}">
+                <table width="100%">
+                    <tr>
+                        <td width="30%">
+                            <apex:outputText value="{!dto.servCalcLoanType3}"/>
+                        </td>
+                        <td width="30%">
+                            <apex:outputText value="{!dto.servCalcLoanPayFrecuency3}"/>
+                        </td>
+                        <td width="30%">
+                            <apex:outputText value="{0, Number, Currency}" >
+                                    <apex:param value="{!dto.servCalcLoanPayAmount3}" />
+                                </apex:outputText>
+                        </td>
+                    </tr>
+                </table>
+            </apex:outputPanel>
+            <apex:outputPanel layout="block" rendered="{!!ISBLANK(dto.servCalcLoanType4)}">
+                <table width="100%">
+                    <tr>
+                        <td width="30%">
+                            <apex:outputText value="{!dto.servCalcLoanType4}"/>
+                        </td>
+                        <td width="30%">
+                            <apex:outputText value="{!dto.servCalcLoanPayFrecuency4}"/>
+                        </td>
+                        <td width="30%">
+                            <apex:outputText value="{0, Number, Currency}" >
+                                    <apex:param value="{!dto.servCalcLoanPayAmount4}" />
+                                </apex:outputText>
+                        </td>
+                    </tr>
+                </table>
+            </apex:outputPanel>
+    	</apex:outputPanel>
+        <br/>
+        <strong>Rent / Mortgage</strong>
+        <table width="100%">
+            <tr>
+                <td width="25%">Frequency:</td>
+                <td width="25%"><apex:outputText value="{!dto.servCalcRentPayFrecuency}"/></td>
+                <td width="25%">Amount:</td>
+                <td width="25%"><apex:outputText value="{0, Number, Currency}" >
+                                    <apex:param value="{!dto.servCalcRentPayAmount}" />
+                                </apex:outputText></td>
+            </tr>
+        </table>
+        <br/>
+        <table width="100%">
+            <tr>
+                <td colspan="2"><strong>Credit Cards</strong></td>
+                <td colspan="2"><strong>Liberty Calculator</strong></td>
+            </tr>
+            <tr>
+                <td width="20%">Issuer:</td>
+                <td width="20%"><apex:outputText value="{!dto.servCalcCCardIssuer}"/></td>
+                <td width="35%">Net - Non Centrelink Income:</td>
+                <td width="25%"><apex:outputText value="{0, Number, Currency}">
+                                                <apex:param value="{!dto.servCalcCLinkNetNonCentIncome}" />
+                                            </apex:outputText></td>
+            </tr>
+            <tr>
+                <td>Credit Limit:</td>
+                <td><apex:outputText value="{0, Number, Currency}" >
+                                    <apex:param value="{!dto.servCalcCCardCreditLimit}" />
+                                </apex:outputText></td>
+                <td>Centrelink Income:</td>
+                <td><apex:outputText value="{0, Number, Currency}">
+                                                <apex:param value="{!dto.servCalcCLinkIncome}" />
+                                            </apex:outputText></td>
+            </tr>
+            <tr>
+                <td>Amount Owing:</td>
+                <td><apex:outputText value="{0, Number, Currency}" >
+                                    <apex:param value="{!dto.servCalcCCardAmountOwing}" />
+                                </apex:outputText></td>
+                <td>Total Assessable Income:</td>
+                <td><apex:outputText value="{0, Number, Currency}">
+                                                <apex:param value="{!dto.servCalcCLinkTotalIncome}" />
+                                            </apex:outputText></td>
+            </tr>
+            <tr>
+                <td>Monthly Payment:</td>
+                <td><apex:outputText value="{0, Number, Currency}">
+                                                <apex:param value="{!dto.servCalcCCardMonthlyPayment}" />
+                                            </apex:outputText></td>
+                <td>Centrelink Income %:</td>
+                <td><apex:outputText value="{0, Number, ##}%" >
+                                                <apex:param value="{!dto.servCalcCLinkIncomePercentage}" />
+                                            </apex:outputText></td>
+            </tr>
+            <tr>
+                <td colspan="2">&nbsp;</td>
+                
+                <td>Annual C/L to Loannet:</td>
+                <td><apex:outputText value="{0, Number, Currency}">
+                                                <apex:param value="{!dto.servCalcCLinkAnnualToLoannet}" />
+                                            </apex:outputText></td>
+            </tr>
+        </table>
+    </div>
+</apex:page>

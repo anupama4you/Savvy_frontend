@@ -1,0 +1,48 @@
+/* Calculators styles */
+@import 'c/quoteCommonsStyles';
+
+.c-products {
+  padding-right: 25px;
+  padding-left: 15px;
+}
+
+.inTableTitle {
+  font-weight: bold;
+  font-size: small;
+  padding: 10px;
+}
+
+.inTableText {
+  font-size: smaller;
+  padding: 10px;
+}
+
+.titleTableTab {
+  border: 1px solid #ddd;
+  border-bottom: transparent;
+  display: inline-block;
+  background-color: #fff;
+  position: relative;
+  padding: 6px;
+  top: 17px;
+}
+
+.actionButton {
+  font-weight: bold;
+}
+
+.presentationButton {
+  font-weight: bold;
+  /* --slds-c-button-brand-text-color: #f4f7f9; */
+  /* --slds-c-button-brand-color-background: var(--lwc-palettePurple50); */
+}
+
+tr {
+  border-collapse: collapse;
+  border-bottom:1px solid #ddd;
+}
+
+.c-card-body {
+  padding-right: 25px;
+  padding-left: 15px;
+}

@@ -1,0 +1,46 @@
+<apex:component controller="StaticInfoController">
+	<apex:attribute name="useTabs" type="Boolean" description="Use Tab CSS styles" default="false" />
+	<apex:attribute name="useStatic" type="Boolean" description="Use Tab CSS styles" default="false" />
+	<apex:attribute name="category" type="String" description="Use Tab CSS styles" assignTo="{!cat}" />
+	<!-- <apex:pageBlock title="Help" rendered="{!NOT(useTabs)}">
+		<apex:outputPanel layout="block">
+			<apex:commandButton action="{!showObjections}" value="Objections Handling" reRender="pnlContent" />
+			<apex:commandButton action="{!showFollow}" value="Follow Up & Follow Through & Closing" reRender="pnlContent" />
+			<apex:commandButton action="{!showRapportBuilding}" value="Rapport Building" reRender="pnlContent" />
+			<apex:commandButton action="{!showPreApprovalCall}" value="Pre-approval Call, VD Referral & Protection Package Reminder" reRender="pnlContent" />
+			<apex:commandButton action="{!showInvoiceRequest}" value="Invoice Requested/Vendor Doc Request (Private Sale)" reRender="pnlContent" />
+			<apex:commandButton action="{!showInsuranceObjetions}" value="Objection Handling For Insurance" reRender="pnlContent" />
+			<apex:commandButton action="{!showRealLife}" value="Real Life Examples – Insurance" reRender="pnlContent" />
+		</apex:outputPanel>
+		<hr/>
+		<apex:outputPanel id="pnlContent">
+			<apex:repeat value="{!contentLst}" var="a">
+				<h1>{!a.Name}</h1>
+				<hr/>
+				<apex:outputField value="{!a.Content__c}"/>
+			</apex:repeat>
+		</apex:outputPanel>
+	</apex:pageBlock> -->
+	<!-- HTML Styles -->
+	<apex:outputPanel rendered="{!useTabs}">
+		<ul class="nav nav-tabs" id="myTab" role="tablist">
+			<li class="nav-item">
+		    	<a class="nav-link active" id="{!firstTab.Id}-tab" data-toggle="tab" href="#{!firstTab.Id}" role="tab" aria-controls="{!firstTab.Id}" aria-selected="false"><apex:outputField value="{!firstTab.Category__c}"/></a>
+			</li>
+			<apex:repeat value="{!tabs}" var="a">
+			  	<li class="nav-item">
+			    	<a class="nav-link" id="{!a.Id}-tab" data-toggle="tab" href="#{!a.Id}" role="tab" aria-controls="{!a.Id}" aria-selected="false"><apex:outputField value="{!a.Category__c}"/></a>
+				</li>
+			</apex:repeat>
+		</ul>
+		<div class="tab-content" id="myTabContent">
+			<div class="tab-pane fade active show" id="{!firstTab.Id}" role="tabpanel" aria-labelledby="{!firstTab.Id}-tab"><apex:outputText value="{!firstTab.Content__c}" escape="false"/></div>
+			<apex:repeat value="{!tabs}" var="a">
+		  		<div class="tab-pane fade" id="{!a.Id}" role="tabpanel" aria-labelledby="{!a.Id}-tab"><apex:outputText value="{!a.Content__c}" escape="false"/></div>
+		  	</apex:repeat>
+		</div>
+	</apex:outputPanel>
+	<apex:outputPanel rendered="{!useStatic}">
+		<apex:outputField value="{!categoryContent.Content__c}"/>
+	</apex:outputPanel>
+</apex:component>

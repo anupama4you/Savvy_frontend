@@ -1,0 +1,1959 @@
+<apex:component controller="YTDDetailsController">
+    <apex:attribute name="opp" type="Id" description="Opportunity Data" required="true" assignTo="{!opportunityId}"/>
+    <!--<apex:attribute name="app" type="Id" description="Application Data" required="true" assignTo="{!applicationId}"/>-->
+    <apex:attribute name="numberForYTDCalculation" type="Integer" description="Number for YTD calculation" required="true"/>
+    <apex:attribute name="n" type="String" description="Name" required="true"/>
+    <apex:outputPanel id="YTDSection" layout="block" rendered="{!OR(app1.Type__c == 'Esanda',app1.Type__c == 'Pepper')}">
+        <h3>{!numberForYTDCalculation}.) 
+            <apex:outputText value="ANZ" rendered="{!app1.Type__c == 'Esanda'}" />
+            <apex:outputText value="Pepper" rendered="{!app1.Type__c == 'Pepper'}" />
+            - Year To Date Calculation / Income for Applicant 1:</h3>
+        <table width="100%">
+            <tr>
+                <td width="13%">
+                    <apex:outputLabel value="Start Date: " for="fldStartDate"/>
+                </td>
+                <td width="16%">
+                    <apex:outputText value="{0,date,dd/MM/yyyy}">
+                        <apex:param value="{!app1.Start_Date__c}" />
+                    </apex:outputText>
+                </td>
+                <td width="13%">
+                    <apex:outputLabel value="End Date: " for="fldNetMontIncome"/>
+                </td>
+                <td width="16%">
+                    <apex:outputText value="{0,date,dd/MM/yyyy}">
+                        <apex:param value="{!app1.End_Date__c}" />
+                    </apex:outputText>
+                </td>
+                <td width="25%">
+                    <apex:outputLabel value="Weeks Between Them: " for="fldYtdWeeks"/>
+                </td>
+                <td width="14%"><strong>
+                    <apex:outputText id="fldYtdWeeks" value="{!app1.Weeks__c}"/></strong>
+                </td>
+            </tr>
+        </table>
+        <table width="100%">
+            <tr>
+                <td>Net YTD Income From Payslips:</td>
+                <td>
+                    <strong><!--<apex:outputText styleClass="labelValueTyped" id="fldYtdIncome" value="{!app1.Net_Annual_Income__c}"/>-->
+                        <apex:outputText value="{0, Number, Currency}">
+                            <apex:param value="{!app1.Net_Annual_Income__c}" />
+                        </apex:outputText>
+                    </strong>
+                </td>
+                <td><strong>
+                    <apex:outputText value="{0, Number, Currency}">
+                        <apex:param value="{!app1.Net_Income__c}" />
+                    </apex:outputText></strong>
+                </td>
+                <td>Net Monthly <apex:outputText value="(ANZ)" rendered="{!app1.Type__c == 'Esanda'}" /></td>
+            </tr>
+            <tr>
+                <td>
+                    <apex:outputText value="Annual Gross Base Income" rendered="{!app1.Type__c == 'Esanda'}" />
+                    <apex:outputText value="Gross YTD Income From Payslip" rendered="{!app1.Type__c == 'Pepper'}" />
+                </td>
+                <td>
+                    <strong><!--<apex:outputText id="fldYbaseIncome" value="{!app1.Gross_YTD_Income__c}"/>-->
+                        <apex:outputText value="{0, Number, Currency}">
+                            <apex:param value="{!app1.Gross_YTD_Income__c}" />
+                        </apex:outputText>
+                    </strong>
+                </td>
+                <td><strong>
+                    <apex:outputText value="{0, Number, Currency}">
+                        <apex:param value="{!app1.Gross_Net_Income__c}" />
+                    </apex:outputText></strong>
+                </td>
+                <td>Net Monthly (Normal Pay <apex:outputText value="- Amount to be entered into ANZ" rendered="{!app1.Type__c == 'Esanda'}" />)</td>
+            </tr>
+            <tr style="display: {!IF(app1.Type__c == 'Pepper', '','none')}">
+                <td>Net last pay period income</td>
+                <td>
+                    <apex:outputText value="{0, Number, Currency}">
+                        <apex:param value="{!app1.Net_Last_Income__c}" />
+                    </apex:outputText>
+                    &nbsp;(<apex:outputText value="{!app1.Last_Income_Frequency__c}"/>)
+                </td>
+                <td><strong>
+                    <apex:outputText value="{0, Number, Currency}">
+                        <apex:param value="{!app1.Net_Last_Monthly_Income__c}" />
+                    </apex:outputText></strong>
+                </td>
+                <td>Net Monthly</td>
+            </tr>
+            <tr style="display: {!IF(app1.Type__c == 'Esanda', '','none')}">
+                <td rowspan="3">&nbsp;</td>
+                <td>Difference:</td>
+                <td><strong>
+                    <apex:outputText value="{0, Number, Currency}">
+                        <apex:param value="{!app1.Difference__c}" />
+                    </apex:outputText></strong>
+                </td>
+                <td>Net Monthly (O/T - Amount to be entered into ANZ)</td>
+            </tr>
+            <tr style="display: {!IF(app1.Type__c == 'Esanda', '','none')}">
+                <td>Discounted by 70%:</td>
+                <td><strong>
+                    <apex:outputText value="{0, Number, Currency}">
+                        <apex:param value="{!app1.Discounted__c}" />
+                    </apex:outputText></strong></td>
+                <td>O/T - Amount to be used for serviceability &nbsp;</td>
+            </tr>
+            <tr style="display: {!IF(app1.Type__c == 'Esanda', '','none')}">
+                <td>Monthly Amount to Use for Servicing</td>
+                <td colspan="2"><strong>
+                    <apex:outputText value="{0, Number, Currency}">
+                        <apex:param value="{!app1.Monthly_Amount__c}" />
+                    </apex:outputText></strong></td>
+            </tr>
+            <tr style="display: {!IF(app1.Type__c == 'Esanda', '','none')}">
+                <td colspan="4">Note: Base income - work out ordinary hours + allowances but exclude overtime and commission/bonus.</td>
+            </tr>
+            <tr style="display: {!IF(app1.Type__c == 'Esanda', '','none')}">
+                <td>Comments</td>
+                <td colspan="3"><apex:outputText value="{!app1.Comment__c}"/></td>
+            </tr>
+        </table>
+        <apex:outputPanel layout="block" rendered="{!hasSecondJob1}">
+            <h3><apex:outputText value="ANZ" rendered="{!app12ndJob.Type__c == 'Esanda'}" />
+                <apex:outputText value="Pepper" rendered="{!app12ndJob.Type__c == 'Pepper'}" /> - Year To Date Calculation / Income for Applicant 1 Second Job:</h3>
+            <table width="100%">
+                <tr>
+                    <td width="13%">
+                        <apex:outputLabel value="Start Date: "/>
+                    </td>
+                    <td width="16%">
+                        <apex:outputText value="{0,date,dd/MM/yyyy}">
+                            <apex:param value="{!app12ndJob.Start_Date__c}" />
+                        </apex:outputText>
+                    </td>
+                    <td width="13%">
+                        <apex:outputLabel value="End Date: "/>
+                    </td>
+                    <td width="16%">
+                        <apex:outputText value="{0,date,dd/MM/yyyy}">
+                            <apex:param value="{!app12ndJob.End_Date__c}" />
+                        </apex:outputText>
+                    </td>
+                    <td width="25%">
+                        <apex:outputLabel value="Weeks Between Them: "/>
+                    </td>
+                    <td width="14%"><strong>
+                        <apex:outputText value="{!app12ndJob.Weeks__c}"/></strong>
+                    </td>
+                </tr>
+            </table>
+            <table width="100%">
+                <tr>
+                    <td>Net YTD Income From Payslips:</td>
+                    <td>
+                        <strong><!--<apex:outputText styleClass="labelValueTyped" value="{!app12ndJob.Net_Annual_Income__c}"/>-->
+                            <apex:outputText value="{0, Number, Currency}">
+                                <apex:param value="{!app12ndJob.Net_Annual_Income__c}" />
+                            </apex:outputText>
+                        </strong>
+                    </td>
+                    <td><strong>
+                        <apex:outputText value="{0, Number, Currency}">
+                            <apex:param value="{!app12ndJob.Net_Income__c}" />
+                        </apex:outputText></strong>
+                    </td>
+                    <td>Net Monthly <apex:outputText value="(ANZ)" rendered="{!app12ndJob.Type__c == 'Esanda'}" /></td>
+                </tr>
+                <tr>
+                    <td>
+                        <apex:outputText value="Annual Gross Base Income" rendered="{!app12ndJob.Type__c == 'Esanda'}" />
+                        <apex:outputText value="Gross YTD Income From Payslip" rendered="{!app12ndJob.Type__c == 'Pepper'}" />
+                    </td>
+                    <td>
+                        <strong><!--<apex:outputText value="{!app12ndJob.Gross_YTD_Income__c}"/>-->
+                            <apex:outputText value="{0, Number, Currency}">
+                                <apex:param value="{!app12ndJob.Gross_YTD_Income__c}" />
+                            </apex:outputText>
+                        </strong>
+                    </td>
+                    <td><strong>
+                        <apex:outputText value="{0, Number, Currency}">
+                            <apex:param value="{!app12ndJob.Gross_Net_Income__c}" />
+                        </apex:outputText></strong>
+                    </td>
+                    <td>Net Monthly (Normal Pay <apex:outputText value="- Amount to be entered into ANZ" rendered="{!app12ndJob.Type__c == 'Esanda'}" />)</td>
+                </tr>
+                <tr style="display: {!IF(app12ndJob.Type__c == 'Pepper', '','none')}">
+                    <td>Net last pay period income</td>
+                    <td>
+                        <apex:outputText value="{0, Number, Currency}">
+                            <apex:param value="{!app12ndJob.Net_Last_Income__c}" />
+                        </apex:outputText>
+                        &nbsp;(<apex:outputText value="{!app12ndJob.Last_Income_Frequency__c}"/>)
+                    </td>
+                    <td><strong>
+                        <apex:outputText value="{0, Number, Currency}">
+                            <apex:param value="{!app12ndJob.Net_Last_Monthly_Income__c}" />
+                        </apex:outputText></strong>
+                    </td>
+                    <td>Net Monthly</td>
+                </tr>
+                <tr style="display: {!IF(app12ndJob.Type__c == 'Esanda', '','none')}">
+                    <td rowspan="3">&nbsp;</td>
+                    <td>Difference:</td>
+                    <td><strong>
+                        <apex:outputText value="{0, Number, Currency}">
+                            <apex:param value="{!app12ndJob.Difference__c}" />
+                        </apex:outputText></strong></td>
+                    <td>Net Monthly (O/T - Amount to be entered into ANZ)</td>
+                </tr>
+                <tr style="display: {!IF(app12ndJob.Type__c == 'Esanda', '','none')}">
+                    <td>Discounted by 70%</td>
+                    <td><strong>
+                        <apex:outputText value="{0, Number, Currency}">
+                            <apex:param value="{!app12ndJob.Discounted__c}" />
+                        </apex:outputText></strong>&nbsp;
+                    </td>
+                    <td>O/T - Amount to be used for serviceability&nbsp;</td>
+                </tr>
+                <tr style="display: {!IF(app12ndJob.Type__c == 'Esanda', '','none')}">
+                    <td>Monthly Amount to Use for Servicing</td>
+                    <td colspan="2"><strong>
+                        <apex:outputText value="{0, Number, Currency}">
+                            <apex:param value="{!app12ndJob.Monthly_Amount__c}" />
+                        </apex:outputText></strong>&nbsp;
+                    </td>
+                </tr>
+                <tr style="display: {!IF(app12ndJob.Type__c == 'Esanda', '','none')}">
+                    <td colspan="4">Note: Base income - work out ordinary hours + allowances but exclude overtime and commission/bonus.</td>
+                </tr>
+                <tr style="display: {!IF(app12ndJob.Type__c == 'Esanda', '','none')}">
+                    <td>Comments</td>
+                    <td colspan="3"><apex:outputText value="{!app12ndJob.Comment__c}"/></td>
+                </tr>
+            </table>
+        </apex:outputPanel>
+        <apex:outputPanel layout="block" rendered="{!hasApplicant2}">
+            <h3><apex:outputText value="ANZ" rendered="{!app2.Type__c == 'Esanda'}" />
+                <apex:outputText value="Pepper" rendered="{!app2.Type__c == 'Pepper'}" /> - Year To Date Calculation / Income for Applicant 2:</h3>
+            <table width="100%">
+                <tr>
+                    <td width="13%">
+                        <apex:outputLabel value="Start Date: "/>
+                    </td>
+                    <td width="16%">
+                        <apex:outputText value="{0,date,dd/MM/yyyy}">
+                            <apex:param value="{!app2.Start_Date__c}" />
+                        </apex:outputText>
+                    </td>
+                    <td width="13%">
+                        <apex:outputLabel value="End Date: "/>
+                    </td>
+                    <td width="16%">
+                        <apex:outputText value="{0,date,dd/MM/yyyy}">
+                            <apex:param value="{!app2.End_Date__c}" />
+                        </apex:outputText>
+                    </td>
+                    <td width="25%">
+                        <apex:outputLabel value="Weeks Between Them: "/>
+                    </td>
+                    <td width="14%"><strong>
+                        <apex:outputText value="{!app2.Weeks__c}"/></strong>
+                    </td>
+                </tr>
+            </table>
+            <table width="100%">
+                <tr>
+                    <td>Net YTD Income From Payslips:</td>
+                    <td>
+                        <strong><!--<apex:outputText styleClass="labelValueTyped" value="{!app2.Net_Annual_Income__c}"/>-->
+                            <apex:outputText value="{0, Number, Currency}">
+                                <apex:param value="{!app2.Net_Annual_Income__c}" />
+                            </apex:outputText>
+                        </strong>
+                    </td>
+                    <td><strong>
+                        <apex:outputText value="{0, Number, Currency}">
+                            <apex:param value="{!app2.Net_Income__c}" />
+                        </apex:outputText></strong>
+                    </td>
+                    <td>Net Monthly <apex:outputText value="(ANZ)" rendered="{!app2.Type__c == 'Esanda'}" /></td>
+                </tr>
+                <tr>
+                    <td>
+                        <apex:outputText value="Annual Gross Base Income" rendered="{!app2.Type__c == 'Esanda'}" />
+                        <apex:outputText value="Gross YTD Income From Payslip" rendered="{!app2.Type__c == 'Pepper'}" />
+                    </td>
+                    <td>
+                        <strong><!--<apex:outputText value="{!app2.Gross_YTD_Income__c}"/>-->
+                            <apex:outputText value="{0, Number, Currency}">
+                                <apex:param value="{!app2.Gross_YTD_Income__c}" />
+                            </apex:outputText>
+                        </strong>
+                    </td>
+                    <td><strong>
+                        <apex:outputText value="{0, Number, Currency}">
+                            <apex:param value="{!app2.Gross_Net_Income__c}" />
+                        </apex:outputText></strong>
+                    </td>
+                    <td>Net Monthly (Normal Pay <apex:outputText value="- Amount to be entered into ANZ" rendered="{!app2.Type__c == 'Esanda'}" />)</td>
+                </tr>
+                <tr style="display: {!IF(app2.Type__c == 'Pepper', '','none')}">
+                    <td>Net last pay period income</td>
+                    <td>
+                        <apex:outputText value="{0, Number, Currency}">
+                            <apex:param value="{!app2.Net_Last_Income__c}" />
+                        </apex:outputText>
+                        &nbsp;(<apex:outputText value="{!app2.Last_Income_Frequency__c}"/>)
+                    </td>
+                    <td><strong>
+                        <apex:outputText value="{0, Number, Currency}">
+                            <apex:param value="{!app2.Net_Last_Monthly_Income__c}" />
+                        </apex:outputText></strong>
+                    </td>
+                    <td>Net Monthly</td>
+                </tr>
+                <tr style="display: {!IF(app2.Type__c == 'Esanda', '','none')}">
+                    <td rowspan="3">&nbsp;</td>
+                    <td>Difference:</td>
+                    <td><strong>
+                        <apex:outputText value="{0, Number, Currency}">
+                            <apex:param value="{!app2.Difference__c}" />
+                        </apex:outputText></strong></td>
+                    <td>Net Monthly (O/T - Amount to be entered into ANZ)</td>
+                </tr>
+                <tr style="display: {!IF(app2.Type__c == 'Esanda', '','none')}">
+                    <td>Discounted by 70%</td>
+                    <td><strong>
+                        <apex:outputText value="{0, Number, Currency}">
+                            <apex:param value="{!app2.Discounted__c}" />
+                        </apex:outputText></strong>&nbsp;
+                    </td>
+                    <td>O/T - Amount to be used for serviceability&nbsp;</td>
+                </tr>
+                <tr style="display: {!IF(app2.Type__c == 'Esanda', '','none')}">
+                    <td>Monthly Amount to Use for Servicing</td>
+                    <td colspan="2"><strong>
+                        <apex:outputText value="{0, Number, Currency}">
+                            <apex:param value="{!app2.Monthly_Amount__c}" />
+                        </apex:outputText></strong>&nbsp;
+                    </td>
+                </tr>
+                <tr style="display: {!IF(app2.Type__c == 'Esanda', '','none')}">
+                    <td colspan="4">Note: Base income - work out ordinary hours + allowances but exclude overtime and commission/bonus.</td>
+                </tr>
+                <tr style="display: {!IF(app2.Type__c == 'Esanda', '','none')}">
+                    <td>Comments</td>
+                    <td colspan="3"><apex:outputText value="{!app2.Comment__c}"/></td>
+                </tr>
+            </table>
+        </apex:outputPanel>
+        <apex:outputPanel layout="block" rendered="{!hasSecondJob2}">
+            <h3><apex:outputText value="ANZ" rendered="{!app22ndJob.Type__c == 'Esanda'}" />
+                <apex:outputText value="Pepper" rendered="{!app22ndJob.Type__c == 'Pepper'}" /> - Year To Date Calculation / Income for Applicant 2 Second Job:</h3>
+            <table width="100%">
+                <tr>
+                    <td width="13%">
+                        <apex:outputLabel value="Start Date: "/>
+                    </td>
+                    <td width="16%">
+                        <apex:outputText value="{0,date,dd/MM/yyyy}">
+                            <apex:param value="{!app22ndJob.Start_Date__c}" />
+                        </apex:outputText>
+                    </td>
+                    <td width="13%">
+                        <apex:outputLabel value="End Date: "/>
+                    </td>
+                    <td width="16%">
+                        <apex:outputText value="{0,date,dd/MM/yyyy}">
+                            <apex:param value="{!app22ndJob.End_Date__c}" />
+                        </apex:outputText>
+                    </td>
+                    <td width="25%">
+                        <apex:outputLabel value="Weeks Between Them: "/>
+                    </td>
+                    <td width="14%"><strong>
+                        <apex:outputText value="{!app22ndJob.Weeks__c}"/></strong>
+                    </td>
+                </tr>
+            </table>
+            <table width="100%">
+                <tr>
+                    <td>Net YTD Income From Payslips:</td>
+                    <td>
+                        <strong><!--<apex:outputText styleClass="labelValueTyped" value="{!app22ndJob.Net_Annual_Income__c}"/>-->
+                            <apex:outputText value="{0, Number, Currency}">
+                                <apex:param value="{!app22ndJob.Net_Annual_Income__c}" />
+                            </apex:outputText>
+                        </strong>
+                    </td>
+                    <td><strong>
+                        <apex:outputText value="{0, Number, Currency}">
+                            <apex:param value="{!app22ndJob.Net_Income__c}" />
+                        </apex:outputText></strong>
+                    </td>
+                    <td>Net Monthly <apex:outputText value="(ANZ)" rendered="{!app22ndJob.Type__c == 'Esanda'}" /></td>
+                </tr>
+                <tr>
+                    <td>
+                        <apex:outputText value="Annual Gross Base Income" rendered="{!app22ndJob.Type__c == 'Esanda'}" />
+                        <apex:outputText value="Gross YTD Income From Payslip" rendered="{!app22ndJob.Type__c == 'Pepper'}" />
+                    </td>
+                    <td>
+                        <strong><!--<apex:outputText value="{!app22ndJob.Gross_YTD_Income__c}"/>-->
+                            <apex:outputText value="{0, Number, Currency}">
+                                <apex:param value="{!app22ndJob.Gross_YTD_Income__c}" />
+                            </apex:outputText>
+                        </strong>
+                    </td>
+                    <td><strong>
+                        <apex:outputText value="{0, Number, Currency}">
+                            <apex:param value="{!app22ndJob.Gross_Net_Income__c}" />
+                        </apex:outputText></strong>
+                    </td>
+                    <td>Net Monthly (Normal Pay <apex:outputText value="- Amount to be entered into ANZ" rendered="{!app22ndJob.Type__c == 'Esanda'}" />)</td>
+                </tr>
+                <tr style="display: {!IF(app22ndJob.Type__c == 'Pepper', '','none')}">
+                    <td>Net last pay period income</td>
+                    <td>
+                        <apex:outputText value="{0, Number, Currency}">
+                            <apex:param value="{!app22ndJob.Net_Last_Income__c}" />
+                        </apex:outputText>
+                        &nbsp;(<apex:outputText value="{!app22ndJob.Last_Income_Frequency__c}"/>)
+                    </td>
+                    <td><strong>
+                        <apex:outputText value="{0, Number, Currency}">
+                            <apex:param value="{!app22ndJob.Net_Last_Monthly_Income__c}" />
+                        </apex:outputText></strong>
+                    </td>
+                    <td>Net Monthly</td>
+                </tr>
+                <tr style="display: {!IF(app22ndJob.Type__c == 'Esanda', '','none')}">
+                    <td rowspan="3">&nbsp;</td>
+                    <td>Difference:</td>
+                    <td><strong>
+                        <apex:outputText value="{0, Number, Currency}">
+                            <apex:param value="{!app22ndJob.Difference__c}" />
+                        </apex:outputText></strong></td>
+                    <td>Net Monthly (O/T - Amount to be entered into ANZ)</td>
+                </tr>
+                <tr style="display: {!IF(app22ndJob.Type__c == 'Esanda', '','none')}">
+                    <td>Discounted by 70%</td>
+                    <td><strong>
+                        <apex:outputText value="{0, Number, Currency}">
+                        <apex:param value="{!app22ndJob.Discounted__c}" />
+                    </apex:outputText></strong>&nbsp;
+                    </td>
+                    <td>O/T - Amount to be used for serviceability&nbsp;</td>
+                </tr>
+                <tr style="display: {!IF(app22ndJob.Type__c == 'Esanda', '','none')}">
+                    <td>Monthly Amount to Use for Servicing</td>
+                    <td colspan="2"><strong>
+                        <apex:outputText value="{0, Number, Currency}">
+                            <apex:param value="{!app22ndJob.Monthly_Amount__c}" />
+                        </apex:outputText></strong>&nbsp;
+                    </td>
+                </tr>
+                <tr style="display: {!IF(app22ndJob.Type__c == 'Esanda', '','none')}">
+                    <td colspan="4">Note: Base income - work out ordinary hours + allowances but exclude overtime and commission/bonus.</td>
+                </tr>
+                <tr style="display: {!IF(app22ndJob.Type__c == 'Esanda', '','none')}">
+                    <td>Comments</td>
+                    <td colspan="3"><apex:outputText value="{!app22ndJob.Comment__c}"/></td>
+                </tr>
+            </table>
+        </apex:outputPanel>
+    </apex:outputPanel>
+    <apex:outputPanel id="YTDSectionMac" layout="block" rendered="{!app1.Type__c == 'Macquarie'}">
+        <h3>{!numberForYTDCalculation}.) Macquarie - Year To Date Calculation / Income for Applicant 1:</h3>
+        <table width="100%">
+            <tr>
+                <td colspan="2">&nbsp;</td>
+                <td>Employment Start or YTD Start Date</td>
+                <td>
+                    <apex:outputText value="{0,date,dd/MM/yyyy}">
+                        <apex:param value="{!app1.Employment_Start_Date__c}" />
+                    </apex:outputText>
+                </td>
+            </tr>
+            <tr>
+                <td>Net Year-to-Date From Payslip</td>
+                <td><!--<apex:outputText value="${!app1.Net_Annual_Income__c}" />-->
+                    <apex:outputText value="{0, Number, Currency}">
+                        <apex:param value="{!app1.Net_Annual_Income__c}" />
+                    </apex:outputText>
+                </td>
+                <td>Most Recent Payslip Period Start</td>
+                <td>
+                    <apex:outputText value="{0,date,dd/MM/yyyy}">
+                        <apex:param value="{!app1.Start_Date__c}" />
+                    </apex:outputText>
+                </td>
+            </tr>
+            <tr>
+                <td>Most Recent Payslip Net Income</td>
+                <td><!--<apex:outputText value="${!app1.Net_Last_Income__c}" />-->
+                    <apex:outputText value="{0, Number, Currency}">
+                        <apex:param value="{!app1.Net_Last_Income__c}" />
+                    </apex:outputText>
+                </td>
+                <td>Most Recent Payslip Period End</td>
+                <td>
+                    <apex:outputText value="{0,date,dd/MM/yyyy}">
+                        <apex:param value="{!app1.End_Date__c}" />
+                    </apex:outputText>
+                </td>
+            </tr>
+            <tr>
+                <td>Frequency</td>
+                <td>Year-to-Date</td>
+                <td>Pay Period</td>
+                <td><apex:outputText value="{!app1.Weeks__c}"/>&nbsp;days</td>
+            </tr>
+        </table>
+        <table width="100%">
+            <tr>
+                <td>&nbsp;</td>
+                <td><strong>Net Year-to-Date Salary</strong></td>
+                <td><strong>Pay Period</strong></td>
+            </tr>
+            <tr>
+                <td>Monthly</td>
+                <td><apex:outputText value="{0, Number, Currency}">
+                    <apex:param value="{!app1.Net_YTD_Salary_Monthly__c}" />
+                    </apex:outputText>
+                </td>
+                <td>
+                    <apex:outputText value="{0, Number, Currency}">
+                        <apex:param value="{!app1.Pay_Period_Monthly__c}" />
+                    </apex:outputText></td>
+            </tr>
+            <tr>
+                <td>Annually</td>
+                <td>
+                    <apex:outputText value="{0, Number, Currency}">
+                        <apex:param value="{!app1.Net_YTD_Salary_Annually__c}" />
+                    </apex:outputText></td>
+                <td>
+                    <apex:outputText value="{0, Number, Currency}">
+                        <apex:param value="{!app1.Pay_Period_Annually__c}" />
+                    </apex:outputText></td>
+            </tr>
+            <tr>
+                <td colspan="3">Comments:</td>
+            </tr>
+            <tr>
+                <td colspan="3">
+                    <apex:outputText value="{!app1.Comment__c}" />
+                </td>
+            </tr>
+        </table>
+        <apex:outputPanel layout="block" rendered="{!hasSecondJob1}">
+            <h3>Macquarie - Year To Date Calculation / Income for Applicant 1 Second Job:</h3>
+            <table width="100%">
+                <tr>
+                    <td colspan="2">&nbsp;</td>
+                    <td>Employment Start or YTD Start Date</td>
+                    <td>
+                        <apex:outputText value="{0,date,dd/MM/yyyy}">
+                            <apex:param value="{!app12ndJob.Employment_Start_Date__c}" />
+                        </apex:outputText>
+                    </td>
+                </tr>
+                <tr>
+                    <td>Net Year-to-Date From Payslip</td>
+                    <td><!--<apex:outputText value="${!app12ndJob.Net_Annual_Income__c}" />-->
+                        <apex:outputText value="{0, Number, Currency}">
+                            <apex:param value="{!app12ndJob.Net_Annual_Income__c}" />
+                        </apex:outputText>
+                    </td>
+                    <td>Most Recent Payslip Period Start</td>
+                    <td>
+                        <apex:outputText value="{0,date,dd/MM/yyyy}">
+                            <apex:param value="{!app12ndJob.Start_Date__c}" />
+                        </apex:outputText>
+                    </td>
+                </tr>
+                <tr>
+                    <td>Most Recent Payslip Net Income</td>
+                    <td><!--<apex:outputText value="${!app12ndJob.Net_Last_Income__c}" />-->
+                        <apex:outputText value="{0, Number, Currency}">
+                            <apex:param value="{!app12ndJob.Net_Last_Income__c}" />
+                        </apex:outputText>
+                    </td>
+                    <td>Most Recent Payslip Period End</td>
+                    <td>
+                        <apex:outputText value="{0,date,dd/MM/yyyy}">
+                            <apex:param value="{!app12ndJob.End_Date__c}" />
+                        </apex:outputText>
+                    </td>
+                </tr>
+                <tr>
+                    <td>Frequency</td>
+                    <td>Year-to-Date</td>
+                    <td>Pay Period</td>
+                    <td><apex:outputText value="{!app12ndJob.Weeks__c}"/>&nbsp;days</td>
+                </tr>
+            </table>
+            <table width="100%">
+                <tr>
+                    <td>&nbsp;</td>
+                    <td><strong>Net Year-to-Date Salary</strong></td>
+                    <td><strong>Pay Period</strong></td>
+                </tr>
+                <tr>
+                    <td>Monthly</td>
+                    <td>
+                        <apex:outputText value="{0, Number, Currency}">
+                            <apex:param value="{!app12ndJob.Net_YTD_Salary_Monthly__c}" />
+                        </apex:outputText></td>
+                    <td>
+                        <apex:outputText value="{0, Number, Currency}">
+                            <apex:param value="{!app12ndJob.Pay_Period_Monthly__c}" />
+                        </apex:outputText></td>
+                </tr>
+                <tr>
+                    <td>Annually</td>
+                    <td>
+                        <apex:outputText value="{0, Number, Currency}">
+                            <apex:param value="{!app12ndJob.Net_YTD_Salary_Annually__c}" />
+                        </apex:outputText></td>
+                    <td>
+                        <apex:outputText value="{0, Number, Currency}">
+                            <apex:param value="{!app12ndJob.Pay_Period_Annually__c}" />
+                        </apex:outputText></td>
+                </tr>
+                <tr>
+                    <td colspan="3">Comments:</td>
+                </tr>
+                <tr>
+                    <td colspan="3">
+                        <apex:outputText value="{!app12ndJob.Comment__c}" />
+                    </td>
+                </tr>
+            </table>
+        </apex:outputPanel>
+        <apex:outputPanel layout="block" rendered="{!hasApplicant2}">
+            <h3>Macquarie - Year To Date Calculation / Income for Applicant 2:</h3>
+            <table width="100%">
+                <tr>
+                    <td colspan="2">&nbsp;</td>
+                    <td>Employment Start or YTD Start Date</td>
+                    <td>
+                        <apex:outputText value="{0,date,dd/MM/yyyy}">
+                            <apex:param value="{!app2.Employment_Start_Date__c}" />
+                        </apex:outputText>
+                    </td>
+                </tr>
+                <tr>
+                    <td>Net Year-to-Date From Payslip</td>
+                    <td><!--<apex:outputText value="${!app2.Net_Annual_Income__c}" />-->
+                        <apex:outputText value="{0, Number, Currency}">
+                            <apex:param value="{!app2.Net_Annual_Income__c}" />
+                        </apex:outputText>
+                    </td>
+                    <td>Most Recent Payslip Period Start</td>
+                    <td>
+                        <apex:outputText value="{0,date,dd/MM/yyyy}">
+                            <apex:param value="{!app2.Start_Date__c}" />
+                        </apex:outputText>
+                    </td>
+                </tr>
+                <tr>
+                    <td>Most Recent Payslip Net Income</td>
+                    <td><!--<apex:outputText value="${!app2.Net_Last_Income__c}" />-->
+                        <apex:outputText value="{0, Number, Currency}">
+                            <apex:param value="{!app2.Net_Last_Income__c}" />
+                        </apex:outputText>
+                    </td>
+                    <td>Most Recent Payslip Period End</td>
+                    <td>
+                        <apex:outputText value="{0,date,dd/MM/yyyy}">
+                            <apex:param value="{!app2.End_Date__c}" />
+                        </apex:outputText>
+                    </td>
+                </tr>
+                <tr>
+                    <td>Frequency</td>
+                    <td>Year-to-Date</td>
+                    <td>Pay Period</td>
+                    <td><apex:outputText value="{!app2.Weeks__c}"/>&nbsp;days</td>
+                </tr>
+            </table>
+            <table width="100%">
+                <tr>
+                    <td>&nbsp;</td>
+                    <td><strong>Net Year-to-Date Salary</strong></td>
+                    <td><strong>Pay Period</strong></td>
+                </tr>
+                <tr>
+                    <td>Monthly</td>
+                    <td>
+                        <apex:outputText value="{0, Number, Currency}">
+                            <apex:param value="{!app2.Net_YTD_Salary_Monthly__c}" />
+                        </apex:outputText></td>
+                    <td>
+                        <apex:outputText value="{0, Number, Currency}">
+                            <apex:param value="{!app2.Pay_Period_Monthly__c}" />
+                        </apex:outputText></td>
+                </tr>
+                <tr>
+                    <td>Annually</td>
+                    <td>
+                        <apex:outputText value="{0, Number, Currency}">
+                            <apex:param value="{!app2.Net_YTD_Salary_Annually__c}" />
+                        </apex:outputText></td>
+                    <td>
+                        <apex:outputText value="{0, Number, Currency}">
+                            <apex:param value="{!app2.Pay_Period_Annually__c}" />
+                        </apex:outputText></td>
+                </tr>
+                <tr>
+                    <td colspan="3">Comments:</td>
+                </tr>
+                <tr>
+                    <td colspan="3">
+                        <apex:outputText value="{!app2.Comment__c}" />
+                    </td>
+                </tr>
+            </table>
+        </apex:outputPanel>
+        <apex:outputPanel layout="block" rendered="{!hasSecondJob2}">
+            <h3>Macquarie - Year To Date Calculation / Income for Applicant 2 Second Job:</h3>
+            <table width="100%">
+                <tr>
+                    <td colspan="2">&nbsp;</td>
+                    <td>Employment Start or YTD Start Date</td>
+                    <td>
+                        <apex:outputText value="{0,date,dd/MM/yyyy}">
+                            <apex:param value="{!app22ndJob.Employment_Start_Date__c}" />
+                        </apex:outputText>
+                    </td>
+                </tr>
+                <tr>
+                    <td>Net Year-to-Date From Payslip</td>
+                    <td><!--<apex:outputText value="${!app22ndJob.Net_Annual_Income__c}" />-->
+                        <apex:outputText value="{0, Number, Currency}">
+                            <apex:param value="{!app22ndJob.Net_Annual_Income__c}" />
+                        </apex:outputText>
+                    </td>
+                    <td>Most Recent Payslip Period Start</td>
+                    <td>
+                        <apex:outputText value="{0,date,dd/MM/yyyy}">
+                            <apex:param value="{!app22ndJob.Start_Date__c}" />
+                        </apex:outputText>
+                    </td>
+                </tr>
+                <tr>
+                    <td>Most Recent Payslip Net Income</td>
+                    <td><!--<apex:outputText value="${!app22ndJob.Net_Last_Income__c}" />-->
+                        <apex:outputText value="{0, Number, Currency}">
+                            <apex:param value="{!app22ndJob.Net_Last_Income__c}" />
+                        </apex:outputText>
+                    </td>
+                    <td>Most Recent Payslip Period End</td>
+                    <td>
+                        <apex:outputText value="{0,date,dd/MM/yyyy}">
+                            <apex:param value="{!app22ndJob.End_Date__c}" />
+                        </apex:outputText>
+                    </td>
+                </tr>
+                <tr>
+                    <td>Frequency</td>
+                    <td>Year-to-Date</td>
+                    <td>Pay Period</td>
+                    <td><apex:outputText value="{!app22ndJob.Weeks__c}"/>&nbsp;days</td>
+                </tr>
+            </table>
+            <table width="100%">
+                <tr>
+                    <td>&nbsp;</td>
+                    <td><strong>Net Year-to-Date Salary</strong></td>
+                    <td><strong>Pay Period</strong></td>
+                </tr>
+                <tr>
+                    <td>Monthly</td>
+                    <td>
+                        <apex:outputText value="{0, Number, Currency}">
+                            <apex:param value="{!app22ndJob.Net_YTD_Salary_Monthly__c}" />
+                        </apex:outputText></td>
+                    <td>
+                        <apex:outputText value="{0, Number, Currency}">
+                            <apex:param value="{!app22ndJob.Pay_Period_Monthly__c}" />
+                        </apex:outputText></td>
+                </tr>
+                <tr>
+                    <td>Annually</td>
+                    <td>
+                        <apex:outputText value="{0, Number, Currency}">
+                            <apex:param value="{!app22ndJob.Net_YTD_Salary_Annually__c}" />
+                        </apex:outputText></td>
+                    <td>
+                        <apex:outputText value="{0, Number, Currency}">
+                            <apex:param value="{!app22ndJob.Pay_Period_Annually__c}" />
+                        </apex:outputText></td>
+                </tr>
+                <tr>
+                    <td colspan="3">Comments:</td>
+                </tr>
+                <tr>
+                    <td colspan="3">
+                        <apex:outputText value="{!app22ndJob.Comment__c}" />
+                    </td>
+                </tr>
+            </table>
+        </apex:outputPanel>
+    </apex:outputPanel>
+    <apex:outputPanel id="YTDSectionOthers" layout="block" rendered="{!app1.Type__c == 'Others'}">
+        <h3>{!numberForYTDCalculation}.) Others - Year To Date Calculation / Income for Applicant 1:</h3>
+        <table width="100%">
+            <tr>
+                <td width="25%">
+                    <apex:outputLabel value="Financial Year Start Date: "/>
+                </td>
+                <td width="15%">
+                    <apex:outputText value="{0,date,dd/MM/yyyy}">
+                        <apex:param value="{!app1.Start_Date__c}" />
+                    </apex:outputText>
+                </td>
+                <td width="14%">
+                    <apex:outputLabel value="Pay Period End Date: "/>
+                </td>
+                <td width="15%">
+                    <apex:outputText value="{0,date,dd/MM/yyyy}">
+                        <apex:param value="{!app1.End_Date__c}" />
+                    </apex:outputText>
+                </td>
+                <td width="23%">
+                    <apex:outputLabel value="Weeks Between Them: "/>
+                </td>
+                <td width="8%"><strong>
+                    <apex:outputText value="{!app1.Weeks__c}"/></strong>
+                </td>
+            </tr>
+            <tr>
+                <td>Gross YTD Income From Payslip:</td>
+                <td colspan="2">
+                    <strong><!--<apex:outputText styleClass="labelValueTyped" value="{!app1.Gross_YTD_Income__c}"/>-->
+                        <apex:outputText value="{0, Number, Currency}">
+                            <apex:param value="{!app1.Gross_YTD_Income__c}" />
+                        </apex:outputText>
+                    </strong>
+                </td>
+                <td><strong>
+                    <apex:outputText value="{0, Number, Currency}">
+                        <apex:param value="{!app1.Net_Monthly_Income__c}" />
+                    </apex:outputText></strong>
+                </td>
+                <td colspan="2">Net Monthly</td>
+            </tr>
+            <tr>
+                <td>&nbsp;</td>
+                <td colspan="2">Annualised Income:</td>
+                <td>
+                    <apex:outputText value="{0, Number, Currency}">
+                        <apex:param value="{!app1.Annualised_Income__c}" />
+                    </apex:outputText></td>
+                <td colspan="2">Gross PA inc O/T &nbsp;</td>
+            </tr>
+        </table>
+        <apex:outputPanel layout="block" rendered="{!hasSecondJob1}">
+            <h3>Others - Year To Date Calculation / Income for Applicant 1 Second Job:</h3>
+            <table width="100%">
+                <tr>
+                    <td width="25%">
+                        <apex:outputLabel value="Financial Year Start Date: "/>
+                    </td>
+                    <td width="15%">
+                        <apex:outputText value="{0,date,dd/MM/yyyy}">
+                            <apex:param value="{!app12ndJob.Start_Date__c}" />
+                        </apex:outputText>
+                    </td>
+                    <td width="14%">
+                        <apex:outputLabel value="Pay Period End Date: "/>
+                    </td>
+                    <td width="15%">
+                        <apex:outputText value="{0,date,dd/MM/yyyy}">
+                            <apex:param value="{!app12ndJob.End_Date__c}" />
+                        </apex:outputText>
+                    </td>
+                    <td width="23%">
+                        <apex:outputLabel value="Weeks Between Them: "/>
+                    </td>
+                    <td width="8%"><strong>
+                        <apex:outputText value="{!app12ndJob.Weeks__c}"/></strong>
+                    </td>
+                </tr>
+                <tr>
+                    <td>Gross YTD Income From Payslip:</td>
+                    <td colspan="2">
+                        <strong><!--<apex:outputText styleClass="labelValueTyped" value="{!app12ndJob.Gross_YTD_Income__c}"/>-->
+                            <apex:outputText value="{0, Number, Currency}">
+                                <apex:param value="{!app12ndJob.Gross_YTD_Income__c}" />
+                            </apex:outputText>
+                        </strong>
+                    </td>
+                    <td><strong>
+                        <apex:outputText value="{0, Number, Currency}">
+                            <apex:param value="{!app12ndJob.Net_Monthly_Income__c}" />
+                        </apex:outputText></strong>
+                    </td>
+                    <td colspan="2">Net Monthly</td>
+                </tr>
+                <tr>
+                    <td>&nbsp;</td>
+                    <td colspan="2">Annualised Income:</td>
+                    <td>
+                        <apex:outputText value="{0, Number, Currency}">
+                            <apex:param value="{!app12ndJob.Annualised_Income__c}" />
+                        </apex:outputText></td>
+                    <td colspan="2">Gross PA inc O/T &nbsp;</td>
+                </tr>
+            </table>
+        </apex:outputPanel>
+        <apex:outputPanel layout="block" rendered="{!hasApplicant2}">
+            <h3>Others - Year To Date Calculation / Income for Applicant 2:</h3>
+            <table width="100%">
+                <tr>
+                    <td width="25%">
+                        <apex:outputLabel value="Financial Year Start Date: "/>
+                    </td>
+                    <td width="15%">
+                        <apex:outputText value="{0,date,dd/MM/yyyy}">
+                            <apex:param value="{!app2.Start_Date__c}" />
+                        </apex:outputText>
+                    </td>
+                    <td width="14%">
+                        <apex:outputLabel value="Pay Period End Date: "/>
+                    </td>
+                    <td width="15%">
+                        <apex:outputText value="{0,date,dd/MM/yyyy}">
+                            <apex:param value="{!app2.End_Date__c}" />
+                        </apex:outputText>
+                    </td>
+                    <td width="23%">
+                        <apex:outputLabel value="Weeks Between Them: "/>
+                    </td>
+                    <td width="8%"><strong>
+                        <apex:outputText value="{!app2.Weeks__c}"/></strong>
+                    </td>
+                </tr>
+                <tr>
+                    <td>Gross YTD Income From Payslip:</td>
+                    <td colspan="2">
+                        <strong><!--<apex:outputText styleClass="labelValueTyped" value="{!app2.Gross_YTD_Income__c}"/>-->
+                            <apex:outputText value="{0, Number, Currency}">
+                                <apex:param value="{!app2.Gross_YTD_Income__c}" />
+                            </apex:outputText>
+                        </strong>
+                    </td>
+                    <td><strong>
+                        <apex:outputText value="{0, Number, Currency}">
+                            <apex:param value="{!app2.Net_Monthly_Income__c}" />
+                        </apex:outputText></strong>
+                    </td>
+                    <td colspan="2">Net Monthly</td>
+                </tr>
+                <tr>
+                    <td>&nbsp;</td>
+                    <td colspan="2">Annualised Income:</td>
+                    <td>
+                        <apex:outputText value="{0, Number, Currency}">
+                            <apex:param value="{!app2.Annualised_Income__c}" />
+                        </apex:outputText></td>
+                    <td colspan="2">Gross PA inc O/T &nbsp;</td>
+                </tr>
+            </table>
+        </apex:outputPanel>
+        <apex:outputPanel layout="block" rendered="{!hasSecondJob2}">
+            <h3>Others - Year To Date Calculation / Income for Applicant 2 Second Job:</h3>
+            <table width="100%">
+                <tr>
+                    <td width="25%">
+                        <apex:outputLabel value="Financial Year Start Date: "/>
+                    </td>
+                    <td width="15%">
+                        <apex:outputText value="{0,date,dd/MM/yyyy}">
+                            <apex:param value="{!app22ndJob.Start_Date__c}" />
+                        </apex:outputText>
+                    </td>
+                    <td width="14%">
+                        <apex:outputLabel value="Pay Period End Date: "/>
+                    </td>
+                    <td width="15%">
+                        <apex:outputText value="{0,date,dd/MM/yyyy}">
+                            <apex:param value="{!app22ndJob.End_Date__c}" />
+                        </apex:outputText>
+                    </td>
+                    <td width="23%">
+                        <apex:outputLabel value="Weeks Between Them: "/>
+                    </td>
+                    <td width="8%"><strong>
+                        <apex:outputText value="{!app22ndJob.Weeks__c}"/></strong>
+                    </td>
+                </tr>
+                <tr>
+                    <td>Gross YTD Income From Payslip:</td>
+                    <td colspan="2">
+                        <strong><!--<apex:outputText styleClass="labelValueTyped" value="{!app22ndJob.Gross_YTD_Income__c}"/>-->
+                            <apex:outputText value="{0, Number, Currency}">
+                                <apex:param value="{!app22ndJob.Gross_YTD_Income__c}" />
+                            </apex:outputText>
+                        </strong>
+                    </td>
+                    <td><strong>
+                        <apex:outputText value="{0, Number, Currency}">
+                            <apex:param value="{!app22ndJob.Net_Monthly_Income__c}" />
+                        </apex:outputText></strong>
+                    </td>
+                    <td colspan="2">Net Monthly</td>
+                </tr>
+                <tr>
+                    <td>&nbsp;</td>
+                    <td colspan="2">Annualised Income:</td>
+                    <td>
+                        <apex:outputText value="{0, Number, Currency}">
+                            <apex:param value="{!app22ndJob.Annualised_Income__c}" />
+                        </apex:outputText></td>
+                    <td colspan="2">Gross PA inc O/T &nbsp;</td>
+                </tr>
+            </table>
+        </apex:outputPanel>
+    </apex:outputPanel>
+    <apex:outputPanel id="YTDSectionFD2" layout="block" rendered="{!app1.Type__c == 'Self-Employed'}">
+        <h3>{!numberForYTDCalculation}.) Self-Employed - Year To Date Calculation/Income for {!n}</h3>
+        <table width="100%">
+            <tr><td colspan="2" class="tableCaption"><strong>Applicant 1</strong></td></tr>
+            <tr>
+                <td width="40%"><apex:outputLabel value="Self-Employed: " /></td>
+                <td width="60%">
+                    <apex:outputText value="{!app1.Self_Employed_Class__c}" /> &nbsp;&nbsp;&nbsp; / &nbsp;&nbsp;&nbsp;
+                    <apex:outputText value="{!app1.Self_Employed_Type__c}" />
+                </td>
+            </tr>
+        </table>
+        <apex:outputPanel layout="block" rendered="{!app1.Self_Employed_Type__c=='Trust'}">
+            <table width="100%">
+                <tr>
+                    <td width="40%">Total Trustees:&nbsp;{!app1.Trustees_Number__c}</td>
+                    <td width="30%">1st Trustee</td>
+                    <td width="30%">
+                        <apex:outputText value="2nd Trustee" rendered="{!app1.Trustees_Number__c=='2'}"/>
+                        <apex:outputText value="N/A" rendered="{!app1.Trustees_Number__c!='2'}"/>
+                    </td>
+                </tr>
+                <tr>
+                    <td width="40%">
+                        <apex:outputText value="Net Profit Before Tax" rendered="{!app1.Self_Employed_Type__c!='Trust'}" />
+                        <apex:outputText value="Trust disbursement" rendered="{!app1.Self_Employed_Type__c=='Trust'}" />
+                    </td>
+                    <td>
+                        <apex:outputText value="{0, Number, Currency}">
+                            <apex:param value="{!app1.Net_Profit__c}" />
+                        </apex:outputText>
+                    </td>
+                    <td>
+                        <apex:outputText value="{0, Number, Currency}" rendered="{!app1.Trustees_Number__c=='2'}">
+                            <apex:param value="{!app1.Net_Profit_2__c}" />
+                        </apex:outputText>
+                        <apex:outputText value="N/A" rendered="{!app1.Trustees_Number__c!='2'}"/>
+                    </td>
+                </tr>
+                <tr style="display: {!IF(app1.Self_Employed_Type__c=='Company Pty Ltd', '','none')}">
+                    <td>(-30%)</td>
+                    <td>
+                        <apex:outputText value="{0, Number, Currency}">
+                            <apex:param value="{!app1.Net_Profit__c * 0.3}" />
+                        </apex:outputText>
+                    </td>
+                    <td>
+                        <apex:outputText value="{0, Number, Currency}" rendered="{!app1.Trustees_Number__c=='2'}">
+                            <apex:param value="{!app1.Net_Profit_2__c * 0.3}" />
+                        </apex:outputText>
+                        <apex:outputText value="N/A" rendered="{!app1.Trustees_Number__c!='2'}"/>
+                    </td>
+                </tr>
+                <tr style="display: {!IF(app1.Self_Employed_Type__c!='Trust', '','none')}">
+                    <td><apex:outputLabel value="Depreciation: " /></td>
+                    <td>
+                        <apex:outputText value="{0, Number, Currency}">
+                            <apex:param value="{!app1.Depreciation__c}" />
+                        </apex:outputText>
+                    </td>
+                    <td>
+                        <!-- <apex:outputText value="{0, Number, Currency}" rendered="{!ydtCalc.trusteesNumber=='2'}">
+<apex:param value="{!ydtCalc.fdDepreciation2}" />
+</apex:outputText> -->
+                        <apex:outputText value="N/A" rendered="{!app1.Trustees_Number__c!='2'}"/>
+                    </td>
+                </tr>
+                <tr style="display: {!IF(app1.Self_Employed_Type__c!='Trust', '','none')}">
+                    <td><apex:outputLabel value="Interest: " /></td>
+                    <td>
+                        <apex:outputText value="{0, Number, Currency}">
+                            <apex:param value="{!app1.Interest__c}" />
+                        </apex:outputText>
+                    </td>
+                    <td>
+                        <!-- <apex:outputText value="{0, Number, Currency}" rendered="{!ydtCalc.trusteesNumber=='2'}">
+<apex:param value="{!ydtCalc.fdInterest2}" />
+</apex:outputText> -->
+                        <apex:outputText value="N/A" rendered="{!app1.Trustees_Number__c!='2'}"/>
+                    </td>
+                </tr>
+                <tr style="display: {!IF(app1.Self_Employed_Type__c!='Trust', '','none')}">
+                    <td><apex:outputLabel value="Director's Salary: " /></td>
+                    <td>
+                        <apex:outputText value="{0, Number, Currency}">
+                            <apex:param value="{!app1.Director_Salary__c}" />
+                        </apex:outputText>
+                    </td>
+                    <td>
+                        <!-- <apex:outputText value="{0, Number, Currency}" rendered="{!ydtCalc.trusteesNumber=='2'}">
+<apex:param value="{!ydtCalc.fdDirectorSalary2}" />
+</apex:outputText> -->
+                        <apex:outputText value="N/A" rendered="{!app1.Trustees_Number__c!='2'}"/>
+                    </td>
+                </tr>
+                <tr style="display: {!IF(app1.Self_Employed_Type__c=='Company Pty Ltd', '','none')}">
+                    <td>Net Profit Before Tax</td>
+                    <td>
+                        <h3>
+                            <apex:outputText value="{0, Number, Currency}">
+                                <apex:param value="{!app1.Net_Profit_Calc__c}" />
+                            </apex:outputText>
+                        </h3>
+                    </td>
+                    <td>
+                        <h3>
+                            <apex:outputText value="{0, Number, Currency}" rendered="{!app1.Trustees_Number__c=='2'}">
+                                <apex:param value="{!app1.Net_Profit_Calc_2__c}" />
+                            </apex:outputText>
+                            <apex:outputText value="N/A" rendered="{!app1.Trustees_Number__c!='2'}"/>
+                        </h3>
+                    </td>
+                </tr>
+                <tr style="display: {!IF(app1.Self_Employed_Type__c=='Sole Trader', '','none')}">
+                    <td>Net Profit After Tax</td>
+                    <td>
+                        <h3>
+                            <apex:outputText value="{0, Number, Currency}">
+                                <apex:param value="{!app1.Net_Monthly_Income__c * 12}" />
+                            </apex:outputText>
+                        </h3>
+                    </td>
+                    <td>
+                        <h3>
+                            <apex:outputText value="{0, Number, Currency}" rendered="{!app1.Trustees_Number__c=='2'}">
+                                <apex:param value="{!app1.Net_Monthly_Income_2__c * 12}" />
+                            </apex:outputText>
+                        </h3>
+                        <apex:outputText value="N/A" rendered="{!app1.Trustees_Number__c!='2'}"/>
+                    </td>
+                </tr>
+                <tr>
+                    <td>Monthly Income (after tax)</td>
+                    <td>
+                        <h3>
+                            <apex:outputText value="{0, Number, Currency}">
+                                <apex:param value="{!app1.Net_Monthly_Income__c}" />
+                            </apex:outputText>
+                        </h3>
+                    </td>
+                    <td>
+                        <h3>
+                            <apex:outputText value="{0, Number, Currency}" rendered="{!app1.Trustees_Number__c=='2'}">
+                                <apex:param value="{!app1.Net_Monthly_Income_2__c}" />
+                            </apex:outputText>
+                        </h3>
+                        <apex:outputText value="N/A" rendered="{!app1.Trustees_Number__c!='2'}"/>
+                    </td>
+                </tr>
+            </table>
+        </apex:outputPanel>
+        <apex:outputPanel layout="block" rendered="{!app1.Self_Employed_Type__c!='Trust'}">
+            <table width="100%">
+                <tr style="display: {!IF(app1.Self_Employed_Type__c=='Company Pty Ltd', '','none')}">
+                    <td>Sales $</td>
+                    <td>
+                        <apex:outputText value="{0, Number, Currency}">
+                            <apex:param value="{!app1.Sales__c}" />
+                        </apex:outputText>
+                    </td>
+                </tr>
+                <tr>
+                    <td width="40%">Net Profit Before Tax</td>
+                    <td>
+                        <apex:outputText value="{0, Number, Currency}">
+                            <apex:param value="{!app1.Net_Profit__c}" />
+                        </apex:outputText>
+                    </td>
+                </tr>
+                <tr style="display: {!IF(app1.Self_Employed_Type__c=='Company Pty Ltd', '','none')}">
+                    <td>(-30%)</td>
+                    <td>
+                        <apex:outputText value="{0, Number, Currency}">
+                            <apex:param value="{!app1.Net_Profit__c * 0.3}" />
+                        </apex:outputText>
+                    </td>
+                </tr>
+                <tr>
+                    <td><apex:outputLabel value="Depreciation: " /></td>
+                    <td>
+                        <apex:outputText value="{0, Number, Currency}">
+                            <apex:param value="{!app1.Depreciation__c}" />
+                        </apex:outputText>
+                    </td>
+                </tr>
+                <tr>
+                    <td><apex:outputLabel value="Interest: " /></td>
+                    <td>
+                        <apex:outputText value="{0, Number, Currency}">
+                            <apex:param value="{!app1.Interest__c}" />
+                        </apex:outputText>
+                    </td>
+                </tr>
+                <tr>
+                    <td><apex:outputLabel value="Director's Salary: " /></td>
+                    <td>
+                        <apex:outputText value="{0, Number, Currency}">
+                            <apex:param value="{!app1.Director_Salary__c}" />
+                        </apex:outputText>
+                    </td>
+                </tr>
+                <tr style="display: {!IF(app1.Self_Employed_Type__c=='Company Pty Ltd', '','none')}">
+                    <td>Net Profit Before Tax</td>
+                    <td>
+                        <h3>
+                            <apex:outputText value="{0, Number, Currency}">
+                                <apex:param value="{!app1.Net_Profit_Calc__c}" />
+                            </apex:outputText>
+                        </h3>
+                    </td>
+                </tr>
+                <tr style="display: {!IF(app1.Self_Employed_Type__c=='Sole Trader', '','none')}">
+                    <td>Net Profit After Tax</td>
+                    <td>
+                        <h3>
+                            <apex:outputText value="{0, Number, Currency}">
+                                <apex:param value="{!app1.Net_Monthly_Income__c * 12}" />
+                            </apex:outputText>
+                        </h3>
+                    </td>
+                </tr>
+                <tr>
+                    <td>Monthly Income (after tax)</td>
+                    <td>
+                        <h3>
+                            <apex:outputText value="{0, Number, Currency}">
+                                <apex:param value="{!app1.Net_Monthly_Income__c}" />
+                            </apex:outputText>
+                        </h3>
+                    </td>
+                </tr>
+            </table>
+        </apex:outputPanel>
+        <apex:outputPanel layout="block" rendered="{!hasSecondJob1}">
+            <br/>
+            <table width="100%">
+                <tr><td colspan="2" class="tableCaption"><strong>Applicant 1 Second Job</strong></td></tr>
+                <tr>
+                    <td width="40%"><apex:outputLabel value="Self-Employed: " /></td>
+                    <td width="60%">
+                        <apex:outputText value="{!app12ndJob.Self_Employed_Class__c}" /> &nbsp;&nbsp;&nbsp; / &nbsp;&nbsp;&nbsp;
+                        <apex:outputText value="{!app12ndJob.Self_Employed_Type__c}" />
+                    </td>
+                </tr>
+            </table>
+            <apex:outputPanel layout="block" rendered="{!app12ndJob.Self_Employed_Type__c=='Trust'}">
+                <table width="100%">
+                    <tr>
+                        <td width="40%">Total Trustees:&nbsp;{!app12ndJob.Trustees_Number__c}</td>
+                        <td width="30%">1st Trustee</td>
+                        <td width="30%">
+                            <apex:outputText value="2nd Trustee" rendered="{!app12ndJob.Trustees_Number__c=='2'}"/>
+                            <apex:outputText value="N/A" rendered="{!app12ndJob.Trustees_Number__c!='2'}"/>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td width="40%">
+                            <apex:outputText value="Net Profit Before Tax" rendered="{!app12ndJob.Self_Employed_Type__c!='Trust'}" />
+                            <apex:outputText value="Trust disbursement" rendered="{!app12ndJob.Self_Employed_Type__c=='Trust'}" />
+                        </td>
+                        <td>
+                            <apex:outputText value="{0, Number, Currency}">
+                                <apex:param value="{!app12ndJob.Net_Profit__c}" />
+                            </apex:outputText>
+                        </td>
+                        <td>
+                            <apex:outputText value="{0, Number, Currency}" rendered="{!app12ndJob.Trustees_Number__c=='2'}">
+                                <apex:param value="{!app12ndJob.Net_Profit_2__c}" />
+                            </apex:outputText>
+                            <apex:outputText value="N/A" rendered="{!app12ndJob.Trustees_Number__c!='2'}"/>
+                        </td>
+                    </tr>
+                    <tr style="display: {!IF(app12ndJob.Self_Employed_Type__c=='Company Pty Ltd', '','none')}">
+                        <td>(-30%)</td>
+                        <td>
+                            <apex:outputText value="{0, Number, Currency}">
+                                <apex:param value="{!app12ndJob.Net_Profit__c * 0.3}" />
+                            </apex:outputText>
+                        </td>
+                        <td>
+                            <apex:outputText value="{0, Number, Currency}" rendered="{!app12ndJob.Trustees_Number__c=='2'}">
+                                <apex:param value="{!app12ndJob.Net_Profit_2__c * 0.3}" />
+                            </apex:outputText>
+                            <apex:outputText value="N/A" rendered="{!app12ndJob.Trustees_Number__c!='2'}"/>
+                        </td>
+                    </tr>
+                    <tr style="display: {!IF(app12ndJob.Self_Employed_Type__c!='Trust', '','none')}">
+                        <td><apex:outputLabel value="Depreciation: " /></td>
+                        <td>
+                            <apex:outputText value="{0, Number, Currency}">
+                                <apex:param value="{!app12ndJob.Depreciation__c}" />
+                            </apex:outputText>
+                        </td>
+                        <td>
+                            <!-- <apex:outputText value="{0, Number, Currency}" rendered="{!ydtCalc.trusteesNumber=='2'}">
+<apex:param value="{!ydtCalc.fdDepreciation2}" />
+</apex:outputText> -->
+                            <apex:outputText value="N/A" rendered="{!app12ndJob.Trustees_Number__c!='2'}"/>
+                        </td>
+                    </tr>
+                    <tr style="display: {!IF(app12ndJob.Self_Employed_Type__c!='Trust', '','none')}">
+                        <td><apex:outputLabel value="Interest: " /></td>
+                        <td>
+                            <apex:outputText value="{0, Number, Currency}">
+                                <apex:param value="{!app12ndJob.Interest__c}" />
+                            </apex:outputText>
+                        </td>
+                        <td>
+                            <!-- <apex:outputText value="{0, Number, Currency}" rendered="{!ydtCalc.trusteesNumber=='2'}">
+<apex:param value="{!ydtCalc.fdInterest2}" />
+</apex:outputText> -->
+                            <apex:outputText value="N/A" rendered="{!app12ndJob.Trustees_Number__c!='2'}"/>
+                        </td>
+                    </tr>
+                    <tr style="display: {!IF(app12ndJob.Self_Employed_Type__c!='Trust', '','none')}">
+                        <td><apex:outputLabel value="Director's Salary: " /></td>
+                        <td>
+                            <apex:outputText value="{0, Number, Currency}">
+                                <apex:param value="{!app12ndJob.Director_Salary__c}" />
+                            </apex:outputText>
+                        </td>
+                        <td>
+                            <!-- <apex:outputText value="{0, Number, Currency}" rendered="{!ydtCalc.trusteesNumber=='2'}">
+<apex:param value="{!ydtCalc.fdDirectorSalary2}" />
+</apex:outputText> -->
+                            <apex:outputText value="N/A" rendered="{!app12ndJob.Trustees_Number__c!='2'}"/>
+                        </td>
+                    </tr>
+                    <tr style="display: {!IF(app12ndJob.Self_Employed_Type__c=='Company Pty Ltd', '','none')}">
+                        <td>Net Profit Before Tax</td>
+                        <td>
+                            <h3>
+                                <apex:outputText value="{0, Number, Currency}">
+                                    <apex:param value="{!app12ndJob.Net_Profit_Calc__c}" />
+                                </apex:outputText>
+                            </h3>
+                        </td>
+                        <td>
+                            <h3>
+                                <apex:outputText value="{0, Number, Currency}" rendered="{!app12ndJob.Trustees_Number__c=='2'}">
+                                    <apex:param value="{!app12ndJob.Net_Profit_Calc_2__c}" />
+                                </apex:outputText>
+                                <apex:outputText value="N/A" rendered="{!app12ndJob.Trustees_Number__c!='2'}"/>
+                            </h3>
+                        </td>
+                    </tr>
+                    <tr style="display: {!IF(app12ndJob.Self_Employed_Type__c=='Sole Trader', '','none')}">
+                        <td>Net Profit After Tax</td>
+                        <td>
+                            <h3>
+                                <apex:outputText value="{0, Number, Currency}">
+                                    <apex:param value="{!app12ndJob.Net_Monthly_Income__c * 12}" />
+                                </apex:outputText>
+                            </h3>
+                        </td>
+                        <td>
+                            <h3>
+                                <apex:outputText value="{0, Number, Currency}" rendered="{!app12ndJob.Trustees_Number__c=='2'}">
+                                    <apex:param value="{!app12ndJob.Net_Monthly_Income_2__c * 12}" />
+                                </apex:outputText>
+                            </h3>
+                            <apex:outputText value="N/A" rendered="{!app12ndJob.Trustees_Number__c!='2'}"/>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Monthly Income (after tax)</td>
+                        <td>
+                            <h3>
+                                <apex:outputText value="{0, Number, Currency}">
+                                    <apex:param value="{!app12ndJob.Net_Monthly_Income__c}" />
+                                </apex:outputText>
+                            </h3>
+                        </td>
+                        <td>
+                            <h3>
+                                <apex:outputText value="{0, Number, Currency}" rendered="{!app12ndJob.Trustees_Number__c=='2'}">
+                                    <apex:param value="{!app12ndJob.Net_Monthly_Income_2__c}" />
+                                </apex:outputText>
+                            </h3>
+                            <apex:outputText value="N/A" rendered="{!app12ndJob.Trustees_Number__c!='2'}"/>
+                        </td>
+                    </tr>
+                </table>
+            </apex:outputPanel>
+            <apex:outputPanel layout="block" rendered="{!app12ndJob.Self_Employed_Type__c!='Trust'}">
+                <table width="100%">
+                    <tr style="display: {!IF(app12ndJob.Self_Employed_Type__c=='Company Pty Ltd', '','none')}">
+                        <td>Sales $</td>
+                        <td>
+                            <apex:outputText value="{0, Number, Currency}">
+                                <apex:param value="{!app12ndJob.Sales__c}" />
+                            </apex:outputText>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td width="40%">Net Profit Before Tax</td>
+                        <td>
+                            <apex:outputText value="{0, Number, Currency}">
+                                <apex:param value="{!app12ndJob.Net_Profit__c}" />
+                            </apex:outputText>
+                        </td>
+                    </tr>
+                    <tr style="display: {!IF(app12ndJob.Self_Employed_Type__c=='Company Pty Ltd', '','none')}">
+                        <td>(-30%)</td>
+                        <td>
+                            <apex:outputText value="{0, Number, Currency}">
+                                <apex:param value="{!app12ndJob.Net_Profit__c * 0.3}" />
+                            </apex:outputText>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><apex:outputLabel value="Depreciation: " /></td>
+                        <td>
+                            <apex:outputText value="{0, Number, Currency}">
+                                <apex:param value="{!app12ndJob.Depreciation__c}" />
+                            </apex:outputText>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><apex:outputLabel value="Interest: " /></td>
+                        <td>
+                            <apex:outputText value="{0, Number, Currency}">
+                                <apex:param value="{!app12ndJob.Interest__c}" />
+                            </apex:outputText>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><apex:outputLabel value="Director's Salary: " /></td>
+                        <td>
+                            <apex:outputText value="{0, Number, Currency}">
+                                <apex:param value="{!app12ndJob.Director_Salary__c}" />
+                            </apex:outputText>
+                        </td>
+                    </tr>
+                    <tr style="display: {!IF(app12ndJob.Self_Employed_Type__c=='Company Pty Ltd', '','none')}">
+                        <td>Net Profit Before Tax</td>
+                        <td>
+                            <h3>
+                                <apex:outputText value="{0, Number, Currency}">
+                                    <apex:param value="{!app12ndJob.Net_Profit_Calc__c}" />
+                                </apex:outputText>
+                            </h3>
+                        </td>
+                    </tr>
+                    <tr style="display: {!IF(app12ndJob.Self_Employed_Type__c=='Sole Trader', '','none')}">
+                        <td>Net Profit After Tax</td>
+                        <td>
+                            <h3>
+                                <apex:outputText value="{0, Number, Currency}">
+                                    <apex:param value="{!app12ndJob.Net_Monthly_Income__c * 12}" />
+                                </apex:outputText>
+                            </h3>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Monthly Income (after tax)</td>
+                        <td>
+                            <h3>
+                                <apex:outputText value="{0, Number, Currency}">
+                                    <apex:param value="{!app12ndJob.Net_Monthly_Income__c}" />
+                                </apex:outputText>
+                            </h3>
+                        </td>
+                    </tr>
+                </table>
+            </apex:outputPanel>
+        </apex:outputPanel>
+        <apex:outputPanel layout="block" rendered="{!hasApplicant2}">
+            <br/>
+            <table width="100%">
+                <tr><td colspan="2" class="tableCaption"><strong>Applicant 2</strong></td></tr>
+                <tr>
+                    <td width="40%"><apex:outputLabel value="Self-Employed: " /></td>
+                    <td width="60%">
+                        <apex:outputText value="{!app2.Self_Employed_Class__c}" /> &nbsp;&nbsp;&nbsp; / &nbsp;&nbsp;&nbsp;
+                        <apex:outputText value="{!app2.Self_Employed_Type__c}" />
+                    </td>
+                </tr>
+            </table>
+            <apex:outputPanel layout="block" rendered="{!app2.Self_Employed_Type__c=='Trust'}">
+                <table width="100%">
+                    <tr>
+                        <td width="40%">Total Trustees:&nbsp;{!app2.Trustees_Number__c}</td>
+                        <td width="30%">1st Trustee</td>
+                        <td width="30%">
+                            <apex:outputText value="2nd Trustee" rendered="{!app2.Trustees_Number__c=='2'}"/>
+                            <apex:outputText value="N/A" rendered="{!app2.Trustees_Number__c!='2'}"/>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td width="40%">
+                            <apex:outputText value="Net Profit Before Tax" rendered="{!app2.Self_Employed_Type__c!='Trust'}" />
+                            <apex:outputText value="Trust disbursement" rendered="{!app2.Self_Employed_Type__c=='Trust'}" />
+                        </td>
+                        <td>
+                            <apex:outputText value="{0, Number, Currency}">
+                                <apex:param value="{!app2.Net_Profit__c}" />
+                            </apex:outputText>
+                        </td>
+                        <td>
+                            <apex:outputText value="{0, Number, Currency}" rendered="{!app2.Trustees_Number__c=='2'}">
+                                <apex:param value="{!app2.Net_Profit_2__c}" />
+                            </apex:outputText>
+                            <apex:outputText value="N/A" rendered="{!app2.Trustees_Number__c!='2'}"/>
+                        </td>
+                    </tr>
+                    <tr style="display: {!IF(app2.Self_Employed_Type__c=='Company Pty Ltd', '','none')}">
+                        <td>(-30%)</td>
+                        <td>
+                            <apex:outputText value="{0, Number, Currency}">
+                                <apex:param value="{!app2.Net_Profit__c * 0.3}" />
+                            </apex:outputText>
+                        </td>
+                        <td>
+                            <apex:outputText value="{0, Number, Currency}" rendered="{!app2.Trustees_Number__c=='2'}">
+                                <apex:param value="{!app2.Net_Profit_2__c * 0.3}" />
+                            </apex:outputText>
+                            <apex:outputText value="N/A" rendered="{!app2.Trustees_Number__c!='2'}"/>
+                        </td>
+                    </tr>
+                    <tr style="display: {!IF(app2.Self_Employed_Type__c!='Trust', '','none')}">
+                        <td><apex:outputLabel value="Depreciation: " /></td>
+                        <td>
+                            <apex:outputText value="{0, Number, Currency}">
+                                <apex:param value="{!app2.Depreciation__c}" />
+                            </apex:outputText>
+                        </td>
+                        <td>
+                            <!-- <apex:outputText value="{0, Number, Currency}" rendered="{!ydtCalc.trusteesNumber=='2'}">
+<apex:param value="{!ydtCalc.fdDepreciation2}" />
+</apex:outputText> -->
+                            <apex:outputText value="N/A" rendered="{!app2.Trustees_Number__c!='2'}"/>
+                        </td>
+                    </tr>
+                    <tr style="display: {!IF(app2.Self_Employed_Type__c!='Trust', '','none')}">
+                        <td><apex:outputLabel value="Interest: " /></td>
+                        <td>
+                            <apex:outputText value="{0, Number, Currency}">
+                                <apex:param value="{!app2.Interest__c}" />
+                            </apex:outputText>
+                        </td>
+                        <td>
+                            <!-- <apex:outputText value="{0, Number, Currency}" rendered="{!ydtCalc.trusteesNumber=='2'}">
+<apex:param value="{!ydtCalc.fdInterest2}" />
+</apex:outputText> -->
+                            <apex:outputText value="N/A" rendered="{!app2.Trustees_Number__c!='2'}"/>
+                        </td>
+                    </tr>
+                    <tr style="display: {!IF(app2.Self_Employed_Type__c!='Trust', '','none')}">
+                        <td><apex:outputLabel value="Director's Salary: " /></td>
+                        <td>
+                            <apex:outputText value="{0, Number, Currency}">
+                                <apex:param value="{!app2.Director_Salary__c}" />
+                            </apex:outputText>
+                        </td>
+                        <td>
+                            <!-- <apex:outputText value="{0, Number, Currency}" rendered="{!ydtCalc.trusteesNumber=='2'}">
+<apex:param value="{!ydtCalc.fdDirectorSalary2}" />
+</apex:outputText> -->
+                            <apex:outputText value="N/A" rendered="{!app2.Trustees_Number__c!='2'}"/>
+                        </td>
+                    </tr>
+                    <tr style="display: {!IF(app2.Self_Employed_Type__c=='Company Pty Ltd', '','none')}">
+                        <td>Net Profit Before Tax</td>
+                        <td>
+                            <h3>
+                                <apex:outputText value="{0, Number, Currency}">
+                                    <apex:param value="{!app2.Net_Profit_Calc__c}" />
+                                </apex:outputText>
+                            </h3>
+                        </td>
+                        <td>
+                            <h3>
+                                <apex:outputText value="{0, Number, Currency}" rendered="{!app2.Trustees_Number__c=='2'}">
+                                    <apex:param value="{!app2.Net_Profit_Calc_2__c}" />
+                                </apex:outputText>
+                                <apex:outputText value="N/A" rendered="{!app2.Trustees_Number__c!='2'}"/>
+                            </h3>
+                        </td>
+                    </tr>
+                    <tr style="display: {!IF(app2.Self_Employed_Type__c=='Sole Trader', '','none')}">
+                        <td>Net Profit After Tax</td>
+                        <td>
+                            <h3>
+                                <apex:outputText value="{0, Number, Currency}">
+                                    <apex:param value="{!app2.Net_Monthly_Income__c * 12}" />
+                                </apex:outputText>
+                            </h3>
+                        </td>
+                        <td>
+                            <h3>
+                                <apex:outputText value="{0, Number, Currency}" rendered="{!app2.Trustees_Number__c=='2'}">
+                                    <apex:param value="{!app2.Net_Monthly_Income_2__c * 12}" />
+                                </apex:outputText>
+                            </h3>
+                            <apex:outputText value="N/A" rendered="{!app2.Trustees_Number__c!='2'}"/>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Monthly Income (after tax)</td>
+                        <td>
+                            <h3>
+                                <apex:outputText value="{0, Number, Currency}">
+                                    <apex:param value="{!app2.Net_Monthly_Income__c}" />
+                                </apex:outputText>
+                            </h3>
+                        </td>
+                        <td>
+                            <h3>
+                                <apex:outputText value="{0, Number, Currency}" rendered="{!app2.Trustees_Number__c=='2'}">
+                                    <apex:param value="{!app2.Net_Monthly_Income_2__c}" />
+                                </apex:outputText>
+                            </h3>
+                            <apex:outputText value="N/A" rendered="{!app2.Trustees_Number__c!='2'}"/>
+                        </td>
+                    </tr>
+                </table>
+            </apex:outputPanel>
+            <apex:outputPanel layout="block" rendered="{!app2.Self_Employed_Type__c!='Trust'}">
+                <table width="100%">
+                    <tr style="display: {!IF(app2.Self_Employed_Type__c=='Company Pty Ltd', '','none')}">
+                        <td>Sales $</td>
+                        <td>
+                            <apex:outputText value="{0, Number, Currency}">
+                                <apex:param value="{!app2.Sales__c}" />
+                            </apex:outputText>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td width="40%">Net Profit Before Tax</td>
+                        <td>
+                            <apex:outputText value="{0, Number, Currency}">
+                                <apex:param value="{!app2.Net_Profit__c}" />
+                            </apex:outputText>
+                        </td>
+                    </tr>
+                    <tr style="display: {!IF(app2.Self_Employed_Type__c=='Company Pty Ltd', '','none')}">
+                        <td>(-30%)</td>
+                        <td>
+                            <apex:outputText value="{0, Number, Currency}">
+                                <apex:param value="{!app2.Net_Profit__c * 0.3}" />
+                            </apex:outputText>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><apex:outputLabel value="Depreciation: " /></td>
+                        <td>
+                            <apex:outputText value="{0, Number, Currency}">
+                                <apex:param value="{!app2.Depreciation__c}" />
+                            </apex:outputText>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><apex:outputLabel value="Interest: " /></td>
+                        <td>
+                            <apex:outputText value="{0, Number, Currency}">
+                                <apex:param value="{!app2.Interest__c}" />
+                            </apex:outputText>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><apex:outputLabel value="Director's Salary: " /></td>
+                        <td>
+                            <apex:outputText value="{0, Number, Currency}">
+                                <apex:param value="{!app2.Director_Salary__c}" />
+                            </apex:outputText>
+                        </td>
+                    </tr>
+                    <tr style="display: {!IF(app2.Self_Employed_Type__c=='Company Pty Ltd', '','none')}">
+                        <td>Net Profit Before Tax</td>
+                        <td>
+                            <h3>
+                                <apex:outputText value="{0, Number, Currency}">
+                                    <apex:param value="{!app2.Net_Profit_Calc__c}" />
+                                </apex:outputText>
+                            </h3>
+                        </td>
+                    </tr>
+                    <tr style="display: {!IF(app2.Self_Employed_Type__c=='Sole Trader', '','none')}">
+                        <td>Net Profit After Tax</td>
+                        <td>
+                            <h3>
+                                <apex:outputText value="{0, Number, Currency}">
+                                    <apex:param value="{!app2.Net_Monthly_Income__c * 12}" />
+                                </apex:outputText>
+                            </h3>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Monthly Income (after tax)</td>
+                        <td>
+                            <h3>
+                                <apex:outputText value="{0, Number, Currency}">
+                                    <apex:param value="{!app2.Net_Monthly_Income__c}" />
+                                </apex:outputText>
+                            </h3>
+                        </td>
+                    </tr>
+                </table>
+            </apex:outputPanel>
+        </apex:outputPanel>
+        <apex:outputPanel layout="block" rendered="{!hasSecondJob2}">
+            <br/>
+            <table width="100%">
+                <tr><td colspan="2" class="tableCaption"><strong>Applicant 2 Second Job</strong></td></tr>
+                <tr>
+                    <td width="40%"><apex:outputLabel value="Self-Employed: " /></td>
+                    <td width="60%">
+                        <apex:outputText value="{!app22ndJob.Self_Employed_Class__c}" /> &nbsp;&nbsp;&nbsp; / &nbsp;&nbsp;&nbsp;
+                        <apex:outputText value="{!app22ndJob.Self_Employed_Type__c}" />
+                    </td>
+                </tr>
+            </table>
+            <apex:outputPanel layout="block" rendered="{!app22ndJob.Self_Employed_Type__c=='Trust'}">
+                <table width="100%">
+                    <tr>
+                        <td width="40%">Total Trustees:&nbsp;{!app22ndJob.Trustees_Number__c}</td>
+                        <td width="30%">1st Trustee</td>
+                        <td width="30%">
+                            <apex:outputText value="2nd Trustee" rendered="{!app22ndJob.Trustees_Number__c=='2'}"/>
+                            <apex:outputText value="N/A" rendered="{!app22ndJob.Trustees_Number__c!='2'}"/>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td width="40%">
+                            <apex:outputText value="Net Profit Before Tax" rendered="{!app22ndJob.Self_Employed_Type__c!='Trust'}" />
+                            <apex:outputText value="Trust disbursement" rendered="{!app22ndJob.Self_Employed_Type__c=='Trust'}" />
+                        </td>
+                        <td>
+                            <apex:outputText value="{0, Number, Currency}">
+                                <apex:param value="{!app22ndJob.Net_Profit__c}" />
+                            </apex:outputText>
+                        </td>
+                        <td>
+                            <apex:outputText value="{0, Number, Currency}" rendered="{!app22ndJob.Trustees_Number__c=='2'}">
+                                <apex:param value="{!app22ndJob.Net_Profit_2__c}" />
+                            </apex:outputText>
+                            <apex:outputText value="N/A" rendered="{!app22ndJob.Trustees_Number__c!='2'}"/>
+                        </td>
+                    </tr>
+                    <tr style="display: {!IF(app22ndJob.Self_Employed_Type__c=='Company Pty Ltd', '','none')}">
+                        <td>(-30%)</td>
+                        <td>
+                            <apex:outputText value="{0, Number, Currency}">
+                                <apex:param value="{!app22ndJob.Net_Profit__c * 0.3}" />
+                            </apex:outputText>
+                        </td>
+                        <td>
+                            <apex:outputText value="{0, Number, Currency}" rendered="{!app22ndJob.Trustees_Number__c=='2'}">
+                                <apex:param value="{!app22ndJob.Net_Profit_2__c * 0.3}" />
+                            </apex:outputText>
+                            <apex:outputText value="N/A" rendered="{!app22ndJob.Trustees_Number__c!='2'}"/>
+                        </td>
+                    </tr>
+                    <tr style="display: {!IF(app22ndJob.Self_Employed_Type__c!='Trust', '','none')}">
+                        <td><apex:outputLabel value="Depreciation: " /></td>
+                        <td>
+                            <apex:outputText value="{0, Number, Currency}">
+                                <apex:param value="{!app22ndJob.Depreciation__c}" />
+                            </apex:outputText>
+                        </td>
+                        <td>
+                            <!-- <apex:outputText value="{0, Number, Currency}" rendered="{!ydtCalc.trusteesNumber=='2'}">
+<apex:param value="{!ydtCalc.fdDepreciation2}" />
+</apex:outputText> -->
+                            <apex:outputText value="N/A" rendered="{!app22ndJob.Trustees_Number__c!='2'}"/>
+                        </td>
+                    </tr>
+                    <tr style="display: {!IF(app22ndJob.Self_Employed_Type__c!='Trust', '','none')}">
+                        <td><apex:outputLabel value="Interest: " /></td>
+                        <td>
+                            <apex:outputText value="{0, Number, Currency}">
+                                <apex:param value="{!app22ndJob.Interest__c}" />
+                            </apex:outputText>
+                        </td>
+                        <td>
+                            <!-- <apex:outputText value="{0, Number, Currency}" rendered="{!ydtCalc.trusteesNumber=='2'}">
+<apex:param value="{!ydtCalc.fdInterest2}" />
+</apex:outputText> -->
+                            <apex:outputText value="N/A" rendered="{!app22ndJob.Trustees_Number__c!='2'}"/>
+                        </td>
+                    </tr>
+                    <tr style="display: {!IF(app22ndJob.Self_Employed_Type__c!='Trust', '','none')}">
+                        <td><apex:outputLabel value="Director's Salary: " /></td>
+                        <td>
+                            <apex:outputText value="{0, Number, Currency}">
+                                <apex:param value="{!app22ndJob.Director_Salary__c}" />
+                            </apex:outputText>
+                        </td>
+                        <td>
+                            <!-- <apex:outputText value="{0, Number, Currency}" rendered="{!ydtCalc.trusteesNumber=='2'}">
+<apex:param value="{!ydtCalc.fdDirectorSalary2}" />
+</apex:outputText> -->
+                            <apex:outputText value="N/A" rendered="{!app22ndJob.Trustees_Number__c!='2'}"/>
+                        </td>
+                    </tr>
+                    <tr style="display: {!IF(app22ndJob.Self_Employed_Type__c=='Company Pty Ltd', '','none')}">
+                        <td>Net Profit Before Tax</td>
+                        <td>
+                            <h3>
+                                <apex:outputText value="{0, Number, Currency}">
+                                    <apex:param value="{!app22ndJob.Net_Profit_Calc__c}" />
+                                </apex:outputText>
+                            </h3>
+                        </td>
+                        <td>
+                            <h3>
+                                <apex:outputText value="{0, Number, Currency}" rendered="{!app22ndJob.Trustees_Number__c=='2'}">
+                                    <apex:param value="{!app22ndJob.Net_Profit_Calc_2__c}" />
+                                </apex:outputText>
+                                <apex:outputText value="N/A" rendered="{!app22ndJob.Trustees_Number__c!='2'}"/>
+                            </h3>
+                        </td>
+                    </tr>
+                    <tr style="display: {!IF(app22ndJob.Self_Employed_Type__c=='Sole Trader', '','none')}">
+                        <td>Net Profit After Tax</td>
+                        <td>
+                            <h3>
+                                <apex:outputText value="{0, Number, Currency}">
+                                    <apex:param value="{!app22ndJob.Net_Monthly_Income__c * 12}" />
+                                </apex:outputText>
+                            </h3>
+                        </td>
+                        <td>
+                            <h3>
+                                <apex:outputText value="{0, Number, Currency}" rendered="{!app22ndJob.Trustees_Number__c=='2'}">
+                                    <apex:param value="{!app22ndJob.Net_Monthly_Income_2__c * 12}" />
+                                </apex:outputText>
+                            </h3>
+                            <apex:outputText value="N/A" rendered="{!app22ndJob.Trustees_Number__c!='2'}"/>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Monthly Income (after tax)</td>
+                        <td>
+                            <h3>
+                                <apex:outputText value="{0, Number, Currency}">
+                                    <apex:param value="{!app22ndJob.Net_Monthly_Income__c}" />
+                                </apex:outputText>
+                            </h3>
+                        </td>
+                        <td>
+                            <h3>
+                                <apex:outputText value="{0, Number, Currency}" rendered="{!app22ndJob.Trustees_Number__c=='2'}">
+                                    <apex:param value="{!app22ndJob.Net_Monthly_Income_2__c}" />
+                                </apex:outputText>
+                            </h3>
+                            <apex:outputText value="N/A" rendered="{!app22ndJob.Trustees_Number__c!='2'}"/>
+                        </td>
+                    </tr>
+                </table>
+            </apex:outputPanel>
+            <apex:outputPanel layout="block" rendered="{!app22ndJob.Self_Employed_Type__c!='Trust'}">
+                <table width="100%">
+                    <tr style="display: {!IF(app22ndJob.Self_Employed_Type__c=='Company Pty Ltd', '','none')}">
+                        <td>Sales $</td>
+                        <td>
+                            <apex:outputText value="{0, Number, Currency}">
+                                <apex:param value="{!app22ndJob.Sales__c}" />
+                            </apex:outputText>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td width="40%">Net Profit Before Tax</td>
+                        <td>
+                            <apex:outputText value="{0, Number, Currency}">
+                                <apex:param value="{!app22ndJob.Net_Profit__c}" />
+                            </apex:outputText>
+                        </td>
+                    </tr>
+                    <tr style="display: {!IF(app22ndJob.Self_Employed_Type__c=='Company Pty Ltd', '','none')}">
+                        <td>(-30%)</td>
+                        <td>
+                            <apex:outputText value="{0, Number, Currency}">
+                                <apex:param value="{!app22ndJob.Net_Profit__c * 0.3}" />
+                            </apex:outputText>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><apex:outputLabel value="Depreciation: " /></td>
+                        <td>
+                            <apex:outputText value="{0, Number, Currency}">
+                                <apex:param value="{!app22ndJob.Depreciation__c}" />
+                            </apex:outputText>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><apex:outputLabel value="Interest: " /></td>
+                        <td>
+                            <apex:outputText value="{0, Number, Currency}">
+                                <apex:param value="{!app22ndJob.Interest__c}" />
+                            </apex:outputText>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><apex:outputLabel value="Director's Salary: " /></td>
+                        <td>
+                            <apex:outputText value="{0, Number, Currency}">
+                                <apex:param value="{!app22ndJob.Director_Salary__c}" />
+                            </apex:outputText>
+                        </td>
+                    </tr>
+                    <tr style="display: {!IF(app22ndJob.Self_Employed_Type__c=='Company Pty Ltd', '','none')}">
+                        <td>Net Profit Before Tax</td>
+                        <td>
+                            <h3>
+                                <apex:outputText value="{0, Number, Currency}">
+                                    <apex:param value="{!app22ndJob.Net_Profit_Calc__c}" />
+                                </apex:outputText>
+                            </h3>
+                        </td>
+                    </tr>
+                    <tr style="display: {!IF(app22ndJob.Self_Employed_Type__c=='Sole Trader', '','none')}">
+                        <td>Net Profit After Tax</td>
+                        <td>
+                            <h3>
+                                <apex:outputText value="{0, Number, Currency}">
+                                    <apex:param value="{!app22ndJob.Net_Monthly_Income__c * 12}" />
+                                </apex:outputText>
+                            </h3>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Monthly Income (after tax)</td>
+                        <td>
+                            <h3>
+                                <apex:outputText value="{0, Number, Currency}">
+                                    <apex:param value="{!app22ndJob.Net_Monthly_Income__c}" />
+                                </apex:outputText>
+                            </h3>
+                        </td>
+                    </tr>
+                </table>
+            </apex:outputPanel>
+        </apex:outputPanel>
+    </apex:outputPanel>
+</apex:component>

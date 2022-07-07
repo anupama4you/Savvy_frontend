@@ -1,0 +1,344 @@
+<!--
+* @author  Phil Dennison C. Fang
+* @version 1.0
+* @date   2017-02-13 
+* @description    Visualforce page for GAP and Truck GAP
+-->
+
+<apex:page docType="html-5.0" standardController="Custom_Opportunity__c" extensions="OppApplicationExtension" showHeader="true" standardStylesheets="true" sidebar="false">
+    
+    <style type="text/css">
+        
+        body input.btn, body input.btnDisabled, body input.btnCancel{
+        padding: 7px 36px;
+        
+        color: #ffffff !important;
+        background-color: #c4122e; !important;
+        border: 1.5px solid #c4122e;
+        border-radius: 4px;
+        font-size: 13px !important;
+        font-weight: normal !important;
+        text-transform: uppercase;
+        -moz-appearance: none;
+        -webkit-appearance: none;
+        cursor: pointer;
+        font-family: "Calibri";
+        
+        }
+        
+        
+        body button, body .x-btn, body .btn, body .btnDisabled, body .btnCancel, body .menuButton .menuButtonButton{
+        background: none;
+        }
+        
+        .currentSelCvrType{
+            text-transform:uppercase;
+            color:#c4122e;
+            font-size:24px;
+            font-family:Calibri;
+        }
+        
+        .currentSelCvrTypeText{
+            font-family:Calibri;
+            font-weight:bold;
+        }
+        
+        .vehDetBlkSecLabel{
+            font-family:Calibri;
+        }
+        
+        .createQuotSelectList{
+            width:150px;
+        }
+        
+        .createQuotSelectListLong{
+            width:500px;
+        }
+        
+        .vehSuburb{
+            font-family:Calibri;
+            width:500px;
+        }
+        
+        .vehUsageDiv{
+            margin-left:108px;
+        }
+        
+        .vehUsageLabel{
+            font-family:Calibri;
+            font-weight:bold;
+            font-size:91%;
+            color:#4a4a56;
+        }
+        
+        .vehUsageSelectList{
+            margin-left:20px;
+        }
+        
+        .mainInsuredBlkSecLabel{
+            font-family:Calibri;
+        }
+        
+        .financrOutputLbl{
+            text-transform:uppercase;
+            color:#c4122e;
+            font-size:24px;
+            font-family:Calibri;
+            position:relative;
+            margin-top:50%;
+        }
+        
+        .financrOutputLblField{
+            text-transform:uppercase;
+            font-size:16px;
+            font-family:Calibri;
+            margin-left:100px;padding-left:10px;
+        }
+        
+        .financrOutputLblFieldSpn{
+            padding-left:20px;
+        }
+        
+        .motorCvrTermTitle{
+            text-transform:uppercase;
+            color:#c4122e;
+            font-size:24px;
+            font-family:Calibri;
+        }
+        
+        .coverTermMnthsLblField{
+            text-transform:uppercase;
+            font-size:16px;
+            font-family:Calibri;
+            margin-left:0.8%;
+        }
+        
+        .coverTermMnthsLblFieldSpn{
+            padding-left:17px;
+        }
+        
+        .leftMarginDiv{
+            margin-left:230px;
+        }
+        
+        .hwLongSinceLstFaultAccLblField{
+            font-size:80%;
+            font-weight:bold;
+            color:#4a4a56;
+            font-family:Calibri;
+        }
+        
+        .hwLongSinceLstFaultAccLblFieldSpn{
+            padding-left:20px;
+        }
+        
+        .areThereAddDriversLblField{
+            text-transform:uppercase;
+            color:#c4122e;
+            font-size:24px;
+            font-family:Calibri;
+            position:relative;
+            margin-top:50%;
+        }
+        
+        .addDriverColumn{
+            width:80%;
+            text-align:right;
+        }
+        
+        .addDriverColumnAddBtn{
+            background-color: #c4122e;
+        }
+        
+        .addDriverColumnRemoveBtn{
+            background-color: #c4122e;
+        }
+        
+        .areThereAddDriversColDiv{
+            width:230px;
+        }
+        
+        .addDriverPanelCol{
+            width:80%;
+            text-align:right;
+        }
+        
+        .createQuoteBtnBottom{
+            background-color: #c4122e;
+        }
+        
+        .cvrMnthsLeftSpn{
+            padding-left:17px;
+        }
+        
+        .cvrMnthsLblField{
+            text-transform:uppercase;
+            font-size:16px;
+            font-family:Calibri;
+            margin-left:0.8%;
+        }
+        
+        .mtrCoverTrm{
+            text-transform:uppercase;
+            color:#c4122e;
+            font-size:24px;
+            font-family:Calibri;
+        }
+        
+        .employMargnDiv{
+            margin-left:800px;
+        }
+        
+        .contEmploySixMnthsLblField{
+            text-transform:uppercase;
+            font-size:16px;
+            font-family:Calibri;
+        }
+        
+        .employInfoLblField{
+            text-transform:uppercase;
+            color:#c4122e;
+            font-size:24px;
+            font-family:Calibri;
+            position:relative;
+            margin-top:50%;
+        }
+        
+        .isEmployFullorPartLblField{
+            text-transform:uppercase;
+            font-size:16px;
+            font-family:Calibri;
+        }
+        
+        .areCurrEmployLblField{
+            text-transform:uppercase;
+            font-size:16px;
+            font-family:Calibri;
+        }
+        
+        .empInfoLblField{
+            text-transform:uppercase;
+            color:#c4122e;
+            font-size:24px;
+            font-family:Calibri;
+            position:relative;
+            margin-top:50%;
+        }
+        
+        .vehUsageWarQuestionUL{
+            margin:0px;
+        }
+        
+        .vehUsageWarQuestionDiv{
+            margin-left:800px;
+        }
+        
+        .vehUsageWarQuestionLblField{
+            font-size:16px;
+            font-family:Calibri;
+        }
+        
+        .vehUsageWarLeftDiv{
+            float:left;
+        }
+        
+        .vehUsageWarLblField{
+            text-transform:uppercase;
+            color:#c4122e;
+            font-size:24px;
+            font-family:Calibri;
+        }
+        
+        .warContractLblField{
+            text-transform:uppercase;
+            color:#c4122e;
+            font-size:24px;
+            font-family:Calibri;
+            position:relative;
+            margin-top:50%;
+        }
+        
+        .warContractCvrTrmMnths{
+            text-transform:uppercase;
+            font-size:16px;
+            font-family:Calibri;
+            margin-left:87px;
+        }
+        
+        .warContractLeftSelect{
+            margin-left:5px;
+        }
+        
+        .otherInfoLblField{
+            text-transform:uppercase;
+            color:#c4122e;
+            font-size:24px;
+            font-family:Calibri;
+        }
+        
+        .odoReadingLblField{
+            text-transform:uppercase;
+            font-size:16px;
+            font-family:Calibri;
+        }
+        
+        .dtFirstRegLblField{
+            text-transform:uppercase;
+            font-size:16px;
+            font-family:Calibri;
+        }
+        
+        .dtFirstRegSpan{
+            font-size:9px;
+            font-family:Calibri;
+            color:#a9a9a9;
+        }
+        
+    </style>
+    
+    
+    <apex:form >
+        
+        <apex:pageMessages />
+        
+        <apex:pageBlock >
+            
+            
+            <div>
+                <apex:outputLabel value="CURRENTLY SELECTED COVER TYPES" styleClass="currentSelCvrType" />
+                <br/>
+                <apex:outputText styleClass="currentSelCvrTypeText">→&nbsp;&nbsp;GAP</apex:outputText><br/>
+                <apex:outputText styleClass="currentSelCvrTypeText">→&nbsp;&nbsp;Truck Gap</apex:outputText>
+            </div>
+            <br/>
+            <br/>
+            
+            
+            <apex:pageBlockSection title="VEHICLE DETAILS" columns="1">
+                
+                <apex:pageBlockSectionItem >
+                    <apex:outputLabel value="SUBURB" styleClass="vehSuburb"/><apex:inputText value="{!suburbVFInput}" styleClass="createQuotSelectListLong"/>
+                </apex:pageBlockSectionItem>
+                
+            </apex:pageBlockSection>
+            
+            <br/>
+            <br/>
+            
+            <div>
+                <apex:outputLabel value="FINANCIER" styleClass="financrOutputLbl"/>
+            </div>
+            <br/>
+            
+            <div><apex:outputLabel value="FINANCIER" styleClass="financrOutputLblField"/><span class="financrOutputLblFieldSpn"><apex:inputText value="{!financierNamePage2}" /></span></div>
+            
+            <br/>
+            <br/>
+            
+            <apex:commandButton value="PREVIOUS" action="{!previousCreateQuotePage1}" styleClass="createQuoteBtnBottom"/><apex:commandButton value="NEXT" action="{!nextCreateQuotePage3}" styleClass="createQuoteBtnBottom"/>
+            
+        </apex:pageBlock>
+        
+    </apex:form>
+    
+</apex:page>

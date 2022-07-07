@@ -1,0 +1,25 @@
+<apex:page standardController="Lead__c" title="Lead: {!Lead__c.Name}" extensions="LeadRedirectionExtension" action="{!redirectProcess}">
+    <apex:includeScript value="{!URLFOR($Resource.jQuery)}" />
+    <apex:detail />
+    <script>
+        if ({!Lead__c.Owner.Name == 'System Generated'})
+        {
+            var found = false;
+        
+            $('.pbBody').children().each(function()
+            {
+                if (found)
+                {
+                    this.remove();
+                    found = false;
+                }
+            
+                if (this.id == 'head_01B9000000V8ucN_ep_j_id0_j_id2')
+                {
+                    found = true;
+                    this.remove();
+                }                   
+            });
+        }
+    </script>
+</apex:page>

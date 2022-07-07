@@ -1,0 +1,142 @@
+<apex:page docType="html-5.0" standardController="Custom_Opportunity__c" extensions="OppApplicationExtension" showheader="false" standardStylesheets="true" sidebar="false">
+
+<script>
+
+</script>  
+
+
+<style type="text/css">
+
+/*
+body input.btn, body input.btnDisabled, body input.btnCancel{
+         padding: 7px 36px;
+  
+    color: #ffffff !important;
+    background-color: #c4122e; !important;
+    border: 1.5px solid #c4122e;
+    border-radius: 4px;
+    font-size: 13px !important;
+    font-weight: normal !important;
+    text-transform: uppercase;
+    -moz-appearance: none;
+    -webkit-appearance: none;
+    cursor: pointer;
+    font-family: "Calibri";
+    
+}
+
+
+body button, body .x-btn, body .btn, body .btnDisabled, body .btnCancel, body .menuButton .menuButtonButton{
+    background: none;
+}
+
+.xButtonId {
+       padding: 7px 36px;
+    //min-width: 160px;
+    color: #ffffff !important;
+    background-color: #c4122e;
+    border: 1.5px solid #c4122e;
+    border-radius: 4px;
+    font-size: 13px !important;
+    font-weight: normal !important;
+    text-transform: uppercase;
+    -moz-appearance: none;
+    -webkit-appearance: none;
+    cursor: pointer;
+    font-family: "museo-sans-rounded", "Helvetica Neue", Calibri, Candara, Segoe, Segoe UI, Optima, Arial, sans-serif;
+    
+}
+
+.oKButtonId {
+       padding: 7px 36px;
+    //min-width: 160px;
+    color: #ffffff !important;
+    background-color: #c4122e;
+    border: 1.5px solid #c4122e;
+    border-radius: 4px;
+    font-size: 13px !important;
+    font-weight: normal !important;
+    text-transform: uppercase;
+    -moz-appearance: none;
+    -webkit-appearance: none;
+    cursor: pointer;
+    font-family: "museo-sans-rounded", "Helvetica Neue", Calibri, Candara, Segoe, Segoe UI, Optima, Arial, sans-serif;
+    text-align:right;
+    
+}
+*/
+
+.xButtonId {
+  
+    color:#ffffff !important;
+    background-color:#c4122e !important;
+    border:1.5px solid #c4122e!important;
+    border-radius:4px!important;
+    font-size:13px !important;
+    font-weight:normal !important;
+    text-transform:uppercase !important;
+    -moz-appearance:none !important;
+    -webkit-appearance:none !important;
+    cursor:pointer !important;
+    font-family:"Calibri" !important;
+    
+    width:20px !important;
+    
+}
+
+.oKButtonId {
+  
+    color:#ffffff !important;
+    background-color:#c4122e !important;
+    border:1.5px solid #c4122e!important;
+    border-radius:4px!important;
+    font-size:13px !important;
+    font-weight:normal !important;
+    text-transform:uppercase !important;
+    -moz-appearance:none !important;
+    -webkit-appearance:none !important;
+    cursor:pointer !important;
+    font-family:"Calibri" !important;
+    
+    width:100px !important;
+    
+}
+
+body button, body .x-btn, body .btn, body .btnDisabled, body .btnCancel, body .menuButton .menuButtonButton{
+    background: none;
+}
+
+
+</style>
+
+
+<apex:form >
+
+
+<apex:pageBlock >
+    
+<div>
+<span style="width:100px;font-weight:bold;color:#c4122e;font-size:1.5em;font-family:Calibri">Important Please Note</span><span style="margin-left:60px;"><apex:commandButton id="xButtonId" styleClass="xButtonId" value="x" onclick="window.close();" /></span>
+<br/>
+<br/>
+
+<div style="font-family:Calibri;font-size:1.1em;">
+Unlisted drivers under the age of 25 will<br/> 
+incur an additional excess of $2,500 on<br/> 
+any claim lodged.<br/>
+<p/>
+International drivers will incur an<br/> 
+additional excess of $2,000<br/>
+</div>
+
+</div>
+<br/>
+<apex:commandButton value="Ok" onclick="window.close();" id="oKButtonId" styleClass="oKButtonId"/> 
+    
+</apex:pageBlock>
+
+
+</apex:form>
+
+   
+</apex:page>

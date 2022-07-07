@@ -1,0 +1,18 @@
+<apex:page showHeader="false" sidebar="false" controller="OppApprovalSalesConsultantsListExtension" cache="false" title="Lender Logins">
+	<apex:form id="formData">
+	    <apex:pageBlock title="Sale Consultants Details" mode="edit" >
+	        <apex:pageMessages id="msg" />
+	      	<apex:pageBlockTable id="tblData" value="{!data}" var="d" captionClass="captionTable">
+	            <!-- <apex:facet name="caption">Lender Login</apex:facet> -->
+	            <apex:column width="20%" headerValue="Name" value="{!d.Name}"/>
+	            <apex:column width="20%" headerValue="Email" value="{!d.Email}"/>
+	            <apex:column width="20%" headerValue="Phone">
+	            	<apex:outputText value="{!d.Phone}" />&nbsp;
+	            	<apex:outputText value="x {!d.Extension}" rendered="{!IF(d.Extension != null,true,false)}" />
+	            </apex:column>
+	            <apex:column width="20%" headerValue="Fax" value="{!d.Fax}"/>
+	            <apex:column width="20%" headerValue="Mobile" value="{!d.MobilePhone}"/>
+	        </apex:pageBlockTable>
+	    </apex:pageBlock>
+	</apex:form>
+</apex:page>

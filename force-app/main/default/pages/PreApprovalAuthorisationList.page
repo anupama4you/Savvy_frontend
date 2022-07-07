@@ -1,0 +1,54 @@
+<apex:page controller="PreApprovalAuthorisationListExtension" standardStylesheets="true" cache="true" title="Pre-Approval Authorisation List" id="preAppAuthRpt">
+    <apex:stylesheet value="{!$Resource.PerformanceRptCSS}"/>
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.1/css/all.css" integrity="sha384-50oBUHEmvpQ+1lW4y57PTFmhCaXp0ML5d60M1M7uH2+nqUivzIebhndOJK28anvf" crossorigin="anonymous"/>
+    <apex:form id="formData">
+        <apex:actionPoller action="{!hideMessages}" reRender="formData" enabled="{!showMessage}" interval="7" id="apoller"/>
+        <apex:pageBlock mode="Detail" id="tableBlock">
+            <!-- <apex:sectionHeader title="Pre-Approval Authorisation List ({!authorised})"  /> -->
+            <div class="bPageTitle">
+                <div class="ptBody secondaryPalette brandSecondaryBrd">
+                    <table width="100%">
+                        <tr>
+                            <td width="50%" valign="top">
+                                <h1 class="noSecondHeader">
+                                    <apex:outputText value="Pre-Approval Authorisation List"/>&nbsp;
+                                    <apex:actionStatus id="stproc" startText="[Processing...]"/>
+                                </h1>
+                            </td>
+                            <td width="50%" align="right">
+                                <apex:commandButton value="Pipeline Report" onClick="window.open('/apex/PreApprovalAuthorisationPipelineReport');"
+                                    rendered="{!authorised}" reRender="tableBlock" />
+                                <apex:commandButton value="Performance Report (3)" onClick="window.open('/apex/SalesPerformanceReport3');"
+                                        rendered="{!authorised}" reRender="tableBlock" />
+                                <apex:commandButton value="Refresh Data" action="{!refresh}" status="stproc" reRender="formData"/>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+            <apex:pageMessages rendered="{!showMessage}" id="msgs"/>
+            <apex:pageMessage severity="ERROR" rendered="{!NOT(authorised)}" id="msgsNotAlloed" 
+                    title="Not Authorised" detail="You are not allowed to authorise any Pre-Approval submission"/>
+            <apex:pageBlockTable value="{!data}" var="d" id="tblData" rowClasses="rowOne, rowTwo" rendered="{!authorised}">
+                <apex:column styleClass="numbers" headerClass="numbers">
+                    <apex:facet name="header">Action</apex:facet>
+                    <apex:commandButton value="Approve / Decline" action="{!openApproval}" status="stproc" reRender="formData">
+                        <apex:param name="oppIdSel" assignTo="{!oppIdSel}" value="{!d.Id}"/>
+                    </apex:commandButton>
+                </apex:column>
+                <apex:column headerValue="Opportunity Name">
+                    <apex:outputLink value="/{!d.Id}" target="_blank">{!d.Name}</apex:outputLink>
+                </apex:column>
+                <apex:column value="{!d.Mobile_Number__c}" headerValue="{!$ObjectType.Custom_Opportunity__c.fields.Mobile_Number__c.Label}" styleClass="numbers" headerClass="numbers"/>
+                <apex:column value="{!d.Lead_Loan_Type__c}" headerValue="{!$ObjectType.Custom_Opportunity__c.fields.Lead_Loan_Type__c.Label}"/>
+                <apex:column value="{!d.NAF_Net_Amount_Financed__c}" headerValue="{!$ObjectType.Custom_Opportunity__c.fields.NAF_Net_Amount_Financed__c.Label}" styleClass="numbers" headerClass="numbers"/>
+                <apex:column value="{!d.Total_Commission__c}" headerValue="{!$ObjectType.Custom_Opportunity__c.fields.Total_Commission__c.Label}" styleClass="numbers" headerClass="numbers"/>
+                <apex:column value="{!d.Total_Brokerage__c}" headerValue="{!$ObjectType.Custom_Opportunity__c.fields.Total_Brokerage__c.Label}" styleClass="numbers" headerClass="numbers"/>
+                <apex:column value="{!d.Total_DOF__c}" headerValue="{!$ObjectType.Custom_Opportunity__c.fields.Total_DOF__c.Label}" styleClass="numbers" headerClass="numbers"/>
+                <apex:column value="{!d.Total_Insurance_Commission__c}" headerValue="{!$ObjectType.Custom_Opportunity__c.fields.Total_Insurance_Commission__c.Label}" styleClass="numbers" headerClass="numbers"/>
+                <apex:column value="{!d.Owner_Name__c}" headerValue="{!$ObjectType.Custom_Opportunity__c.fields.Owner_Name__c.Label}"/>
+                <apex:column value="{!d.LastModifiedDate}" headerValue="{!$ObjectType.Custom_Opportunity__c.fields.LastModifiedDate.Label}" styleClass="numbers" headerClass="numbers"/>
+            </apex:pageBlockTable>
+        </apex:pageBlock>
+    </apex:form>
+</apex:page>

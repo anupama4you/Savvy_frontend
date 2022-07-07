@@ -1,0 +1,66 @@
+<apex:page standardController="Custom_Opportunity__c" extensions="ValidateSubmitExtension" action="{!Validate2}">
+    <apex:variable value="{!Custom_Opportunity__c}" var="o" />
+   
+    <apex:sectionHeader title="Submit for Approval" subtitle="{!Custom_Opportunity__c.Name}" />
+    <apex:pageMessages />
+    <apex:form >
+        <apex:pageBlock mode="edit">
+            <apex:outputPanel layout="block" style="padding: 10px;" rendered="{!!fieldsValidated.empty}">                        
+                The following fields on the Opportunity need to be entered before it can be processed:<br />
+                <br />            
+                <apex:repeat value="{!fieldsValidated}" var="d">
+                    <b>{!d}</b><br />
+                </apex:repeat>           
+            </apex:outputPanel>
+            <!--
+            <apex:outputPanel layout="block" style="padding: 10px;" rendered="{!MissingProductFields.size > 0}">                        
+                The following fields on the Loan Product need to be entered before this Opportunity can be processed:<br />
+                <br />            
+                <apex:repeat value="{!MissingProductFields}" var="d">
+                    <b>{!d}</b><br />
+                </apex:repeat>           
+            </apex:outputPanel>
+            <apex:outputPanel layout="block" style="padding: 10px;" rendered="{!MissingChecklist.size > 0}">
+                The following Consultant Checklist need to be checked before this opportunity can be processed:<br />
+                <br />
+                <apex:repeat value="{!MissingChecklist}" var="d">
+                    <b>{!d}</b><br />    
+                </apex:repeat>    
+            </apex:outputPanel>
+			-->
+            <apex:outputPanel layout="block" style="padding: 10px;" rendered="{!docsValidated.size > 0}">                        
+                The following document(s) need to be produced before this Opportunity can be processed:<br />
+                <br />            
+                <apex:repeat value="{!docsValidated}" var="d">
+                    <b>{!d}</b><br />
+                </apex:repeat>              
+            </apex:outputPanel>
+            <!-- <apex:outputPanel layout="block" style="padding: 10px;" rendered="{!!ISBLANK(msgInsurance)}">                        
+                Insurance product:<br /><br />
+                <b>{!msgInsurance}</b><br />          
+            </apex:outputPanel> -->
+            <apex:outputPanel layout="block" style="padding: 10px;" rendered="{!!ISBLANK(msgSubmitProcess)}">
+                <h3>Process failed</h3>
+                <p>{!msgSubmitProcess}</p>
+            </apex:outputPanel>
+            <apex:pageBlockButtons location="bottom">
+                <apex:commandButton value="Return" action="{!Cancel}" />
+            </apex:pageBlockButtons>
+        </apex:pageBlock>
+    </apex:form>
+    <!-- <apex:outputText value="{!Custom_Opportunity__c.Monthly_Surplus__c}" rendered="false"/> -->
+    <apex:outputText value="{!o.Application__c}" rendered="false"/>
+    <apex:outputText value="{!o.Status__c}" rendered="false"/>
+    <apex:outputText value="{!o.Purchase_Type__c}" rendered="false"/>
+    <apex:outputText value="{!o.ApplicationYTD__c}" rendered="false"/>
+    <apex:outputText value="{!o.ApplicationYTD__r.Type__c}" rendered="false"/>
+    <apex:outputText value="{!o.ApplicationYTD__r.Self_Employed_Type__c}" rendered="false"/>
+    <apex:outputText value="{!o.ApplicationYTD__r.Self_Employed_Class__c}" rendered="false"/>
+    <apex:outputText value="{!o.Application__r.Business_Structure__c}" rendered="false"/>
+    <apex:outputText value="{!o.Application_AssetDetail__r.Type__c}" rendered="false"/>
+    <apex:outputText value="{!o.Application_AssetDetail__r.LVR__c}" rendered="false"/>
+    <apex:outputText value="{!o.Application__r.Application_Type__c}" rendered="false"/>
+    <apex:outputText value="{!o.Application__r.Type_of_Asset__c}" rendered="false"/>
+    <apex:outputText value="{!o.Application__r.No_of_People__c}" rendered="false"/>
+    <apex:outputText value="{!o.ApplicationServicing__c}" rendered="false"/>
+</apex:page>

@@ -1,0 +1,10 @@
+<apex:component >
+    <apex:attribute name="lead" type="Lead__c" description="Lead" required="true"/>
+    <apex:pageBlock mode="maindetail">
+        <apex:pageBlockSection title="Protection Questions" columns="1" collapsible="false">
+                <!--<apex:outputField label="LTI/LPI" value="{!lead.Losing_Job_Protection__c}" />-->
+                <apex:outputField label="Shortfall" value="{!lead.Written_Off_Protection__c}" />
+                <apex:outputField label="Warranty" value="{!lead.Mechanical_Breakdown_Protection__c}" />
+        </apex:pageBlockSection>
+    </apex:pageBlock>
+</apex:component>

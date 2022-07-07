@@ -21,7 +21,7 @@
               slds-button_icon-inverse
             "
             title="Close"
-            onclick={handleClose}
+            onclick={handleCancel}
           >
             <lightning-icon
               icon-name="utility:close"
@@ -31,7 +31,7 @@
             <span class="slds-assistive-text">Close</span>
           </button>
           <h2 id="modal-heading-01" class="slds-modal__title slds-hyphenate">
-            Broker Support for Formal Approval: [{processStage}]
+            Broker Support for Formal Approval:
           </h2>
         </header>
         <div
@@ -134,8 +134,17 @@
             icon-name="utility:share_file"
           >
           </lightning-button>
-          <!-- Close / Cancel -->
           <lightning-button
+            if:true={displaySubmission}
+            class="slds-button slds-m-left_x-small"
+            type="button"
+            label="Cancel"
+            onclick={handleCancel}
+          >
+          </lightning-button>
+          <!-- Close -->
+          <lightning-button
+            if:false={displaySubmission}
             class="slds-button slds-m-left_x-small"
             type="button"
             label={closeLabel}

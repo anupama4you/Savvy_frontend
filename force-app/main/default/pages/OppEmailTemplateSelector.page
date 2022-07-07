@@ -1,0 +1,64 @@
+<apex:page docType="html-5.0" standardController="Custom_Opportunity__c" extensions="OppEmailTemplateSelectorExtension">
+    
+    <apex:form >
+        <apex:pageBlock >            
+            <apex:outputText style="font-style:italic; color:red;" value="Please select a template" rendered="{!showerror}"/>
+            
+            <table>
+                <tr>
+                    <td width="47%" style="font-size: 14px;font-weight: bold;">Select Template</td>
+                    <td width="6%"></td>
+                    <td width="47%" style="font-size: 14px;font-weight: bold;">&nbsp;&nbsp;&nbsp;Select Document</td>
+                </tr>
+                <tr>
+                    <td height="1%"></td>
+                </tr>
+                <tr>
+                    <td><apex:selectList value="{!selectedTemplateId}">
+                        <apex:selectOptions value="{!myPersonalTemplateOptions}"/>
+                        </apex:selectList></td>
+                    <td></td>
+                    <td><apex:selectCheckboxes layout="pageDirection" value="{!selectedDocuments}">
+                        <apex:selectOptions value="{!documentList}"/>
+                        </apex:selectCheckboxes>
+                    </td>
+                    
+                </tr>
+            </table>
+            <!--
+<apex:pageBlockSection columns="2">
+<apex:pageBlockSectionItem >
+<apex:selectList value="{!selectedTemplateId}">
+<apex:selectOptions value="{!myPersonalTemplateOptions}"/>
+</apex:selectList>
+</apex:pageBlockSectionItem>
+
+<apex:pageBlockSectionItem >
+<apex:selectCheckboxes layout="pageDirection" value="{!selectedDocuments}">
+<apex:selectOptions value="{!documentList}"/>
+</apex:selectCheckboxes>
+</apex:pageBlockSectionItem>
+</apex:pageBlockSection>
+-->
+            <!-- <p>Lead Loan Type: <strong><apex:outputField value="{!Custom_Opportunity__c.Lead__r.Loan_Type__c}"/></strong> </p>
+<p>
+<strong>Select below an Application Form link to be included into the email template:</strong><br/>
+<apex:selectList value="{!Custom_Opportunity__c.Web_Apply_Now_Section__c}" multiselect="false" size="7">
+<apex:selectOptions value="{!applyNowOptions}" />
+</apex:selectList>
+</p> -->
+            <p>&nbsp;</p>
+            
+            
+            <p>&nbsp;{!userType}</p>
+            <apex:commandButton value="Next" action="{!sendEmail}" />
+            <p>&nbsp;</p>
+            <p>
+                <Strong>Please Note: </Strong>
+                <br></br>
+        If you need to edit an email, do not copy and paste text from another program, only manually write text in email.
+    </p>
+</apex:pageBlock>
+</apex:form>
+
+</apex:page>

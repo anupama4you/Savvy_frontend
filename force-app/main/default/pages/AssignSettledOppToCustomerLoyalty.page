@@ -1,0 +1,10 @@
+<apex:page controller="AssignSettledOppToCustomerLoyaltyExt" action="{!setOpportunities}">
+    <apex:form id="frmData">
+        <apex:pageMessages />
+        <apex:outputPanel layout="block" rendered="{!requireNewProcess}">
+            <br/>
+            <apex:commandButton value="Process" action="{!setOpportunities}" status="stProc" reRender="frmData"/>&nbsp;&nbsp;&nbsp;
+            <apex:actionStatus id="stProc" startText="Processing..." />
+        </apex:outputPanel>
+    </apex:form>
+</apex:page>

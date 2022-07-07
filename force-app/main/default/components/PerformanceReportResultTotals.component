@@ -1,0 +1,84 @@
+<apex:component >
+    <apex:attribute name="report" type="PerformanceReportResult" description="Report" required="true"/>
+    <apex:pageBlock >
+        <!-- Totals -->
+        <apex:pageBlockSection title="Totals" collapsible="false" id="totalSect" rendered="true">
+            <apex:pageBlockSectionItem rendered="{!NOT(report.isInsSalesReport)}">
+                <apex:outputLabel value="Total Commission (ex GST)"/>
+                 <apex:outputText value="{0, number, $##,###,###.00}">
+                    <apex:param value="{!report.commission}"/>
+                </apex:outputText>   
+            </apex:pageBlockSectionItem>
+            <apex:pageBlockSectionItem >
+                <apex:outputLabel value="Total Net Amount Financed" /> 
+                 <apex:outputText value="{0, number, $##,###,###.00}">
+                  <apex:param value="{!report.totalNAF}" />
+                </apex:outputText>
+            </apex:pageBlockSectionItem>
+            <apex:pageBlockSectionItem rendered="{!NOT(report.isInsSalesReport)}">
+                <apex:outputLabel value="Total Brokerage/DOF (ex GST)" />                
+                 <apex:outputText value="{0, number, $##,###,###.00}">
+                  <apex:param value="{!report.totalBrokerageDOF}" />
+                </apex:outputText>  
+            </apex:pageBlockSectionItem>
+            <apex:pageBlockSectionItem rendered="{!report.displayInsurances}">
+                <apex:outputLabel value="Total Insurance Commission (ex GST)" />                
+                 <apex:outputText value="{0, number, $##,###,###.00}">
+                  <apex:param value="{!report.commissionInsurance}" />
+                </apex:outputText>  
+            </apex:pageBlockSectionItem>
+             <apex:pageBlockSectionItem >
+                <apex:outputLabel value="# of Leads" />
+                <apex:outputPanel >
+                  <apex:outputLabel value="{!report.totalLeads}" rendered="{!report.isLeadCount}" />
+                  <apex:outputLabel value="{!report.totalOpps}" rendered="{!NOT(report.isLeadCount)}" />
+                </apex:outputPanel>
+            </apex:pageBlockSectionItem>
+            <apex:pageBlockSectionItem rendered="{!NOT(report.isInsSalesReport)}">
+                <apex:outputLabel value="% of Budget"/>
+                <apex:outputText value="{0, number, #,###.##}%">
+                    <apex:param value="{!report.BudgetConvertion}" />
+                </apex:outputText>                                         
+            </apex:pageBlockSectionItem>
+            <apex:pageBlockSectionItem >
+                <apex:outputLabel value="# of Loan Sales" />
+                <apex:outputLabel value="{!report.totalLoanSales}" />
+            </apex:pageBlockSectionItem>
+            <apex:pageBlockSectionItem >
+                <apex:outputLabel value="Lead Conversion" />
+                <apex:outputPanel >
+                    <apex:outputText value="{0, number, #,###.##}%">
+                        <apex:param value="{!report.oppConvertion}" />
+                    </apex:outputText>
+                </apex:outputPanel>
+            </apex:pageBlockSectionItem>
+            <apex:pageBlockSectionItem rendered="{!NOT(report.isInsSalesReport)}">
+                <apex:outputLabel value="Total budget (ex GST)"/> 
+                 <apex:outputText value="{0, number, $##,###,###.00}">
+                  <apex:param value="{!report.budget}" />
+                </apex:outputText>                      
+            </apex:pageBlockSectionItem>
+            <apex:pageBlockSectionItem />
+            <apex:pageBlockSectionItem rendered="{!report.displayInsurances}">
+                <apex:outputLabel value="Total # of Full-Comp" />
+                <apex:outputLabel value="{!report.totalComp}" />
+            </apex:pageBlockSectionItem>
+            <apex:pageBlockSectionItem rendered="{!report.displayInsurances}">
+                <apex:outputLabel value="Total # of Add-Ons" />
+                <apex:outputLabel value="{!report.totalInsurance}" />
+            </apex:pageBlockSectionItem>
+            <apex:pageBlockSectionItem rendered="{!report.displayInsurances}">
+                <apex:outputLabel value="Total % of Full-Comp" />
+                <apex:outputText value="{0, number, #,###.##}%">
+                    <apex:param value="{!report.CompConvertion}" />
+                </apex:outputText>
+            </apex:pageBlockSectionItem>
+            <apex:pageBlockSectionItem rendered="{!report.displayInsurances}">
+                <apex:outputLabel value="Total % of Add-Ons" />
+                <apex:outputText value="{0, number, #,###.##}%">
+                    <apex:param value="{!report.InsuranceConvertion}" />
+                </apex:outputText>
+            </apex:pageBlockSectionItem>
+        </apex:pageBlockSection>
+    </apex:pageBlock>
+</apex:component>

@@ -1,0 +1,650 @@
+<apex:page docType="html-5.0" standardController="Custom_Opportunity__c" extensions="PepperPLExtension" sidebar="false" showHeader="true" id="ppplCalc" title="Pepper PL">
+    <apex:variable value="{!Custom_Opportunity__c}" var="o" />
+    <!-- Partner Portal Styles -->
+    <apex:outputPanel rendered="{!isBrokerPartnerUser}">
+      <style type="text/css">
+        html .brandQuaternaryBgr,
+        .titleDiv {
+          background: #ffffff !important;
+        }
+    
+        .bPageBlock {
+          border: 1px solid white !important;
+        }
+      </style>
+    </apex:outputPanel>
+    <apex:stylesheet value="{!$Resource.QuotingCalculatorCSS}"/>
+    <style type="text/css">
+        .titleDiv {
+            width: 100%;
+            height: 43px;
+            font-size: 1.0rem;
+        }
+        .logo {
+            float: right;
+            width: 60%;
+        }
+        .calculatorInput {
+            padding-bottom: 20px;
+            background: #f8f8f8;
+            border: 1px solid #ddd;
+        }
+        .divTitle {
+            background-color: #ddd;
+            padding-top: 2px;
+            padding-bottom: 2px;
+            padding-left: 20px;
+            text-transform: uppercase;
+            border: 1px solid #ddd;
+        }
+        #leftTables {
+            display: inline-block;
+            float: left;
+            width: 38%;
+            padding-left: 20px;
+        }
+        #rightTables {
+            display: inline-block;
+            width: 60%;
+        }
+        #vehicleTab {
+            border: 1px solid #ddd;
+            border-bottom: transparent;
+            display: inline-block;
+            background-color: #fff;
+            position: relative;
+            padding: 6px;
+            top: 17px;
+        }
+        #vehicleDetails {
+            width: 95%;
+            background: white;
+            border: 1px solid #ddd;
+            margin-top: 15px;
+            padding: 2px;
+            padding-left: 20px;
+            padding-top: 10px;
+            padding-bottom: 10px;
+        }
+        #insuranceTab {
+            border: 1px solid #ddd;
+            border-bottom: transparent;
+            display: inline-block;
+            background-color: #fff;
+            position: relative;
+            padding: 6px;
+            top: 17px;
+        }
+        #insuranceProduct {
+            width: 95%;
+            background: white;
+            border: 1px solid #ddd;
+            margin-top: 15px;
+            padding: 2px;
+            padding-left: 20px;
+            padding-top: 0px;
+            padding-bottom: 10px;
+        }
+        #financeTab {
+            border: 1px solid #ddd;
+            border-bottom: transparent;
+            display: inline-block;
+            background-color: #fff;
+            position:relative;
+            padding: 6px;
+            top: 17px;
+        }
+        #financeDetails {
+            width: 95%;
+            background: white;
+            border: 1px solid #ddd;
+            margin-top: 15px;
+            padding: 2px;
+            padding-left: 20px;
+            padding-top: 10px;
+            padding-bottom: 10px;
+        }
+        #commissionPanel {
+            background: #f8f8f8;
+            border: 1px solid #ddd;
+        }
+        #commissionTab {
+            border: 1px solid #ddd;
+            border-bottom: transparent;
+            display: inline-block;
+            background-color: #fff;
+            position: relative;
+            padding: 6px;
+            top: 17px;
+            margin-left: 20px;
+        }
+        #commission {
+            width: 96%;
+            background: white;
+            border: 1px solid #ddd;
+            margin-top: 15px;
+            padding: 2px;
+            padding-left: 20px;
+            padding-top: 20px;
+            padding-bottom: 20px;
+            margin-left: 20px;
+            margin-bottom: 20px;
+        }
+        #repaymentPanel {
+            background: #f8f8f8;
+            border: 1px solid #ddd;
+        }
+        #repaymentTab {
+            border: 1px solid #ddd;
+            border-bottom: transparent;
+            display: inline-block;
+            background-color: #fff;
+            position: relative;
+            padding: 6px;
+            top: 17px;
+            margin-left: 20px;
+        }
+        #repayment {
+            width: 96%;
+            background: white;
+            border: 1px solid #ddd;
+            margin-top: 15px;
+            padding: 2px;
+            padding-left: 20px;
+            padding-top: 20px;
+            padding-bottom: 20px;
+            margin-left: 20px;
+            margin-bottom: 20px;
+        }
+        .inTableTitle {
+            font-weight: bold;
+            padding-top: 10px;
+            padding-bottom: 10px;
+        }
+        .calcInput {
+            border: 1px solid #e0e0e0;
+            padding: 0.15em;
+            min-width: 173px;
+        }
+        .calcInput2 {
+            border: 1px solid #e0e0e0;
+            padding: 0.15em;
+            max-width: 70px;
+        }
+        .selectList {
+            border: 1px solid #e0e0e0;
+            padding: 0.15em;
+            width:182px;
+        }
+        .defaultInsurance {
+            text-align: center;
+            width: 25%;
+        }
+        .vehicleColumn {
+            width: 25%;
+        }
+        .insuranceColumn {
+            width: 25%;
+        }
+        .financeColumn {
+            width: 50%;
+        }
+        .commissionLabel {
+            width: 8%;
+            font-weight: bold;
+        }
+        .commissionCotent {
+            width: 17%;
+            font-weight: bold;
+        }
+        .repayColumn {
+            width: 12.5%;
+            font-weight: bold;
+        }
+        .calcLabel {
+            font-weight: 500;
+        }
+        .baseRateColumn {
+            padding: 0.3rem;
+        }
+        .monthlyFeeLabel {
+            width: 5%;
+            font-weight: bold;
+        }
+        .monthlyFeeContent {
+            width: 20%;
+            font-weight: bold;
+        }
+        .referenceTable {
+            
+        }
+        .referenceTitle {
+            padding: 10px;
+        }
+        .tableDetails {
+            width: 95%;
+            background: white;
+            border: 1px solid #ddd;
+            margin-top: 15px;
+            padding: 2px;
+            padding-left: 20px;
+            padding-top: 10px;
+            padding-bottom: 10px;
+        }
+        .titleTableTab {
+            border: 1px solid #ddd;
+            border-bottom: transparent;
+            display: inline-block;
+            background-color: #fff;
+            position: relative;
+            padding: 6px;
+            top: 17px;
+        }
+        .resultValue {
+            font-weight: bold;
+        }
+        .buttonPanel {
+            float: right;
+            text-align: right;
+        }
+        
+        /*Created By: Phil Fang | Date: March 6, 2017 | Description: Styling for ERIC API integration*/
+        .acceptQuoteButtons {
+            padding: 6px 7px !important;
+            color: #fff !important;
+            font-size: 11px !important;
+            outline: none !important;
+        
+            background: rgb(125,126,125) !important; 
+            background: -moz-linear-gradient(top,  rgba(125,126,125,1) 0%, rgba(14,14,14,1) 100%) !important;
+            
+            background: -webkit-linear-gradient(top,  rgba(0,77,0,1) 0%,rgba(0,102,0,1) 100%) !important;
+            
+            /*original*/
+            /*background: -webkit-linear-gradient(top,  rgba(51,126,88,1) 0%,rgba(44,112,66,1) 100%) !important;*/
+            
+            /*background: -webkit-linear-gradient(top,  rgba(62,151,106,1) 0%,rgba(51,125,88,1) 100%) !important;*/
+    
+            margin: 0px !important;
+        }
+        
+        .acceptQuoteButtonsClicked {
+            padding: 6px 7px !important;
+            color: #fff !important;
+            font-size: 11px !important;
+            outline: none !important;
+        
+            background: rgb(125,126,125) !important; 
+            background: -moz-linear-gradient(top,  rgba(125,126,125,1) 0%, rgba(14,14,14,1) 100%) !important;
+            
+            background: -webkit-linear-gradient(top,  rgba(0,153,0,1) 0%,rgba(0,179,0,1) 100%) !important;
+            
+            /*background: -webkit-linear-gradient(top,  rgba(62,151,106,1) 0%,rgba(51,125,88,1) 100%) !important;*/
+    
+            margin: 0px !important;
+        }
+        
+        .decQuoteButtons {
+            padding: 6px 7px !important;
+            color: #fff !important;
+            font-size: 11px !important;
+            outline: none !important;
+           
+            background: rgb(125,126,125) !important;
+            background: -moz-linear-gradient(top,  rgba(125,126,125,1) 0%, rgba(14,14,14,1) 100%) !important; 
+            
+            background: -webkit-linear-gradient(top,  rgba(168,0,0,1) 0%, rgba(219,0,0,1) 100%) !important; Chrome10-25,Safari5.1-6
+            
+            /*background: -webkit-linear-gradient(top,  rgba(235,74,93,1) 0%, rgba(203,57,74,1) 100%) !important; Chrome10-25,Safari5.1-6*/
+            
+            /*background: linear-gradient(to bottom,  rgba(125,126,125,1) 0%,rgba(14,14,14,1) 100%) !important;  */
+            /* filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#7d7e7d', endColorstr='#0e0e0e',GradientType=0 ) !important;  */
+            
+            margin: 0px !important;
+        }
+        
+        .decQuoteButtonsClicked {
+            padding: 6px 7px !important;
+            color: #fff !important;
+            font-size: 11px !important;
+            outline: none !important;
+           
+            background: rgb(125,126,125) !important;
+            background: -moz-linear-gradient(top,  rgba(125,126,125,1) 0%, rgba(14,14,14,1) 100%) !important; 
+            
+            background: -webkit-linear-gradient(top,  rgba(245,0,0,1) 0%, rgba(255,66,66,1) 100%) !important; Chrome10-25,Safari5.1-6
+            
+            /*background: -webkit-linear-gradient(top,  rgba(235,74,93,1) 0%, rgba(203,57,74,1) 100%) !important; Chrome10-25,Safari5.1-6*/
+            
+            /*background: linear-gradient(to bottom,  rgba(125,126,125,1) 0%,rgba(14,14,14,1) 100%) !important;  */
+            /* filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#7d7e7d', endColorstr='#0e0e0e',GradientType=0 ) !important;  */
+            
+            margin: 0px !important;
+        }
+        
+        .buyPolicyButtons {
+            padding: 6px 7px !important;
+            color: #fff !important;
+            font-size: 14px !important;
+            outline: none !important;
+           
+            background: rgb(125,126,125) !important;
+            background: -moz-linear-gradient(top,  rgba(125,126,125,1) 0%, rgba(14,14,14,1) 100%) !important; 
+            
+            background: -webkit-linear-gradient(top,  rgba(0,0,0,1) 0%, rgba(191,191,191,1) 100%) !important; Chrome10-25,Safari5.1-6
+
+            
+            /*color test 2 okay*/
+            /*background: -webkit-linear-gradient(top,  rgba(66,161,255,1) 0%, rgba(117,186,255,1) 100%) !important; Chrome10-25,Safari5.1-6*/
+            
+            /*original*/
+            /*background: -webkit-linear-gradient(top,  rgba(125,126,125,1) 0%,rgba(14,14,14,1) 100%) !important;*/
+            background: linear-gradient(to bottom,  rgba(125,126,125,1) 0%,rgba(14,14,14,1) 100%) !important; 
+            filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#7d7e7d', endColorstr='#0e0e0e',GradientType=0 ) !important; 
+            
+            float: right;
+            margin-top: 10px !important;
+            margin-right: 48px !important;
+            height:45px;
+            width: 150px;
+       
+        }
+        .ratesTh {
+            font-weight: bold;
+            text-align: center;
+        }
+        .ratesThSolid {
+            background-color: #e0e3e5; 
+        }
+        .colComm {
+            background-color: #f8f8f8;
+        }
+        .main-content {
+          margin-left: auto;
+          width: 86%;
+        }
+    </style>
+    
+    <c:sidebarV2 oppId="{!o.Id}" appId="{!o.Application__c}" showLenders="true" rendered="{!NOT(isBrokerPartnerUser)}" />
+    <div id="mainContent" class="{!IF(NOT(isBrokerPartnerUser),'main-content','')}">
+        <apex:form id="calcFormData">
+            <apex:pageMessages id="pageMessage" />
+            <!-- Send Quote -->
+            <apex:actionFunction action="{!sendCustomerEmail1}" name="sendCustomerEmail1" reRender="pageMessage" status="stsSend1" oncomplete="sendCustomerEmail2();"/>
+            <apex:actionFunction action="{!sendCustomerEmail2}" name="sendCustomerEmail2" status="stsSend2" reRender="pageMessage, pnlInsProd"/>
+            <!-- End -->
+            <apex:actionFunction name="nafRefresh" reRender="applicationFee,realtimeNaf,netDeposit,maxDof,applicationFee" />
+            
+            <div class="titleDiv">
+                <h1>PEPPER PL for {!Custom_Opportunity__c.Name}</h1>
+                <div class="buttonPanel">
+                    <table>
+                        <tr>
+                            <td>
+                                <apex:actionStatus startText="(Processing...)" id="stsQuote"  />
+                                <apex:actionStatus startText="(Saving...)" id="stsSend1" />
+                                <apex:actionStatus startText="(Sending...)" id="stsSend2" />&nbsp;&nbsp;&nbsp;
+                                
+                                <apex:commandButton styleClass="calculateButtons" value="Calculate" action="{!calculate}" status="stsQuote" reRender="calcFormData"/>
+                                <apex:commandButton styleClass="calculateButtons" value="Reset" action="{!reset}" status="stsQuote" reRender="calcFormData"/>
+                                <apex:commandButton styleClass="calculateButtons" value="Save Quoting" action="{!saveQuoting}" status="stsQuote" reRender="calcFormData"/>
+                                <apex:commandButton styleClass="calculateButtons" value="Save Pre-approval" action="{!savePreApproval}" status="stsQuote" reRender="calcFormData"/>
+                                <apex:commandButton styleClass="calculateButtons" value="Save Amendment" action="{!saveAmendment}" status="stsQuote" reRender="calcFormData"/>
+                                <apex:commandButton styleClass="calculateButtons" value="Save Formal Approval" action="{!saveFormalApproval}" status="stsQuote" reRender="calcFormData"/>
+                                
+                                <input name="DoAction" type="button" value="Send Quote" class="btn calculateButtons"
+                                       onclick="sendCustomerEmail1();return false;"/>   
+                                
+                            </td>
+                            <td>
+                                <apex:image url="{!$Resource.PepperLogo}" height="40" />
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+            <div class="calculatorInput"  >
+              <div class="divTitle"><h3>Input</h3></div>
+              <div style="display: flex;">
+                <div id="leftTables">
+                    <div id="financeTab"><h3>Finance Details</h3></div>
+                    <table id="financeDetails">
+                        <tr>
+                            <td class="financeColumn">
+                            <apex:outputLabel styleClass="calcLabel" value="Loan Type" for="LoanType" />
+                            </td>
+                            <td class="financeColumn">
+                            <apex:selectList label="Loan Type" value="{!dto.loanType}" multiselect="false" size="1" styleClass="selectList" id="LoanType">
+                                <apex:selectOptions value="{!qh.loanTypeOptions}" />
+                            </apex:selectList>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="financeColumn">
+                            <apex:outputLabel styleClass="calcLabel" value="Loan Product" for="productLoanType" />
+                            </td>
+                            <td class="financeColumn">
+                            <apex:selectList label="Loan Type" value="{!dto.productLoanType}" multiselect="false" size="1" styleClass="selectList" id="productLoanType">
+                                <apex:selectOptions value="{!qh.loanProductOptionsConsumer}" />
+                            </apex:selectList>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="financeColumn">
+                                <apex:outputLabel styleClass="calcLabel" value="Loan Amount" for="carPrice" />
+                            </td>
+                            <td class="financeColumn">
+                                <apex:input type="number" html-step="0.01" label="Car Price" value="{!dto.carPrice}" html-placeholder="$" id="carPrice" styleClass="calcInput" onchange="nafRefresh()" />
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="financeColumn">
+                            <apex:outputLabel styleClass="calcLabel" value="Application Fee" for="applicationFee" />
+                            </td>
+                            <td class="financeColumn">
+                                <apex:input type="number" html-step="0.01" label="Application Fee" value="{!dto.applicationFee}" html-placeholder="$" id="applicationFee" styleClass="calcInput" onchange="nafRefresh()" />
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="financeColumn">
+                                <apex:outputLabel styleClass="calcLabel" value="DOF" for="dof" />&nbsp;&nbsp;
+                            </td>
+                            <td class="financeColumn">
+                            <apex:input type="number" html-step="0.01" label="DOF" value="{!dto.dof}" html-placeholder="$" id="dof" styleClass="calcInput2" onchange="nafRefresh()" />&nbsp;
+                                <apex:outputText value="(Max: ${!maxDOF})" id="maxDof"/>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="financeColumn">
+                            <apex:outputLabel styleClass="calcLabel" value="Residual Value" for="residualValue" />
+                            </td>
+                            <td class="financeColumn">
+                            <apex:input type="number" html-step="0.01" label="Residual Value" value="{!dto.residualValue}" html-placeholder="$" id="residualValue" styleClass="calcInput" />
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="financeColumn">
+                                <apex:outputLabel style="display:inline-block;" value="Monthly Fee" for="monthlyFee" />
+                            </td>
+                            <td class="financeColumn">
+                                <apex:input type="number" html-step="0.01" label="Monthly Fee" value="{!dto.monthlyFee}" html-placeholder="$" id="monthlyFee" styleClass="calcInput"/>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="inTableTitle">Loan Details</td>
+                            <td class="financeColumn"></td>
+                        </tr>
+                        <tr>
+                            <td class="financeColumn">
+                            <apex:outputLabel styleClass="calcLabel" value="Term (months)" for="term" />
+                            </td>
+                            <td class="financeColumn">
+                            <apex:selectList value="{!dto.term}" multiselect="false" size="1" styleClass="selectList" id="term">
+                                    <apex:selectOption itemLabel="12" itemValue="12"/>
+                                    <apex:selectOption itemLabel="24" itemValue="24"/>
+                                    <apex:selectOption itemLabel="48" itemValue="48"/>
+                                    <apex:selectOption itemLabel="36" itemValue="36"/>
+                                    <apex:selectOption itemLabel="60" itemValue="60"/>
+                                    <apex:selectOption itemLabel="72" itemValue="72"/>
+                                    <apex:selectOption itemLabel="84" itemValue="84"/>
+                                </apex:selectList>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="financeColumn">
+                            <apex:outputLabel styleClass="calcLabel" value="Payment" for="paymentType" />
+                            </td>
+                            <td class="financeColumn">
+                            <apex:selectList label="Payment" value="{!dto.paymentType}" multiselect="false" size="1" styleClass="selectList" id="paymentType" onchange="messageRefresh()">
+                                <apex:selectOptions value="{!qh.selectPaymentTypeOptions}" />
+                            </apex:selectList>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="financeColumn">
+                                <apex:outputLabel styleClass="calcLabel" value="Client Rate" />
+                            </td>
+                            <td class="financeColumn">
+                                <apex:input type="number" html-step="0.01" label="Client Rate" value="{!dto.clientRate}" html-placeholder="%" id="clientRate" styleClass="calcInput" />
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="financeColumn">
+                            <apex:outputLabel styleClass="calcLabel" value="NAF" for="realtimeNaf" />
+                            </td>
+                            <td class="baseRateColumn">
+                            <apex:outputText label="NAF" value="{0, number, $##,###,##0.00}" id="realtimeNaf" >
+                                <apex:param value="{!dto.realtimeNaf}" />
+                            </apex:outputText>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+                <div id="rightTables">
+                    <div class="titleTableTab"><h3>Commission and Repayment</h3></div>
+                    <table class="tableDetails">
+                        <tr>
+                            <td width="20%">&nbsp;</td>
+                            <td width="30%" class="resultHeading">Quoting</td>
+                            <td width="20%">&nbsp;</td>
+                            <td width="30%" class="resultHeading">Quoting</td>
+                        </tr>
+                        <tr>
+                            <td class="labelHeading">
+                                <apex:outputLabel style="display:inline-block;" value="Estimated Commission" for="estimatedCommission" />
+                            </td>
+                            <td class="resultValue">
+                                <apex:outputText label="Estimated Commission" value="{0, number, $##,###,##0.00}" id="estimatedCommission" >
+                                    <apex:param value="{!dto.estimatedCommission}" />
+                                </apex:outputText>
+                            </td>
+                            <td class="labelHeading">
+                                <apex:outputLabel style="display:inline-block;" value="NAF" for="naf" />
+                            </td>
+                            <td class="resultValue">
+                                <apex:outputText label="NAF" value="{0, number, $##,###,##0.00}" id="naf" >
+                                    <apex:param value="{!dto.nafCalculated}" />
+                                </apex:outputText>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="labelHeading">
+                                <apex:outputLabel value="DOF" for="dofResult" />
+                            </td>
+                            <td class="resultValue">
+                                <apex:outputText label="DOF" value="{0, number, $##,###,##0.00}" id="dofResult" >
+                                    <apex:param value="{!dto.dofResult}" />
+                                </apex:outputText>
+                            </td>
+                            <td class="labelHeading">
+                                <apex:outputLabel value="Rental" for="rental" />
+                            </td>
+                            <td class="resultValue">
+                                <apex:outputText label="Rental" value="{0, number, $##,###,##0.00}" id="rental" >
+                                    <apex:param value="{!dto.rental}" />
+                                </apex:outputText>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="labelHeading">
+                                <apex:outputLabel style="display:inline-block;" value="Insurance Income" for="insuranceIncome" />
+                            </td>
+                            <td class="resultValue">
+                                <apex:outputText label="Insurance Income" value="{0, number, $##,###,##0.00}" id="insuranceIncome" >
+                                    <apex:param value="{!dto.insuranceIncome}" />
+                                </apex:outputText>
+                            </td>
+                            <td class="labelHeading">
+                                <apex:outputLabel style="display:inline-block;" value="Monthly Payment" for="monthlyPayment" />
+                            </td>
+                            <td class="resultValue">
+                                <apex:outputText label="Monthly Payment" value="{0, number, $##,###,##0.00}" id="monthlyPayment" >
+                                    <apex:param value="{!dto.monthlyPayment}" />
+                                </apex:outputText>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="labelHeading">
+                                <apex:outputLabel style="display:inline-block;" value="TOTAL Commission (GST Exc)" for="totalCommission" />
+                            </td>
+                            <td class="resultValue">
+                                <apex:outputText label="TOTAL Commission (GST Exc)" value="{0, number, $##,###,##0.00}" id="totalCommission" >
+                                    <apex:param value="{!dto.totalCommission}" />
+                                </apex:outputText>
+                            </td>
+                            <td class="labelHeading">
+                                <apex:outputLabel style="display:inline-block;" value="Fortnightly Payment" for="fortnightlyPayment" />
+                            </td>
+                            <td class="resultValue">
+                                <apex:outputText label="Fortnightly Payment" value="{0, number, $##,###,##0.00}" id="fortnightlyPayment" >
+                                    <apex:param value="{!dto.fortnightlyPayment}" />
+                                </apex:outputText>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="labelHeading">
+                                <apex:outputLabel style="display:inline-block;" value="TOTAL Commission (GST Inc)" for="totalCommissionGst" />
+                            </td>
+                            <td class="resultValue">
+                                <apex:outputText label="TOTAL Commission (GST Inc)" value="{0, number, $##,###,##0.00}" id="totalCommissionGst" >
+                                    <apex:param value="{!dto.totalCommissionGst}" />
+                                </apex:outputText>
+                            </td>
+                            <td class="labelHeading">
+                                <apex:outputLabel style="display:inline-block;" value="Weekly Payment" for="weeklyPayment" />
+                            </td>
+                            <td class="resultValue">
+                                <apex:outputText label="Weekly Payment" value="{0, number, $##,###,##0.00}" id="weeklyPayment" >
+                                    <apex:param value="{!dto.weeklyPayment}" />
+                                </apex:outputText>
+                            </td>
+                        </tr>
+                    </table><p>&nbsp;</p>
+                    <apex:outputPanel layout="block">
+                        <h4>Loan Purpose</h4>
+                        <apex:inputTextarea value="{!dto.loanPurpose}" style="margin: 0px; width: 94%;" rows="3"/>
+                    </apex:outputPanel>                    
+                    <p>&nbsp;</p>
+                    <p>&nbsp;</p>
+                    <p>&nbsp;</p>
+                </div>
+              </div>
+            </div>
+        </apex:form>
+    </div>
+    <apex:outputField value="{!o.Application__r.Application_Quoting__c}" rendered="false" />
+    <apex:outputField value="{!o.Account__c}" rendered="false" />
+    <apex:outputField value="{!o.Loan_Product__c}" rendered="false" />
+    <apex:outputField value="{!o.Application__r.Title_1__c}" rendered="false" />
+    <apex:outputField value="{!o.Application__r.First_Name__c}" rendered="false" />
+    <apex:outputField value="{!o.Application__r.Last_Name__c}" rendered="false" />
+    <apex:outputField value="{!o.Email_Address__c}" rendered="false" />
+    <apex:outputField value="{!o.Owner_Name__c}" rendered="false" />
+    <apex:outputField value="{!o.Owner_Phone__c}" rendered="false" />
+    <apex:outputField value="{!o.Owner_Mobile__c}" rendered="false" />
+    <apex:outputField value="{!o.Owner_Email__c}" rendered="false" />
+    <apex:outputField value="{!o.First_Name__c}" rendered="false" />
+    <apex:outputField value="{!o.Account__r.FirstName}" rendered="false" />
+    <apex:outputField value="{!o.Application__r.Status__c}" rendered="false" />
+    <apex:outputField value="{!o.Application_AssetDetail__c}" rendered="false" />
+</apex:page>

@@ -1,0 +1,411 @@
+<!--
+* @author  Phil Dennison C. Fang
+* @version 1.0
+* @date   2017-03-28 
+* @description    Visualforce page for Buy Policy for Final Quotation request 
+-->
+
+<apex:page standardController="Custom_Opportunity__c" extensions="OppApplicationExtension" showHeader="true" standardStylesheets="true" sidebar="false">
+    
+    <style type="text/css">
+        
+        body input.btn, body input.btnDisabled, body input.btnCancel{
+        padding: 7px 36px;
+        
+        color: #ffffff !important;
+        background-color: #c4122e; !important;
+        border: 1.5px solid #c4122e;
+        border-radius: 4px;
+        font-size: 13px !important;
+        font-weight: normal !important;
+        text-transform: uppercase;
+        -moz-appearance: none;
+        -webkit-appearance: none;
+        cursor: pointer;
+        font-family: "Calibri";
+        
+        }
+        
+        body button, body .x-btn, body .btn, body .btnDisabled, body .btnCancel, body .menuButton .menuButtonButton{
+        background: none;
+        }
+        
+        .apexp .bPageBlock.apexDefaultPageBlock .pbBody{
+        height:600px;
+        }
+        
+        .qDownloadSpanDvCBtn{
+        background-color: #c4122e;
+        }
+        
+        .qDownloadSpanDv{
+        float:right;
+        }
+        
+        .qDownloadSpan{
+        color:#c4122e;
+        font-size:24px;
+        font-family:Calibri;
+        margin-left:70px;
+        }
+        
+        .buyPolicyBlkTab{
+        position:absolute;
+        width:1333px;
+        }
+        
+        .premFinQuotLbl{
+        text-transform:uppercase;
+        color:#c4122e;
+        font-size:24px;
+        font-family:Calibri;
+        }
+        
+        .vehUseForLabelMar{
+        margin-left:20px;
+        }
+        
+        .vehUseForLabel{
+        font-family:Calibri;
+        font-weight:bold;
+        font-size:91%;
+        color:#4a4a56;
+        }
+        
+        vehUseForLabelDiv{
+        margin-left:108px;
+        }
+        
+        .mainInsLblWide{
+        font-family:Calibri;
+        width:500px;
+        }
+        
+        .mainInsSelectL{
+        width:500px;
+        }
+        
+        .mainInsLbl{
+        font-family:Calibri;
+        }
+        
+        .coverStrtDtLblSpn{
+        font-size:9px;
+        font-family:Calibri;
+        color:#a9a9a9;
+        }
+        
+        .coverStrtDtLbl{
+        text-transform:uppercase;
+        font-size:16px;
+        font-family:Calibri;
+        }
+        
+        .coverStrtDtLft{
+        float:left;
+        }
+        
+        .coverTrmDetLbl{
+        text-transform:uppercase;
+        color:#c4122e;
+        font-size:24px;
+        font-family:Calibri;
+        position:relative;
+        margin-top:50%;
+        }
+        
+        .quotNumTop{
+        color:#4a4a56;
+        font-size:11px;
+        font-family:Calibri;
+        }
+        
+        .finQuotReqLbl{
+        text-transform:uppercase;
+        color:#c4122e;
+        font-size:24px;
+        font-family:Calibri
+        }     
+        
+    </style>
+    
+    
+    <apex:form >
+        
+        
+        <apex:pageBlock >
+            
+            <apex:pageMessages />
+            
+            <div>
+                <apex:outputLabel value="FINAL QUOTATION REQUEST" styleClass="finQuotReqLbl" /><br/>
+                <span>→</span><apex:outputText styleClass="quotNumTop" value="{!quoteNumBuyPlicytoOthrPgeVFInput}" />
+            </div>
+            
+            <br/>
+            <br/>
+            
+            <div>
+                <apex:outputLabel value="COVER TERM DETAILS " styleClass="coverTrmDetLbl"/>
+            </div>
+            <br/>
+            
+            <div class="coverStrtDtLft"><apex:outputLabel value="Cover start date" styleClass="coverStrtDtLbl"/><span class="coverStrtDtLblSpn">(i.e.20/1/2017)</span></div><div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<apex:inputText label="Cover Start Date" value="{!coverStartDateFinVFInput}" required="true"/></div>
+            
+            <br/>
+            <br/>
+            
+            <apex:pageBlockSection title="MAIN INSURED" columns="2">
+                
+                <apex:pageBlockSectionItem >
+                    <apex:outputLabel value="DATE OF BIRTH" styleClass="mainInsLbl"/><apex:inputText value="{!mainInsuredDoByPolcyStringVF}"/>
+                </apex:pageBlockSectionItem>
+                
+                <apex:pageBlockSectionItem >
+                    <apex:outputLabel value="CUSTOMER NAME" styleClass="mainInsLbl"/><apex:inputtext value="{!mainInsuredCuNameByPolcyVF}" />
+                </apex:pageBlockSectionItem>
+                
+                <apex:pageBlockSectionItem >
+                    <apex:outputLabel value="GENDER" styleClass="mainInsLbl"/><apex:inputtext value="{!mainInsuredGenderByPolcyVF}" />
+                </apex:pageBlockSectionItem>
+                
+                <apex:pageBlockSectionItem >
+                    <apex:outputLabel value="IS HOLDING INTERNATIONAL LICENSE?" styleClass="mainInsLbl"/><apex:selectRadio value="{!mainInsuredInterLicByPolcyVF}" ><apex:selectOptions value="{!mainInsuredInterLicByPolcyVFOptions}"/></apex:selectRadio>
+                </apex:pageBlockSectionItem>
+                
+                <apex:pageBlockSectionItem >
+                    <apex:outputLabel value="LICENSE NUMBER" styleClass="mainInsLbl"/><apex:inputText value="{!mainInsuredLicNumberByPolcyVF}"/>
+                </apex:pageBlockSectionItem>
+                
+                <apex:pageBlockSectionItem >
+                    <apex:outputLabel value="YEAR FIRST LICENSED" styleClass="mainInsLbl"/><apex:inputText value="{!mainInsuredYrLicByPolcyVF}" />
+                </apex:pageBlockSectionItem>
+                
+                <apex:pageBlockSectionItem >
+                    <apex:outputLabel value="YEAR SINCE LAST ACCIDENT" styleClass="mainInsLbl"/><apex:selectList value="{!mainInsuredLstAccSelectList}" size="1" styleClass="mainInsSelectL"><apex:selectOptions value="{!MainInsuredLstAccOptions}"/></apex:selectList>
+                </apex:pageBlockSectionItem>
+                
+                <apex:pageBlockSectionItem >
+                    <apex:outputLabel value="EMAIL" styleClass="mainInsLbl"/><apex:inputText value="{!mainInsuredEmailByPolcyVF}" />
+                </apex:pageBlockSectionItem>
+                
+                <apex:pageBlockSectionItem >
+                    <apex:outputLabel value="INPUT TAX CREDIT" styleClass="mainInsLbl"/><apex:inputText value="{!mainInsuredInptTxCrdtByPolcyVF}" />
+                </apex:pageBlockSectionItem>
+                
+                <apex:pageBlockSectionItem >
+                    <apex:outputLabel value="IS BUSINESS USE" styleClass="mainInsLbl"/><apex:selectRadio value="{!mainInsuredIsBusUseByPolcyVF}" ><apex:selectOptions value="{!mainInsuredIsBusUseByPolcyVFOptions}"/></apex:selectRadio>
+                </apex:pageBlockSectionItem>
+                
+                <apex:pageBlockSectionItem >
+                    <apex:outputLabel value="IS REGISTERED OWNER" styleClass="mainInsLblWide"/><apex:selectRadio value="{!mainInsuredIsRegOwnByPolcyVF}" ><apex:selectOptions value="{!mainInsuredIsRegOwnByPolcyVFOptions}"/></apex:selectRadio>
+                </apex:pageBlockSectionItem>
+                
+                <apex:pageBlockSectionItem >
+                    <apex:outputLabel value="MOBILE" styleClass="mainInsLbl"/><apex:inputText value="{!mainInsuredMobileByPolcyVF}"/>
+                </apex:pageBlockSectionItem>
+                
+                <apex:pageBlockSectionItem >
+                    <apex:outputLabel value="OCCUPATION" styleClass="mainInsLbl"/><apex:inputText value="{!mainInsuredOccupationByPolcyVF}"/>
+                </apex:pageBlockSectionItem>
+                
+                <apex:pageBlockSectionItem >
+                    <apex:outputLabel value="PHONE" styleClass="mainInsLbl"/><apex:inputText value="{!mainInsuredPhone1ByPolcyVF}"/>
+                </apex:pageBlockSectionItem>
+                
+                <apex:pageBlockSectionItem >
+                    <apex:outputLabel value="POSTCODE" styleClass="mainInsLbl"/><apex:inputText value="{!mainInsuredPostcodeByPolcyVF}"/>
+                </apex:pageBlockSectionItem>
+                
+                <apex:pageBlockSectionItem >
+                    <apex:outputLabel value="POST ADDRESS" styleClass="mainInsLbl"/><apex:inputText value="{!mainInsuredPostaddress1ByPolcyVF}"/>
+                </apex:pageBlockSectionItem>
+                
+                <apex:pageBlockSectionItem >
+                    <apex:outputLabel value="REGISTERED FOR GST" styleClass="mainInsLbl"/><apex:selectRadio value="{!mainInsuredRegForGstByPolcyVF}" ><apex:selectOptions value="{!mainInsuredRegForGstByPolcyVFOptions}"/></apex:selectRadio>
+                </apex:pageBlockSectionItem>
+                
+                <apex:pageBlockSectionItem >
+                    <apex:outputLabel value="STATE" styleClass="mainInsLbl"/><apex:inputText value="{!mainInsuredStateByPolcyVF}"/>
+                </apex:pageBlockSectionItem>
+                
+                <apex:pageBlockSectionItem >
+                    <apex:outputLabel value="SUBURB" styleClass="mainInsLbl"/><apex:inputText value="{!mainInsuredSuburbByPolcyVF}"/>
+                </apex:pageBlockSectionItem>
+                
+                <apex:pageBlockSectionItem >
+                    
+                    <apex:outputPanel id="usagePanel" >
+                        <apex:outputPanel rendered="{!IF(usagePrivBus=='Business',True,False)}" >
+                            
+                            <div class="vehUseForLabelDiv"><apex:outputLabel value="VEHICLE USE FOR" styleClass="vehUseForLabel"/><apex:selectList value="{!vehUseForVFInput}" size="1" styleClass="vehUseForLabelMar"><apex:selectOptions value="{!vehUseForVFInputOptions}"/></apex:selectList></div>
+                            
+                        </apex:outputPanel>
+                    </apex:outputPanel>       
+                    
+                </apex:pageBlockSectionItem>
+                
+            </apex:pageBlockSection>
+            
+            <br/>
+            
+            <apex:pageBlockSection title="MOTOR VEHICLE" columns="2">
+                
+                <apex:pageBlockSectionItem >
+                    <apex:outputLabel value="PRODUCT NAME" styleClass="mainInsLbl"/><apex:inputText value="{!mvProductNameBPVF}" html-readonly="true"/>
+                </apex:pageBlockSectionItem>
+                
+                <apex:pageBlockSectionItem >
+                    <apex:outputLabel value="PREMIUM" styleClass="mainInsLbl"/><apex:inputText value="{!mvPremiumBPVF}" html-readonly="true"/>
+                </apex:pageBlockSectionItem>
+                
+                <apex:pageBlockSectionItem >
+                    <apex:outputLabel value="PAYABLE" styleClass="mainInsLbl"/><apex:inputText value="{!mvPayableBPVF}" html-readonly="true"/>
+                </apex:pageBlockSectionItem>
+                
+            </apex:pageBlockSection>
+            
+            <br/>
+            
+            <apex:pageBlockSection title="GAP" columns="2">
+                
+                <apex:pageBlockSectionItem >
+                    <apex:outputLabel value="PRODUCT NAME" styleClass="mainInsLbl"/><apex:inputText value="{!gapProductNameBPVF}" html-readonly="true"/>
+                </apex:pageBlockSectionItem>
+                
+                <apex:pageBlockSectionItem >
+                    <apex:outputLabel value="PREMIUM" styleClass="mainInsLbl"/><apex:inputText value="{!gapPremiumBPVF}" html-readonly="true"/>
+                </apex:pageBlockSectionItem>
+                
+                <apex:pageBlockSectionItem >
+                    <apex:outputLabel value="PAYABLE" styleClass="mainInsLbl"/><apex:inputText value="{!gapPayableBPVF}" html-readonly="true"/>
+                </apex:pageBlockSectionItem>
+                
+            </apex:pageBlockSection>
+            
+            <br/>
+            
+            <apex:pageBlockSection title="TAI" columns="2">
+                
+                <apex:pageBlockSectionItem >
+                    <apex:outputLabel value="PRODUCT NAME" styleClass="mainInsLbl"/><apex:inputText value="{!taiProductNameBPVF}" html-readonly="true"/>
+                </apex:pageBlockSectionItem>
+                
+                <apex:pageBlockSectionItem >
+                    <apex:outputLabel value="PREMIUM" styleClass="mainInsLbl"/><apex:inputText value="{!taiPremiumBPVF}" html-readonly="true"/>
+                </apex:pageBlockSectionItem>
+                
+                <apex:pageBlockSectionItem >
+                    <apex:outputLabel value="PAYABLE" styleClass="mainInsLbl"/><apex:inputText value="{!taiPayableBPVF}" html-readonly="true"/>
+                </apex:pageBlockSectionItem>
+                
+            </apex:pageBlockSection>
+            
+            <br/>
+            
+            <apex:pageBlockSection title="TRUCK GAP" columns="2">
+                
+                <apex:pageBlockSectionItem >
+                    <apex:outputLabel value="PRODUCT NAME" styleClass="mainInsLbl"/><apex:inputText value="{!tGapProductNameBPVF}" html-readonly="true"/>
+                </apex:pageBlockSectionItem>
+                
+                <apex:pageBlockSectionItem >
+                    <apex:outputLabel value="PREMIUM" styleClass="mainInsLbl"/><apex:inputText value="{!tGapPremiumBPVF}" html-readonly="true"/>
+                </apex:pageBlockSectionItem>
+                
+                <apex:pageBlockSectionItem >
+                    <apex:outputLabel value="PAYABLE" styleClass="mainInsLbl"/><apex:inputText value="{!tGapPayableBPVF}" html-readonly="true"/>
+                </apex:pageBlockSectionItem>
+                
+            </apex:pageBlockSection>
+            
+            <br/>
+            
+            <apex:pageBlockSection title="LTI" columns="2">
+                
+                <apex:pageBlockSectionItem >
+                    <apex:outputLabel value="PRODUCT NAME" styleClass="mainInsLbl"/><apex:inputText value="{!ltiProductNameBPVF}" html-readonly="true"/>
+                </apex:pageBlockSectionItem>
+                
+                <apex:pageBlockSectionItem >
+                    <apex:outputLabel value="PREMIUM" styleClass="mainInsLbl"/><apex:inputText value="{!ltiPremiumBPVF}" html-readonly="true"/>
+                </apex:pageBlockSectionItem>
+                
+                <apex:pageBlockSectionItem >
+                    <apex:outputLabel value="PAYABLE" styleClass="mainInsLbl"/><apex:inputText value="{!ltiPayableBPVF}" html-readonly="true"/>
+                </apex:pageBlockSectionItem>
+                
+            </apex:pageBlockSection>
+            
+            <br/>
+            
+            <apex:pageBlockSection title="WARRANTY" columns="2">
+                
+                <apex:pageBlockSectionItem >
+                    <apex:outputLabel value="PRODUCT NAME" styleClass="mainInsLbl"/><apex:inputText value="{!warProductNameBPVF}" html-readonly="true"/>
+                </apex:pageBlockSectionItem>
+                
+                <apex:pageBlockSectionItem >
+                    <apex:outputLabel value="PREMIUM" styleClass="mainInsLbl"/><apex:inputText value="{!warPremiumBPVF}" html-readonly="true"/>
+                </apex:pageBlockSectionItem>
+                
+                <apex:pageBlockSectionItem >
+                    <apex:outputLabel value="PAYABLE" styleClass="mainInsLbl"/><apex:inputText value="{!warPayableBPVF}" html-readonly="true"/>
+                </apex:pageBlockSectionItem>
+                
+            </apex:pageBlockSection>
+            
+            
+            <br/>
+            <br/>
+            
+            <apex:outputLabel value="PREMIUM FOR FINAL QUOTATION" styleClass="premFinQuotLbl" />
+            <br/>
+            <br/>
+            
+            <apex:pageBlockTable value="{!finalPremsTableWrapperList}" var="finalPremsTabVar" styleClass="buyPolicyBlkTab">
+                <apex:column headerValue="PRODUCT">
+                    
+                    <apex:outPutText value="{!finalPremsTabVar.productFinalPremsTablePage3}"></apex:outputText>
+                </apex:column>
+                
+                <apex:column headerValue="PREMIUM"><apex:outPutText value="{!finalPremsTabVar.premiumFinalPremsTablePage3}"></apex:outputText></apex:column>
+                <apex:column headerValue="MONTHLY"><apex:outPutText value="{!finalPremsTabVar.monthlyFinalPremsTablePage3}"></apex:outputText></apex:column>
+                <apex:column headerValue="ESTAB. FEE"><apex:outPutText value="{!finalPremsTabVar.estabFeeFinalPremsTablePage3}"></apex:outputText></apex:column>
+                <apex:column headerValue="TOTAL PAYABLE"><apex:outPutText value="{!finalPremsTabVar.totalPayableFinalPremsTablePage3}"></apex:outputText></apex:column>
+                
+            </apex:pageBlockTable>
+            
+            <br/>
+            <br/>
+            <br/>
+            <br/>
+            <br/>
+            <br/>
+            <br/>
+            <br/>
+            <br/>
+            <br/>
+            
+            <br/>
+            
+            <apex:outputPanel id="qDownloadMessagePanel">
+                <apex:outputPanel rendered="{!IF(qDownloadMessageRender == True,True,False)}" >
+                    
+                    <span class="qDownloadSpan"><apex:outputText >CONGRATULATIONS! Your quote is now ready, to download your quote information</apex:outputText></span><br/>
+                    <span class="qDownloadSpan"><apex:outputText >press IMPORT QUOTE after this page and click DONE!</apex:outputText></span>
+                    
+                </apex:outputPanel>
+            </apex:outputPanel>
+            
+            <br/>
+            <br/>
+            <br/>
+            
+            <div class="qDownloadSpanDv"><apex:commandButton value="SUBMIT" action="{!coverStartDateValid}" styleClass="qDownloadSpanDvCBtn"><apex:actionSupport event="onsubmit" rerender="qDownloadMessagePanel" /></apex:commandButton><apex:commandButton value="DONE" action="{!setToLoanFinal}" onclick="window.close();" styleClass="qDownloadSpanDvCBtn"/></div>
+            
+        </apex:pageBlock>
+        
+    </apex:form>
+    
+</apex:page>

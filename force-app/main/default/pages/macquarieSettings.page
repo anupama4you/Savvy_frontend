@@ -1,0 +1,136 @@
+<apex:page docType="html-5.0" standardController="Custom_Opportunity__c" extensions="MacquarieSettingsExtension" sidebar="false" showHeader="true">
+	<style type="text/css">
+    	.titleDiv {
+            width: 100%;
+            height: 43px;
+            font-size: 1.0rem;
+        }
+        .toolOptions {
+            float: right;
+            text-align: right;
+            width: 45%;
+        }
+
+        .commandButtons {
+            padding: 5px 6px !important;
+            color: #fff !important;
+            font-size: 10px !important;
+            outline: none !important;
+            /*text-transform: uppercase !important;*/
+            background: rgb(125,126,125) !important; /* Old browsers */
+            background: -moz-linear-gradient(top,  rgba(125,126,125,1) 0%, rgba(14,14,14,1) 100%) !important; /* FF3.6-15 */
+            background: -webkit-linear-gradient(top,  rgba(125,126,125,1) 0%,rgba(14,14,14,1) 100%) !important; /* Chrome10-25,Safari5.1-6 */
+            background: linear-gradient(to bottom,  rgba(125,126,125,1) 0%,rgba(14,14,14,1) 100%) !important; /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
+            filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#7d7e7d', endColorstr='#0e0e0e',GradientType=0 ) !important; /* IE6-9 */
+        }
+        .commandButtons:hover {
+            background: rgb(125,126,125) !important; /* Old browsers */
+            background: -moz-linear-gradient(top,  rgba(125,126,125,1) 0%, rgba(14,14,14,1) 41%) !important; /* FF3.6-15 */
+            background: -webkit-linear-gradient(top,  rgba(125,126,125,1) 0%,rgba(14,14,14,1) 41%) !important; /* Chrome10-25,Safari5.1-6 */
+            background: linear-gradient(to bottom,  rgba(125,126,125,1) 0%,rgba(14,14,14,1) 41%) !important; /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
+            filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#7d7e7d', endColorstr='#0e0e0e',GradientType=0 ) !important; /* IE6-9 */
+        }
+        
+        .dataInputFull {
+            border: 1px solid #e0e0e0;
+            padding: 0.3em !important;
+            min-width: 98% !important;
+        }
+        
+        #main .bPageBlock {
+            border-top: 1px solid white !important;
+            width: 84% !important;
+            position: absolute;
+            margin: 0.5% 0% 0% 14%;
+        }
+        
+        .selectList {
+            border: 1px solid #e0e0e0;
+            padding: 0.3em;
+            width:100%;
+            height: 25px !important;
+        }
+        
+    </style>
+    <!-- end -->
+    <apex:includeScript value="{! $Resource.jQuery }"/>
+    <script type="text/javascript">
+        jQuery.noConflict();
+        jQuery(document).ready(function() {});
+    </script>
+            
+    <div id="main" class="bPageBlock">
+        <apex:variable value="{!Custom_Opportunity__c}" var="opp" />
+        <c:sidebarV2 id="pnlSideBar" oppId="{!opp.Id}" appId="{!opp.Application__c}"/>
+        <div id="CreditHistory">
+            <apex:pageMessages id="msgCreditHistory" />
+            <apex:form id="dataForm">
+                <apex:outputPanel layout="block" styleClass="titleDiv">
+                    <h1>Macquarie Settings</h1>
+                    <apex:outputPanel layout="block" styleClass="toolOptions">
+                        <apex:actionStatus startText="(processing...)" id="stsSave"  />&nbsp;
+                        <apex:commandButton value="Update" action="{!updateRow}" styleClass="commandButtons"  status="stsSave" />
+                    </apex:outputPanel>
+                </apex:outputPanel> 
+                <div>
+                    <apex:pageBlock >
+                        <apex:pageBlockSection title="Users" collapsible="false" columns="1">
+                            <apex:pageBlockTable value="{!lendersLogin}" var="l" id="listLendersLogin">
+                                <apex:column headerValue="Name">
+                                    <apex:selectList value="{!l.OwnerId}" multiselect="false" size="1" styleClass="selectList" disabled="{!IF(ISBLANK(l.OwnerId),false,true)}">
+                                    	<apex:selectOptions value="{!users}" />
+                                    </apex:selectList>
+                                </apex:column>
+                                <apex:column headerValue="User Name">
+                                    <apex:inputField value="{!l.User_Name__c}" styleClass="dataInputFull" />
+                                </apex:column>
+                                <apex:column headerValue="Password">
+                                    <apex:inputField value="{!l.Password__c}" styleClass="dataInputFull" />
+                                </apex:column>
+                                <apex:column headerValue="Access Token">
+                                    <apex:inputField value="{!l.Access_Token__c}" styleClass="dataInputFull" />
+                                </apex:column>
+                                <!--
+                                <apex:column headerValue="Consumer key">
+                                    <apex:inputField value="{!l.Consumer_Key__c }" styleClass="dataInputFull" />
+                                </apex:column> -->
+                                <apex:column value="{!l.Consumer_Key__c }"/>
+                                
+                            </apex:pageBlockTable>
+                            <!--apex:commandButton value="Add" action="{!addUser}" styleClass="commandButtons"  reRender="divUsers,dataForm, main" immediate="true"/>
+                         <apex:commandButton value="Remove" action="{!removeUser}" styleClass="commandButtons"  reRender="divUsers,dataForm, main" immediate="true"/-->
+                        </apex:pageBlockSection>
+                        
+                        <apex:pageBlockSection title="General" collapsible="false" columns="1">
+                            <apex:pageBlockTable value="{!settings}" var="s">
+                                <apex:column value="{!s.name}" />
+                                <apex:column headerValue="Value">
+                                    <apex:inputField value="{!s.Value__c}" styleClass="dataInputFull"/>
+                                </apex:column>
+                                <apex:column headerValue="EndPoint">
+                                    <apex:inputField value="{!s.Endpoint__c}" styleClass="dataInputFull"/>
+                                </apex:column>
+                            </apex:pageBlockTable>
+                        </apex:pageBlockSection>
+                    </apex:pageBlock>
+                </div>
+                <!--
+                <div>
+                    <apex:pageBlock title="General">
+                        <apex:pageBlockTable value="{!settings}" var="s">
+                            <apex:column value="{!s.name}" />
+                            <apex:column headerValue="Value">
+                                <apex:inputField value="{!s.Value__c}" styleClass="dataInputFull"/>
+                            </apex:column>
+                            <apex:column headerValue="EndPoint">
+                                <apex:inputField value="{!s.Endpoint__c}" styleClass="dataInputFull"/>
+                            </apex:column>
+                        </apex:pageBlockTable>
+                    </apex:pageBlock>
+                </div>
+-->
+            </apex:form>
+        </div>
+    </div>
+    <!-- </apex:outputPanel> -->
+</apex:page>

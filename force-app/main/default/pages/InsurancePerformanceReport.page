@@ -1,0 +1,57 @@
+<apex:page controller="InsurancePerformanceReportController" showHeader="false" sidebar="false" standardStylesheets="true" cache="true" title="Insurance Performance Report">
+	<apex:stylesheet value="{!$Resource.PerformanceRptCSS}"/>
+	<apex:sectionHeader title="{!reportName} Performance Report" />
+	<apex:form id="formData">
+		<!-- <apex:actionPoller action="{!pollReport}" interval="{!pollerTime}" enabled="{!isCurrentPeriod}" reRender="formData" status="stf5"/> -->
+		<apex:pageBlock >
+			<!-- Parameters -->
+			<apex:pageBlockSection columns="3" >
+	            <apex:pageBlockSectionItem >
+	                <apex:outputLabel value="Month" />
+	                <apex:actionRegion >
+	                    <apex:selectList value="{!param.month}" size="1">
+	                        <apex:selectOption itemValue="1" itemLabel="January" />
+	                        <apex:selectOption itemValue="2" itemLabel="February" />
+	                        <apex:selectOption itemValue="3" itemLabel="March" />
+	                        <apex:selectOption itemValue="4" itemLabel="April" />
+	                        <apex:selectOption itemValue="5" itemLabel="May" />
+	                        <apex:selectOption itemValue="6" itemLabel="June" />
+	                        <apex:selectOption itemValue="7" itemLabel="July" />
+	                        <apex:selectOption itemValue="8" itemLabel="August" />
+	                        <apex:selectOption itemValue="9" itemLabel="September" />
+	                        <apex:selectOption itemValue="10" itemLabel="October" />
+	                        <apex:selectOption itemValue="11" itemLabel="November" />
+	                        <apex:selectOption itemValue="12" itemLabel="December" />
+	                        <apex:actionSupport event="onchange" reRender="formData" action="{!executeReport}" status="stMo" />
+	                    </apex:selectList>
+	                    &nbsp;&nbsp;&nbsp;&nbsp;
+	                    <apex:actionStatus id="stMo" startText="(processing...)" />
+	                </apex:actionRegion>
+	            </apex:pageBlockSectionItem>
+	            <apex:pageBlockSectionItem >
+	                <apex:outputLabel value="Year" />
+	                <apex:actionRegion >
+	                    <apex:selectList value="{!param.year}" size="1">
+	                        <apex:selectOptions value="{!yearOptions}" />
+	                        <apex:actionSupport event="onchange" reRender="formData" action="{!executeReport}" status="stYe"/>
+	                    </apex:selectList>
+	                    &nbsp;&nbsp;&nbsp;&nbsp;
+	                    <apex:actionStatus id="stYe" startText="(processing...)" />
+	                </apex:actionRegion>                
+	            </apex:pageBlockSectionItem>
+	            <apex:pageBlockSectionItem >
+	              <apex:actionStatus id="stf5" startText="(processing...)" />
+	              <apex:commandButton value="Refresh" action="{!executeReport}" reRender="formData" status="stf5" />              
+	            </apex:pageBlockSectionItem>
+	        </apex:pageBlockSection>
+	        <!-- Totals -->
+            <apex:outputPanel layout="block" styleClass="result-totals">
+                <c:PerformanceReportResultTotals report="{!report}"/>
+            </apex:outputPanel>
+            <apex:outputPanel layout="block" styleClass="result-details">
+                <!-- Details -->
+                <c:PerformanceReportResultTable report="{!report}"/>
+            </apex:outputPanel>
+		</apex:pageBlock>
+	</apex:form>
+</apex:page>

@@ -1,0 +1,1334 @@
+<apex:page docType="html-5.0" sidebar="false" showHeader="true" cache="false" standardController="Custom_Opportunity__c" extensions="LenderComparisonFilterExtension" id="pgLenderComparision" title="Lender Comparison">
+    <apex:variable value="{!Custom_Opportunity__c}" var="o" />
+    <!-- Partner Portal Styles -->
+    <apex:outputPanel rendered="{!isBrokerPartnerUser}">
+      <style type="text/css">
+        html .brandQuaternaryBgr,
+        .titleDiv {
+          background: #ffffff !important;
+        }
+    
+        .bPageBlock {
+          border: 1px solid white !important;
+        }
+
+        .sidebar2 ul {
+          background-color: unset !important;
+          padding-left: 0px !important;
+        }
+      </style>
+    </apex:outputPanel>
+    <apex:stylesheet value="{! $Resource.AppCss }"/>
+    <apex:stylesheet value="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css"/>
+    <!-- Lelo                              2016-06-28 -->
+    <style type="text/css">
+    
+        /* Lelo */
+
+        .customInputStyle {
+            width: 20px;
+        }
+      
+        .leftTables {
+            display: inline-block;
+            float: left;
+            width: 48%;
+            padding-left: 20px;
+        }
+        .rightTables {
+            display: inline-block;
+            width: 48%;
+            padding-left: 20px;
+        }
+        
+        .leftTables2 {
+            display: inline-block;
+            float: left;
+            width: 32%;
+            padding-left: 20px;
+        }
+        
+        .leftTablesNoFloat {
+            display: inline-block;
+            width: 38%;
+            padding-left: 20px;
+        }
+        .rightTablesNoFloat {
+            display: inline-block;
+            width: 58%;
+            padding-left: 20px;
+        }
+        
+        .rightTables2 {
+            display: inline-block;
+            width: 64%;
+            padding-left: 20px;
+        }
+      
+        .oneTables {
+            display: inline-block;
+            /*float: left;*/
+            width: 97.5%;
+            padding-left: 20px;
+        }
+      
+        .section {
+            background: #f8f8f8;
+            border: 1px solid #ddd;
+            padding-bottom: 20px;
+        }
+
+        .subSectionTab {
+            border: 1px solid #ddd;
+            border-bottom: transparent;
+            display: inline-block;
+            background-color: #fff;
+            position: relative;
+            padding: 3px;
+            padding-right: 20px;
+            padding-left: 20px;
+            top: 20px;
+        }
+        
+        .tableSubsection {
+            width: 100%;
+            background: white;
+            border: 1px solid #ddd;
+            margin-top: 18px;
+            padding: 2px;
+            padding-left: 20px;
+            padding-top: 10px;
+            padding-bottom: 10px;
+        }
+        
+        .subSectionTab2 {
+            border: 1px solid #ddd;
+            border-bottom: transparent;
+            display: inline-block;
+            background-color: #F5F5F5;
+            position: relative;
+            padding: 3px;
+            padding-right: 20px;
+            padding-left: 20px;
+            top: 20px;
+        }
+
+        .tableSubsection2 {
+            width: 100%;
+            background-color: #F5F5F5;
+            border: 1px solid #ddd;
+            margin-top: 18px;
+            padding: 2px;
+            padding-left: 20px;
+            padding-top: 10px;
+            padding-bottom: 10px;
+        }
+
+        .tableResultContainer {
+            width: 100%;
+            background: white;
+        }
+
+        .labelColumn {
+            width: 25%;
+            /*padding-bottom: 13px;*/
+        }
+        .dataColumn {
+            width: 25%;
+        }
+        
+        .labelOneColumn {
+            width: 30%;
+            /*padding-bottom: 13px;*/
+        }
+        .dataOneColumn {
+            width: 70%;
+        }
+        
+        .divTitle {
+            background-color: #ddd;
+            padding-top: 1px;
+            padding-bottom: 1px;
+            padding-left: 15px;
+            /*text-transform: uppercase;*/
+            font-weight: bold;
+            border: 1px solid #ddd;
+        }
+        .dataInput {
+            border: 1px solid #e0e0e0;
+            padding: 0.3em !important;;
+            min-width: 173px !important;;
+        }
+        .dataInput2 {
+            border: 1px solid #e0e0e0;
+            padding: 0.3em !important;
+            min-width: 53px !important;
+            max-width: 80px !important;
+        }
+        .dataInputClientRate {
+            border: 1px solid #e0e0e0;
+            padding: 0.3em !important;
+            min-width: 30px !important;
+            max-width: 50px !important;
+        }
+        .dataInputOptions {
+            border: 1px solid #e0e0e0;
+            padding: 0.3em !important;
+            min-width: 30px !important;
+            max-width: 63px !important;
+        }
+        .dataInputFull {
+            border: 1px solid #e0e0e0;
+            padding: 0.3em !important;
+            min-width: 98% !important;
+        }
+        .selectList {
+            border: 1px solid #e0e0e0;
+            padding: 0.3em;
+            width:182px;
+            height: 25px !important;
+        }
+        .selectList2 {
+            border: 1px solid #e0e0e0;
+            padding: 0.3em;
+            width: 89px;
+            height: 25px !important;
+        }
+        .selectListMultiple {
+            border: 1px solid #e0e0e0;
+            padding: 0.3em;
+            width:182px;
+        }
+        .titleDiv {
+            width: 100%;
+            /*height: 43px;*/
+            font-size: 1.0rem;
+        }
+        .toolOptions {
+            float: right;
+            text-align: right;
+            width: 60%;
+        }
+
+        #main .bPageBlock {
+            border-top: 1px solid white !important;
+            border-bottom: 1px solid white !important;
+            border-left: 1px solid white !important;
+            border-right: 1px solid white !important;
+        }
+
+        #main ul {
+            margin-left: -5px;
+        }
+
+        .commandButtons {
+            min-width: initial !important;
+            padding: 9px 10px !important;
+            color: #fff !important;
+            font-size: 11px !important;
+            outline: none !important;
+            background: rgb(0,0,0) !important;
+        }
+        
+        .comparisonButtons {
+            min-width: initial !important;
+            padding: 9px 10px !important;
+            color: #fff !important;
+            font-size:  1rem !important;
+            outline: none !important;
+            background: rgb(131, 64, 153) !important;
+        }
+        
+        .recalculateButton {
+            width: 90% !important;
+        }
+        
+        .noSidebarCell, .sidebarCell .fixed {
+            height: inherit;
+        }
+        
+        /* Servicing Calculator*/
+        
+        #ServicingCalc .bPageBlock {
+            border-top: 1px solid white !important;
+        }
+        .cellMultiTables {
+            vertical-align: top;
+        }
+        .cellExtraRigthPading {
+            padding-right: 18px;
+        }
+        .cellExtraLeftPading {
+            padding-left: 18px;
+        }
+        .incomeValue {
+            color: #1a75ff !important;
+        }
+        .notIncomeValue {
+            color: #cc0000 !important;
+        }     
+        
+        #YtdCalc .bPageBlock {
+            border-top: 1px solid white !important;
+        }
+        
+        #GlassServEstimator .bPageBlock {
+            border-top: 1px solid white !important;
+        }
+        .totalCalculated {
+            color: #1a75ff !important;
+            font-weight: bold;
+            font-size: 13px;
+        }
+        .bPageBlock { 
+                border-top: 1px solid white !important;
+        }
+        .div2Columns {
+            -webkit-column-count: 2; /* Chrome, Safari, Opera */
+            -moz-column-count: 2; /* Firefox */
+            column-count: 2;
+        }
+        
+        .sidebar2 {
+          float:left;
+          width:14%;
+        }
+
+        .sidebar2 ul {
+            margin-top: 3px;
+            padding: 5px;
+            
+            list-style-type: none;
+            border-radius: 5px;
+            background-color: #D6F1F5;
+            
+            display: block;
+            
+            
+            -webkit-margin-after: 1em;
+            -webkit-margin-start: 0px;
+            -webkit-margin-end: 0px;
+            margin-right: 10px;
+            padding-left: 30px;
+            padding-top: 10px !important;
+        }
+
+        .sidebar2 li {
+          display: list-item;
+          text-align: -webkit-match-parent;
+        }
+
+        .sidebar2 a {
+          background: transparent;
+          box-sizing: border-box;
+        }
+
+        .sidebar2 ul li a {
+          text-decoration: underline;
+          
+          line-height: 25px;
+          vertical-align: middle;
+          
+          color: #333435;
+        }
+        .sidebar2 ul li {
+          margin-left: 0;
+        }
+        
+        .sidebarContentPanel {
+            vertical-align: top;
+            background-color: #D6F1F5;
+            padding-top: 6px;
+            padding-left: 10px;
+            padding-bottom: 6px;
+            border-radius: 5px;
+            margin-top: 3px;
+            margin-right: 10px;
+        }
+        .helpButton, .helpButtonOn, .mouseOverInfoOuter {
+            display: block;
+        }
+        /* end */
+        .flowContent {
+            font-size: 0.8rem;
+        }
+        .flowContent .infoText1 {
+            /*color: #fff3cd;*/
+            background-color: #d6d8d9;
+            border-color: #c3e6cb;
+            position: relative;
+            padding: .75rem 1.25rem;
+            margin-bottom: 1rem;
+            border: 2px solid transparent;
+            border-radius: .25rem;
+            font-size: 0.9rem;
+        }
+        .flowContent .extraInfoPanel {
+            position: relative;
+            /*padding: .75rem 1.25rem;*/
+            margin-bottom: 1rem;
+            border: 2px solid transparent;
+            border-radius: .5rem;
+        }
+        .flowContent .closingPanel {
+            color: #155724;
+            background-color: #d4edda;
+            border-color: #c3e6cb;
+
+        }
+        .flowContent .objectingPanel {
+            color: #721c24;
+            background-color: #f8d7da;
+            border-color: #f5c6cb;
+        }
+        .flowContent .closingPanelNoProceed {
+            color: #856404;
+            background-color: #fff3cd;
+            border-color: #ffeeba;
+        }
+        .flowContent .btn-dark {
+            color: #fff !important;
+            background-color: #000000 !important;
+            border-color: #343a40 !important;
+            background-image: none;
+            font-size: 0.8rem !important;
+            padding: 5px 10px 5px 10px !important;
+            margin-right: 21px !important;
+        }
+        .highlight3 {
+            font-weight: bold;
+            font-size: 1rem;
+        }
+        /*Closing and Objecting*/
+        .rowHeaderClosing {
+            background-color: #F8342D;
+            color: #ffffff;
+            padding-top: 10px;
+            padding-bottom: 10px;
+            font-weight: bold;
+            font-size: 1.1rem;
+            text-align: center;
+        }
+        .sefvicing-deficiency {
+            color: #E82C0C;
+            font-weight: bold;
+        }
+        .inputTextArea{
+            width: 40%;
+            padding: 12px 20px;
+            margin: 8px 0;
+            box-sizing: border-box;
+        }
+        .opinion{
+            font-size: 1.0rem;
+        }
+        .main-content {
+          margin-left: auto;
+          width: 86%;
+        }
+    </style>
+    <!-- end -->
+    <apex:outputPanel layout="block" id="pnlMain">
+      <apex:outputPanel layout="block" id="sidebar2" styleClass="sidebar2" rendered="{!OR(NOT(isBrokerPartnerUser),AND(isBrokerPartnerUser, isActiveComparison))}">
+      <!-- <div id="sidebar2"> -->
+        <apex:form id="dataForm2" styleClass="appForm">
+          <apex:outputPanel layout="block" rendered="{!NOT(isBrokerPartnerUser)}">
+            <div class="heading">
+                <strong>Sales Tools</strong>
+            </div>
+            <ul class="fa-ul">
+                <li><i class="fa-li fa fa-file-o fa-lg"></i><apex:outputLink value="{!$Page.OppApplication}?id={!Custom_Opportunity__c.Id}" >Application Form</apex:outputLink></li>
+                <li><i class="fa-li fa fa-money fa-lg"></i><apex:outputLink value="/{!Custom_Opportunity__c.Id}" id="GoBack">Go back to Opportunity</apex:outputLink></li>
+            </ul>
+          </apex:outputPanel>
+            <apex:outputPanel layout="block" styleClass="heading" id="pnlSummary" rendered="{!isActiveComparison}">
+                <strong>Summary</strong>
+            </apex:outputPanel>
+            <apex:outputPanel layout="block" id="pnlCriteria" rendered="{!isActiveComparison}">
+                <ul class="fa-ul">
+                    <li><i class="fa-li fa fa-car fa-lg"></i><strong>Asset Detail:</strong> {!param.assetDetail}</li>
+                    <li><i class="fa-li fa fa-building-o fa-lg"></i><strong>Employment Type:</strong> {!param.employmentType}</li><br/>
+                    <li><i class="fa-li fa fa-database fa-lg"></i><strong>Loan Type:</strong> {!param.loanType}</li><br/>
+                    <li><i class="fa-li fa fa-life-ring fa-lg"></i><strong>Purchase Type:</strong> {!param.purchaseType}</li><br/>
+                    <!-- <li><i class="fa-li fa fa-paper-plane-o fa-lg"></i><strong>Term End:</strong> {!param.termEnd}</li><br/> -->
+                    <li><i class="fa-li fa fa-wpforms fa-lg"></i><strong>Credit History:</strong> {!param.creditHistory}</li><br/>
+                    <hr/>
+                    <li><i class="fa-li fa fa-birthday-cake fa-lg"></i><strong>Age Vehicle:</strong> &nbsp;
+                    <!-- <apex:outputText value="{!param.ageCar}" rendered="{!param.ageCar != '0'}" />
+                         <apex:outputText value="New Vehicle" rendered="{!param.ageCar == '0'}" /> -->
+                        <apex:selectList value="{!param.ageCar}" multiselect="false" size="1" styleClass="cp-selectList3-rsl">
+                            <apex:selectOption itemValue="0" itemLabel="New Vehicle" />
+                            <apex:selectOption itemValue="1" itemLabel="1" />
+                            <apex:selectOption itemValue="2" itemLabel="2" />
+                            <apex:selectOption itemValue="3" itemLabel="3" />
+                            <apex:selectOption itemValue="4" itemLabel="4" />
+                            <apex:selectOption itemValue="5" itemLabel="5" />
+                            <apex:selectOption itemValue="6" itemLabel="6" />
+                            <apex:selectOption itemValue="7" itemLabel="7" />
+                            <apex:selectOption itemValue="8" itemLabel="8" />
+                            <apex:selectOption itemValue="9" itemLabel="9" />
+                            <apex:selectOption itemValue="10" itemLabel="10" />
+                            <apex:selectOption itemValue="11" itemLabel="11" />
+                            <apex:selectOption itemValue="12" itemLabel="12" />
+                            <apex:selectOption itemValue="13" itemLabel="13" />
+                            <apex:selectOption itemValue="14" itemLabel="14" />
+                            <apex:selectOption itemValue="15" itemLabel="15" />
+                            <apex:selectOption itemValue="16" itemLabel="16" />
+                            <apex:selectOption itemValue="17" itemLabel="17" />
+                            <apex:selectOption itemValue="18" itemLabel="18" />
+                            <apex:selectOption itemValue="19" itemLabel="19" />
+                            <apex:selectOption itemValue="20" itemLabel="20" />
+                        </apex:selectList>
+                    </li><br/>
+                    <li><i class="fa-li fa fa-calendar fa-lg"></i><strong>Loan Term (months):</strong>
+                        &nbsp;
+                        <apex:input type="number" value="{!param.loanTerm}" styleClass="cp-dataInput-short-rsl"/>
+                    </li><br/>
+                    <li><i class="fa-li fa fa-users fa-lg"></i><strong>Residential Status:</strong> {!param.residentialStatus}</li><br/>
+                    <li><i class="fa-li fa fa-dollar fa-lg"></i><strong>Vehicle Price:</strong> 
+                        &nbsp;
+                        <!-- 
+                            <apex:outputText value="{0, number, $##,###,##0}" >
+                                <apex:param value="{!param.price}" />
+                            </apex:outputText>
+                        -->
+                        <apex:input type="number" value="{!param.price}" html-placeholder="$" html-step="0.01" styleClass="cp-dataInput-rsl" />
+                    </li><br/>
+                    <li><i class="fa-li fa fa-dollar fa-lg"></i><strong>Deposit:</strong> 
+                        &nbsp;
+                        <!-- <apex:outputText value="{0, number, $##,###,##0}" >
+                            <apex:param value="{!param.deposit}" />
+                        </apex:outputText> -->
+                        <apex:input type="number" value="{!param.deposit}" html-placeholder="$" html-step="0.01" styleClass="cp-dataInput-rsl"/>
+                    </li><br/>
+                    <li><i class="fa-li fa fa-dollar fa-lg"></i><strong>Residual:</strong> 
+                        &nbsp;
+                        <!-- <apex:outputText value="{0, number, $##,###,##0}" >
+                            <apex:param value="{!param.residual}" />
+                        </apex:outputText> -->
+                        <apex:input type="number" value="{!param.residual}" html-placeholder="$" html-step="0.01" styleClass="cp-dataInput-rsl"/>
+                    </li><br/>
+                    <hr/>
+                    <li><i class="fa-li fa fa-university fa-lg"></i><strong>Payday loan last 6 months?:</strong> <!-- {!param.hasPayday} -->
+                            <apex:selectList value="{!param.hasPayday}" multiselect="false" size="1" styleClass="cp-selectList2-rsl">
+                                                <apex:selectOption itemValue="" itemLabel="-" />
+                                                <apex:selectOption itemValue="Y" itemLabel="Yes" />
+                                                <apex:selectOption itemValue="N" itemLabel="No" />
+                                            </apex:selectList>
+                    </li><br/>
+                    <li><i class="fa-li fa fa-credit-card-alt fa-lg"></i><strong>Verifiable credit?:</strong> <!-- {!param.hasVerifiableCredit} -->
+                        <apex:selectList value="{!param.hasVerifiableCredit}" multiselect="false" size="1" styleClass="cp-selectList2-rsl">
+                                                <apex:selectOption itemValue="" itemLabel="-" />
+                                                <apex:selectOption itemValue="Y" itemLabel="Yes" />
+                                                <apex:selectOption itemValue="N" itemLabel="No" />
+                                            </apex:selectList>
+                    </li><br/>
+                    <li><i class="fa-li fa fa-address-book fa-lg"></i><strong>Jobs in the last 3 years?:</strong>&nbsp; <!-- {!param.jobsLast3Years} -->
+                            <apex:selectList value="{!param.jobsLast3Years}" multiselect="false" size="1" styleClass="cp-selectList-rsl">
+                                                <apex:selectOption itemValue="0" itemLabel="-" />
+                                                <apex:selectOption itemValue="1" itemLabel="1" />
+                                                <apex:selectOption itemValue="2" itemLabel="2" />
+                                                <apex:selectOption itemValue="3" itemLabel="3" />
+                                                <apex:selectOption itemValue="4" itemLabel="4" />
+                                                <apex:selectOption itemValue="5" itemLabel="5" />
+                                                <apex:selectOption itemValue="6" itemLabel="6" />
+                                                <apex:selectOption itemValue="7" itemLabel="7" />
+                                                <apex:selectOption itemValue="8" itemLabel="8" />
+                                                <apex:selectOption itemValue="9" itemLabel="9" />
+                                                <apex:selectOption itemValue="10" itemLabel="10" />
+                                            </apex:selectList>
+                    </li><br/>
+                    <li><i class="fa-li fa fa-umbrella fa-lg"></i><strong>Credit enquiries in 6 months?:</strong> &nbsp; <!-- {!param.hasEnquiries} -->
+                            <apex:selectList value="{!param.hasEnquiries}" multiselect="false" size="1" styleClass="cp-selectList2-rsl">
+                                                <apex:selectOption itemValue="" itemLabel="-" />
+                                                <apex:selectOption itemValue="Y" itemLabel="Yes" />
+                                                <apex:selectOption itemValue="N" itemLabel="No" />
+                                            </apex:selectList>
+                    </li><br/>
+                    <li><i class="fa-li fa fa-thermometer-full fa-lg"></i><strong>Credit score?:</strong> &nbsp;<!-- {!param.creditScore} -->
+                        <apex:selectList value="{!param.creditScore}" multiselect="false" size="1" styleClass="cp-selectList3-rsl">
+                                                <apex:selectOption itemValue="" itemLabel="--None--" />
+                                                <apex:selectOption itemValue="<400" itemLabel="<400" />
+                                                <apex:selectOption itemValue="400 - 524" itemLabel="400 - 524" />
+                                                <apex:selectOption itemValue="525 - 599" itemLabel="525 - 599" />
+                                                <apex:selectOption itemValue="600 - 749" itemLabel="600 - 749" />
+                                                <apex:selectOption itemValue="750+" itemLabel="750+" />
+                                            </apex:selectList>
+                    </li><br/>
+                    <li><i class="fa-li fa fa-money fa-lg"></i><strong>Verifiable Savings?:</strong> &nbsp;<!-- {!param.verifiableSavings} -->
+                        <apex:selectList value="{!param.verifiableSavings}" multiselect="false" size="1" styleClass="cp-selectList3-rsl">
+                                                <apex:selectOption itemValue="" itemLabel="--None--" />
+                                                <apex:selectOption itemValue="<50k" itemLabel="<50K" />
+                                                <apex:selectOption itemValue="50k-100K" itemLabel="50K-100K" />
+                                                <apex:selectOption itemValue="100K+" itemLabel="100K+" />
+                                            </apex:selectList>
+                    </li><br/>
+                    <li><i class="fa-li fa fa-car fa-lg"></i><strong>What is your LTV?:</strong> &nbsp;<!-- {!param.ltv} -->
+                        <apex:selectList value="{!param.ltv}" multiselect="false" size="1" styleClass="cp-selectList3-rsl">
+                                                <apex:selectOption itemValue="" itemLabel="--None--" />
+                                                <apex:selectOption itemValue="<90" itemLabel="<90" />
+                                                <apex:selectOption itemValue="90-99" itemLabel="90-99" />
+                                                <apex:selectOption itemValue="100–109" itemLabel="100–109" />
+                                                <apex:selectOption itemValue="110–119" itemLabel="110–119" />
+                                                <apex:selectOption itemValue="120–129" itemLabel="120–129" />
+                                                <apex:selectOption itemValue="130" itemLabel="130" />
+                                                <apex:selectOption itemValue="131+" itemLabel="131+" />
+                                            </apex:selectList>
+                    </li><br/>
+                    <hr/>
+                    <li>
+                        <apex:commandButton value="Search" action="{!search}" reRender="pnlMain" status="stsSideBar"/>&nbsp;
+                        <apex:commandButton value="Restart" action="{!restart}"/>
+                    </li>
+                    <apex:actionStatus startText="(processing...)" id="stsSideBar"/>
+                    <!-- 
+                    <hr/>
+                    <li>
+                        DOF ($): <br/>
+                        <apex:input value="{!param.dofValue}" styleClass="dataInputOptions" type="number"  html-step="1" html-placeholder="$" id="fldDofValue"/>
+                        <apex:commandButton value="Calculate" action="{!adjustDOFValue}" reRender="pgbResultForm, fldSortBy" status="stsProcessing"/>
+                        &nbsp;
+                        <apex:commandButton value="Reset" action="{!resetDOFValue}" reRender="pgbResultForm, fldSortBy, fldDofValue" status="stsProcessing"/>
+                    </li>
+                    <hr/>
+                    <li>
+                        Brokerage (%): <br/>
+                        <apex:input value="{!param.rateValue}" styleClass="dataInputOptions" type="number"  html-step="0.1" />
+                        <apex:commandButton value="Calculate" action="{!adjustClientRate}" reRender="pgbResultForm, fldSortBy" status="stsProcessing"/>
+                    </li>
+                    <hr/>
+                    <li>
+                        *Brokerage ($):<br/>
+                        <apex:input value="{!param.estimateCommission}" styleClass="dataInputOptions" type="number" html-placeholder="$" />
+                        <apex:commandButton value="Calculate" action="{!calculateCommissions}" reRender="pgbResultForm, fldSortBy" status="stsProcessing"/>
+                    </li>
+                    <hr/>
+                    <li>
+                        *Total Commission ($):<br/>
+                        <apex:input value="{!param.targetCommission}" styleClass="dataInputOptions" type="number" html-placeholder="$" />
+                        <apex:commandButton value="Calculate" action="{!calculateTotalCommissions}" reRender="pgbResultForm, fldSortBy" status="stsProcessing"/>
+                    </li>
+                    <hr/>
+                    <li>
+                        Sort by: &nbsp;
+                        <apex:selectList value="{!param.sortBy}" multiselect="false" size="1" id="fldSortBy">
+                            <apex:actionSupport event="onchange" action="{!sortResult}" reRender="pgbResultForm" status="stsProcessing" />
+                            <apex:selectOption itemValue="BA" itemLabel="Base Rate" />
+                            <apex:selectOption itemValue="CL" itemLabel="Client Rate" />
+                            <apex:selectOption itemValue="CO" itemLabel="Commission" />
+                            <apex:selectOption itemValue="RE" itemLabel="Repayment" />
+                            <apex:selectOption itemValue="TC" itemLabel="Total Commission" />
+                        </apex:selectList>
+                    </li>
+                    -->
+                </ul>
+            </apex:outputPanel>
+           <!--  <hr/>
+            <c:StaticInfo /> -->
+        </apex:form>
+      </apex:outputPanel>
+        <!-- <apex:outputPanel layout="block" id="main"> -->
+      <apex:outputPanel layout="block" id="mainContent" styleClass="{!IF(OR(NOT(isBrokerPartnerUser),AND(isBrokerPartnerUser, isActiveComparison)),'main-content','')}">
+        <apex:form id="dataForm" styleClass="appForm">
+            <apex:actionFunction action="{!adjustBaseRate}" name="adjustBaseRate"
+                                 status="stsProcessing" reRender="dataForm"/>
+            <apex:outputPanel layout="block" styleClass="titleDiv">
+ 
+                <h1>Lender Comparison for {!Custom_Opportunity__c.Name}
+                    <apex:outputPanel rendered="{!isActiveComparison}">: &nbsp;&nbsp;&nbsp; Result&nbsp;&nbsp;
+                        <apex:selectList value="{!param.tier}" multiselect="false" size="1" styleClass="selectTiers" 
+                                         id="fldTier" onchange="adjustBaseRate()">
+                            <apex:selectOptions value="{!tierOptions}" />
+                        </apex:selectList>
+                    </apex:outputPanel>
+                </h1>
+                &nbsp;&nbsp;<apex:actionStatus startText="(processing...)" id="stsProcessing"/>
+            </apex:outputPanel>
+            <apex:pageBlock mode="edit" id="pgbFilterForm" rendered="{!!isActiveComparison}">
+                <apex:pageMessages id="msgPanel" />
+                <!-- FILTER DETAILS -->
+                <apex:outputPanel layout="block" styleClass="section" id="pnlFilter">
+                    <div class="divTitle">Details</div>
+                    <table width="50%">
+                        <tr>
+                            <td class="cellMultiTables cellExtraLeftPading cellExtraRigthPading">
+                                <apex:outputPanel styleClass="subSectionTab"><h3>Details</h3></apex:outputPanel>
+                                <table class="tableSubsection" width="100%">
+                                    <tr>
+                                        <td width="50%" valign="top">
+                                            <table width="100%">
+                                                <tr>
+                                                    <td align="right">Asset Detail</td>
+                                                    <td>&nbsp;</td>
+                                                    <td>
+                                                        <apex:outputPanel styleClass="requiredInput"><apex:outputPanel styleClass="requiredBlock"></apex:outputPanel></apex:outputPanel>
+                                                        <apex:selectList value="{!param.assetDetail}" multiselect="false" size="1" styleClass="selectList">
+                                                            <apex:selectOption itemValue="" itemLabel="--None--" />
+                                                            <apex:selectOption itemValue="Car" itemLabel="Car" />
+                                                            <apex:selectOption itemValue="Motorbike" itemLabel="Motorbike" />
+                                                            <apex:selectOption itemValue="Boat" itemLabel="Boat" />
+                                                            <apex:selectOption itemValue="Caravan" itemLabel="Caravan" />
+                                                            <apex:selectOption itemValue="Truck" itemLabel="Truck" />
+                                                            <apex:selectOption itemValue="Personal" itemLabel="Personal" />
+                                                        </apex:selectList>
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td width="39%" align="right">Loan Type</td>
+                                                    <td width="1%">&nbsp;</td>
+                                                    <td width="60%">
+                                                        <apex:outputPanel styleClass="requiredInput"><apex:outputPanel styleClass="requiredBlock"></apex:outputPanel></apex:outputPanel>
+                                                        <apex:selectList value="{!param.loanType}" multiselect="false" size="1" styleClass="selectList" id="fldLoanTYpe">
+                                                            <apex:selectOption itemValue="" itemLabel="--None--" />
+                                                            <apex:selectOption itemValue="Consumer Loan" itemLabel="Consumer Loan"/>
+                                                            <!-- <apex:selectOption itemValue="Full-Doc Car Lease" itemLabel="Full-Doc Car Lease" /> -->
+                                                            <apex:selectOption itemValue="Full-Doc Chattel Mortgage" itemLabel="Full-Doc Chattel Mortgage" />
+                                                            <!-- <apex:selectOption itemValue="Low-Doc Car Lease" itemLabel="Low-Doc Car Lease" /> -->
+                                                            <apex:selectOption itemValue="Low-Doc Chattel Mortgage" itemLabel="Low-Doc Chattel Mortgage" />
+                                                            <!-- <apex:selectOption itemValue="Refinance Consumer Loan" itemLabel="Refinance Consumer Loan" />
+                                                            <apex:selectOption itemValue="Refinance Full-Doc Car Lease" itemLabel="Refinance Full-Doc Car Lease" />
+                                                            <apex:selectOption itemValue="Refinance Full-Doc Chattel Mortgage" itemLabel="Refinance Full-Doc Chattel Mortgage" />
+                                                            <apex:selectOption itemValue="Refinance Low-Doc Car Lease" itemLabel="Refinance Low-Doc Car Lease" />
+                                                            <apex:selectOption itemValue="Refinance Low-Doc Chattel Mortgage" itemLabel="Refinance Low-Doc Chattel Mortgage" />
+                                                            <apex:selectOption itemValue="Sale and Lease-Back" itemLabel="Sale and Lease-Back" /> -->
+                                                            <apex:selectOption itemValue="Personal Loan" itemLabel="Personal Loan" />
+                                                            <apex:actionSupport event="onchange" reRender="pnlFilter" focus="fldLoanTYpe" />
+                                                        </apex:selectList>
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td align="right">Employment Type</td>
+                                                    <td>&nbsp;</td>
+                                                    <td>
+                                                        <apex:outputPanel styleClass="requiredInput"><apex:outputPanel styleClass="requiredBlock"></apex:outputPanel></apex:outputPanel>
+                                                        <apex:selectList value="{!param.employmentType}" multiselect="false" size="1" styleClass="selectList" id="fldEmpType">
+                                                            <apex:selectOption itemValue="" itemLabel="--None--" />
+                                                            <apex:selectOption itemValue="Casual < 12 months" itemLabel="Casual < 12 months" />
+                                                            <apex:selectOption itemValue="Casual > 12 months" itemLabel="Casual > 12 months" />
+                                                            <apex:selectOption itemValue="Full-Time" itemLabel="Full-Time" />
+                                                            <apex:selectOption itemValue="Permanent Part-Time" itemLabel="Permanent Part-Time" />
+                                                            <apex:selectOption itemValue="Self employed (Full-Doc)" itemLabel="Self employed (Full-Doc)" rendered="{!NOT(param.loanType=='Personal Loan')}" />
+                                                            <apex:selectOption itemValue="Self employed (Low-Doc)" itemLabel="Self employed (Low-Doc)" rendered="{!NOT(param.loanType=='Personal Loan')}" />
+                                                        </apex:selectList>
+                                                    </td>
+                                                </tr>
+                                                <tr style= "display: {!IF(param.loanType=='Personal Loan', 'none','')}">
+                                                    <td align="right">Purchase Type</td>
+                                                    <td>&nbsp;</td>
+                                                    <td>
+                                                        <apex:outputPanel styleClass="requiredInput"><apex:outputPanel styleClass="requiredBlock"></apex:outputPanel></apex:outputPanel>
+                                                        <apex:selectList value="{!param.purchaseType}" multiselect="false" size="1" styleClass="selectList">
+                                                            <apex:selectOption itemValue="" itemLabel="--None--" />
+                                                            <apex:selectOption itemValue="Dealer" itemLabel="Dealer" />
+                                                            <apex:selectOption itemValue="Private" itemLabel="Private" />
+                                                            <apex:selectOption itemValue="Refinance" itemLabel="Refinance" />
+                                                            <!-- <apex:selectOption itemValue="Sale & Lease-Back - Commercial" itemLabel="Sale & Lease-Back - Commercial" /> -->
+                                                            <!-- <apex:selectOption itemValue="Sale & Lease-Back - Consumer" itemLabel="Sale & Lease-Back - Consumer" /> -->
+                                                        </apex:selectList>
+                                                    </td>
+                                                </tr>
+                                                <!-- <tr>
+                                                    <td>Term End</td>
+                                                    <td>
+                                                        <apex:outputPanel styleClass="requiredInput"><apex:outputPanel styleClass="requiredBlock"></apex:outputPanel></apex:outputPanel>
+                                                        <apex:selectList value="{!param.termEnd}" multiselect="false" size="1" styleClass="selectList">
+                                                            <apex:selectOption itemValue="" itemLabel="--None--" />
+                                                            <apex:selectOption itemValue="12 Years" itemLabel="12 Years" />
+                                                            <apex:selectOption itemValue="15 Years" itemLabel="15 Years" />
+                                                            <apex:selectOption itemValue="20 Years" itemLabel="20 Years" />
+                                                        </apex:selectList>
+                                                    </td>
+                                                </tr> -->
+                                                <tr>
+                                                    <td align="right">Credit History</td>
+                                                    <td>
+                                                        <c:HelpIcon helpText="<strong><u>Default/s or Ex-Bankrupt with strong profile,</u></strong><br/>Must have at least one: Strong deposit (20-30%), verifiable correctable credit, very strong employment and income, Issues are not habitual.<br/><br/><strong><u>Default/s or Ex-Bankrupt with standard profile</u></strong><br/> Decent Employment, income and residency however does not have ‘Strong profile’ mitigates." />
+                                                    </td>
+                                                    <td>
+                                                        <apex:outputPanel styleClass="requiredInput"><apex:outputPanel styleClass="requiredBlock"></apex:outputPanel></apex:outputPanel>
+                                                        <apex:selectList value="{!param.creditHistory}" multiselect="false" size="1" styleClass="selectList">
+                                                            <apex:selectOption itemValue="" itemLabel="--None--" />
+                                                            <apex:selectOption itemValue="Clean History" itemLabel="Clean History" />
+                                                            <apex:selectOption itemValue="Defaults & or Previous Bankrupt" itemLabel="Defaults & or Previous Bankrupt" />
+                                                            <!-- <apex:selectOption itemValue="Default/s or Ex-Bankrupt with standard profile" itemLabel="Default/s or Ex-Bankrupt with standard profile" /> -->
+                                                            <!-- <apex:selectOption itemValue="Default/s or Ex-Bankrupt with strong profile" itemLabel="Default/s or Ex-Bankrupt with strong profile" /> -->
+                                                        </apex:selectList>
+                                                    </td>
+                                                </tr>
+                                            </table>
+                                        </td>
+                                        <td width="50%" valign="top">
+                                            <table width="100%">
+                                                <tr style= "display: {!IF(param.loanType=='Personal Loan', 'none','')}">
+                                                    <td width="37%" align="right">Age Vehicle</td>
+                                                    <td width="3%">&nbsp;&nbsp;&nbsp;</td>
+                                                    <td width="60%">
+                                                        <apex:outputPanel styleClass="requiredInput"><apex:outputPanel styleClass="requiredBlock"></apex:outputPanel></apex:outputPanel>
+                                                        <apex:selectList value="{!param.ageCar}" multiselect="false" size="1" styleClass="selectList">
+                                                            <apex:selectOption itemValue="0" itemLabel="New Vehicle" />
+                                                            <apex:selectOption itemValue="1" itemLabel="1" />
+                                                            <apex:selectOption itemValue="2" itemLabel="2" />
+                                                            <apex:selectOption itemValue="3" itemLabel="3" />
+                                                            <apex:selectOption itemValue="4" itemLabel="4" />
+                                                            <apex:selectOption itemValue="5" itemLabel="5" />
+                                                            <apex:selectOption itemValue="6" itemLabel="6" />
+                                                            <apex:selectOption itemValue="7" itemLabel="7" />
+                                                            <apex:selectOption itemValue="8" itemLabel="8" />
+                                                            <apex:selectOption itemValue="9" itemLabel="9" />
+                                                            <apex:selectOption itemValue="10" itemLabel="10" />
+                                                            <apex:selectOption itemValue="11" itemLabel="11" />
+                                                            <apex:selectOption itemValue="12" itemLabel="12" />
+                                                            <apex:selectOption itemValue="13" itemLabel="13" />
+                                                            <apex:selectOption itemValue="14" itemLabel="14" />
+                                                            <apex:selectOption itemValue="15" itemLabel="15" />
+                                                            <apex:selectOption itemValue="16" itemLabel="16" />
+                                                            <apex:selectOption itemValue="17" itemLabel="17" />
+                                                            <apex:selectOption itemValue="18" itemLabel="18" />
+                                                            <apex:selectOption itemValue="19" itemLabel="19" />
+                                                            <apex:selectOption itemValue="20" itemLabel="20" />
+                                                        </apex:selectList>
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td width="37%" align="right">Loan Term (months)</td>
+                                                    <td width="3%">&nbsp;</td>
+                                                    <td width="60%">
+                                                        <apex:outputPanel styleClass="requiredInput"><apex:outputPanel styleClass="requiredBlock"></apex:outputPanel></apex:outputPanel>
+                                                        <apex:input type="number" value="{!param.loanTerm}" styleClass="dataInput"/>
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td align="right">Residential Status</td>
+                                                    <td>&nbsp;</td>
+                                                    <td>
+                                                        <apex:outputPanel styleClass="requiredInput"><apex:outputPanel styleClass="requiredBlock"></apex:outputPanel></apex:outputPanel>
+                                                        <apex:selectList value="{!param.residentialStatus}" multiselect="false" size="1" styleClass="selectList">
+                                                            <apex:selectOption itemValue="" itemLabel="--None--" />
+                                                            <apex:selectOption itemValue="Property Owner" itemLabel="Property Owner" />
+                                                            <apex:selectOption itemValue="Renting Real Estate" itemLabel="Renting Real Estate" />
+                                                            <apex:selectOption itemValue="Renting Other" itemLabel="Renting Other" />
+                                                            <apex:selectOption itemValue="Boarding" itemLabel="Boarding" />
+                                                        </apex:selectList>
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td align="right">
+                                                        <apex:outputText value="Vehicle Price" rendered="{!NOT(param.loanType=='Personal Loan')}"/>
+                                                        <apex:outputText value="Loan Amount" rendered="{!param.loanType=='Personal Loan'}"/>
+                                                    </td>
+                                                    <td>&nbsp;</td>
+                                                    <td>
+                                                        <apex:outputPanel styleClass="requiredInput"><apex:outputPanel styleClass="requiredBlock"></apex:outputPanel></apex:outputPanel>
+                                                        <apex:input type="number" value="{!param.price}" html-placeholder="$" html-step="0.01" styleClass="dataInput"/>
+                                                    </td>
+                                                </tr>
+                                                <tr style= "display: {!IF(param.loanType=='Personal Loan', 'none','')}">
+                                                    <td align="right">Deposit</td>
+                                                    <td>&nbsp;</td>
+                                                    <td>
+                                                        <apex:outputPanel styleClass="requiredInput"><apex:outputPanel styleClass="requiredBlock"></apex:outputPanel></apex:outputPanel>
+                                                        <apex:input type="number" value="{!param.deposit}" html-placeholder="$" html-step="0.01" styleClass="dataInput"/>
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td align="right">Residual</td>
+                                                    <td>&nbsp;</td>
+                                                    <td>
+                                                        <apex:outputPanel styleClass="requiredInput"><apex:outputPanel styleClass="requiredBlock"></apex:outputPanel></apex:outputPanel>
+                                                        <apex:input type="number" value="{!param.residual}" html-placeholder="$" html-step="0.01" styleClass="dataInput"/>
+                                                    </td>
+                                                </tr>
+                                                <tr><td colspan="2">&nbsp;</td></tr>
+                                            </table>
+                                        </td>
+                                    </tr>
+                                </table>
+                                <table class="tableSubsection" width="100%">
+                                    <tr>
+                                        <td width="49%" align="right">
+                                            Current payday loan in the last 6 months?
+                                        </td>
+                                        <td width="1%">&nbsp;</td>
+                                        <td width="50%">
+                                            <apex:selectList value="{!param.hasPayday}" multiselect="false" size="1" styleClass="selectList">
+                                                <apex:selectOption itemValue="" itemLabel="--None--" />
+                                                <apex:selectOption itemValue="Y" itemLabel="Yes" />
+                                                <apex:selectOption itemValue="N" itemLabel="No" />
+                                            </apex:selectList>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td align="right">Have you got any current verifiable credit?</td>
+                                        <td>&nbsp;</td>
+                                        <td>
+                                            <apex:selectList value="{!param.hasVerifiableCredit}" multiselect="false" size="1" styleClass="selectList">
+                                                <apex:selectOption itemValue="" itemLabel="--None--" />
+                                                <apex:selectOption itemValue="Y" itemLabel="Yes" />
+                                                <apex:selectOption itemValue="N" itemLabel="No" />
+                                            </apex:selectList>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td align="right">How many jobs have you had in the last 3 years?</td>
+                                        <td>&nbsp;</td>
+                                        <td>
+                                            <apex:selectList value="{!param.jobsLast3Years}" multiselect="false" size="1" styleClass="selectList">
+                                                <apex:selectOption itemValue="0" itemLabel="--None--" />
+                                                <apex:selectOption itemValue="1" itemLabel="1" />
+                                                <apex:selectOption itemValue="2" itemLabel="2" />
+                                                <apex:selectOption itemValue="3" itemLabel="3" />
+                                                <apex:selectOption itemValue="4" itemLabel="4" />
+                                                <apex:selectOption itemValue="5" itemLabel="5" />
+                                                <apex:selectOption itemValue="6" itemLabel="6" />
+                                                <apex:selectOption itemValue="7" itemLabel="7" />
+                                                <apex:selectOption itemValue="8" itemLabel="8" />
+                                                <apex:selectOption itemValue="9" itemLabel="9" />
+                                                <apex:selectOption itemValue="10" itemLabel="10" />
+                                            </apex:selectList>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td align="right">Have you had more than 3 credit enquiries in 6 months?</td>
+                                        <td>&nbsp;</td>
+                                        <td>
+                                            <apex:selectList value="{!param.hasEnquiries}" multiselect="false" size="1" styleClass="selectList">
+                                                <apex:selectOption itemValue="" itemLabel="--None--" />
+                                                <apex:selectOption itemValue="Y" itemLabel="Yes" />
+                                                <apex:selectOption itemValue="N" itemLabel="No" />
+                                            </apex:selectList>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td align="right">What is your credit score?</td>
+                                        <td>&nbsp;</td>
+                                        <td>
+                                            <apex:selectList value="{!param.creditScore}" multiselect="false" size="1" styleClass="selectList">
+                                                <apex:selectOption itemValue="" itemLabel="--None--" />
+                                                <apex:selectOption itemValue="<400" itemLabel="<400" />
+                                                <apex:selectOption itemValue="400 - 524" itemLabel="400 - 524" />
+                                                <apex:selectOption itemValue="525 - 599" itemLabel="525 - 599" />
+                                                <apex:selectOption itemValue="600 - 749" itemLabel="600 - 749" />
+                                                <apex:selectOption itemValue="750+" itemLabel="750+" />
+                                            </apex:selectList>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td align="right">Verifiable Savings?</td>
+                                        <td>&nbsp;</td>
+                                        <td>
+                                            <apex:selectList value="{!param.verifiableSavings}" multiselect="false" size="1" styleClass="selectList">
+                                                <apex:selectOption itemValue="" itemLabel="--None--" />
+                                                <apex:selectOption itemValue="<50k" itemLabel="<50K" />
+                                                <apex:selectOption itemValue="50k-100K" itemLabel="50K-100K" />
+                                                <apex:selectOption itemValue="100K+" itemLabel="100K+" />
+                                            </apex:selectList>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td align="right">What is your LTV?</td>
+                                        <td>&nbsp;</td>
+                                        <td>
+                                            <apex:selectList value="{!param.ltv}" multiselect="false" size="1" styleClass="selectList">
+                                                <apex:selectOption itemValue="" itemLabel="--None--" />
+                                                <apex:selectOption itemValue="<90" itemLabel="<90" />
+                                                <apex:selectOption itemValue="90-99" itemLabel="90-99" />
+                                                <apex:selectOption itemValue="100–109" itemLabel="100–109" />
+                                                <apex:selectOption itemValue="110–119" itemLabel="110–119" />
+                                                <apex:selectOption itemValue="120–129" itemLabel="120–129" />
+                                                <apex:selectOption itemValue="130" itemLabel="130" />
+                                                <apex:selectOption itemValue="131+" itemLabel="131+" />
+                                            </apex:selectList>
+                                        </td>
+                                    </tr>
+                                    <tr><td colspan="3">&nbsp;</td></tr>
+                                    <tr>
+                                        <td colspan="3" align="center">
+                                            <apex:commandButton value="Search" action="{!search}" styleClass="commandButtons" reRender="pnlMain" status="stsProcessing" />
+                                        </td>
+                                    </tr>
+                                </table>
+                            </td>
+                        </tr>
+                    </table>
+                </apex:outputPanel>
+            </apex:pageBlock>
+            <apex:outputPanel id="pgbResultForm" rendered="{!isActiveComparison}" layout="block" styleClass="cp-result">
+                <hr/>
+                <table width="100%" cellspacing="0">
+                    <tr>
+                        <td width="6%">
+                            <apex:image value="{!$Resource.PlatinumBadge}" height="70" rendered="{!param.tier=='Tier 1'}" title="Platinum"/>
+                            <apex:image value="{!$Resource.GoldBadge}" height="70" rendered="{!param.tier=='Tier 2'}" title="Gold"/>
+                            <apex:image value="{!$Resource.BronzeBadge}" height="70" rendered="{!param.tier=='Tier 3'}" title="Bronze"/>
+                        </td>
+                        <!--
+                        <td width="17%" class="{!IF(param.tier=='Tier 1','cp-platinum',IF(param.tier=='Tier 2','cp-gold','cp-bronze'))}">
+                            <apex:outputText value='Platinum' rendered="{!param.tier=='Tier 1'}"/>
+                            <apex:outputText value='Gold' rendered="{!param.tier=='Tier 2'}"/>
+                            <apex:outputText value='Bronze' rendered="{!param.tier=='Tier 3'}"/>
+                        </td>
+                        -->
+                        <td width="16%">
+                            DOF ($): <br/>
+                            <apex:input value="{!param.dofValue}" styleClass="dataInputOptions" type="number"  html-step="1" html-placeholder="$" id="fldDofValue"/>
+                            <apex:commandButton value="Calculate" action="{!adjustDOFValue}" reRender="pgbResultForm, fldSortBy" status="stsProcessing"/>
+                            &nbsp;
+                            <apex:commandButton value="Reset" action="{!resetDOFValue}" reRender="pgbResultForm, fldSortBy, fldDofValue" status="stsProcessing"/>
+                        </td>
+                        <td width="16%">
+                            Client Rate (%): <br/>
+                            <apex:input value="{!param.rateValue}" styleClass="dataInputOptions" type="number"  html-step="0.1" />
+                            <apex:commandButton value="Calculate" action="{!adjustClientRate}" reRender="pgbResultForm, fldSortBy" status="stsProcessing"/>
+                        </td>
+                        <td width="16%">
+                            *Brokerage ($):<br/>
+                            <apex:input value="{!param.estimateCommission}" styleClass="dataInputOptions" type="number" html-placeholder="$" />
+                            <apex:commandButton value="Calculate" action="{!calculateCommissions}" reRender="pgbResultForm, fldSortBy" status="stsProcessing"/>
+                        </td>
+                        <td width="30%">
+                            <!-- 
+                            *Total Commission ($):<br/>
+                            <apex:input value="{!param.targetCommission}" styleClass="dataInputOptions" type="number" html-placeholder="$" />
+                            <apex:commandButton value="Calculate" action="{!calculateTotalCommissions}" reRender="pgbResultForm, fldSortBy" status="stsProcessing"/>
+                            -->
+                            &nbsp;
+                        </td>
+                        <td width="16%" align="right">
+                            Sort by: &nbsp;
+                            <apex:selectList value="{!param.sortBy}" multiselect="false" size="1" id="fldSortBy">
+                                <apex:actionSupport event="onchange" action="{!sortResult}" reRender="pgbResultForm" status="stsProcessing" />
+                                <apex:selectOption itemValue="BA" itemLabel="Base Rate" />
+                                <apex:selectOption itemValue="CL" itemLabel="Client Rate" />
+                                <apex:selectOption itemValue="CO" itemLabel="Commission" />
+                                <apex:selectOption itemValue="RE" itemLabel="Repayment" />
+                                <apex:selectOption itemValue="TC" itemLabel="Total Commission" />
+                            </apex:selectList>
+                        </td>
+                    </tr>
+                </table>
+                <br/>
+                <table width="100%" class="tableResultContainer" cellspacing="0">
+                    <tr>
+                        <th class="ct-th" colspan="2">Lender</th>
+                        <th class="ct-th">Detail</th>
+                        <th class="ct-th">Base Rate</th>
+                        <th class="ct-th">*Estimated Commission</th>
+                        <th class="ct-th">DOF</th>
+                        <th class="ct-th">*Total Commission</th>
+                        <th class="ct-th">Client Rate</th>
+                        <th class="ct-th">Monthly Fee</th>
+                        <th class="ct-th">Weekly Payment</th>
+                        <th class="ct-th">Monthly Payment</th>
+                        <th class="ct-th">Surplus</th>
+                        <th class="ct-th">&nbsp;</th>
+                        <th class="ct-th">DOF</th>
+                        <th class="ct-th">Client Rate / Brokerage</th>
+                    </tr>
+                    <apex:repeat value="{!lendersList}" var="a">
+                        <tr>
+                            <td>
+                                <img src="{!$Resource[a.info.Static_Logo_Resource__c]}" height="40px" />
+                            </td>
+                            <td valign="center" class="ct-td">
+                                {!a.info.Label__c}
+                            </td>
+                            <td align="center" class="ct-td">
+                                <apex:outputText value="{!a.extraInfo}" />
+                            </td>
+                            <td align="center" class="ct-td">
+                                <apex:outputText styleClass="ct-base-rate" value="{0, Number, ##.00}%">
+                                    <apex:param value="{!a.baseRate}" />
+                                </apex:outputText>
+                            </td>
+                            <td align="right" class="ct-td">
+                                <apex:outputText value="{0, Number, Currency}">
+                                    <apex:param value="{!a.quotingResult.Estimated_Commission__c}" />
+                                </apex:outputText>
+                            </td>
+                            <td align="center" class="ct-td">
+                                <apex:outputText value="{0, Number, Currency}">
+                                    <apex:param value="{!a.dofBase}" />
+                                </apex:outputText>
+                            </td>
+                            <td align="right" class="ct-td"><strong>
+                                <apex:outputText value="{0, Number, Currency}">
+                                    <apex:param value="{!a.quotingResult.Total_Commission__c}" />
+                                </apex:outputText></strong>
+                            </td>
+                            <td align="center" class="ct-td">
+                                <apex:outputText value="{0, Number, ##.00}%">
+                                    <apex:param value="{!a.clientRate}" />
+                                </apex:outputText>
+                            </td>
+                            <td align="center" class="ct-td">
+                                <apex:outputField value="{!a.info.Monthly_Fee__c}" />
+                            </td>
+                            <td align="right" class="ct-td">
+                                <apex:outputText value="{0, Number, Currency}">
+                                    <apex:param value="{!a.quotingResult.Weekly_Payment__c}" />
+                                </apex:outputText>
+                            </td>
+                            <td align="right" class="ct-td"><strong>
+                                <apex:outputText value="{0, Number, Currency}">
+                                    <apex:param value="{!a.quotingResult.Monthly_Payment__c}" />
+                                </apex:outputText></strong>
+                            </td>
+                            <td align="right" class="ct-td">
+                                <apex:outputText value="{0, Number, Currency}" rendered="{!a.servicing != null}" styleClass="{!IF(a.servicing.amountAvailable<0,'sefvicing-deficiency','')}">
+                                    <apex:param value="{!a.servicing.amountAvailable}" />
+                                </apex:outputText>
+                            </td>
+                            <td class="ct-td">
+                                <apex:commandButton value="Open" action="{!openQuotingTool}" reRender="msgResultPanel" styleClass="commandButtons" status="stsProcessing">
+                                    <apex:param name="paramLenderSel" assignTo="{!lenderCodeSelected}" value="{!a.info.Code__c}"/>
+                                </apex:commandButton>
+                            </td>
+                            <td class="ct-td">
+                                <apex:input value="{!a.dofBase}" styleClass="dataInputOptions" type="number" html-step="1" html-placeholder="$"
+                                                         rendered="{!NOT(CONTAINS(a.info.lender__c,'Yamaha'))}" />
+                            </td>
+                            <td class="ct-td">
+                                <apex:input value="{!a.clientRate}" styleClass="dataInputClientRate" type="number" html-step="0.01" html-placeholder="%" rendered="{!a.hasClientRate}" />
+                                <apex:input value="{!a.brokerageBase}" styleClass="dataInputClientRate" type="number" html-step="0.01" html-placeholder="%" rendered="{!a.hasBrokerage}" />
+                                &nbsp;<apex:outputText value="Brokerage (%)" rendered="{!a.hasBrokerage}" styleClass="ct-foot-note" />
+                            </td>
+                        </tr>
+                    </apex:repeat>
+                    <tr>
+                        <td colspan="12"><strong><span class="titleDiv">Total options: {!lendersList.size} </span></strong></td>
+                        <td colspan="2" align="center">
+                            <apex:commandButton value="Re-calculate result(s)" action="{!recalculate}" reRender="pgbResultForm" status="stsProcessing" styleClass="commandButtons recalculateButton"/>
+                        </td>
+                    </tr>
+                </table>
+                <apex:pageMessages id="msgResult" />
+                <table width="100%" cellspacing="10" class="tableResultContainer">
+                    <tr>
+                        <td colspan="2">
+                            <br/><br/>
+                            <i><strong>Note:</strong> all figures are calculated using Client Rates. * Estimated Commission and Total commission are GST Exc. * Surplus/Deficiency estimated according with Application form data.</i>
+                        </td>
+                        <td colspan="3" align="right">
+                           <apex:commandButton value="Comparison Feedback" reRender="pnlInfoExtra, pgbResultForm" status="stsProcessing" styleClass="comparisonButtons"
+                                               rendered="{!isOpinion==0}">
+                               <apex:param name="opinionSelected" assignTo="{!isOpinion}" value="1" />
+                               <apex:param name="closingSelected" assignTo="{!infoExtra}" value="0" />
+                               <apex:param name="objectingSelected" assignTo="{!hasObjectingOpened}" value="false" />
+                               <apex:param name="cusInfoSelected" assignTo="{!hasNotCustomerProvidedInfo}" value="false" />
+                            </apex:commandButton>
+                            <apex:commandButton value="Hide Comparison Feedback" reRender="pnlInfoExtra, pgbResultForm" status="stsProcessing" styleClass="comparisonButtons"
+                                                rendered="{!isOpinion>0}">
+                                <apex:param name="opinionSelected" assignTo="{!isOpinion}" value="0" />
+                            </apex:commandButton>
+                            &nbsp;&nbsp;&nbsp;&nbsp;
+                            <apex:commandButton value="Closing" reRender="pnlInfoExtra, pgbResultForm" status="stsProcessing" styleClass="commandButtons"
+                                                rendered="{!infoExtra==0}">
+                                <apex:param name="opinionSelected" assignTo="{!isOpinion}" value="0" />
+                                <apex:param name="closingSelected" assignTo="{!infoExtra}" value="1" />
+                                <apex:param name="objectingSelected" assignTo="{!hasObjectingOpened}" value="false" />
+                                <apex:param name="cusInfoSelected" assignTo="{!hasNotCustomerProvidedInfo}" value="false" />
+                            </apex:commandButton>
+                            <apex:commandButton value="Hide Closing" reRender="pnlInfoExtra, pgbResultForm" status="stsProcessing" styleClass="commandButtons"
+                                                rendered="{!infoExtra>0}">
+                                <apex:param name="closingSelected" assignTo="{!infoExtra}" value="0" />
+                            </apex:commandButton>
+                            &nbsp;&nbsp;&nbsp;&nbsp;
+                            <!-- <apex:commandButton styleClass="recalculateButton" value="Objecting Handling"  onClick="window.open('/apex/AppFlowObjectingHandling2?id={!Custom_Opportunity__c.Id}');" reRender="pnlInfoExtra, pgbResultForm" status="stsProcessing"/> -->
+                            <apex:commandButton value="Objecting Handling" reRender="pnlInfoExtra, pgbResultForm" status="stsProcessing" styleClass="commandButtons"
+                                                rendered="{!NOT(hasObjectingOpened)}">
+                                <apex:param name="opinionSelected" assignTo="{!isOpinion}" value="0" />
+                                <apex:param name="objectingSelected" assignTo="{!hasObjectingOpened}" value="true" />
+                                <apex:param name="closingSelected" assignTo="{!infoExtra}" value="0" />
+                                <apex:param name="cusInfoSelected" assignTo="{!hasNotCustomerProvidedInfo}" value="false" />
+                            </apex:commandButton>
+                            <apex:commandButton value="Hide Objecting Handling" reRender="pnlInfoExtra, pgbResultForm" status="stsProcessing" styleClass="commandButtons"
+                                                rendered="{!hasObjectingOpened}">
+                                <apex:param name="closingSelected" assignTo="{!hasObjectingOpened}" value="false" />
+                            </apex:commandButton>
+                        </td>
+                    </tr>
+                </table>
+            </apex:outputPanel>
+            <apex:outputPanel id="pnlInfoExtra" rendered="{!isActiveComparison}">
+                <!-- <c:StaticInfo /> -->
+                <apex:outputPanel rendered="{!OR(isOpinion>0)}">
+                    <apex:pageBlock >
+                        <p class="opinion">Please let us know your opinion for this comparison</p>
+                        <apex:inputTextarea id="newDesc" value="{!opinionText}" styleClass="inputTextArea" /><p/>
+                        <table width="100%">
+                            <tr>
+                                <td width="5%">
+                                    <apex:commandButton value="Save" action="{!saveOpinion}" styleClass="commandButtons" reRender="pnlInfoExtra, pgbResultForm" status="stsProcessing" >
+                                        <apex:param name="opinionSelected" assignTo="{!isOpinion}" value="2" />
+                                    </apex:commandButton>
+                                </td>
+                                <td width="25%">
+                                    <apex:outputPanel rendered="{!isOpinion==2}">
+                                        <apex:outputLabel styleClass="opinion" value="{!opinionMessage}"/>
+                                    </apex:outputPanel>
+                                </td>
+                                <td width="35%"></td>
+                                <td width="35%"></td>
+                            </tr>
+                        </table>
+                    </apex:pageBlock>
+                </apex:outputPanel>
+                <apex:outputPanel rendered="{!OR(infoExtra>0,hasObjectingOpened)}" styleClass="flowContent">
+                                
+                    <apex:outputPanel layout="block" rendered="{!NOT(hasObjectingOpened)}">
+                        <apex:outputPanel layout="block" styleClass="rowHeaderClosing">
+                            Closing
+                        </apex:outputPanel>
+                        <!-- <p>&nbsp;</p> -->
+                        <apex:outputPanel layout="block" rendered="{!infoExtra==1}" styleClass="extraInfoPanel">
+                            <p>
+                                So, tell me <strong>{!o.application__r.Title_1__c} {!Custom_Opportunity__c.Name}</strong>, who else are you looking at in regard to this solution?<br/>
+                            </p>
+                            <p>&nbsp;</p>
+                            <p>&nbsp;</p>
+                            <apex:commandButton value="No one just looking for a quote" styleClass="btn-dark" reRender="pnlInfoExtra" status="stsProcessingInfo">
+                                <apex:param name="closingInfoParam" assignTo="{!infoExtra}" value="4" />
+                            </apex:commandButton> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                            <apex:commandButton value="Yes, I’m looking around" styleClass="btn-dark" reRender="pnlInfoExtra" status="stsProcessingInfo">
+                                <apex:param name="closingInfoParam" assignTo="{!infoExtra}" value="2" />
+                            </apex:commandButton>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                            <!-- 
+                             &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                            <apex:commandButton value="Closing No Proceed" action="{!goClosingNoProceed}" styleClass="commandButtons" reRender="pnlInfoExtra" status="stsProcessingInfo"/> -->
+                        </apex:outputPanel>
+                        <apex:outputPanel layout="block" rendered="{!infoExtra==2}" styleClass="extraInfoPanel">
+                            <p>
+                                And why haven’t you moved forward with them at this point?&nbsp;
+                                <apex:inputText value="{!o.lead__r.Closing_Comment_1__c}" maxlength="255" />
+                            </p>
+                            <p>
+                                So, considering you are shopping around, and have received and bunch of quotes and have spoken with some of our competition, tell me ‘Mr Customer’, What would you need to see to decide to move forward with Savvy? In terms of repayments, rate, terms, conditions etc.? Customer provides information&nbsp;
+                                <apex:inputText value="{!o.lead__r.Closing_Comment_2__c}" maxlength="255" />
+                            </p>
+                            <p>&nbsp;</p>
+                            <p>
+                                <apex:commandButton value="Customer provide information..." action="{!saveFlowComments}" styleClass="" reRender="pnlInfoExtra" status="stsFlowSaving1"/>&nbsp;&nbsp;&nbsp;&nbsp;
+                                <apex:commandButton value="Customer does not provide information..." action="{!customerNotInformation}" styleClass="" reRender="pnlInfoExtra" status="stsFlowSaving1"/>&nbsp;&nbsp;
+                                <apex:actionStatus startText="(saving...)" id="stsFlowSaving1"/>
+                            </p>
+                            <p>&nbsp;</p>
+                        </apex:outputPanel>
+                        <apex:outputPanel layout="block" rendered="{!infoExtra==3}" styleClass="extraInfoPanel">
+                            <apex:outputPanel rendered="{!hasNotCustomerProvidedInfo}">
+                                <p>
+                                    Customer does not provide information, they want a quote
+                                    <br/>
+                                    <apex:inputTextarea value="{!o.lead__r.Closing_Comment_2__c}" cols="100" rows="3" html-maxlength="255" /><br/>
+                                    <apex:commandButton value="Save" action="{!saveFlowComments}" styleClass="" reRender="pnlInfoExtra" status="stsFlowSaving2"/>&nbsp;&nbsp;
+                                    <apex:actionStatus startText="(saving...)" id="stsFlowSaving2"/>
+                                </p>
+                                <p>&nbsp;</p>
+                            </apex:outputPanel>
+                            <p>
+                                Ok, so <strong>{!o.application__r.Title_1__c} {!Custom_Opportunity__c.Name}</strong>, that price (and terms) are going to need some approval on my end and even still I’m not sure at this point if I will be able to get to the price point that you’re looking for but let me try my best to see what I can get for you, but before I do, I need to make sure that if I can get you (review the details) approved, then this is something you’re prepared to move forward with today, right? And commit to savvy?
+                            </p>
+                            <p>&nbsp;</p>
+                            <div class="extraInfoPanel infoText1">
+                                Only after they agree to the deal should you put them on hold or hang up and call back in 5 minutes and make the appropriate arrangements. After you’ve done that, come back on the line and say:
+                            </div>
+                            <p>
+                                Ok, that’s all done on this end, so congratulations we can now proceed with a pre-approval, Considering I have collected most of your information already its probably easier that we finish your application over the phone, have you got another 5-10 minutes to complete this now? <!-- All that we will then need is for you to send me a few supporting documents to get your approval in place (if yes proceed to Sales tools/No proceed to Script 3) -->
+                            </p>
+                            <br/>
+                        </apex:outputPanel>
+                        <apex:outputPanel layout="block" rendered="{!infoExtra==4}" styleClass="extraInfoPanel">
+                           <!--  <p>
+                                Customer does not provide information, they want a quote
+                                <br/>
+                                <apex:inputTextarea value="{!o.lead__r.Closing_Comment_2__c}" cols="100" rows="3" html-maxlength="255" /><br/>
+                                <apex:commandButton value="Save" action="{!saveFlowComments}" styleClass="" reRender="pnlInfoExtra" status="stsFlowSaving2"/>&nbsp;&nbsp;
+                                <apex:actionStatus startText="(saving...)" id="stsFlowSaving2"/>
+                            </p>
+                            <p>&nbsp;</p> -->
+                            <p>
+                                Ok sure, so based on <strong>
+                                <apex:outputText value="{0, number, $##,###,##0}" >
+                                    <apex:param value="{!param.price}" />
+                                </apex:outputText></strong>
+                                 Loan amount, over <strong>{!param.loanTerm}</strong> term, I’ve completed a comparison from our panel of lenders and its produced a positive result with an attractive repayment based on your profile. As I previously mentioned all of our loans come with the choice of being protected or not. There are various levels of coverage which we can discuss at a later stage. So, your fully protected repayment is XXXXXX. Your base repayment is <strong>$XXX.xx</strong>.
+                            </p>
+                            <p>&nbsp;</p>
+                            <p>
+                                How does that sound……. Is this affordable for you……. Would you like me to proceed in getting your application pre-approved?
+                            </p>
+                            <p>&nbsp;</p>
+                            <apex:commandButton value="YES" styleClass="btn-dark" reRender="pnlInfoExtra" status="stsProcessingInfo">
+                                <apex:param name="closingInfoParam" assignTo="{!infoExtra}" value="5" />
+                            </apex:commandButton> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                            <apex:commandButton value="NO" styleClass="btn-dark" reRender="pnlInfoExtra, pgbResultForm" status="stsProcessingInfo">
+                                <apex:param name="objectingSelected" assignTo="{!hasObjectingOpened}" value="true" />
+                                <apex:param name="closingSelected" assignTo="{!infoExtra}" value="0" />
+                            </apex:commandButton>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                        </apex:outputPanel>
+                        <apex:outputPanel layout="block" rendered="{!OR(infoExtra==3,infoExtra==5)}" styleClass="extraInfoPanel">
+                            <p>
+                                <span class="highlight3">Yes – Let complete the application now</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                                <apex:commandButton value="Go to Sales Tool" action="{!goSalesTool}" styleClass="btn-dark" status="stsProcessingInfo"/>
+                            </p>
+                            <p>&nbsp;</p>
+                            <p>
+                                <span class="highlight3">No – Don’t have time now</span><br/><br/>
+                                Ok, no worries so the next step then is that I will send you an application pack to you email, included in the application pack is a link to our online application form, from here you will be able to complete your application and submit all supporting documentation that we require to get you pre-approved….so within the application you can upload your payslips and driver’s license plus also e-sign our consent documents. Our process is online so we do not require you to print anything out, physically sign paperwork just yet or anything like that which usually makes applying for a loan a bit of a headache.
+                            </p>
+                            <p>&nbsp;</p>
+                            <p>
+                                Once I receive all of this information I can then submit for a pre-approval. Generally, if I get all this information together I should be able to come back to you within approximately 4 hours.
+                            </p>
+                            <p>&nbsp;</p>
+                            <p>
+                                Thank you for your time and I look forward to working on your approval &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                                <apex:commandButton value="Send Email" action="{!goSendEmail}" reRender="msg" status="stsProcessingInfo" styleClass="btn-dark" />
+                            </p>
+                        </apex:outputPanel>
+                    </apex:outputPanel>
+
+                    <!-- Objecting and Handling -->
+                    <apex:outputPanel layout="block" styleClass="extraInfoPanel" rendered="{!hasObjectingOpened}">
+                        <apex:iframe src="{!$Page.AppFlowObjectingHandling2}" width="100%" height="900px" scrolling="true"/>
+                    </apex:outputPanel>
+                    <apex:actionStatus startText="(processing...)" id="stsProcessingInfo"/>
+                            
+                </apex:outputPanel>
+            </apex:outputPanel>
+        </apex:form>
+      </apex:outputPanel>
+    </apex:outputPanel>
+    <!-- <div id="dialog" title="Basic dialog">
+      <p>This is the default dialog which is useful for displaying information. The dialog window can be moved, resized and closed with the 'x' icon.</p>
+    </div> -->
+    <!-- </apex:outputPanel> -->
+    <!-- Lead -->
+    <apex:outputField value="{!o.Lead__r.Application_Type__c}" rendered="false" />
+    <apex:outputField value="{!o.Lead__r.Has_Tax_Returns__c}" rendered="false" />
+    <apex:outputField value="{!o.Lead__r.Has_Clean_Credit_History__c}" rendered="false" />
+    <apex:outputField value="{!o.Lead__r.Purchase_Type__c}" rendered="false" />
+    <apex:outputField value="{!o.Lead__r.Deposit__c}" rendered="false" />
+    <apex:outputField value="{!o.Lead__r.Credit_History__c}" rendered="false" />
+    <apex:outputField value="{!o.Lead__r.Has_Credit_Enquiries__c}" rendered="false" />
+
+    <!-- Application -->
+    <apex:outputField value="{!o.Application__r.Type_of_Asset__c}" rendered="false" />
+    <apex:outputField value="{!o.Application__r.Application_Type__c}" rendered="false" />
+    <apex:outputField value="{!o.Application__r.Mode_of_Employment_1__c}" rendered="false" />
+    <apex:outputField value="{!o.Application__r.Date_Started_1__c}" rendered="false" />
+    <apex:outputField value="{!o.Application__r.Vehicle_Year__c}" rendered="false" />
+    <apex:outputField value="{!o.Application__r.Length_of_Term__c}" rendered="false" />
+    <apex:outputField value="{!o.Application__r.Current_Residence_Status_1__c}" rendered="false" />
+    <!-- <apex:outputField value="{!o.Application__r.Total_Mortgage_Loan__c}" rendered="false" /> -->
+    <apex:outputField value="{!o.Application__r.Purchase_Price__c}" rendered="false" />
+    <apex:outputField value="{!o.Application__r.Date_of_Birth_1__c}" rendered="false" />
+    <apex:outputField value="{!o.Application__r.Date_Started_1__c}" rendered="false" />
+    <apex:outputField value="{!o.Application__r.Start_Date_1__c}" rendered="false" />
+    <apex:outputField value="{!o.Application__r.Mode_of_Employment_1__c}" rendered="false" />
+    <apex:outputField value="{!o.Application__r.Previous_Mode_of_Employment_1__c}" rendered="false" />
+    <apex:outputField value="{!o.Application__r.Net_Income_1__c}" rendered="false" />
+    <apex:outputField value="{!o.Application__r.Payment_Frequency_1__c}" rendered="false" />
+    <apex:outputField value="{!o.Application__r.Bank_Value__c}" rendered="false" />
+    <apex:outputField value="{!o.Application__c}" rendered="false" />
+    
+</apex:page>

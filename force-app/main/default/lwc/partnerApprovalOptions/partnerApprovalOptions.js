@@ -4,6 +4,7 @@ import { ShowToastEvent } from "lightning/platformShowToastEvent";
 import { getFieldValue, getRecordNotifyChange } from "lightning/uiRecordApi";
 import NAME_FIELD from "@salesforce/schema/Custom_Opportunity__c.Name";
 import STATUS_FIELD from "@salesforce/schema/Custom_Opportunity__c.Status__c";
+import PARTNER_EXTERNAL_FIELD from "@salesforce/schema/Custom_Opportunity__c.Partner_Is_External__c";
 import preApprovalValidation from "@salesforce/apex/PartnerCommunityApprovals.preApprovalValidation";
 import settlementValidation from "@salesforce/apex/PartnerCommunityApprovals.settlementValidation";
 import getLenderSettings from "@salesforce/apex/PartnerCommunityApprovals.getLenderSettings";
@@ -22,6 +23,11 @@ export default class PartnerApprovalOptions extends NavigationMixin(LightningEle
   @track displayComp = false;
   @api quoting;
   @api opp; // Opportunity
+  @api oppManualStatus;
+  @api oppManualName;
+  @api oppPartnerExternal;
+  @api hideSettledOption;
+  @api callBackAction;
 
   showSpinner;
   appResult;
@@ -45,6 +51,8 @@ export default class PartnerApprovalOptions extends NavigationMixin(LightningEle
 
   connectedCallback() {
     // console.log(`this.recordId: ` + this.recordId);
+    // console.log(`this.oppManualStatus: ` + this.oppManualStatus);
+    // console.log(`this.hideSettledOption: ${this.hideSettledOption}`);
     if (this.recordId && this.recordId != null && this.recordId !== "null") {
       this.displayComp = true;
     }
@@ -52,14 +60,14 @@ export default class PartnerApprovalOptions extends NavigationMixin(LightningEle
 
   handleApprovalClick(event) {
     event.preventDefault();
-    console.log(`Click on Submit for approval`);
+    // console.log(`Click on Submit for approval`);
     if (this.displayComp) {
       this.showSpinner = true;
       this.processStatus = STAGE_VALIDATION;
       preApprovalValidation({ oppId: this.recordId })
         .then((result) => {
           this.appResult = result;
-          console.log(`result: ${JSON.stringify(result)}`);
+          // console.log(`result: ${JSON.stringify(result)}`);
           this.showApprovalMessages = this.displayApprovalResults;
           this.showSpinner = false;
           if (!this.showApprovalMessages) {
@@ -83,14 +91,14 @@ export default class PartnerApprovalOptions extends NavigationMixin(LightningEle
 
   handleSettleClick(event) {
     event.preventDefault();
-    console.log(`Click on Settle`);
+    // console.log(`Click on Settle`);
     if (this.displayComp) {
       this.showSpinner = true;
       this.processStatus = STAGE_VALIDATION;
       settlementValidation({ oppId: this.recordId })
         .then((result) => {
           this.appResult = result;
-          console.log(`result: ${JSON.stringify(result)}`);
+          // console.log(`result: ${JSON.stringify(result)}`);
           this.showApprovalMessages = this.displayApprovalResults;
           this.showSpinner = false;
           if (!this.showApprovalMessages) {
@@ -114,7 +122,7 @@ export default class PartnerApprovalOptions extends NavigationMixin(LightningEle
 
   handleFormalApprovalClick(event) {
     event.preventDefault();
-    console.log(`Click on Formal`);
+    // console.log(`Click on Formal`);
     this.processStatus = STAGE_FORMAL_APPROVAL;
   }
 
@@ -134,7 +142,7 @@ export default class PartnerApprovalOptions extends NavigationMixin(LightningEle
           oppName: this.oppName
         }
       };
-      console.log(JSON.stringify(pageRef));
+      // console.log(JSON.stringify(pageRef));
       // Navigate to the Account Home page.
       this[NavigationMixin.Navigate](pageRef);
       // this.displayToast(`Application Form`);
@@ -187,6 +195,9 @@ export default class PartnerApprovalOptions extends NavigationMixin(LightningEle
     this.showApiConfirmation = false;
     this.showBrokerSupport = false;
     this.processStatus = STAGE_NONE;
+    if (this.callBackAction) {
+      this.callBackAction();
+    }
   }
 
   processApiConfirmation() {
@@ -222,11 +233,15 @@ export default class PartnerApprovalOptions extends NavigationMixin(LightningEle
   }
 
   get displayAPIConfirmation() {
-    const qn = this.quoting ? this.quoting.Name : undefined;
+    const qn = this.quoting
+      ? this.quoting.Name
+      : this.lenderSettings
+      ? this.lenderSettings.Name
+      : undefined;
+    // console.log(`@@displayAPIConfirmation:`, qn);
     return (
       qn &&
-      (
-        qn === "Pepper MV" ||
+      (qn === "Pepper MV" ||
         qn === "Pepper Leisure" ||
         // qn === "Pepper Commercial" ||
         qn === "RateSetter" ||
@@ -234,8 +249,7 @@ export default class PartnerApprovalOptions extends NavigationMixin(LightningEle
         qn === "Finance One" ||
         qn === "Finance One Commercial" ||
         qn === "Latitude" ||
-        qn === "Money3"
-      )
+        qn === "Money3")
     );
   }
 
@@ -248,15 +262,30 @@ export default class PartnerApprovalOptions extends NavigationMixin(LightningEle
   }
 
   get oppName() {
-    return getFieldValue(this.opp, NAME_FIELD);
+    // return getFieldValue(this.opp, NAME_FIELD);
+    return this.oppManualName
+      ? this.oppManualName
+      : getFieldValue(this.opp, NAME_FIELD);
   }
 
   get oppStatus() {
-    return getFieldValue(this.opp, STATUS_FIELD);
+    // console.log(`oppManualStatus >> ${this.oppManualStatus}`);
+    // return getFieldValue(this.opp, STATUS_FIELD);
+    return this.oppManualStatus
+      ? this.oppManualStatus
+      : getFieldValue(this.opp, STATUS_FIELD);
+  }
+
+  get isExternal() {
+    // console.log(`oppPartnerExternal >> ${this.oppPartnerExternal}`);
+    // return getFieldValue(this.opp, STATUS_FIELD);
+    return this.oppPartnerExternal !== undefined
+      ? this.oppPartnerExternal
+      : getFieldValue(this.opp, PARTNER_EXTERNAL_FIELD);
   }
 
   handlerApiNo() {
-    console.log(`API No click...`);
+    // console.log(`API No click...`);
     this.showApiConfirmation = false;
     this.showBrokerSupport = true;
     this.processStatus = STAGE_BROKER_SUPPORT;
@@ -319,10 +348,13 @@ export default class PartnerApprovalOptions extends NavigationMixin(LightningEle
 
   get showFAButton() {
     return (
-      this.oppStatus === "Pre-Approved" ||
-      this.oppStatus === "Submitted for Formal Approval" ||
-      this.oppStatus === "Sent to Lender for Formal Approval" ||
-      this.oppStatus === "Formal Approved"
+      !this.isExternal &&
+      (
+        this.oppStatus === "Pre-Approved" ||
+        this.oppStatus === "Submitted for Formal Approval" ||
+        this.oppStatus === "Sent to Lender for Formal Approval" ||
+        this.oppStatus === "Formal Approved"
+      )
     );
   }
 
@@ -346,5 +378,9 @@ export default class PartnerApprovalOptions extends NavigationMixin(LightningEle
 
   get disableFAButton() {
     return !(this.oppStatus === "Pre-Approved");
+  }
+
+  get showSettledButton() {
+    return !(this.hideSettledOption === true);
   }
 }

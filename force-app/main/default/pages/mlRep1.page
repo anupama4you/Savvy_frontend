@@ -1,0 +1,14 @@
+<apex:page showHeader="false" sidebar="false" controller="CustomReportExtension">
+	<apex:pageBlock >
+	 	<apex:sectionHeader title="Machine Learning Report" />
+		<apex:pageBlockTable value="{!machineLearningItems}" var="r" id="oppLst" >
+			<apex:column headerValue="lender" value="{!r.Loan_Product__r.Quoting_Source__c}"/>
+			<apex:column headerValue="assetType" value="{!r.Application_AssetDetail__r.Type__c}"/>
+			<apex:column headerValue="employmentType" value="{!r.Application__r.Mode_of_Employment_1__c}"/>
+			<apex:column headerValue="income" value="{!r.Application__r.Net_Income_1__c}"/>
+			<apex:column headerValue="loanTerm" value="{!r.Opp_Loan_Term__c}"/>
+			<apex:column headerValue="vehiclePrice" value="{!r.Loan_Product__r.Cost_of_Goods__c}"/>
+			<apex:column headerValue="appType" value="{!r.Application__r.Application_Type__c}"/>
+		</apex:pageBlockTable>
+	</apex:pageBlock>
+</apex:page>

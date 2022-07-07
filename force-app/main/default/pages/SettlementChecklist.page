@@ -1,0 +1,161 @@
+<apex:page standardController="Custom_Opportunity__c"  showHeader="false" extensions="SettlementChecklistExt" >
+    <apex:sectionHeader title="Settlement Checklist"/> 
+        <apex:variable value="{!Custom_Opportunity__c}" var="o" />
+          <apex:form >
+            <apex:pageBlock title="Documents Worksheet" >
+                <apex:pageBlockButtons >
+                    <apex:commandButton value="Save Checklist" action="{!UpdateCheckList}"/>
+                 <apex:commandButton value="Print Page" onclick="window.print();"/>  
+                </apex:pageBlockButtons>   
+                
+                    <apex:pageBlockSection title="Customer Details:" columns="4" >
+                    
+                        <apex:inputfield value="{!o.name }" />
+                        <apex:inputCheckbox value="{!oppNameChecked}"/>  
+                        
+                        <apex:inputField value="{!o.Loan_Product__r.Liberty_Trail__c }" label="Liberty (ex GST) " />   
+                        <apex:inputCheckbox value="{!oppLoanProductLibertyTrail}"/> 
+                        
+                        <apex:inputField value="{!o.Owner_Name__c }"/>
+                        <apex:inputCheckbox value="{!oppOwnerName }" />
+                        
+                        <apex:inputField value="{!o.Loan_Product__r.DOF__c }" label="DOF (Inc GST)"/>
+                        <apex:inputCheckbox value="{!oppLoanProductDof }"/>
+                        
+                        <apex:inputfield value="{!o.Mobile_Number__c }"/> 
+                        <apex:inputCheckbox value="{!oppMobileNumberChecked }" />
+                        
+                        <apex:inputField value="{!o.Loan_Product__r.Client_Rate__c }" />
+                        <apex:inputCheckbox value="{!oppLoanProductClientRate}"/>
+                         
+                        <apex:inputField value="{!o.Email_Address__c }"/>
+                        <apex:inputCheckbox value="{!oppEmailAddChecked}"/>
+                        
+                        <apex:inputField value="{!o.Loan_Product__r.Deposit__c }"/>
+                        <apex:inputCheckbox value="{!oppLoanProductDeposit }"/>
+                        
+                        <!--apex:inputfield value="{!o.Account__r.Unit_House_Number__c }"/>
+                        <apex:inputCheckbox value="{!oppAccUnitHouseNo }" /-->
+                        
+                        <apex:inputField value="{!o.Loan_Product__r.Lender_App_Fee__c }"/>
+                        <apex:inputCheckbox value="{!oppLoanProductLenderAppFee }"/>
+                                    
+                        <apex:inputField value="{!o.Loan_Product__r.Cost_of_Goods__c}"/>
+                        <apex:inputCheckbox value="{!oppCostOfGoods}"/>  
+                                    
+                        <!--apex:inputfield value="{!o.Account__r.Street_Address__c }"/>
+                        <apex:inputCheckbox value="{!oppAccStreetAdd }"/-->
+                        
+                        <apex:inputField value="{!o.Loan_Product__r.Equalisation_Fee_PPSR__c }" label=" Equalisation Fee + PPSR (ex GST)"/>
+                        <apex:inputCheckbox value="{!oppLoanProductEquFeePPSR}" />
+                        
+                        <!--apex:inputfield value="{!o.Account__r.Street_Type__c }"/>
+                        <apex:inputCheckbox value="{!oppAccStreetType }"/-->
+                        
+                        <apex:inputField value="{!o.Loan_Product__r.Residual_Amount__c }" />
+                        <apex:inputCheckbox value="{!oppLoanProductResidualAmount}" />
+                       
+                        <!--apex:inputField value="{!o.Account__r.Suburb__c}"/>
+                        <apex:inputCheckbox value="{!oppAccSuburb }"/-->
+                        
+                        <apex:pageBlockSectionItem >                                                     
+                            <apex:outputLabel value="{!$ObjectType.Product__c.Fields.Brokerage__c.label}"/>
+                            <apex:outputPanel >
+                                <apex:inputField value="{!o.Loan_Product__r.Brokerage__c }"/>
+                                <strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                                    {!$ObjectType.Product__c.Fields.Brokerage_GST_Inc__c.label}:&nbsp;&nbsp;
+                                    <apex:outputText value="{0, Number, Currency}">
+                                        <apex:param value="{!o.Loan_Product__r.Brokerage_GST_Inc__c}" />
+                                    </apex:outputText>
+                                </strong>
+                            </apex:outputPanel>
+                        </apex:pageBlockSectionItem>
+                        <apex:inputCheckbox value="{!oppLoanProductBrokerage}" />
+                        
+                        <!--apex:inputField value="{!o.State__c}"/>
+                        <apex:inputCheckbox value="{!oppState}"/-->
+                        
+                        <apex:inputField value="{!o.loan_Product__r.Balloon_Residual_Requested__c}"/>
+                        <apex:inputCheckbox value="{!oppLoanProductBalloon}"/>
+                        
+                        <!--apex:inputfield value="{!o.Account__r.Postcode__c }"/>
+                        <apex:inputCheckbox value="{!oppAccPostCode }"/-->
+                       
+                        <apex:inputField value="{!o.Total_Commission__c }" />
+                        <apex:inputCheckbox value="{!oppTotalCommission}" />
+                        
+                        <apex:inputField value="{!o.Is_your_client_a_Property_Owner__c }" />
+                        <apex:inputCheckbox value="{!oppIsyourClientPropertyOwner}"/>
+                        
+                        
+                        
+                        <apex:inputField value="{!o.loan_Product__r.Repayment_Regularity__c }" />
+                        <apex:inputCheckbox value="{!oppLoanProductRepay}"/>
+                                                
+                        <apex:inputField value="{!o.Loan_Product__r.Loan_Term__c }" /> 
+                        <apex:inputCheckbox value="{!oppLoanProductLoanTerm}"/>  
+                        
+                        <apex:inputField value="{!o.Loan_Product__r.Payments__c }" /> 
+                        <apex:inputCheckbox value="{!oppLoanProductPayments}"/>  
+
+                        <apex:inputField value="{!o.NAF_Net_Amount_Financed__c}" label="NAF Net Amount Financed (ex GST)" /> 
+                        <apex:inputCheckbox value="{!oppNAFAmountFinanced}"/>
+                        
+                        <apex:inputField value="{!o.Notes_to_Settlement_Officer__c}" style="width:600px"/>
+                        <apex:inputCheckbox value="{!oppNotesToSettlementOfficer}" />
+                        
+                        <apex:pageBlockSectionItem >
+                        <apex:outputLabel value="Customer Address" />
+                        <apex:inputTextarea value="{!oppCustomerAddress}"  />
+                                               
+                        </apex:pageBlockSectionItem>
+                        <!--apex:inputCheckbox value="{!oppCustomerAddress}"/-->
+                                                 
+                    </apex:pageBlockSection>
+                    
+          
+                  
+                    <apex:pageBlockSection title="Dealer Details:" columns="4">
+                 
+                        <!-- <apex:inputField value="{!o.Preferred_Lender__c }"/> -->
+
+                        <apex:pageBlockSectionItem >
+                          <apex:outputLabel value="{!$ObjectType.Custom_Opportunity__c.Fields.Preferred_Lender__c.label}" />
+                          <apex:outputPanel >
+                            <apex:inputField value="{!o.Preferred_Lender__c}" />
+                            <strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; {!$ObjectType.Product__c.Fields.Loan_Type_Detail__c.label}:&nbsp;&nbsp;
+                              <apex:outputText value="{!o.Loan_Product__r.Loan_Type_Detail__c}"/>
+                            </strong>
+                          </apex:outputPanel>
+                        </apex:pageBlockSectionItem>
+                        <apex:inputCheckbox value="{!oppPreferredLender}" />
+
+                        <apex:inputField value="{!o.Purchase_Type__c }"/>
+                        <apex:inputCheckbox value="{!oppPurchaseType}"/> 
+                        
+                        <apex:inputField value="{!o.Dealer_Name__c }"/>
+                        <apex:inputCheckbox value="{!oppDealerName}" /> 
+                       
+                        <apex:inputField value="{!o.Dealer_Contact_Name__c }"/>
+                        <apex:inputCheckbox value="{!oppDealerContactName}"/>  
+                       
+                        <apex:inputField value="{!o.Dealer_Address__c }"/>
+                        <apex:inputCheckbox value="{!oppDealerAddress}"/>
+                       
+                        <apex:inputField value="{!o.Dealer_Email__c }"/>
+                        <apex:inputCheckbox value="{!oppDealerEmail}"/>
+                       
+                        <apex:inputField value="{!o.Dealer_Fax_Number__c }"/>
+                        <apex:inputCheckbox value="{!oppDealerFaxNumber}"/>
+                        
+                        <apex:inputField value="{!o.Dealer_Phone_Number__c }"/>
+                        <apex:inputCheckbox value="{!oppDealerPhoneNumber}"/>
+                       
+                    </apex:pageBlockSection>
+                                                               
+             </apex:pageBlock>
+             
+         </apex:form>
+         <apex:relatedList subject="{!Custom_Opportunity__c}" list="Products__r"/>
+          
+</apex:page>

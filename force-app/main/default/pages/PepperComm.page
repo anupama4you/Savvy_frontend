@@ -1,0 +1,834 @@
+<apex:page docType="html-5.0" standardController="Custom_Opportunity__c" extensions="PepperCommExtension" sidebar="false"
+  showHeader="true" id="PepperComm" title="Pepper Commercial">
+  <apex:variable value="{!Custom_Opportunity__c}" var="o" />
+  <!-- Partner Portal Styles -->
+  <apex:outputPanel rendered="{!isBrokerPartnerUser}">
+    <style type="text/css">
+      html .brandQuaternaryBgr,
+      .titleDiv {
+        background: #ffffff !important;
+      }
+
+      .bPageBlock {
+        border: 1px solid white !important;
+      }
+    </style>
+  </apex:outputPanel>
+  <apex:stylesheet value="{! $Resource.QuotingCalculatorCSS }" />
+  <style type="text/css">
+    .titleDiv {
+      width: 100%;
+      height: 43px;
+      font-size: 1.0rem;
+    }
+
+    .logo {
+      float: right;
+      width: 60%;
+    }
+
+    .calculatorInput {
+      padding-bottom: 20px;
+      background: #f8f8f8;
+      border: 1px solid #ddd;
+    }
+
+    .divTitle {
+      background-color: #ddd;
+      padding-top: 2px;
+      padding-bottom: 2px;
+      padding-left: 20px;
+      text-transform: uppercase;
+      border: 1px solid #ddd;
+    }
+
+    #leftTables {
+      display: inline-block;
+      float: left;
+      width: 28%;
+      padding-left: 20px;
+    }
+
+    #rightTables {
+      display: inline-block;
+      width: 70%;
+    }
+
+    #vehicleTab {
+      border: 1px solid #ddd;
+      border-bottom: transparent;
+      display: inline-block;
+      background-color: #fff;
+      position: relative;
+      padding: 6px;
+      top: 17px;
+    }
+
+    #vehicleDetails {
+      width: 95%;
+      background: white;
+      border: 1px solid #ddd;
+      margin-top: 15px;
+      padding: 2px;
+      padding-left: 20px;
+      padding-top: 10px;
+      padding-bottom: 10px;
+    }
+
+    #insuranceTab {
+      border: 1px solid #ddd;
+      border-bottom: transparent;
+      display: inline-block;
+      background-color: #fff;
+      position: relative;
+      padding: 6px;
+      top: 17px;
+    }
+
+    #insuranceProduct {
+      width: 95%;
+      background: white;
+      border: 1px solid #ddd;
+      margin-top: 15px;
+      padding: 2px;
+      padding-left: 20px;
+      padding-top: 0px;
+      padding-bottom: 10px;
+    }
+
+    #financeTab {
+      border: 1px solid #ddd;
+      border-bottom: transparent;
+      display: inline-block;
+      background-color: #fff;
+      position: relative;
+      padding: 6px;
+      top: 17px;
+    }
+
+    .financeDetails {
+      width: 95%;
+      background: white;
+      border: 1px solid #ddd;
+      margin-top: 15px;
+      padding: 2px;
+      padding-left: 20px;
+      padding-top: 10px;
+      padding-bottom: 10px;
+    }
+
+    .acceptBtnCol {
+      position: relative;
+      left: -10px;
+    }
+
+    .cancelBtnCol {
+      position: relative;
+      left: -10px;
+    }
+
+    #repaymentPanel {
+      background: #f8f8f8;
+      border: 1px solid #ddd;
+    }
+
+    #repaymentTab {
+      border: 1px solid #ddd;
+      border-bottom: transparent;
+      display: inline-block;
+      background-color: #fff;
+      position: relative;
+      padding: 6px;
+      top: 17px;
+      margin-left: 20px;
+    }
+
+    #repayment {
+      width: 96%;
+      background: white;
+      border: 1px solid #ddd;
+      margin-top: 15px;
+      padding: 2px;
+      padding-left: 20px;
+      padding-top: 20px;
+      padding-bottom: 20px;
+      margin-left: 20px;
+      margin-bottom: 20px;
+    }
+
+    .inTableTitle {
+      font-weight: bold;
+      padding-top: 10px;
+      padding-bottom: 10px;
+    }
+
+    .calcInput {
+      border: 1px solid #e0e0e0;
+      padding: 0.15em;
+      min-width: 173px;
+    }
+
+    .calcInput2 {
+      border: 1px solid #e0e0e0;
+      padding: 0.15em;
+      max-width: 70px;
+    }
+
+    .selectList {
+      border: 1px solid #e0e0e0;
+      padding: 0.15em;
+      width: 182px;
+    }
+
+    .defaultInsurance {
+      text-align: center;
+      width: 25%;
+    }
+
+    .vehicleColumn {
+      width: 25%;
+    }
+
+    .insuranceColumn {
+      width: 25%;
+    }
+
+    .financeColumn {
+      width: 50%;
+    }
+
+    .commissionLabel {
+      width: 8%;
+      font-weight: bold;
+    }
+
+    .commissionCotent {
+      width: 17%;
+      font-weight: bold;
+    }
+
+    .repayColumn {
+      width: 12.5%;
+      font-weight: bold;
+    }
+
+    .calcLabel {
+      font-weight: 500;
+    }
+
+    .baseRateColumn {
+      padding: 0.3rem;
+    }
+
+    .monthlyFeeLabel {
+      width: 5%;
+      font-weight: bold;
+    }
+
+    .monthlyFeeContent {
+      width: 20%;
+      font-weight: bold;
+    }
+
+    .referenceTable {}
+
+    .referenceTitle {
+      padding: 10px;
+    }
+
+    .tableDetails {
+      width: 95%;
+      background: white;
+      border: 1px solid #ddd;
+      margin-top: 15px;
+      padding: 2px;
+      padding-left: 20px;
+      padding-top: 10px;
+      padding-bottom: 10px;
+    }
+
+    .titleTableTab {
+      border: 1px solid #ddd;
+      border-bottom: transparent;
+      display: inline-block;
+      background-color: #fff;
+      position: relative;
+      padding: 6px;
+      top: 17px;
+    }
+
+    .resultValue {
+      font-weight: bold;
+    }
+
+    .buttonPanel {
+      float: right;
+      text-align: right;
+    }
+
+    /*Tier tables*/
+
+    #tierATable {
+      width: 100%;
+    }
+
+    #tierBTable {
+      width: 100%;
+      position: relative;
+      top: -5px;
+    }
+
+    #tierCTable {
+      width: 100%;
+      position: relative;
+      top: -10px;
+    }
+
+    .ratesHeading {
+      display: inline-block;
+      border-collapse: collapse;
+      border: 1px solid #ddd;
+      border-right-width: 0px;
+    }
+
+    .ratesTitle {
+      background: #f2f3f3;
+      border-width: 0 0 1px 1px;
+      border-color: #e0e3e5;
+      color: #000;
+      font-size: .9em;
+      font-weight: bold;
+      padding: 5px 2px 4px 5px;
+      width: 54.12%;
+    }
+
+    .headingColumn {
+      border-width: 0 0 1px 0;
+      vertical-align: middle;
+      border: 1px solid #ededed;
+      color: #000;
+      padding: 4px 2px 4px 5px;
+      font-family: Arial, Helvetica, sans-serif;
+      margin: 0;
+      display: table-cell;
+    }
+
+    .ratesDetails {
+      display: inline-block;
+      border-collapse: collapse;
+      border: 1px solid #ddd;
+      border-left-width: 0px;
+      position: relative;
+      left: -3px;
+    }
+
+    .ratesColumn {
+      border-width: 0 0 1px 0;
+      vertical-align: middle;
+      border: 1px solid #ededed;
+      color: #000;
+      padding: 4px 2px 4px 5px;
+      font-family: Arial, Helvetica, sans-serif;
+      margin: 0;
+      display: table-cell;
+      width: 5.41%;
+      background-color: #ffffff;
+    }
+
+    .ratesColumn2 {
+      border-width: 0 0 1px 0;
+      vertical-align: middle;
+      border: 1px solid #ededed;
+      color: #000;
+      padding: 4px 2px 4px 5px;
+      font-family: Arial, Helvetica, sans-serif;
+      margin: 0;
+      display: table-cell;
+      background-color: #ffffff;
+      text-align: center;
+    }
+
+    .ratesTitle2 {
+      font-weight: bold;
+      text-transform: capitalize;
+    }
+
+    .main-content {
+      margin-left: auto;
+      width: 86%;
+    }
+  </style>
+  <c:sidebarV2 oppId="{!o.Id}" appId="{!o.Application__c}" showLenders="true" rendered="{!NOT(isBrokerPartnerUser)}" />
+  <div id="mainContent" class="{!IF(NOT(isBrokerPartnerUser),'main-content','')}">
+    <apex:form id="calcFormData" styleClass="calculatorForm">
+      <apex:pageMessages id="pageMessage" />
+      <!-- NWC -->
+      <apex:actionFunction action="{!nationalWarrantyCalc}" name="nationalWarrantyCalc" reRender="realtimeNaf, netDeposit, pnlInsProd, pageMessage"
+        oncomplete="nafRefresh()" />
+      <!-- HJ - NWC Calculator - 11-07-2018 - I -->
+      <apex:actionFunction action="{!calculateNWC}" name="calculateNWC" reRender="listTypeNWC, fldNwcCost, NWCMessage, NWCRetailPrice, NWCComission, realtimeNaf, netDeposit, pnlInsProd, pageMessage, NwcPriceToCustomer, messageNWCWarning,nwcIncome_input, nwc_input"
+        oncomplete="nafRefresh()" status="stsProd" />
+      <apex:actionFunction action="{!checkManuallyNWCPrice}" name="checkManuallyNWCPrice" reRender="listTypeNWC, fldNwcCost, NWCMessage, NWCRetailPrice, NWCComission, realtimeNaf, netDeposit, pnlInsProd, pageMessage, NwcPriceToCustomer,nwcIncome_input, nwc_input"
+        status="stsProd" />
+      <!-- HJ - NWC Calculator - 11-07-2018 - F -->
+      <!-- Send Quote -->
+      <apex:actionFunction action="{!sendCustomerEmail1}" name="sendCustomerEmail1" reRender="pageMessage" status="stsSend1" oncomplete="sendCustomerEmail2();"
+      />
+      <apex:actionFunction action="{!sendCustomerEmail2}" name="sendCustomerEmail2" status="stsSend2" reRender="pageMessage" />
+      <!-- End -->
+      <apex:actionFunction action="{!baseRateCalc}" name="baseRateCalc" reRender="baseRate, maxRate, clientRate" />
+      <apex:actionFunction action="{!realtimeNafCalc}" name="nafRefresh" reRender="realtimeNaf, netDeposit" />
+      <apex:actionFunction action="{!applicationFeefCalc}" name="applicationFeefCalc" reRender="applicationFee, realtimeNaf, netDeposit"
+        oncomplete="baseRateCalc();" />
+      <apex:actionFunction action="{!save}" name="save" oncomplete="sendApplication();" status="stsprocessing" />
+      <apex:actionFunction action="{!sendApplication}" name="sendApplication" reRender="calcFormData" status="stsprocessing" />
+      <div class="titleDiv">
+        <h1>Pepper Commercial for {!Custom_Opportunity__c.Name}</h1>
+        <div class="buttonPanel">
+          <table>
+            <tr>
+              <td>
+                <!--Jesus Mora 2020-09-25 start-->
+                <apex:actionStatus startText="(Processing...)" id="stsprocessing" />
+                <!--Jesus Mora 2020-09-25 end-->
+                <apex:actionStatus startText="(Saving...)" id="stsSend1" />
+                <apex:actionStatus startText="(Sending...)" id="stsSend2" />&nbsp;&nbsp;&nbsp;
+
+                <apex:commandButton styleClass="calculateButtons" value="Pepper Application (Test)" action="{!pepperApplicationTest}" rendered="{!paramActive}"
+                  status="stsprocessing" reRender="calcFormData" />
+                <!-- <apex:commandButton styleClass="calculateButtons" value="Pepper Application" action="{!pepperApplication}" rendered="{!IF(ISBLANK(pepperAPI_AppNumber),true,false)}"/> -->
+                <!-- <apex:commandButton styleClass="calculateButtons" value="Pepper Application (Test)" action="{!pepperApplicationTest}" status="stsprocessing" reRender="calcFormData"/> -->
+                <!--<apex:commandButton styleClass="calculateButtons" value="Pepper Application" action="{!pepperApplication}" status="stsprocessing"
+                  reRender="calcFormData" />-->
+                <apex:commandButton styleClass="calculateButtons" value="Pepper Application" onclick="save();return false;" status="stsprocessing" reRender="calcFormData" rendered="{!NOT(isBrokerPartnerUser)}"/>
+                <!--Jesus Mora 2020-09-25 start-->
+                <apex:commandButton styleClass="calculateButtons" value="Calculate" action="{!calculate}" status="stsprocessing" reRender="calcFormData"
+                />
+                <apex:commandButton styleClass="calculateButtons" value="Reset" action="{!reset}" status="stsprocessing" reRender="calcFormData"
+                />
+                <apex:commandButton styleClass="calculateButtons" value="Save Quoting" action="{!saveQuoting}" status="stsprocessing" reRender="calcFormData"
+                />
+                <apex:commandButton styleClass="calculateButtons" value="Save Pre-approval" action="{!savePreApproval}" status="stsprocessing"
+                  reRender="calcFormData" />
+                <apex:commandButton styleClass="calculateButtons" value="Save Amendment" action="{!saveAmendment}" status="stsprocessing"
+                  reRender="calcFormData" />
+                <apex:commandButton styleClass="calculateButtons" value="Save Formal Approval" action="{!saveFormalApproval}" status="stsprocessing"
+                  reRender="calcFormData" />
+                <!--Jesus Mora 2020-09-25 end-->
+                <input name="DoAction" type="button" value="Send Quote" class="btn calculateButtons" onclick="sendCustomerEmail1();return false;"
+                />
+              </td>
+              <td>
+                <apex:image url="{!$Resource.PepperLogo}" height="40" />
+              </td>
+            </tr>
+          </table>
+        </div>
+      </div>
+      <div class="calculatorInput">
+        <div class="divTitle">
+          <h3>Input</h3>
+        </div>
+        <div style="display: flex;">
+          <div id="leftTables">
+            <div id="financeTab">
+              <h3>Finance Details</h3>
+            </div>
+            <table class="financeDetails">
+              <tr>
+                <td class="financeColumn">
+                  <apex:outputLabel styleClass="calcLabel" value="Loan Type" for="LoanType" />
+                </td>
+                <td class="financeColumn">
+                  <apex:selectList value="{!loanType}" multiselect="false" size="1" styleClass="selectList" id="LoanType">
+                    <apex:actionSupport event="onchange" reRender="pnlPepperAPI" status="stsprocessing" />
+                    <apex:selectOptions value="{!loanTypeOptions}" />
+                  </apex:selectList>
+                </td>
+              </tr>
+              <tr>
+                <td class="financeColumn">
+                  <apex:outputLabel styleClass="calcLabel" value="Loan Product" for="productLoanType" />
+                </td>
+                <td class="financeColumn">
+                  <apex:selectList value="{!productLoanType}" multiselect="false" size="1" styleClass="selectList" id="productLoanType">
+                    <apex:actionSupport event="onchange" action="{!baseRateCalc}" reRender="baseRate, maxRate, clientTier, clientRate" />
+                    <apex:selectOptions value="{!productLoanTypes}" />
+                  </apex:selectList>
+                </td>
+              </tr>
+              <tr>
+                <td class="financeColumn">
+                  <apex:outputLabel styleClass="calcLabel" value="Goods Type" for="productGoodsType" />
+                </td>
+                <td class="financeColumn">
+                  <apex:selectList value="{!productGoodsType}" multiselect="false" size="1" styleClass="selectList" id="productGoodsType">
+                    <apex:selectOptions value="{!productGoodsTypes}" />
+                    <apex:actionSupport event="onchange" action="{!baseRateCalc}" reRender="baseRate, maxRate, clientTier, brokeragePercentage, clientRate"
+                    />
+                  </apex:selectList>
+                </td>
+              </tr>
+              <tr>
+                <td class="financeColumn">
+                  <apex:outputLabel styleClass="calcLabel" value="Goods Price" for="carPrice" />
+                </td>
+                <td class="financeColumn">
+                  <apex:input type="number" html-step="0.01" value="{!carPrice}" html-placeholder="$" id="carPrice" styleClass="calcInput"
+                    onchange="nafRefresh()" />
+                </td>
+              </tr>
+              <tr>
+                <td class="financeColumn">
+                  <apex:outputLabel styleClass="calcLabel" value="Deposit" for="deposit" />
+                </td>
+                <td class="financeColumn">
+                  <apex:input type="number" html-step="0.01" value="{!deposit}" html-placeholder="$" id="deposit" styleClass="calcInput" onchange="nafRefresh()"
+                  />
+                </td>
+              </tr>
+              <tr>
+                <td class="financeColumn">
+                  <apex:outputLabel styleClass="calcLabel" value="Trade In" for="tradeIn" />
+                </td>
+                <td class="financeColumn">
+                  <apex:input type="number" html-step="0.01" value="{!tradeIn}" html-placeholder="$" id="tradeIn" styleClass="calcInput" onchange="nafRefresh()"
+                  />
+                </td>
+              </tr>
+              <tr>
+                <td class="financeColumn">
+                  <apex:outputLabel styleClass="calcLabel" value="Payout On Trade In" for="payoutOn" />
+                </td>
+                <td class="financeColumn">
+                  <apex:input type="number" html-step="0.01" value="{!payoutOn}" html-placeholder="$" id="payoutOn" styleClass="calcInput"
+                    onchange="nafRefresh()" />
+                </td>
+              </tr>
+              <tr>
+                <td class="financeColumn">
+                  <apex:outputLabel styleClass="calcLabel" value="Net Deposit" for="netDeposit" />
+                </td>
+                <td class="financeColumn">
+                  <apex:outputText value="{0, number, $##,###,##0.00}" id="netDeposit">
+                    <apex:param value="{!netDeposit}" />
+                  </apex:outputText>
+                </td>
+              </tr>
+              <tr>
+                <td class="financeColumn">
+                  <apex:outputLabel styleClass="calcLabel" value="Application Fee" for="applicationFee" />
+                </td>
+                <td class="financeColumn">
+                  <apex:input type="number" html-step="0.01" value="{!applicationFee}" html-placeholder="$" id="applicationFee" styleClass="calcInput"
+                    onchange="nafRefresh()" />
+                </td>
+              </tr>
+              <tr>
+                <td class="financeColumn">
+                  <apex:outputLabel styleClass="calcLabel" value="DOF" for="dof" />
+                </td>
+                <td class="financeColumn">
+                  <apex:input type="number" html-step="0.01" value="{!dof}" html-placeholder="$" id="dof" styleClass="calcInput" onchange="nafRefresh()"
+                  />
+                </td>
+              </tr>
+              <tr>
+                <td class="financeColumn">
+                  <apex:outputLabel styleClass="calcLabel" value="PPSR" for="ppsr" />
+                </td>
+                <td class="financeColumn">
+                  <apex:input type="number" html-step="0.01" value="{!ppsr}" html-placeholder="$" id="ppsr" styleClass="calcInput" onchange="nafRefresh()"
+                  />
+                </td>
+              </tr>
+              <tr>
+                <td class="financeColumn">
+                  <apex:outputLabel styleClass="calcLabel" value="Residual Value" for="residualValue" />
+                </td>
+                <td class="financeColumn">
+                  <apex:input type="number" html-step="0.01" value="{!residualValue}" html-placeholder="$" id="residualValue" styleClass="calcInput"
+                  />
+                </td>
+              </tr>
+              <tr>
+                <td class="inTableTitle">Loan Details</td>
+                <td class="financeColumn"></td>
+              </tr>
+              <tr>
+                <td class="financeColumn">
+                  <apex:outputLabel styleClass="calcLabel" value="Term (months)" for="term" />
+                </td>
+                <td class="financeColumn">
+                  <apex:input type="number" value="{!term}" id="term" styleClass="calcInput" onchange="baseRateCalc()" />
+                </td>
+              </tr>
+              <tr>
+                <td class="financeColumn">
+                  <apex:outputLabel styleClass="calcLabel" value="Client Tier" for="clientTier" /> &nbsp;
+                </td>
+                <td class="financeColumn">
+                  <apex:selectList value="{!clientTier}" multiselect="false" size="1" styleClass="selectList" id="clientTier">
+                    <apex:actionSupport event="onchange" action="{!baseRateCalc}" reRender="baseRate, maxRate, clientRate" />
+                    <apex:selectOptions value="{!tierOptions}" />
+                  </apex:selectList>
+                </td>
+              </tr>
+              <tr>
+                <td class="financeColumn">
+                  <apex:outputLabel styleClass="calcLabel" value="Asset Age" for="assetAge" />
+                </td>
+                <td class="financeColumn">
+                  <apex:selectList value="{!vehicleAge}" multiselect="false" size="1" styleClass="selectList" id="assetAge">
+                    <apex:actionSupport event="onchange" action="{!baseRateCalc}" reRender="baseRate, maxRate, clientRate" />
+                    <apex:selectOptions value="{!assetAgeOptions}" />
+                  </apex:selectList>
+                </td>
+              </tr>
+              <tr>
+                <td class="financeColumn">
+                  <apex:outputLabel styleClass="calcLabel" value="Private Sales" for="privateSales" />
+                </td>
+                <td class="financeColumn">
+                  <apex:selectList value="{!privateSales}" multiselect="false" size="1" styleClass="selectList" id="privateSales" onchange="applicationFeefCalc()">
+                    <apex:selectOptions value="{!yesNoOptions}" />
+                  </apex:selectList>
+                </td>
+              </tr>
+              <tr>
+                <td class="financeColumn">
+                  <apex:outputLabel styleClass="calcLabel" value="Payment" for="paymentType" />
+                </td>
+                <td class="financeColumn">
+                  <apex:selectList value="{!paymentType}" multiselect="false" size="1" styleClass="selectList" id="paymentType">
+                    <apex:selectOptions value="{!paymentTypes}" />
+                  </apex:selectList>
+                </td>
+              </tr>
+              <tr>
+                <td class="financeColumn">
+                  <apex:outputLabel value="Monthly Fee" for="monthlyFee" />
+                </td>
+                <td class="financeColumn">
+                  <apex:input type="number" html-step="0.01" value="{!monthlyFee}" html-placeholder="$" id="monthlyFee" styleClass="calcInput"
+                  />
+                </td>
+              </tr>
+              <tr>
+                <td class="financeColumn">
+                  <apex:outputLabel styleClass="calcLabel" value="Max Rate" for="maxRate" />
+                </td>
+                <td class="baseRateColumn">
+                  <apex:outputPanel id="maxRate">
+                    <apex:outputText value="{0, number, ##,###,##0.00%}">
+                      <apex:param value="{!maxRate/100}" />
+                    </apex:outputText>
+                  </apex:outputPanel>
+                </td>
+              </tr>
+              <tr>
+                <td class="financeColumn">
+                  <apex:outputLabel styleClass="calcLabel" value="Base Rate" for="baseRate" />
+                </td>
+                <td class="baseRateColumn">
+                  <apex:outputText value="{0, number, ##,###,##0.00%}" id="baseRate">
+                    <apex:param value="{!baseRate/100}" />
+                  </apex:outputText>
+                </td>
+              </tr>
+              <tr>
+                <td class="financeColumn">
+                  <apex:outputLabel styleClass="calcLabel" value="Client Rate" for="clientRate" />
+                </td>
+                <td class="financeColumn">
+                  <apex:outputPanel id="clientRate">
+                    <apex:input type="number" html-step="0.01" value="{!clientRate}" html-placeholder="%" styleClass="calcInput2"
+                    />
+                  </apex:outputPanel>
+                </td>
+              </tr>
+              <tr>
+                <td class="financeColumn">
+                  <apex:outputLabel styleClass="calcLabel" value="NAF" for="realtimeNaf" />
+                </td>
+                <td class="baseRateColumn">
+                  <apex:outputText value="{0, number, $##,###,##0.00}" id="realtimeNaf">
+                    <apex:param value="{!realtimeNaf}" />
+                  </apex:outputText>
+                </td>
+              </tr>
+            </table>
+          </div>
+          <div id="rightTables">
+            <c:QuotingCommissionResults qext="{!quotingExt}" />
+
+            <apex:outputPanel layout="block" id="pnlPepperAPI">
+              <div id="vehicleTab">
+                <h3>Pepper API Details</h3>
+              </div>
+              <table id="vehicleDetails">
+                <tr>
+                  <td class="vehicleColumn">
+                    <apex:outputLabel styleClass="calcLabel" value="PepperAPI user" for="apiUser" />
+                  </td>
+                  <td class="resultValue">
+                    <apex:selectList value="{!apiUser}" multiselect="false" size="1" styleClass="selectList" id="apiUser">
+                      <apex:selectOptions value="{!usersAPIOptions}" />
+                    </apex:selectList>
+                  </td>
+                  <td>&nbsp;</td>
+                  <td>&nbsp;</td>
+                  <td align="right"><apex:commandButton styleClass="calculateButtons" value="Send Files" action="{!sendFiles}" status="stsprocessing" reRender="calcFormData" rendered="{!IF(ISBLANK(pepperAPI_AppNumber),false,true)}"/></td>
+                </tr>
+                <tr>
+                  <td class="vehicleColumn">
+                    <apex:outputLabel style="display:inline-block;" value="Application Number" for="applicationNumber" />
+                  </td>
+                  <td class="resultValue">
+                    <apex:outputText value="{!pepperAPI_AppNumber}" id="applicationNumber" />
+                  </td>
+                  <td class="vehicleColumn">
+                    <apex:outputLabel style="display:inline-block;" value="Response Content" for="responseContent" />
+                  </td>
+                  <td class="resultValue">
+                    <apex:outputText value="{!pepperAPI_ResponseContent}" id="responseContent" />
+                  </td>
+                </tr>
+                <tr>
+                  <td class="vehicleColumn">
+                    <apex:outputLabel style="display:inline-block;" value="Last response" for="lastResponse" />
+                  </td>
+                  <td class="resultValue">
+                    <apex:outputText value="{!pepperAPI_lastResponseApp}" id="lastResponse" />
+                  </td>
+                  <td>&nbsp;</td>
+                  <td>&nbsp;</td>
+                </tr>
+                <tr style="display: {!IF(loanType=='Refinance', '','none')}">
+                  <td class="vehicleColumn">
+                    <apex:outputLabel style="display:inline-block;" value="Loan Purpose" />
+                  </td>
+                  <td class="resultValue">
+                    <apex:inputTextarea value="{!loanPurpose}" style="margin: 0px; width: 94%;" rows="3" />
+                  </td>
+                  <td>&nbsp;</td>
+                  <td>&nbsp;</td>
+                </tr>
+              </table>
+            </apex:outputPanel>
+            <br/>
+            <c:InsuranceProductForm qext="{!quotingExt}" formId="calcFormData" id="pnlInsProd" />
+            <br/>
+            <c:ProtectionQuestions lead="{!o.Lead__r}" />
+            <!-- end Insurance Implementation -->
+          </div>
+        </div>
+      </div>
+    </apex:form>
+    <apex:form id="referenceForm">
+      <apex:pageBlock >
+        <apex:pageBlockSection columns="1">
+          <apex:outputPanel layout="block" styleClass="horizontalRates">
+            <table>
+              <tr>
+                <td valign="top">
+                  <table width="100%">
+                    <tr>
+                      <td width="30%" valign="top">
+                        <apex:pageBlockTable value="{!commercial}" var="r" width="120">
+                          <apex:facet name="caption">Pepper Commercial- Table Rates</apex:facet>
+                          <apex:column value="{!r.Tier__c}" />
+                          <apex:column value="{!r.Rate0__c}" />
+                          <apex:column value="{!r.Rate1__c}" />
+                          <apex:column value="{!r.Rate2__c}" headerValue="Used 6+ years" />
+                        </apex:pageBlockTable>
+                      </td>
+                      <td width="70%" valign="top">&nbsp;</td>
+                    </tr>
+                  </table>
+                </td>
+                <td valign="top" rowspan="3">
+                  <div>
+                    <div class="referenceTitle">
+                      <h1>Pepper Commercial Table Rates</h1>
+                    </div>
+                  </div>
+                  <div>
+                    <div class="referenceTitle">
+                      <h1>Residual Guidelines</h1>
+                    </div>
+                    <apex:image url="{!$Resource.PepperCommResidualGuidelines}" width="450" />
+                  </div>
+                </td>
+              </tr>
+              <tr>
+                <td valign="top">
+                  <table width="100%">
+                    <tr>
+                      <td width="30%" valign="top">
+                        <apex:pageBlockTable value="{!primary}" var="r" width="120">
+                          <apex:facet name="caption">Other-Primary Assets- Table Rates</apex:facet>
+                          <apex:column value="{!r.Tier__c}" />
+                          <apex:column value="{!r.Rate0__c}" headerValue="New and Demo" />
+                          <apex:column value="{!r.Rate1__c}" headerValue="Used all ages" />
+                        </apex:pageBlockTable>
+                      </td>
+                      <td width="70%" valign="top">&nbsp;</td>
+                    </tr>
+                  </table>
+                </td>
+              </tr>
+              <tr>
+                <td valign="top">
+                  <table width="100%">
+                    <tr>
+                      <td width="30%" valign="top">
+                        <apex:pageBlockTable value="{!other2nd3rd}" var="r" width="120">
+                          <apex:facet name="caption">Other-Secondary and Tertiary Assets- Table Rates</apex:facet>
+                          <apex:column value="{!r.Tier__c}" />
+                          <apex:column value="{!r.Rate0__c}" headerValue="New and Used all ages" />
+                        </apex:pageBlockTable>
+                      </td>
+                      <td width="70%" valign="top">&nbsp;</td>
+                    </tr>
+                  </table>
+                </td>
+              </tr>
+            </table>
+          </apex:outputPanel>
+        </apex:pageBlockSection>
+      </apex:pageBlock>
+    </apex:form>
+  </div>
+  <apex:outputField value="{!o.Application__r.Application_Quoting__c}" rendered="false" />
+  <apex:outputField value="{!o.Account__c}" rendered="false" />
+  <apex:outputField value="{!o.Loan_Product__c}" rendered="false" />
+  <apex:outputField value="{!o.Application__r.Title_1__c}" rendered="false" />
+  <apex:outputField value="{!o.Application__r.First_Name__c}" rendered="false" />
+  <apex:outputField value="{!o.Application__r.Last_Name__c}" rendered="false" />
+  <apex:outputField value="{!o.Email_Address__c}" rendered="false" />
+  <apex:outputField value="{!o.Owner_Name__c}" rendered="false" />
+  <apex:outputField value="{!o.Owner_Phone__c}" rendered="false" />
+  <apex:outputField value="{!o.Owner_Mobile__c}" rendered="false" />
+  <apex:outputField value="{!o.Owner_Email__c}" rendered="false" />
+  <apex:outputField value="{!o.Owner.Name}" rendered="false" />
+  <apex:outputField value="{!o.First_Name__c}" rendered="false" />
+  <apex:outputField value="{!o.Last_Name__c}" rendered="false" />
+  <apex:outputField value="{!o.Account__r.FirstName}" rendered="false" />
+  <apex:outputField value="{!o.Application__r.Status__c}" rendered="false" />
+  <apex:outputField value="{!o.Application_AssetDetail__c}" rendered="false" />
+  <apex:outputField value="{!o.Application_AssetDetail__r.Type__c}" rendered="false" />
+  <apex:outputField value="{!o.Application_AssetDetail__r.Condition__c}" rendered="false" />
+  <apex:outputField value="{!o.Application_AssetDetail__r.Year__c}" rendered="false" />
+  <!-- HJ - NWC Calculator  - 11-07-2018 - I -->
+  <apex:outputField value="{!o.Application__r.State__c}" rendered="false" />
+  <apex:outputField value="{!o.Application__r.Type_of_Asset__c}" rendered="false" />
+  <!-- HJ - NWC Calculator  - 11-07-2018 - F -->
+  <!--Jesus Mora 2020-09-25 start-->
+  <apex:outputField value="{!o.Application__r.Mode_of_Employment_1__c}" rendered="false" />
+  <apex:outputField value="{!o.Application__r.Application_Type__c}" rendered="false" />
+  <apex:outputField value="{!o.Application__r.Entity_Name__c}" rendered="false" />
+  <apex:outputField value="{!o.Application_AssetDetail__r.Engine_No__c}" rendered="false" />
+  <apex:outputField value="{!o.ApplicationServicing__r.Is_Splitting_Expenses__c}" rendered="false" />
+  <!--Jesus Mora 2020-09-25 end-->
+</apex:page>

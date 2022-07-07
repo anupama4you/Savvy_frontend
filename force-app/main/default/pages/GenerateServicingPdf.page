@@ -1,0 +1,226 @@
+<apex:page standardController="Custom_Opportunity__c" extensions="ServicingPdfExtension" renderAs="pdf">
+<apex:stylesheet value="{!$Resource.AppPdfCss}"/>    
+    <apex:variable value="{!Custom_Opportunity__c}" var="o" />
+    <div class="header">
+        <table width="100%">
+            <tr style="border: 0px;" width="100%">
+                <td style="border: 0px;" width="30%" align="left">
+                    <apex:image url="{!$Resource.newSavvyLogo}" alt="Logo" />
+                </td>
+                <td style="border: 0px;" width="70%" align="left">
+                    <p><span style="color:#ee245f;">FINANCE APPLICATION</span><br/>
+                        <span style="font-size:0.8em;"><span style="color:#ee245f;">E</span> applications@savvy.com.au <font>|</font> <span style="color:#ee245f;">P</span> 1300 974 066 <font>|</font> <span style="color:#ee245f;">F</span> 1300 978 066<br/>
+                            <span style="color:#ee245f;">A</span> Level 1, 145 The Parade, Norwood, SA 5067 <font>|</font> <span style="color:#ee245f;">www</span>.savvy.<span style="color:#ee245f;">com.au</span></span></p>
+                </td>
+            </tr>
+        </table>
+    </div>
+    <div class="footer">
+        <div class="footerContent">Page <span class="pagenumber"/> of <span class="pagecount"/></div>
+    </div>
+    <div class="content">
+        <h3>Servicing Calculation for &nbsp;<apex:outputField id="oppName" value="{!o.name}"/></h3>
+        <apex:outputPanel layout="block" rendered="{!servCalc.isLowDocSelfEmployed}">
+            <h3>Self Employed</h3>
+            <table class="tableSubsection">
+                <tr>
+                    <td colspan="4"> Self Employed: Yes</td>
+                </tr>
+                <!-- <tr>
+                    <td width="25%">Net Profit <strong>After</strong> Tax:</td>
+                    <td width="25%"><apex:outputText value="{!servCalc.netProfitAfterTax}"/></td>
+                    <td width="25%">Net Profit <strong>Before</strong> Tax:</td>
+                    <td width="25%"><apex:outputText value="{!servCalc.netProfitBeforeTax}"/></td>
+                </tr> -->
+            </table>
+        </apex:outputPanel>
+        <!-- <apex:outputPanel layout="block" rendered="{!!servCalc.isLowDocSelfEmployed}"> -->
+        <apex:outputPanel layout="block">
+            <table width="100%">
+                <tr>
+                    <td width="25%"><apex:outputLabel style="display:inline-block;" value="Lender: "/></td>
+                    <td width="22%"><apex:outputText value="{!servCalc.lender}"/></td>
+                    <td width="25%"><apex:outputLabel style="display:inline-block;" value="NET MONTHLY INCOME: "/></td>
+                    <td width="28%"><h3><apex:outputText value="{!servCalc.netMonthlyIncome}"/></h3></td>
+                </tr>
+                <tr>
+                    <td><apex:outputLabel style="display:inline-block;" value="State / Area: "/></td>
+                    <td><apex:outputText value="{!servCalc.state}"/> / <apex:outputText value="{!servCalc.area}"/></td>
+                    <!-- <td><apex:outputLabel style="display:inline-block;" value="NAF: "/></td>
+                    <td><apex:outputText value="{!servCalc.naf}"/></td> -->
+                    <td><apex:outputLabel style="display:inline-block;" value="Liabilities: "/></td>
+                    <td><strong><apex:outputText value="{!servCalc.totLiabilities}"/></strong></td>
+                </tr>
+                <tr>
+                    <td><apex:outputLabel style="display:inline-block;" value="Type: "/></td>
+                    <td><apex:outputText value="{!servCalc.typeStatus}"/></td>
+                    <td><apex:outputLabel style="display:inline-block;" value="Rent/Mtge Paid: " /></td>
+                    <td width="25%">
+                        <strong><apex:outputText value="{!servCalc.rentMtgePaid}"/></strong>&nbsp;&nbsp;
+                        <apex:outputText value="(Split, total: {!servCalc.rentMtgePaidFull})" rendered="{!servCalc.rentMtgePaidSplited}" />
+                    </td>
+                </tr>
+                <tr>
+                    <td><apex:outputLabel style="display:inline-block;" value="No. of Dependents: "/></td>
+                    <td><apex:outputText value="{!servCalc.dependants}"/></td>
+                    <td><apex:outputLabel style="display:inline-block;" value="Living Expenses: "/></td>
+                    <td>
+                            <apex:outputText value="{!servCalc.livingExpenses}"/>&nbsp;&nbsp;
+                            <apex:outputText value="(Split, total: {!servCalc.livingExpensesFull})" rendered="{!servCalc.livingExpensesSplited}" />
+                    </td>
+                </tr>
+                <tr>
+                    <td><apex:outputLabel style="display:inline-block;" value="Splitting expenses?: "/></td>
+                    <td><apex:outputText value="{!servCalc.splitting}"/></td>
+                    <td><apex:outputLabel style="display:inline-block;" value="Credit Cards: "/></td>
+                    <td><apex:outputText value="{!servCalc.otherDebts}"/></td>
+                </tr>
+                <tr>
+                    <td><apex:outputLabel style="display:inline-block;" value="Partner's income: "/></td>
+                    <td><apex:outputText value="{!servCalc.partnerIncome}"/></td>
+                    <td><apex:outputLabel style="display:inline-block;" value="Buffer Amount: "/></td>
+                    <td><apex:outputText value="{!servCalc.bufferAmount}"/></td>
+                </tr>
+                <tr>
+                    <td><apex:outputLabel style="display:inline-block;" value="Net Partner's Income: "/></td>
+                    <td><apex:outputText value="{!servCalc.netPartnerIncome}"/></td>
+                    <td><apex:outputLabel style="display:inline-block;" value="Mortgage Buffer: "/></td>
+                    <td><apex:outputText value="{!servCalc.mortgageBuffer}"/></td>
+                </tr>
+                <tr>
+                    <td colspan="2" rowspan="2">&nbsp;</td>
+                    <td><apex:outputLabel style="display:inline-block;" value="Monthly Repayment (Quoting tool): "/></td>
+                    <td><apex:outputText value="{!servCalc.monthlyRepayment}"/></td>
+                </tr>
+                <tr>
+                    <td><apex:outputLabel style="display:inline-block;" value="Amount available for loan payment: "/></td>
+                    <td><h3><apex:outputText value="{!servCalc.amountAvailablePayment}"/></h3></td>
+                </tr>
+            </table>
+            <h3>Income (Monthly)</h3>
+            <table width="100%">
+                <tr>
+                    <td width="35%"><apex:outputLabel style="display:inline-block;" value="Applicant 1 Income: " for="income1"/></td>
+                    <td width="15%"><apex:outputText id="income1" value="{!servCalc.applicantIncome1}"/></td>
+                    <td width="35%"><apex:outputLabel style="display:inline-block;" value="Applicant 2 Income: " for="income2"/></td>
+                    <td width="15%"><apex:outputText id="income2" value="{!servCalc.applicantIncome2}" rendered="{!o.Application__r.No_of_People__c == 2}"/></td>
+                </tr>
+                <tr>
+                    <td><apex:outputLabel style="display:inline-block;" value="Applicant 1 Second Job: " for="secondJob1"/></td>
+                    <td><apex:outputText id="secondJob1" value="{!servCalc.applicantIncome1b}"/></td>
+                    <td><apex:outputLabel style="display:inline-block;" value="Applicant 2 Second Job: " for="secondJob2"/></td>
+                    <td><apex:outputText id="secondJob2" value="{!servCalc.applicantIncome2b}" rendered="{!o.Application__r.No_of_People__c == 2}"/></td>
+                </tr>
+                <tr>
+                    <td><apex:outputLabel style="display:inline-block;" value="Applicant 1 Other Income: " for="other1"/></td>
+                    <td><apex:outputText id="other1" value="{!servCalc.applicantOtherIncome1}"/></td>
+                    <td><apex:outputLabel style="display:inline-block;" value="Applicant 2 Other Income: " for="other2"/></td>
+                    <td><apex:outputText id="other2" value="{!servCalc.applicantOtherIncome2}" rendered="{!o.Application__r.No_of_People__c == 2}"/></td>
+                </tr>
+            </table>
+            <h3>Expenses</h3>
+            <apex:outputPanel rendered="{!AND(servCalc.loanList != null,servCalc.loanList.size>0)}">
+                <table width="100%">
+                    <tr>
+                        <td width="30%">Loan Type</td>
+                        <td width="30%">Frequency</td>
+                        <td width="30%">Amount</td>
+                    </tr>
+                    <apex:repeat value="{!servCalc.loanList}" var="a" >
+                        <tr>
+                            <td><apex:outputText value="{!a.loanType}"/></td>
+                            <td><apex:outputText value="{!a.frequency}"/></td>
+                            <td><apex:outputText value="{!a.amount}"/></td>
+                        </tr>
+                    </apex:repeat>
+                </table>
+            </apex:outputPanel>
+            <br/>
+            <strong>Rent / Board ({!servCalc.rentFrequency}) / Mortgage (Monthly)</strong>
+            <table width="100%">
+                <tr>
+                    <td width="16%">Rent:</td>
+                    <td width="16%"><apex:outputText value="{!servCalc.rentAmount}"/></td>
+                    <td width="16%">Board:</td>
+                    <td width="16%"><apex:outputText value="{!servCalc.boardAmount}"/></td>
+                    <td width="17%">Mortgage:</td>
+                    <td width="16%"><apex:outputText value="{!servCalc.mortgageAmount}"/></td>
+                </tr>
+            </table>
+            <br/>
+            <table width="100%">
+                <tr>
+                    <td colspan="3"><strong>Credit Cards</strong></td>
+                </tr>
+                <tr>
+                    <td>Issuer</td>
+                    <td>Credit Limit</td>
+                    <td>
+                        <apex:outputText value="Monthly Payment (3%)" rendered="{!NOT(OR(servCalc.lender='Liberty', servCalc.lender='Pepper', servCalc.lender='Latitude Personal', servCalc.lender='Latitude (Car Loan)', servCalc.lender='Macquarie', servCalc.lender='Green Light'))}"/>
+                        <apex:outputText value="Monthly Payment (3.8%)" rendered="{!OR(servCalc.lender='Liberty', servCalc.lender='Pepper', servCalc.lender='Macquarie', servCalc.lender='Green Light')}"/>
+                        <apex:outputText value="Monthly Payment (4.2% Latitude)" rendered="{!OR(servCalc.lender='Latitude Personal', servCalc.lender='Latitude (Car Loan)')}"/>
+                    </td>
+                </tr>
+                <apex:repeat value="{!creditCards}" var="a">
+                    <tr>
+                        <td><apex:outputField value="{!a.Issuer__c}"/></td>
+                        <td><apex:outputField value="{!a.Limit__c}"/></td>
+                        <td>
+                            <c:CreditCards lenderCode="{!servCalc.lenderCode}" isPayout="{!a.Is_Payout__c}" limit="{!a.Limit__c}"/>
+                            <!--
+							<apex:outputField value="{!a.Monthly_Payment__c}" rendered="{!AND(NOT(OR(servCalc.lender='Liberty', servCalc.lender='Pepper', servCalc.lender='Latitude Personal', servCalc.lender='Latitude (Car Loan)', servCalc.lender='Macquarie', servCalc.lender='Green Light')), a.Is_Payout__c = false)}"/>
+                            <apex:outputText value="{0, Number, Currency}"  rendered="{!AND(OR(servCalc.lender='Liberty', servCalc.lender='Pepper', servCalc.lender='Macquarie', servCalc.lender='Green Light'), a.Is_Payout__c = false)}">
+                                <apex:param value="{!a.Limit__c*0.038}" />
+                            </apex:outputText>
+                            <apex:outputText value="{0, Number, Currency}"  rendered="{!AND(OR(servCalc.lender='Latitude Personal', servCalc.lender='Latitude (Car Loan)'), a.Is_Payout__c = false)}">
+                                <apex:param value="{!a.Limit__c*0.042}" />
+                            </apex:outputText>
+                            <apex:outputText value="$ 0.00 (payout)" rendered="{!IF(a.Is_Payout__c, true, false)}"/>
+							-->
+                        </td>
+                    </tr>
+                </apex:repeat>
+                <tr>
+                    <td>&nbsp;</td>
+                    <td><apex:outputText value="TOTAL"/></td>
+                    <td>
+                        <strong>
+                            <apex:outputText value="{0, Number, Currency}" rendered="{!NOT(OR(servCalc.lender='Liberty', servCalc.lender='Pepper', servCalc.lender='Latitude Personal', servCalc.lender='Latitude (Car Loan)', servCalc.lender='Macquarie', servCalc.lender='Green Light'))}">
+                                <apex:param value="{!totalCreditCards}" />
+                            </apex:outputText>
+                            <apex:outputText value="{0, Number, Currency}" rendered="{!OR(servCalc.lender='Liberty', servCalc.lender='Pepper', servCalc.lender='Macquarie', servCalc.lender='Green Light')}">
+                                <apex:param value="{!totalCreditCards/0.03*0.038}" />
+                            </apex:outputText>
+                            <apex:outputText value="{0, Number, Currency}" rendered="{!OR(servCalc.lender='Latitude Personal', servCalc.lender='Latitude (Car Loan)')}">
+                                <apex:param value="{!totalCreditCards/0.03*0.042}" />
+                            </apex:outputText>
+                        </strong>
+                    </td>
+                </tr>
+            </table>
+            <br/>
+            <table width="100%">
+                <tr>
+                    <td colspan="4"><strong>Liberty Calculator</strong></td>
+                </tr>
+                <tr>
+                    <td width="35%">Net - Non Centrelink Income:</td>
+                    <td width="15%"><apex:outputText value="{!servCalc.netNonCentrelinkIncome}"/></td>
+                    <td width="35%">Centrelink Income:</td>
+                    <td width="15%"><apex:outputText value="{!servCalc.centrelinkIncome}"/></td>
+                </tr>
+                <tr>
+                    <td>Total Assessable Income:</td>
+                    <td><apex:outputText value="{!servCalc.totalAssesableIncome}"/></td>
+                    <td>Centrelink Income %:</td>
+                    <td><apex:outputText value="{!servCalc.centrelinkIncomePercentage}"/></td>
+                </tr>
+                <tr>
+                    <td>Annual C/L to Loannet:</td>
+                    <td><apex:outputText value="{!servCalc.annualCLToLoannet}"/></td>
+                    <td colspan="2">&nbsp;</td>
+                </tr>
+            </table>
+        </apex:outputPanel>
+    </div>
+</apex:page>

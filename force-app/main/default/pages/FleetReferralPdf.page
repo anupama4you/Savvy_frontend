@@ -1,0 +1,186 @@
+<apex:page standardController="Custom_Opportunity__c" extensions="FleetReferralExtension" renderAs="pdf">
+    <apex:variable value="{!Custom_Opportunity__c}" var="o" />
+    <apex:variable value="{!Custom_Opportunity__c.VD_Worksheet__r}" var="ws" />
+    <center><h3>Savvy {!ws.Type_of_Process__c} Form - {!o.Name}</h3></center>
+    <p style="text-align:right;">{!currentTime}</p>
+    <table style="border-collapse: collapse;" width="100%">
+        <tr style="padding: 5px 5px 5px 10px;" width="100%">
+            <td style="border: 1px solid #e0e0e0;padding: 5px 5px 5px 10px;" width="30%">
+                    <apex:outputLabel style="display:inline-block;" value="Consultant details: " for="conDel"/>
+            </td>
+            <td style="border: 1px solid #e0e0e0;padding: 5px 5px 5px 10px;" width="70%">
+                    <apex:outputField id="conDel" value="{!o.Owner_Name__c}"/>
+            </td>
+        </tr>
+        <tr style="padding: 5px 5px 5px 10px;" width="100%">
+            <td style="border: 1px solid #e0e0e0;padding: 5px 5px 5px 10px;" width="30%">
+                    <apex:outputLabel style="display:inline-block;" value="First Name: " for="firstName"/>
+            </td>
+            <td style="border: 1px solid #e0e0e0;padding: 5px 5px 5px 10px;" width="70%">
+                    <apex:outputField id="firstName" value="{!o.First_Name__c}"/>
+            </td>
+        </tr>
+        <tr style="padding: 5px 5px 5px 10px;" width="100%">
+            <td style="border: 1px solid #e0e0e0;padding: 5px 5px 5px 10px;" width="30%">
+                    <apex:outputLabel style="display:inline-block;" value="Last Name: " for="lastName"/>
+            </td>
+            <td style="border: 1px solid #e0e0e0;padding: 5px 5px 5px 10px;" width="70%">
+                    <apex:outputField id="lastName" value="{!o.Last_Name__c}"/>
+            </td>
+        </tr>
+        <tr style="padding: 5px 5px 5px 10px;" width="100%">
+            <td style="border: 1px solid #e0e0e0;padding: 5px 5px 5px 10px;" width="30%">
+                    <apex:outputLabel style="display:inline-block;" value="Client Address: " for="clientAddress"/>
+            </td>
+            <td style="border: 1px solid #e0e0e0;padding: 5px 5px 5px 10px;" width="70%">
+                <!-- <apex:outputField id="clientAddress" value="{!o.Address__c}"/> -->
+                <apex:outputText value="{!customerAdrress}"/>
+            </td>
+        </tr>
+        <tr style="padding: 5px 5px 5px 10px;" width="100%">
+            <td style="border: 1px solid #e0e0e0;padding: 5px 5px 5px 10px;" width="30%">
+                    <apex:outputLabel style="display:inline-block;" value="Mobile Number: " for="contactNumber"/>
+            </td>
+            <td style="border: 1px solid #e0e0e0;padding: 5px 5px 5px 10px;" width="70%">
+                    <apex:outputField id="contactNumber" value="{!o.Mobile_Number__c}"/>
+            </td>
+        </tr>
+        <tr style="padding: 5px 5px 5px 10px;" width="100%">
+            <td style="border: 1px solid #e0e0e0;padding: 5px 5px 5px 10px;" width="30%">
+                    <apex:outputLabel style="display:inline-block;" value="Home Phone Number: " for="homePhoneNumber"/>
+            </td>
+            <td style="border: 1px solid #e0e0e0;padding: 5px 5px 5px 10px;" width="70%">
+                    <apex:outputField id="homePhoneNumber" value="{!o.Home_Phone__c}"/>
+            </td>
+        </tr>
+        <tr style="padding: 5px 5px 5px 10px;" width="100%">
+            <td style="border: 1px solid #e0e0e0;padding: 5px 5px 5px 10px;" width="30%">
+                    <apex:outputLabel style="display:inline-block;" value="Work Phone Number: " for="workPhoneNumber"/>
+            </td>
+            <td style="border: 1px solid #e0e0e0;padding: 5px 5px 5px 10px;" width="70%">
+                    <apex:outputField id="workPhoneNumber" value="{!o.Work_Phone__c}"/>
+            </td>
+        </tr>
+        <tr style="padding: 5px 5px 5px 10px;" width="100%">
+            <td style="border: 1px solid #e0e0e0;padding: 5px 5px 5px 10px;" width="30%">
+                    <apex:outputLabel style="display:inline-block;" value="Email: " for="emailAddress"/>
+            </td>
+            <td style="border: 1px solid #e0e0e0;padding: 5px 5px 5px 10px;" width="70%">
+                    <apex:outputField id="emailAddress" value="{!o.Email_Address__c}"/>
+            </td>
+        </tr>
+        <tr style="padding: 5px 5px 5px 10px; display: {!IF(ws.Type_of_Process__c == 'New Car - Demo', '','none')};" width="100%">
+            <td style="border: 1px solid #e0e0e0;padding: 5px 5px 5px 10px;" width="30%">
+                    <apex:outputLabel style="display:inline-block;" value="Trade In: " for="tradeIn"/>
+            </td>
+            <td style="border: 1px solid #e0e0e0;padding: 5px 5px 5px 10px;" width="70%">
+                    <apex:outputField id="tradeIn" value="{!o.Is_Trade_In__c}"/>
+            </td>
+        </tr>
+    </table>
+    
+    <table style="border-collapse: collapse;" width="100%">
+        <tr style="padding: 5px 5px 5px 10px;" width="100%">
+            <td style="border: 1px solid #e0e0e0;padding: 5px 5px 5px 10px;" width="30%">
+                    <apex:outputLabel style="display:inline-block;" value="New/Used: " for="usedNew"/>
+            </td>
+            <td style="border: 1px solid #e0e0e0;padding: 5px 5px 5px 10px;" width="70%">
+                    <apex:outputField id="usedNew" value="{!o.New_Used__c}"/>
+            </td>
+        </tr>
+        <tr style="padding: 5px 5px 5px 10px;" width="100%">
+            <td style="border: 1px solid #e0e0e0;padding: 5px 5px 5px 10px;" width="30%">
+                    <apex:outputLabel style="display:inline-block;" value="Vehicle Details (if known): " for="vehicleDetails"/>
+            </td>
+            <td style="border: 1px solid #e0e0e0;padding: 5px 5px 5px 10px;" width="70%">
+                    <apex:outputField id="vehicleDetails" value="{!o.Vehicle_Details__c}"/>
+            </td>
+        </tr>
+    </table>
+    <apex:outputPanel rendered="{!ws.Type_of_Process__c == 'Fleet Referral'}">    
+        <table style="border-collapse: collapse;" width="100%">
+            <tr style="padding: 5px 5px 5px 10px;" width="100%">
+                <td style="border: 1px solid #e0e0e0;padding: 5px 5px 5px 10px;" width="30%">
+                        <apex:outputLabel style="display:inline-block;" value="Lender approved with: " for="lenderApproval"/>
+                </td>
+                <td style="border: 1px solid #e0e0e0;padding: 5px 5px 5px 10px;" width="70%">
+                        <apex:outputField id="lenderApproval" value="{!o.Lender_Approved__c}"/>
+                </td>
+            </tr>
+            <tr style="padding: 5px 5px 5px 10px;" width="100%">
+                <td style="border: 1px solid #e0e0e0;padding: 5px 5px 5px 10px;" width="30%">
+                        <apex:outputLabel style="display:inline-block;" value="Lender Pre-Approved Amount: " for="preApproved"/>
+                </td>
+                <td style="border: 1px solid #e0e0e0;padding: 5px 5px 5px 10px;" width="70%">
+                        <apex:outputField id="preApproved" value="{!o.Pre_Approved_Amount__c}"/>
+                </td>
+            </tr>
+            <tr style="padding: 5px 5px 5px 10px;" width="100%">
+                <td style="border: 1px solid #e0e0e0;padding: 5px 5px 5px 10px;" width="30%">
+                        <apex:outputLabel style="display:inline-block;" value="Lender Pre-Approved Maximum Age of Vehicle: " for="preApprovedAge"/>
+                </td>
+                <td style="border: 1px solid #e0e0e0;padding: 5px 5px 5px 10px;" width="70%">
+                        <apex:outputField id="preApprovedAge" value="{!o.Pre_Approved_Vehicle_Age__c}"/>
+                </td>
+            </tr>
+            <tr style="padding: 5px 5px 5px 10px;" width="100%">
+                <td style="border: 1px solid #e0e0e0;padding: 5px 5px 5px 10px;" width="30%">
+                        <apex:outputLabel style="display:inline-block;" value="Client Deposit Amount Required: " for="requiredDeposit"/>
+                </td>
+                <td style="border: 1px solid #e0e0e0;padding: 5px 5px 5px 10px;" width="70%">
+                        <apex:outputField id="requiredDeposit" value="{!o.Required_Client_Deposit__c}"/>
+                </td>
+            </tr>
+            <tr style="padding: 5px 5px 5px 10px;" width="100%">
+                <td style="border: 1px solid #e0e0e0;padding: 5px 5px 5px 10px;" width="30%">
+                        <apex:outputLabel style="display:inline-block;" value="Client Budget (Range): " for="clientBudget"/>
+                </td>
+                <td style="border: 1px solid #e0e0e0;padding: 5px 5px 5px 10px;" width="70%">
+                        <apex:outputField id="clientBudget" value="{!o.Client_Budget__c}"/>
+                </td>
+            </tr>
+            <tr style="padding: 5px 5px 5px 10px;" width="100%">
+                <td style="border: 1px solid #e0e0e0;padding: 5px 5px 5px 10px;" width="30%">
+                        <apex:outputLabel style="display:inline-block;" value="Payout Details (for Trade-in): " for="payoutDetails"/>
+                </td>
+                <td style="border: 1px solid #e0e0e0;padding: 5px 5px 5px 10px;" width="70%">
+                        <apex:outputField id="payoutDetails" value="{!o.Payout_Details__c}"/>
+                </td>
+            </tr>
+            <tr style="padding: 5px 5px 5px 10px;" width="100%">
+                <td style="border: 1px solid #e0e0e0;padding: 5px 5px 5px 10px;" width="30%">
+                        <apex:outputLabel style="display:inline-block;" value="Trade In Details: " for="tradeinDetails"/>
+                </td>
+                <td style="border: 1px solid #e0e0e0;padding: 5px 5px 5px 10px;" width="70%">
+                        <apex:outputField id="tradeinDetails" value="{!o.Trade_in_Details__c}"/>
+                </td>
+            </tr>
+            <tr style="padding: 5px 5px 5px 10px;" width="100%">
+                <td style="border: 1px solid #e0e0e0;padding: 5px 5px 5px 10px;" width="30%">
+                        <apex:outputLabel style="display:inline-block;" value="Dealer Contacted (if applicable): " for="dealerContact"/>
+                </td>
+                <td style="border: 1px solid #e0e0e0;padding: 5px 5px 5px 10px;" width="70%">
+                        <apex:outputField id="dealerContact" value="{!o.Dealer_Contacted__c}"/>
+                </td>
+            </tr>
+            <tr style="padding: 5px 5px 5px 10px;" width="100%">
+                <td style="border: 1px solid #e0e0e0;padding: 5px 5px 5px 10px;" width="30%">
+                        <apex:outputLabel style="display:inline-block;" value="Special Conditions (LTV etc): " for="specialCondition"/>
+                </td>
+                <td style="border: 1px solid #e0e0e0;padding: 5px 5px 5px 10px;" width="70%">
+                        <apex:outputField id="specialCondition" value="{!o.Special_Conditions__c}"/>
+                </td>
+            </tr>
+        </table>
+    </apex:outputPanel>
+    <table style="border-collapse: collapse;" width="100%">
+        <tr style="padding: 5px 5px 5px 10px;" width="100%">
+            <td style="border: 1px solid #e0e0e0;padding: 5px 5px 5px 10px;" width="30%">
+                    <apex:outputLabel style="display:inline-block;" value="Notes: " for="VDNotes"/>
+            </td>
+            <td style="border: 1px solid #e0e0e0;padding: 5px 5px 5px 10px;" width="70%">
+                    <apex:outputField id="VDNotes" value="{!o.VD_Notes__c}"/>
+            </td>
+        </tr>
+    </table>
+</apex:page>

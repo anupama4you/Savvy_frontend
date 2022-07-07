@@ -1,0 +1,202 @@
+<apex:component layout="block" id="PerformanceTable">
+    <apex:attribute name="report" type="PerformanceReportResult" description="Report" required="true"/>
+    <p>report.isLeadCount: [{!report.isLeadCount}]</p>
+    <apex:pageBlock mode="Detail" id="tableBlock">
+        <apex:pageBlockTable value="{!report.data}" var="d" id="tblData" rowClasses="rowOne, rowTwo">
+            <apex:column value="{!d.state}" footerClass="numbers">
+                <apex:facet name="header">State</apex:facet>
+                <apex:facet name="footer" >
+                    <apex:outputLabel value="Totals"/>
+                </apex:facet>
+            </apex:column>
+            <apex:column value="{!d.ownerName}">
+                <apex:facet name="header">Consultant Name</apex:facet>
+            </apex:column>
+            <apex:column value="{!d.totalLeads}" styleClass="numbers" headerClass="numbers" footerClass="numbers" rendered="{!report.isLeadCount}">
+              <apex:facet name="header">Total
+                <br/>Leads</apex:facet>
+              <apex:facet name="footer">
+                <apex:outputText value="{!report.totalLeads}"></apex:outputText>
+              </apex:facet>
+            </apex:column>
+            <apex:column value="{!d.totalOpps}" styleClass="numbers" headerClass="numbers" footerClass="numbers" rendered="{!NOT(report.isLeadCount)}">
+              <apex:facet name="header">Total <br/>Leads</apex:facet>
+              <apex:facet name="footer">
+                <apex:outputText value="{!report.totalOpps}"></apex:outputText>
+              </apex:facet>
+            </apex:column>
+            <apex:column value="{!d.currentPreApprals}" styleClass="numbers" headerClass="numbers"  footerClass="numbers">
+                <apex:facet name="header">Pre-Approved</apex:facet>
+                <apex:facet name="footer">
+                    <apex:outputLabel value="{!report.currentPreApprals}" />
+                </apex:facet>
+            </apex:column>
+            <apex:column styleClass="moneyAndPercentage" headerClass="numbers" footerClass="moneyAndPercentage" rendered="{!NOT(report.isInsSalesReport)}">
+                <apex:facet name="header">Budget</apex:facet>
+                <apex:outputText value="{0, number, $##,###,##0.00}">
+                  <apex:param value="{!d.budget}" />
+                </apex:outputText>
+                <apex:facet name="footer">
+                    <apex:outputText value="{0, number, $##,###,##0.00}">
+                        <apex:param value="{!report.budget}" />
+                    </apex:outputText>
+                </apex:facet>
+            </apex:column>
+            <apex:column value="{!d.totalLoanSales}" styleClass="numbers" headerClass="numbers" footerClass="numbers">
+                <apex:facet name="header">No of Loan<br/> sales</apex:facet>
+                <apex:facet name="footer">
+                    <apex:outputLabel value="{!report.totalLoanSales}" />
+                </apex:facet>
+            </apex:column>
+            <apex:column styleClass="moneyAndPercentage" headerClass="numbers" footerClass="moneyAndPercentage" rendered="{!NOT(report.isInsSalesReport)}">
+                <apex:facet name="header">Commission</apex:facet>
+                <apex:outputText value="{0, number, $##,###,##0.00}">
+                  <apex:param value="{!d.commission}" />
+                </apex:outputText>
+                <apex:facet name="footer">
+                    <apex:outputText value="{0, number, $##,###,##0.00}">
+                        <apex:param value="{!report.commission}" />
+                    </apex:outputText>
+                </apex:facet>
+            </apex:column>
+            <apex:column styleClass="moneyAndPercentage" headerClass="numbers" footerClass="moneyAndPercentage" rendered="{!report.isInsSalesReport}">
+                <apex:facet name="header">Ins.<br/> Commission</apex:facet>
+                <apex:outputText value="{0, number, $##,###,##0.00}">
+                  <apex:param value="{!d.commission}" />
+                </apex:outputText>
+                <apex:facet name="footer">
+                    <apex:outputText value="{0, number, $##,###,##0.00}">
+                        <apex:param value="{!report.commission}" />
+                    </apex:outputText>
+                </apex:facet>
+            </apex:column>
+            <apex:column rendered="{!AND(report.displayInsurances,NOT(report.isInsSalesReport))}" styleClass="moneyAndPercentage" headerClass="numbers" footerClass="moneyAndPercentage">
+                <apex:facet name="header">% of Budget</apex:facet>
+                <apex:outputText value="{0, number, 0.00}%">
+                  <apex:param value="{!d.budgetConvertion}" />
+                </apex:outputText>
+                <apex:facet name="footer">
+                    <apex:outputLabel value="{!report.BudgetConvertion}%"/>
+                </apex:facet>
+            </apex:column>
+            <apex:column styleClass="moneyAndPercentage shaded-column" headerClass="numbers" footerClass="moneyAndPercentage text-italic">
+                <apex:facet name="header">Leads in <br/> Pipeline</apex:facet><i>
+                <apex:outputText value="{0, number}">
+                    <apex:param value="{!d.totalOppsPipeline}" />
+                </apex:outputText></i>
+                <apex:facet name="footer">
+                    <apex:outputText value="{0, number}">
+                        <apex:param value="{!report.totalOppsPipeline}" />
+                    </apex:outputText>
+                </apex:facet>
+            </apex:column>
+            <apex:column styleClass="moneyAndPercentage shaded-column" headerClass="numbers" footerClass="moneyAndPercentage text-italic">
+                <apex:facet name="header">Pipeline</apex:facet>
+                <i>
+                    <apex:outputText value="{0, number, $##,###,##0.00}">
+                        <apex:param value="{!d.totalPipeline}" />
+                    </apex:outputText>
+                </i>
+                <apex:facet name="footer">
+                    <apex:outputText value="{0, number, $##,###,##0.00}">
+                        <apex:param value="{!report.totalPipeline}" />
+                    </apex:outputText>
+                </apex:facet>
+            </apex:column>
+            <apex:column styleClass="moneyAndPercentage shaded-column" headerClass="numbers" footerClass="moneyAndPercentage text-italic">
+                <apex:facet name="header">Projection</apex:facet><i>
+                <apex:outputText value="{0, number, $##,###,##0.00}">
+                    <apex:param value="{!d.calcProjection}" />
+                </apex:outputText></i>
+                <apex:facet name="footer">
+                    <apex:outputText value="{0, number, $##,###,##0.00}">
+                        <apex:param value="{!report.calcProjection}" />
+                    </apex:outputText>
+                </apex:facet>
+            </apex:column>
+            <apex:column styleClass="moneyAndPercentage" headerClass="numbers" footerClass="moneyAndPercentage">
+                <apex:facet name="header">Total NAF</apex:facet>
+                <apex:outputText value="{0, number, $##,###,##0.00}">
+                  <apex:param value="{!d.totalNAF}" />
+                </apex:outputText>
+                <apex:facet name="footer">
+                    <apex:outputText value="{0, number, $##,###,##0.00}">
+                        <apex:param value="{!report.totalNAF}" />
+                    </apex:outputText>
+                </apex:facet>
+            </apex:column>
+            <apex:column styleClass="moneyAndPercentage" headerClass="numbers" footerClass="moneyAndPercentage">
+                <apex:facet name="header">Lead <br/>Conversion</apex:facet>
+                <apex:outputText value="{0, number, 0.00}%">
+                    <apex:param value="{!d.oppConvertion}" />
+                </apex:outputText>
+                <apex:facet name="footer">
+                    <apex:outputLabel value="{!report.oppConvertion}%" />
+                </apex:facet>
+            </apex:column>
+            <apex:column value="{!d.totalComp}" rendered="{!report.displayInsurances}" styleClass="numbers" headerClass="numbers" footerClass="numbers">
+                <apex:facet name="header"># of comp</apex:facet>
+                <apex:facet name="footer">
+                    <apex:outputLabel value="{!report.totalComp}" />
+                </apex:facet>
+            </apex:column>
+            <apex:column rendered="{!report.displayInsurances}" styleClass="moneyAndPercentage" headerClass="numbers" footerClass="moneyAndPercentage">
+                <apex:facet name="header">% of comp</apex:facet>
+                <apex:outputText value="{0, number, 0.00}%">
+                  <apex:param value="{!d.compConvertion}" />
+                </apex:outputText>
+                <apex:facet name="footer">
+                    <apex:outputText value="{0, number, 0.00}%">
+                      <apex:param value="{!report.compConvertion}" />
+                    </apex:outputText>
+                </apex:facet>
+            </apex:column>
+            <apex:column value="{!d.totalInsurance}" rendered="{!report.displayInsurances}" styleClass="numbers" headerClass="numbers" footerClass="numbers">
+                <apex:facet name="header"># of Insurance</apex:facet>
+                <apex:facet name="footer">
+                    <apex:outputLabel value="{!report.totalInsurance}" />
+                </apex:facet>
+            </apex:column>
+            <apex:column rendered="{!report.displayInsurances}" styleClass="moneyAndPercentage" headerClass="numbers" footerClass="moneyAndPercentage">
+                <apex:facet name="header">% of Insurance</apex:facet>
+                <apex:outputText value="{0, number, 0.00}%">
+                  <apex:param value="{!d.insuranceConvertion}" />
+                </apex:outputText>
+                <apex:facet name="footer">
+                    <apex:outputText value="{0, number, 0.00}%">
+                      <apex:param value="{!report.insuranceConvertion}" />
+                    </apex:outputText>
+                </apex:facet>
+            </apex:column>
+            <apex:column value="{!d.totalPreApprals}" styleClass="numbers" headerClass="numbers" footerClass="numbers">
+                <apex:facet name="header">Total PA <br/>for Month</apex:facet>
+                <apex:facet name="footer">
+                    <apex:outputLabel value="{!report.totalPreApprals}" />
+                </apex:facet>
+            </apex:column>
+            <apex:column rendered="{!report.isSalesReport}" value="{!d.totalPreAppVd}" styleClass="numbers" headerClass="numbers" footerClass="numbers">
+                <apex:facet name="header">VD Referral</apex:facet>
+                <apex:facet name="footer">
+                    <apex:outputLabel value="{!report.totalPreAppVd}" />
+                </apex:facet>
+            </apex:column>
+            <!--<apex:column rendered="{!report.isSalesReport}" value="{!d.totalPreAppVd}" styleClass="numbers" headerClass="numbers" footerClass="numbers">
+                <apex:facet name="header">Total VD <br/>Referrals</apex:facet>
+                <apex:facet name="footer">
+                    <apex:outputLabel value="{!report.totalPreAppVd}" />
+                </apex:facet>
+            </apex:column>
+            <apex:column rendered="{!report.isSalesReport}" styleClass="moneyAndPercentage" headerClass="numbers" footerClass="moneyAndPercentage">
+                <apex:facet name="header">% PA <br/>into VD</apex:facet>
+                <apex:outputText value="{0, number, 0.00}%">
+                  <apex:param value="{!d.preAppVDConvertion}" />
+                </apex:outputText>
+                <apex:facet name="footer">
+                    <apex:outputText value="{0, number, 0.00}%">
+                      <apex:param value="{!report.preAppVDConvertion}" />
+                    </apex:outputText>
+                </apex:facet>
+            </apex:column>-->
+        </apex:pageBlockTable>
+    </apex:pageBlock>
+</apex:component>

@@ -1,0 +1,282 @@
+<apex:page controller="FixCostReport" showHeader="false" sidebar="false" standardStylesheets="true" cache="true"  >
+    <style type="text/css">
+      table {
+    border-collapse: collapse;
+    width: 10%;
+}
+
+th, td {
+    text-align: left;
+    padding: 8px;
+    border: 1px solid black;
+}
+
+tr:nth-child(even){background-color: #FFFFFF}
+        /*
+th {
+    background-color: white;
+    color: black;
+        }*/
+    </style>
+    <apex:form id="ohh" >
+        <apex:pageBlock >        
+            
+    <apex:sectionHeader title="Fix Cost Report" />
+      
+      <!--  <apex:pageBlockSectionItem > -->
+                <apex:outputLabel value="Month" />
+        &nbsp;&nbsp;
+                <apex:actionRegion >
+                    <apex:selectList value="{!Month}" size="1">                        
+                        <apex:selectOption itemValue="1" itemLabel="January" />
+                        <apex:selectOption itemValue="2" itemLabel="February" />
+                        <apex:selectOption itemValue="3" itemLabel="March" />
+                        <apex:selectOption itemValue="4" itemLabel="April" />
+                        <apex:selectOption itemValue="5" itemLabel="May" />
+                        <apex:selectOption itemValue="6" itemLabel="June" />
+                        <apex:selectOption itemValue="7" itemLabel="July" />
+                        <apex:selectOption itemValue="8" itemLabel="August" />
+                        <apex:selectOption itemValue="9" itemLabel="September" />
+                        <apex:selectOption itemValue="10" itemLabel="October" />
+                        <apex:selectOption itemValue="11" itemLabel="November" />
+                        <apex:selectOption itemValue="12" itemLabel="December" />
+                        <apex:actionSupport event="onchange" reRender="ohh" action="{!getMyConsultants}" status="stMo" />
+                    </apex:selectList>
+                    &nbsp;&nbsp;&nbsp;&nbsp;
+                    <apex:actionStatus id="stMo" startText="(processing...)" />
+                </apex:actionRegion>      
+                <apex:outputLabel value="Year" />
+                <apex:actionRegion >
+                    <apex:selectList value="{!Year}" size="1">
+                        <apex:selectOptions value="{!Years}" />
+                        <apex:actionSupport event="onchange" reRender="ohh" action="{!getMyConsultants}" status="stYe"/>
+                    </apex:selectList>
+                    &nbsp;&nbsp;&nbsp;&nbsp;
+                    <apex:actionStatus id="stYe" startText="(processing...)" />
+                </apex:actionRegion>   
+             &nbsp;&nbsp;&nbsp;&nbsp;
+            <apex:outputLabel value="Month" />
+        &nbsp;&nbsp;
+                <apex:actionRegion >
+                    <apex:selectList value="{!Month1}" size="1">                        
+                        <apex:selectOption itemValue="1" itemLabel="January" />
+                        <apex:selectOption itemValue="2" itemLabel="February" />
+                        <apex:selectOption itemValue="3" itemLabel="March" />
+                        <apex:selectOption itemValue="4" itemLabel="April" />
+                        <apex:selectOption itemValue="5" itemLabel="May" />
+                        <apex:selectOption itemValue="6" itemLabel="June" />
+                        <apex:selectOption itemValue="7" itemLabel="July" />
+                        <apex:selectOption itemValue="8" itemLabel="August" />
+                        <apex:selectOption itemValue="9" itemLabel="September" />
+                        <apex:selectOption itemValue="10" itemLabel="October" />
+                        <apex:selectOption itemValue="11" itemLabel="November" />
+                        <apex:selectOption itemValue="12" itemLabel="December" />
+                        <apex:actionSupport event="onchange" reRender="ohh" action="{!getMyConsultants}" status="stMo2" />
+                    </apex:selectList>
+                    &nbsp;&nbsp;&nbsp;&nbsp;
+                    <apex:actionStatus id="stMo2" startText="(processing...)" />
+                </apex:actionRegion>      
+                <apex:outputLabel value="Year" />
+                <apex:actionRegion >
+                    <apex:selectList value="{!Year1}" size="1">
+                        <apex:selectOptions value="{!Years}" />
+                        <apex:actionSupport event="onchange" reRender="ohh" action="{!getMyConsultants}" status="stYe2"/>
+                    </apex:selectList>
+                    &nbsp;&nbsp;&nbsp;&nbsp;
+                    <apex:actionStatus id="stYe2" startText="(processing...)" />
+                </apex:actionRegion> 
+
+				            
+         <!--   </apex:pageBlockSectionItem> -->
+        <br> <br>
+     <!--   <apex:pageBlockTable value="{!dataList}" var="k" id="oppLst"> -->
+            <apex:outputPanel id="main" > 
+        <table style="rowOne, rowTwo" id="oppLst11" > 
+            <tr> 
+                <th>First name:</th>
+                <apex:repeat value="{!datainPage}" var="r">
+                    <td>{!r.FirstName}  </td>
+                </apex:repeat>                
+            </tr>
+            <tr> 
+                <th>Last name:</th>
+                <apex:repeat value="{!datainPage}" var="r">
+                    <td>{!r.LastName}</td>
+                </apex:repeat>                
+            </tr>
+            <tr> 
+                <th>SalesForce License:</th>
+                <apex:repeat value="{!datainPage}" var="r">
+                    <td>{!r.EsigLivLic}</td>
+                </apex:repeat>                
+            </tr>
+            <tr> 
+                <th>E-sign Live License:</th>
+                <apex:repeat value="{!datainPage}" var="r">
+                    <td>{!r.SalForLic}</td>
+                </apex:repeat>                
+            </tr>
+            <tr> 
+                <th>Rent:</th>
+                <apex:repeat value="{!datainPage}" var="r">
+                    <td>{!r.Rent}</td>
+                </apex:repeat>                
+            </tr>
+            <tr> 
+                <th>Admin:</th>
+                <apex:repeat value="{!datainPage}" var="r">
+                    <td>{!r.Admin}</td>
+                </apex:repeat>                
+            </tr>
+            <tr> 
+                <th>Processing:</th>
+                <apex:repeat value="{!datainPage}" var="r">
+                    <td>{!r.Processing}</td>
+                </apex:repeat>                
+            </tr>
+            <tr> 
+                <th>Google Email:</th>
+                <apex:repeat value="{!datainPage}" var="r">
+                    <td>{!r.GooEma}</td>
+                </apex:repeat>                
+            </tr>
+            <tr> 
+                <th>Base Salary:</th>
+                <apex:repeat value="{!datainPage}" var="r">
+                    <td>{!r.BasSal}</td>
+                </apex:repeat>                
+            </tr>
+            <tr> 
+                <th>Super:</th>
+                <apex:repeat value="{!datainPage}" var="r">
+                    <td>{!r.Sup}</td>
+                </apex:repeat>                
+            </tr>
+            <tr> 
+                <th>Internet and phone:</th>
+                <apex:repeat value="{!datainPage}" var="r">
+                    <td>{!r.IntPhon}</td>
+                </apex:repeat>                
+            </tr>
+            <tr> 
+                <th>Dialer LIcense:</th>
+                <apex:repeat value="{!datainPage}" var="r">
+                    <td>{!r.DialLic}</td>
+                </apex:repeat>                
+            </tr>
+            <tr> 
+                <th>Gamification Software:</th>
+                <apex:repeat value="{!datainPage}" var="r">
+                    <td>{!r.GamSoft}</td>
+                </apex:repeat>                
+            </tr>           
+           
+            <tr> 
+                <th>Advertising:</th>
+                <apex:repeat value="{!datainPage}" var="r">
+                    <td>{!r.Advert}</td>
+                </apex:repeat>                
+            </tr>
+            <tr> 
+                <th>Electricity:</th>
+                <apex:repeat value="{!datainPage}" var="r">
+                    <td>{!r.Electric}</td>
+                </apex:repeat>                
+            </tr>
+            <tr> 
+                <th>PPSR:</th>
+                <apex:repeat value="{!datainPage}" var="r">
+                    <td>{!r.Ppsr}</td>
+                </apex:repeat>                
+            </tr>
+            <tr> 
+                <th>VEDA:</th>
+                <apex:repeat value="{!datainPage}" var="r">
+                    <td>{!r.Veda}</td>
+                </apex:repeat>                
+            </tr>
+            <tr> 
+                <th>Address Finder:</th>
+                <apex:repeat value="{!datainPage}" var="r">
+                    <td>{!r.Addfind}</td>
+                </apex:repeat>                
+            </tr>
+            <tr> 
+                <th>Bank Statement:</th>
+                <apex:repeat value="{!datainPage}" var="r">
+                    <td>{!r.BankStat}</td>
+                </apex:repeat>                
+            </tr>
+            <tr> 
+                <th>Printing:</th>
+                <apex:repeat value="{!datainPage}" var="r">
+                    <td>{!r.Print}</td>
+                </apex:repeat>                
+            </tr>
+            <tr> 
+                <th>SMS Magic:</th>
+                <apex:repeat value="{!datainPage}" var="r">
+                    <td>{!r.Smsmag}</td>
+                </apex:repeat>                
+            </tr>
+            <tr> 
+                <th>Total Fixed Cost:</th>
+                <apex:repeat value="{!datainPage}" var="r">
+                    <td>{!r.TotFix}</td>
+                </apex:repeat>                
+            </tr>
+            <tr> 
+                <th>Commission Est:</th>
+                <apex:repeat value="{!datainPage}" var="r">
+                    <td>{!r.ComEst}</td>
+                </apex:repeat>                
+            </tr>
+            <tr> 
+                <th>Super on Commission:</th>
+                <apex:repeat value="{!datainPage}" var="r">
+                    <td>{!r.SupCom}</td>
+                </apex:repeat>                
+            </tr>
+             <tr> 
+                <th>Sum Leads:</th>
+                <apex:repeat value="{!datainPage}" var="r">
+                    <td>{!r.SumLead}</td>
+                </apex:repeat>                
+            </tr>            
+            <tr> 
+                <th>Total Variable cost:</th>
+                <apex:repeat value="{!datainPage}" var="r">
+                    <td>{!r.TotVari}</td>
+                </apex:repeat>                
+            </tr> 
+            <tr> 
+               
+                <th>Total Commision </th>                
+                <apex:repeat value="{!datainPage}" var="r"  >                     
+                    <td>{!r.totAmt}</td>                          
+                </apex:repeat>                      
+            </tr>            
+            <tr> 
+                <th>Total Cost:</th>               
+               <apex:repeat value="{!datainPage}" var="r"  >                     
+                    <td> <apex:outputText value="{0, number, $##,###,###.00}">
+                      <apex:param value="{!r.totCost}"  />
+                    </apex:outputText> 
+                     <!--  <td> {!r.totCost}           
+                   
+                   </td> -->                        
+                </apex:repeat>                     
+            </tr>
+            <tr> 
+                <th>Result:</th>
+                <apex:repeat value="{!datainPage}" var="r"  > 
+                    <td>{!r.result}</td>
+                </apex:repeat>               
+            </tr>
+        </table>
+              
+  <!--   </apex:pageBlockTable> -->
+    </apex:outputPanel> 
+            </apex:pageBlock>
+        </apex:form>
+</apex:page>

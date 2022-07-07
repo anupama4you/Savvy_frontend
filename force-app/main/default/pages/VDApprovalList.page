@@ -1,0 +1,63 @@
+<apex:page controller="VDApprovalSummaryExtension" cache="false" readOnly="true" title="VD Approval List" showHeader="true">
+	<style type='text/css'>
+        .captionTable {
+            font-size: 16px;
+            font-weight: bold;
+        }
+        .footerTable {
+        	font-size: 14px;
+            font-weight: bold;
+        }
+        .odd {
+        	background-color: #e7ebee;
+        }
+        .even {
+        	
+        }
+        .tableClass {
+            background-color: #ffffff;	
+        }
+    </style>
+    <apex:pageBlock title="Opportunity: {!activeVDStatus}">
+        <apex:pageBlockSection columns="1">
+            <apex:pageBlockSection columns="1">
+                <apex:dataTable value="{!dataList}" var="d" id="myOppSub" rowClasses="odd,even" 
+                                styleClass="tableClass"  cellpadding="4" width="100%" align="center"
+                                captionClass="captionTable" footerClass="footerTable" cellspacing="4">
+                    <apex:facet name="caption">{!IF(groupType == 0,'My','Other')} processes</apex:facet>
+                    <apex:facet name="footer">Total {!dataList.size}</apex:facet>
+                    <apex:column headerClass=" zen-deemphasize" width="8%">
+                        <apex:facet name="header">Actions</apex:facet>
+                        <apex:outputLink value="/apex/VDApprovalDetail?id={!d.o.Id}" title="Manage / Decline"> <apex:image url="{!$Resource.ApprovalIcon}" width="16" height="16" /><apex:image url="{!$Resource.RejectionIcon}" width="16" height="16" /></apex:outputLink>&nbsp;&nbsp;
+                        &nbsp;&nbsp;
+                        <apex:outputLink value="/apex/VDReassignmentProcess?id={!d.o.Id}" title="Reassign" rendered="{!isVDManager}"><apex:image url="{!$Resource.ReassignIcon}" width="16" height="16" /></apex:outputLink>
+                    </apex:column>
+                    <apex:column width="12%">
+                        <apex:facet name="header">Name</apex:facet>
+                        <apex:outputLink value="/{!d.o.Id}"><apex:outputText value="{!d.o.name}"/></apex:outputLink>
+                    </apex:column>
+                    <apex:column width="12%">
+                        <apex:facet name="header">Opportunity Owner</apex:facet>
+                        <apex:outputLink value="/{!d.o.Owner.Id}" target="_blank"><apex:outputText value="{!d.o.Owner.Name}"/></apex:outputLink>
+                    </apex:column>
+                    <apex:column width="14%">
+                        <apex:facet name="header">Opportunity Status</apex:facet>
+                        <apex:outputText value="{!d.o.Status__c}"/>
+                    </apex:column>
+                    <apex:column width="12%">
+                        <apex:facet name="header">VD Status</apex:facet>
+                        <apex:outputText value="{!d.o.VD_Status_Process__c}"/>
+                    </apex:column>
+                    <apex:column width="30%">
+                        <apex:facet name="header">VD Notes</apex:facet>
+                        <apex:outputText value="{!d.o.VD_Notes__c}"/>
+                    </apex:column>
+                    <apex:column width="12%">
+                        <apex:facet name="header">VD Owner</apex:facet>
+                        <apex:outputLink value="/{!d.o.VD_Owner__c}" target="_blank"><apex:outputText value="{!d.o.VD_Owner__r.Name}"/></apex:outputLink>
+                    </apex:column>
+                </apex:dataTable>
+            </apex:pageBlockSection>
+        </apex:pageBlockSection>
+    </apex:pageBlock>
+</apex:page>

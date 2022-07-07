@@ -1,0 +1,13 @@
+<apex:page standardController="Call_Reminder__c" extensions="RedirectCallReminderEditExt" sidebar="false" showHeader="false">
+Page Redirecting...
+<script>
+    function func()
+    {
+        //window.open("{!DesiredURL}", "_top");
+        top.location.href = '{!DesiredURL}&retURL=%2Fhome%2Fhome.jsp';
+    }
+</script>
+
+<apex:outputText value="{!callfunc}" escape="false"></apex:outputText>
+
+</apex:page>

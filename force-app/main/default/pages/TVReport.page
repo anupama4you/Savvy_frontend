@@ -1,0 +1,80 @@
+<apex:page controller="TVReportController" readOnly="true" title="TV Report" showHeader="false" sidebar="false">
+    <apex:pageMessages />
+    <style>
+        table, td
+        {
+            border: solid 1px black; 
+            border-collapse: collapse;                
+        }
+        
+        td
+        {
+            padding: 5px;   
+        }
+    </style>
+    <apex:form >    
+        <apex:outputPanel id="main" >
+            <div style="padding: 20px; font-size: 12pt; width: 100%;">
+                <div style="font-size: 16pt; width: 100%; text-align: center;">
+                    <span style="color: red;">
+                        <b>Team Target:&nbsp;&nbsp;&nbsp;<apex:outputText value="{0,number,$#,###,###}"><apex:param value="{!TotalTarget}" /></apex:outputText></b>
+                    </span>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                    <span style="color: blue;">
+                        <b>Actual:&nbsp;&nbsp;&nbsp;<apex:outputText value="{0,number,$#,###,###}"><apex:param value="{!TotalActual}" /></apex:outputText></b>
+                        &nbsp;(<apex:outputText value="{0,number,###%}">
+                                   <apex:param value="{!TotalActual / TotalTarget}" />
+                               </apex:outputText>)
+                    </span>
+                </div>
+                <br />
+                <table style="border-width: 0px; margin: auto;">
+                    <tr>                    
+                        <apex:repeat value="{!TableData}" var="u">
+                            <td style="padding: 0px; border-width: 0px; vertical-align: top;">
+                                <table>
+                                    <tr>
+                                        <td style="border-width: 0px;"><b>{!u.Consultant.Name}</b></td>
+                                        <td style="border-width: 0px; text-align: right;">
+                                            <b>
+                                                <apex:outputText value="{0,number,$#,###,###}">
+                                                    <apex:param value="{!u.Consultant.Monthly_Commission_Target__c}" />
+                                                </apex:outputText>
+                                            </b>
+                                         </td>
+                                    </tr>
+                                    <apex:repeat value="{!u.Opportunities}" var="o">
+                                        <tr>
+                                            <td>{!o.Name}</td>
+                                            <td style="text-align: right;">
+                                                <apex:outputText value="{0,number,$#,###,###}">
+                                                <apex:param value="{!o.Total_Commission__c}" />
+                                                </apex:outputText>
+                                            </td>
+                                        </tr>
+                                    </apex:repeat>
+                                    <tr>
+                                        <td><b>Total</b></td>
+                                        <td style="text-align: right; font-weight:bold">
+                                            <apex:outputText value="{0,number,$#,###,###}">
+                                                <apex:param value="{!u.Sum}" />
+                                            </apex:outputText>
+                                        </td>
+                                    </tr>
+                                </table>
+                            </td>
+                        </apex:repeat>                    
+                    </tr>   
+                </table>            
+            </div>    
+            <br />
+            <div style="width: 100%; text-align: center;">
+                Current as of {!TimeNow}
+            </div>        
+            <script>
+                setTimeout('refreshTable()', 600000); // 10 mins = 600,000 ms
+            </script>
+        </apex:outputPanel>
+        <apex:actionFunction name="refreshTable" reRender="main,msgs" />
+    </apex:form>
+</apex:page>

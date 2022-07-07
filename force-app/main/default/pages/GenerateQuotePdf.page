@@ -1,0 +1,48 @@
+<apex:page standardController="Custom_Opportunity__c" extensions="QuotePdfExtension" renderAs="pdf">
+    
+    <apex:stylesheet value="{!$Resource.QuoteCss}"/>
+    
+    <center><apex:image url="{!$Resource.newSavvyLogo}" alt="Logo" /></center>
+    
+    <center><h2 style="font-family: Arial Unicode MS; font-size:14pt; font-weight: bold;"><b>FINANCE APPLICATION QUOTE</b></h2></center>
+    
+    <p style="font-family: Arial Unicode MS;">
+        Date: {!DAY(TODAY())}/{!MONTH(TODAY())}/{!YEAR(TODAY())}<br></br>
+        Your consultant: {!Custom_Opportunity__c.Owner_Name__c}
+    </p>
+    
+    <table class="QuoteInfo" style="font-family: Arial Unicode MS;">
+        <tr><th class="QuoteHeader">Your Details</th></tr>
+        <tr><td class="QuoteColumn">Applicant Name: {!Custom_Opportunity__c.Name}</td></tr>
+    </table>
+    
+    <table class="QuoteInfo" style="font-family: Arial Unicode MS;">
+        <tr><th class="QuoteHeader">Your Quote</th></tr>
+        <tr><td class="QuoteColumn">{!Custom_Opportunity__c.Loan_Product__r.Cost_of_Goods__c} over {!Custom_Opportunity__c.Loan_Product__r.Loan_Term__c / 12} years at {!interestRate} = {!weeklyPayment} per week</td></tr>
+    </table>
+    
+    <p style="font-family: Arial Unicode MS;"><i><strong>Note:</strong> I have quoted on worst case scenario of {!interestRate} as the lender may come in lower but it is all subject to credit assessment by the lender. This quote is based on current interest rates and is subject to change.</i></p>
+    
+    <p style="font-family: Arial Unicode MS;">My contact details are below if you have any further questions or queries.</p>
+    
+    <p style="font-family: Arial Unicode MS;">I look forward to hearing from you and hope to be able to assist with your finance requirements.</p>
+    
+    <p style="font-family: Arial Unicode MS;">Regards,</p>
+    
+    <p style="font-family: Arial Unicode MS;"><strong>{!Custom_Opportunity__c.Owner_Name__c} -</strong> Finance Consultant</p>
+    
+    <p style="font-family: Arial Unicode MS; font-size: 10pt;">
+        <strong>P:</strong> {!Custom_Opportunity__c.Owner_Phone__c}
+        <font style="color:#ee245f;">|</font><strong> F:</strong> 1300 978 066 <font style="color:#ee245f;">|</font> <strong>L:</strong> 1300 974 066 <font style="color:#ee245f;">|</font>
+        <strong>M:</strong> {!Custom_Opportunity__c.Owner_Mobile__c} <br></br>
+        E: <span style="color:#ee245f; text-decoration: underline;">{!Custom_Opportunity__c.Owner_Email__c}</span>
+        <font style="color:#ee245f;">|</font> Web: <span style="color:#ee245f; text-decoration: underline;">www.savvy.com.au</span>
+    </p>
+
+    <p style="font-family: Arial Unicode MS; font-size: 10pt;">
+        Adelaide Office: Level 1, 145 The Parade, Norwood SA 5067<br></br>
+        Sydney Office: Suite 206, 4 Clark Street, Crows Nest, NSW, 2064<br></br>
+        Melbourne Office: Suite 6, 596 North Road, Ormond, VIC, 3024<br></br>
+    </p>
+
+</apex:page>

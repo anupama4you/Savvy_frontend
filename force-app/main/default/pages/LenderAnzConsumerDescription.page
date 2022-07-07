@@ -1,0 +1,50 @@
+<apex:page showHeader="false" sidebar="false" standardStylesheets="false">
+	<strong>Minimum Loan size</strong>
+		$7500 for cars.  
+		$10,000 for leisure goods (except under the car SOB).
+	
+	<hr/><strong>Purchase Type</strong>
+		Dealer or Private sales.  Refinancing.  Sale and leaseback
+	<hr/>
+	<strong>Employment Type </strong>
+		FT will require 3 month’s pay history, 
+		PT will require 3 month’s pay history, 
+		No min with casual but must supply 12 months of history with no GAP of 4 weeks
+	<hr/>
+	<strong>Credit History</strong>
+		Clean credit
+	<hr/>
+	<strong>Financed Assets </strong>
+		Cars, bikes, boats, caravans
+	<hr/>
+	<strong>Loan Terms </strong>
+	0-84 months, 
+	Residual available for 5 year terms or less and car  &lt;= 3 years
+	<hr/>
+	<strong>Term End  </strong>
+	12 years at term end, 
+	Boats flexible with age of goods
+	<hr/>
+	<strong>LTV Ratios </strong>
+	RRP for New &amp; Demo  &lt;5,000 KMS, 
+	Used – trade value, 
+	Will lend up to 140% LTV (rates will alter depending on LTV)
+	<hr/>
+
+	<strong>Why? &amp; When? </strong>
+	Asset backed and buying New, used or demo current year or last year. Dealer sale. Lowest living expenses,  
+	Good chance of auto-approval for marginal transactions (employment term, servicing, lower income, average profile) and where customer is or can’t be rate conscious. 
+	Auto approvals only available when:
+	•	SOB being used is the same state where the customer resides AND, 
+	•	Dealer transaction AND ,
+	•	PAYG borrower. 
+	Outside of these 3 guidelines the deal has to be submitted
+
+	<hr/>
+	<strong>Early repayment fees</strong>
+	Early repayment fee (ERF) $680, 
+	Administration fee $50, 
+	This fee reduces every month that the loan is in existence.  So on a 60 month term the ERF drops by $11.33 per month.
+	So if a client paid out their loan 12 months early the fee would be (12 x $11.33) +$50 = $186.
+
+</apex:page>

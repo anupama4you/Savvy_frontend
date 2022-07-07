@@ -1,0 +1,60 @@
+<apex:page showHeader="false" sidebar="false" standardStylesheets="false">
+	<strong>Mimimum Loan size</strong>
+	$7,500 for cars, 
+	$10,000 for leisure goods (except under the car SOB), 
+	$10,000 for other commercial) plant and equipment, trucks etc).
+
+	<hr/><strong>Purchase Type </strong>
+	Dealer or Private sales. Refinancing.  Sale and leaseback.
+
+	<hr/><strong>Employment Type </strong>
+	Cannot do a commercial loan for PAYG, 
+	Self employed minimum 12 months (except if a start up and asset backed with employment continuity).
+
+	<hr/><strong>Income Verification</strong>
+	Low doc 
+	•	Don’t need to provide tax returns, 
+	•	Asset backed or 20% deposit or A rated car loan credit, 
+	•	If 20% deposit LTV must be &lt;100%. 
+	Fully verified. 
+	Tax return (for individuals) no older than 18 months (ie 2015 tax return can be used up to the end of December 2016) and Notice of assessment. 
+	Financials for other entities will suffice.
+
+	<hr/><strong>Credit History </strong>
+	Clean credit 
+
+	<hr/><strong>Financed Assets </strong>
+	Cars, bikes, boats, caravans 
+
+	<hr/><strong>Loan Terms </strong>
+	0-84 months, 
+	Residual available for 5 year terms or less and car &lt;= 3 years.
+
+	<hr/><strong>Term End  </strong>
+	12 years at term end.   
+	Trucks and other equipment flexible with age of goods. 
+	Boats flexible with age of goods.
+
+	<hr/><strong>LTV Ratios </strong>
+	RRP for New &amp; Demo &lt;5,000 KMS, 
+	Used – trade value, 
+	Will lend up to 140% LTV (rates will alter depending on LTV).
+
+	<hr/><strong>Why? &amp; When? </strong>
+	Asset backed and buying New, used or demo current year or last year. Dealer sale. Lowest living expenses. 
+	Good chance of auto-approval for marginal transactions (employment term, servicing, lower income, average profile) and where customer is or can’t be rate conscious. 
+	Auto approvals only available when: 
+	•	SOB being used is the same state where the customer resides AND, 
+	•	Dealer transaction AND, 
+	•	PAYG borrower. 
+	Outside of these 3 guidelines the deal has to be submitted
+
+	<hr/><strong>Early repayment fees</strong>
+	Commercial loans are not meant to be paid out early.  They are a tax effective facility and the penalties for early repayment can be high. 
+	With ANZ commercial they don’t have an early repayment fee but the cost to exit can be very high.  The following is not to be discussed with the customers as it is commercial in confidence. 
+
+	Essentially ANZ will charge 70% of the remaining interest charges to the client. 
+	So if they pay the loan out 12 months early they will pay a penalty which is 70% of the interest charges which would have occurred had the loan run to expiry.
+	
+	
+</apex:page>

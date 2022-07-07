@@ -1,0 +1,53 @@
+<apex:page showHeader="false" sidebar="false" controller="CustomReportExtension">
+	<style type="text/css">
+		td.label {
+			font-size: 2em;
+			font-weight: bold;
+			color: #7c7c7c;
+            text-align: right;
+            vertical-align: middle;
+		}
+        td.label2 {
+			font-size: 1.5em;
+			font-weight: bold;
+			color: #808080;
+            text-align: right;
+            vertical-align: middle;
+
+		}
+        .title1 {
+			font-size: 4em;
+			font-weight: bold;
+			color: #303030;
+            text-align: left;
+            vertical-align: middle;
+		}
+        .title2 {
+			font-size: 3.2em;
+			font-weight: bold;
+			color: #6e6c6c;
+            text-align: left;
+            vertical-align: middle;
+		}
+	</style>	
+	<table width="100%">
+		<tr>
+            <td width="50%" class="label">Clean :</td>
+			<td width="50%" class="title1">
+				{!totalSalesUnassignedLeads}
+			</td>
+        </tr>
+        <tr>
+            <td class="label2">BCCL :</td>
+            <td class="title2">
+                {!totalUnassignedBCCLLeads}
+            </td>
+        </tr>
+        <tr>
+            <td class="label2">Money 3 :</td>
+            <td class="title2">
+                {!totalUnassignedMoney3Leads}
+            </td>
+        </tr>
+	</table>
+</apex:page>

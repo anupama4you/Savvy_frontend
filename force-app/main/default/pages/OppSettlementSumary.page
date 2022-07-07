@@ -1,0 +1,133 @@
+<apex:page controller="OppSettlementSumaryExtension" cache="false" readOnly="true" title="Settlement Summary">
+    <style type='text/css'>
+        .labelTableBeside {
+            font-size: 25px;
+            font-weight: bold;
+            vertical-align: middle !important;
+        }
+        .labelTableResult {
+            font-size: 16px;
+            font-weight: bold;
+        }
+        .labelTableResultOthers {
+            font-size: 14px;
+            font-weight: bold;
+        }
+        .labelTableResultTotals {
+            font-size: 14px;
+            font-weight: bold;
+            color: blue !important;
+        }
+        .space{
+        	margin-bottom: 5px;
+        }
+    </style>
+    <apex:form id="formData" rendered="{!verifyShow}">
+        <apex:pageBlock title="Settlement Processes" mode="edit">
+            <table align="center" width="90%">
+                <tr>
+                    <td width="33%">
+                        <table width="90%">
+                            <tr>
+                                <td rowspan="5" class="labelTableBeside" width="40%" align="center">Consultant</td>
+                                <th width="30%">Status</th>
+                                <th width="15%" align="center">Own</th>
+                                <th width="15%" align="center">Total</th>
+                            </tr>
+                            <tr class="space">
+                                <td>Internal Settlement</td>
+                                <td class="labelTableResult" align="center">{!MyInternalSettlement}</td>
+                                <td class="labelTableResultOthers" align="center">{!AllInternalSettlement}</td>
+                            </tr>
+                            <tr>
+                                <td>Documents Sent</td>
+                                <td class="labelTableResult" align="center">{!MyDocumentsSend}</td>
+                                <td class="labelTableResultOthers" align="center">{!AllDocumentsSend}</td>
+                            </tr>
+                            <tr>
+                                <td class="labelTableResultTotals">Totals</td>
+                                <td class="labelTableResultTotals" align="center">{!MyConsultant}</td>
+                                <td class="labelTableResultTotals" align="center">{!AllConsultant}</td>
+                            </tr>
+                            <tr>
+                            	<td colspan="3">&nbsp;</td>
+                            </tr>
+                            <tr>
+                                <td colspan="4" align="center">
+                                    <apex:outputLink target="_top" value="{!$Page.OppSettlementListConsultant}?approvalType=CONSULTANT">Manage Consultant</apex:outputLink>
+                                </td>
+                            </tr>
+                        </table>
+                    </td>
+                    <td width="34%">
+                        <table width="90%">
+                            <tr>
+                                <td rowspan="5" class="labelTableBeside" width="45%" align="center">Client</td>
+                                <th width="25%">Status</th>
+                                <th width="15%" align="center">Own</th>
+                                <th width="15%" align="center">Total</th>
+                            </tr>
+                            <tr class="space">
+                                <td>Documents Received</td>
+                                <td class="labelTableResult" align="center">{!MyDocumentsReceived}</td>
+                                <td class="labelTableResultOthers" align="center">{!AllDocumentsReceived}</td>
+                            </tr>
+                            <tr>
+                                <td>Awaiting Further Information</td>
+                                <td class="labelTableResult" align="center">{!MyAwaitingFurtherInformation}</td>
+                                <td class="labelTableResultOthers" align="center">{!AllAwaitingFurtherInformation}</td>
+                            </tr>
+                            <tr>
+                                <td class="labelTableResultTotals">Totals</td>
+                                <td class="labelTableResultTotals" align="center">{!MyClient}</td>
+                                <td class="labelTableResultTotals" align="center">{!AllClient}</td>
+                            </tr>
+                            <tr>
+                            	<td colspan="3">&nbsp;</td>
+                            </tr>
+                            <tr>
+                                <td colspan="4" align="center">
+                                	<apex:outputLink target="_top" value="{!$Page.OppSettlementListClient}?approvalType=CLIENT">Manage Client</apex:outputLink>
+                                </td>
+                            </tr>
+                        </table>
+                    </td>
+                    <td width="33%">
+                        <table width="90%">
+                            <tr>
+                                <td rowspan="5" class="labelTableBeside" width="40%" align="center">Lender</td>
+                                <th width="30%">Status</th>
+                                <th width="15%" align="center">Own</th>
+                                <th width="15%" align="center">Total</th>
+                            </tr>
+                            <tr class="space">
+                                <td>Sent to Lender for Settlement</td>
+                                <td class="labelTableResult" align="center">{!MySenttoLenderforSettlement}</td>
+                                <td class="labelTableResultOthers" align="center">{!AllSenttoLenderforSettlement}</td>
+                            </tr>
+                            <tr>
+                                <td>Rejected By Lender</td>
+                                <td class="labelTableResult" align="center">{!MyRejectedByLender}</td>
+                                <td class="labelTableResultOthers" align="center">{!AllRejectedByLender}</td>
+                            </tr>
+                            <tr>
+                                <td class="labelTableResultTotals">Totals</td>
+                                <td class="labelTableResultTotals" align="center">{!MyLender}</td>
+                                <td class="labelTableResultTotals" align="center">{!AllLender}</td>
+                            </tr>
+                            <tr>
+                            	<td colspan="3">&nbsp;</td>
+                            </tr>
+                            <tr>
+                                <td colspan="4" align="center">
+                                	<apex:outputLink target="_top" value="{!$Page.OppSettlementListLender}?approvalType=LENDER">Manage Lender</apex:outputLink>
+                                </td>
+                            </tr>
+                        </table>
+                    </td>
+                </tr>
+            </table>
+            <br/>
+    	</apex:pageBlock>
+    </apex:form>
+</apex:page>

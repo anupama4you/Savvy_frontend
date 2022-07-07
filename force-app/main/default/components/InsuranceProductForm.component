@@ -1,0 +1,402 @@
+<apex:component allowDML="true">
+  <apex:attribute name="qext" type="QuotingExtension" required="true" description="Quoting extension controller" />
+  <apex:attribute name="formId" type="String" required="true" description="Main form id which will be rerendered" />
+  <div class="titleTableTab">
+    <h3>Insurance Product</h3>
+  </div>
+  <table class="insuranceTableDetails">
+    <!-- Column headers -->
+    <tr>
+      <td class="inTableTitle">Type</td>
+      <td class="inTableTitle">Product</td>
+      <td class="inTableTitle">Retail Price</td>
+      <td class="inTableTitle">Commission</td>
+      <td class="inTableTitle" align="center">Financed/PBM</td>
+      <td class="inTableTitle" align="center">Term</td>
+      <td class="inTableTitle" align="center">Payment/w</td>
+      <td class="inTableTitle" align="center">Actions</td>
+    </tr>
+    <!-- Comprehensive -->
+    <tr style="display: {!IF(qext.displayMVProduct, '','none')}" class="{!IF(qext.mvAcceptance=='A', 'insuranceResultRow1Accepted', IF(qext.mvAcceptance=='D', 'insuranceResultRow1Declined', ''))}">
+      <td>
+        <apex:inputField value="{!qext.quoting.Insurance_MV_Options__c}" rendered="{!qext.mvEditActive}" id="mvSelector">
+          <apex:actionSupport event="onchange" action="{!qext.onChangeMV}" reRender="pnlInsProd" focus="mvSelector" status="stsProd" />
+        </apex:inputField>
+        <apex:outputText value="{!qext.quoting.Insurance_MV_Options__c}" rendered="{!NOT(qext.mvEditActive)}" />
+        <apex:outputText value="MV [not selected]" rendered="{!AND(NOT(qext.mvEditActive),ISBLANK(qext.quoting.Insurance_MV_Options__c))}"
+          styleClass="ins-prod-empty" />
+      </td>
+      <td>
+        <apex:selectList value="{!qext.mvLevel}" multiselect="false" size="1" rendered="{!qext.mvEditActive}">
+          <apex:selectOptions value="{!qext.MVOptions}" />
+        </apex:selectList>
+        <apex:outputText value="{!qext.mvLevel}" rendered="{!NOT(qext.mvEditActive)}" />
+      </td>
+      <td>
+        <apex:input type="number" html-step="0.01" value="{!qext.mv}" html-placeholder="$" styleClass="insuranceInput" rendered="{!qext.mvEditActive}">
+          <apex:actionSupport event="onchange" reRender="MVPayment" status="stsProd" />
+        </apex:input>
+        <apex:outputText value="{0, number, $##,###,##0.00}" rendered="{!NOT(qext.mvEditActive)}">
+          <apex:param value="{!qext.mv}" />
+        </apex:outputText>
+      </td>
+      <td>
+        <apex:input type="number" html-step="0.01" value="{!qext.mvIncome}" html-placeholder="$" styleClass="insuranceInput" rendered="{!qext.mvEditActive}"
+        />
+        <apex:outputText value="{0, number, $##,###,##0.00}" rendered="{!NOT(qext.mvEditActive)}">
+          <apex:param value="{!qext.mvIncome}" />
+        </apex:outputText>
+      </td>
+      <td align="center">(not applicable)</td>
+      <td align="center">12</td>
+      <td align="center">
+        <apex:outputText value="{0, number, $##,###,##0.00}" id="MVPayment">
+          <apex:param value="{!qext.MVPayment}" />
+        </apex:outputText>
+      </td>
+      <td align="center">
+        <apex:commandButton value="Accept" action="{!qext.acceptQuoteMV}" reRender="{!formId}" styleClass="{!IF(qext.mvAcceptance=='A','acceptQuoteButtonsClicked','acceptQuoteButtons')}"
+          status="stsProd" />
+        <apex:commandButton value="Decline" action="{!qext.declineQuoteMV}" reRender="{!formId}" styleClass="{!IF(qext.mvAcceptance=='D','decQuoteButtonsClicked','decQuoteButtons')}"
+          status="stsProd" />
+      </td>
+    </tr>
+    <!-- Shortfall (GAP) -->
+    <tr style="display: {!IF(qext.displayGAPProduct, '','none')}" class="{!IF(qext.gapAcceptance=='A', 'insuranceResultRow1Accepted', IF(qext.gapAcceptance=='D', 'insuranceResultRow1Declined', ''))}">
+      <td>
+        <apex:inputField value="{!qext.quoting.Insurance_Shortfall_Options__c}" rendered="{!qext.gapEditActive}" id="gapSelector">
+          <apex:actionSupport event="onchange" action="{!qext.onChangeGAP}" reRender="pnlInsProd" focus="gapSelector" status="stsProd" />
+        </apex:inputField>
+        <apex:outputText value="{!qext.quoting.Insurance_Shortfall_Options__c}" rendered="{!NOT(qext.gapEditActive)}" />
+        <apex:outputText value="Shortfall [not selected]" rendered="{!AND(NOT(qext.gapEditActive),ISBLANK(qext.quoting.Insurance_Shortfall_Options__c))}"
+          styleClass="ins-prod-empty" />
+      </td>
+      <td>
+        <apex:selectList value="{!qext.gapLevel}" multiselect="false" size="1" rendered="{!qext.gapEditActive}">
+          <apex:selectOptions value="{!qext.shortfallOptions}" />
+          <apex:actionSupport event="onchange" action="{!qext.calculateGAP}" reRender="gap, gapIncome, shortfallPayment" focus="gapTerm"
+            status="stsProd" />
+        </apex:selectList>
+        <apex:outputText value="{!qext.gapLevel}" rendered="{!NOT(qext.gapEditActive)}" />
+      </td>
+      <td>
+        <apex:input type="number" html-step="0.01" value="{!qext.gap}" html-placeholder="$" styleClass="insuranceInput" rendered="{!AND(qext.gapEditActive, NOT(qext.isGAPCalculated))}">
+          <apex:actionSupport event="onchange" reRender="shortfallPayment" status="stsProd" />
+        </apex:input>
+        <apex:outputText value="{0, number, $##,###,##0.00}" rendered="{!OR(NOT(qext.gapEditActive),qext.isGAPCalculated)}" id="gap">
+          <apex:param value="{!qext.gap}" />
+        </apex:outputText>
+      </td>
+      <td>
+        <apex:input type="number" html-step="0.01" value="{!qext.gapIncome}" html-placeholder="$" styleClass="insuranceInput" rendered="{!AND(qext.gapEditActive, NOT(qext.isGAPCalculated))}"
+        />
+        <apex:outputText value="{0, number, $##,###,##0.00}" rendered="{!OR(NOT(qext.gapEditActive),qext.isGAPCalculated)}" id="gapIncome">
+          <apex:param value="{!qext.gapIncome}" />
+        </apex:outputText>
+      </td>
+      <td align="center">
+        <apex:outputPanel rendered="{!qext.gapEditActive}">
+          <apex:selectList value="{!qext.gapPayType}" multiselect="false" size="1" id="gapPayType">
+            <apex:selectOptions value="{!qext.gapPayTypeOptions}" />
+            <apex:actionSupport event="onchange" action="{!realtimeNafCalc}" reRender="realtimeNaf, cci, cciIncome, shortfallPayment"
+              focus="gapPayType" status="stsProd" />
+          </apex:selectList>
+        </apex:outputPanel>
+        <apex:outputPanel rendered="{!NOT(qext.gapEditActive)}">
+          {!IF(ISBLANK(qext.gapPayType),'-none-',qext.gapPayType)}
+        </apex:outputPanel>
+      </td>
+      <td align="center">
+        <apex:outputText value="{!qext.gapTerm}" />
+      </td>
+      <td align="center">
+        <apex:outputText value="{0, number, $##,###,##0.00}" id="shortfallPayment">
+          <apex:param value="{!qext.shortfallPayment}" />
+        </apex:outputText>
+      </td>
+      <td align="center">
+        <apex:commandButton value="Accept" action="{!qext.acceptQuoteGAP}" reRender="{!formId}" styleClass="{!IF(qext.gapAcceptance=='A','acceptQuoteButtonsClicked','acceptQuoteButtons')}"
+          status="stsProd" />
+        <apex:commandButton value="Decline" action="{!qext.declineQuoteGAP}" reRender="{!formId}" styleClass="{!IF(qext.gapAcceptance=='D','decQuoteButtonsClicked','decQuoteButtons')}"
+          status="stsProd" />
+      </td>
+    </tr>
+    <!-- LPI -->
+    <tr style="display: {!IF(qext.displayLPIProduct, '','none')}" class="{!IF(qext.cciAcceptance=='A', 'insuranceResultRow1Accepted', IF(qext.cciAcceptance=='D', 'insuranceResultRow1Declined', ''))}">
+      <td>
+        <apex:inputField value="{!qext.quoting.Insurance_LPI_Options__c}" rendered="{!qext.cciEditActive}" id="lpiSelector">
+          <apex:actionSupport event="onchange" action="{!qext.onChangeLPI}" reRender="pnlInsProd" focus="lpiSelector" status="stsProd" />
+        </apex:inputField>
+        <apex:outputText value="{!qext.quoting.Insurance_LPI_Options__c}" rendered="{!NOT(qext.cciEditActive)}" />
+        <apex:outputPanel rendered="{!AND(qext.quoting.Insurance_LPI_Options__c=='Liberty LFI',qext.Opp.Application__r.No_of_People__c==2)}">
+          <br/> &nbsp;[{!qext.Opp.Application__r.No_of_People__c} applicants]
+        </apex:outputPanel>
+        <apex:outputText value="Loan Protection [not selected]" rendered="{!AND(NOT(qext.cciEditActive),ISBLANK(qext.quoting.Insurance_LPI_Options__c))}"
+          styleClass="ins-prod-empty" />
+      </td>
+      <td class="{!IF(qext.cciAcceptance=='D','cellInsuranceDeclined','')}">
+        <apex:selectList value="{!qext.cciLevel}" multiselect="false" size="1" rendered="{!qext.cciEditActive}">
+          <apex:selectOptions value="{!qext.LPIOptions}" />
+          <apex:actionSupport event="onchange" action="{!qext.calculateLPI}" reRender="cci, cciIncome, LPIPayment" focus="cciTerm" status="stsProd"
+          />
+        </apex:selectList>
+        <apex:outputText value="{!qext.cciLevel}" rendered="{!NOT(qext.cciEditActive)}" />
+      </td>
+      <td class="{!IF(qext.cciAcceptance=='D','cellInsuranceDeclined','')}">
+        <apex:input type="number" html-step="0.01" value="{!qext.cci}" html-placeholder="$" styleClass="insuranceInput" rendered="{!AND(qext.cciEditActive, NOT(qext.isLPICalculated))}">
+          <apex:actionSupport event="onchange" reRender="LPIPayment" status="stsProd" />
+        </apex:input>
+        <apex:outputText value="{0, number, $##,###,##0.00}" rendered="{!OR(NOT(qext.cciEditActive),qext.isLPICalculated)}" id="cci">
+          <apex:param value="{!qext.cci}" />
+        </apex:outputText>
+      </td>
+      <td class="{!IF(qext.cciAcceptance=='D','cellInsuranceDeclined','')}">
+        <apex:input type="number" html-step="0.01" value="{!qext.cciIncome}" html-placeholder="$" styleClass="insuranceInput" rendered="{!AND(qext.cciEditActive, NOT(qext.isLPICalculated))}"
+        />
+        <apex:outputText value="{0, number, $##,###,##0.00}" rendered="{!OR(NOT(qext.cciEditActive),qext.isLPICalculated)}" id="cciIncome">
+          <apex:param value="{!qext.cciIncome}" />
+        </apex:outputText>
+      </td>
+      <td align="center">
+        <apex:outputPanel rendered="{!qext.cciEditActive}">
+          <apex:selectList value="{!qext.cciPayType}" multiselect="false" size="1" id="cciPayType">
+            <apex:selectOptions value="{!qext.cciPayTypeOptions}" />
+            <apex:actionSupport event="onchange" action="{!realtimeNafCalc}" reRender="realtimeNaf, cci, cciIncome, LPIPayment" focus="cciPayType"
+              status="stsProd" />
+          </apex:selectList>
+        </apex:outputPanel>
+        <apex:outputPanel rendered="{!NOT(qext.cciEditActive)}">
+          {!IF(ISBLANK(qext.cciPayType),'-none-',qext.cciPayType)}
+        </apex:outputPanel>
+      </td>
+      <td align="center">
+        <apex:outputPanel rendered="{!NOT(qext.displayLPIProductLiberty)}">
+          <apex:selectList value="{!qext.cciTerm}" multiselect="false" size="1" rendered="{!qext.cciEditActive}">
+            <apex:selectOptions value="{!qext.cciTermOptions}" />
+            <apex:actionSupport event="onchange" reRender="LPIPayment" focus="cciTerm" status="stsProd" />
+          </apex:selectList>
+          <apex:outputText value="{!qext.cciTerm}" rendered="{!NOT(qext.cciEditActive)}" />
+        </apex:outputPanel>
+        <apex:outputPanel rendered="{!qext.displayLPIProductLiberty}">
+          <apex:outputText value="(Loan Term)" />
+        </apex:outputPanel>
+      </td>
+      <td align="center">
+        <apex:outputText value="{0, number, $##,###,##0.00}" id="LPIPayment">
+          <apex:param value="{!qext.LPIPayment}" />
+        </apex:outputText>
+      </td>
+      <td align="center">
+        <apex:commandButton value="Accept" action="{!qext.acceptQuoteCCI}" reRender="{!formId}" styleClass="{!IF(qext.cciAcceptance=='A','acceptQuoteButtonsClicked','acceptQuoteButtons')}"
+          status="stsProd" />
+        <apex:commandButton value="Decline" action="{!qext.declineQuoteCCI}" reRender="{!formId}" styleClass="{!IF(qext.cciAcceptance=='D','decQuoteButtonsClicked','decQuoteButtons')}"
+          status="stsProd" />
+      </td>
+    </tr>
+    <!-- Eric Warranty / Integrity -->
+    <tr class="{!IF(OR(qext.warrantyAcceptance=='A',qext.nwcAcceptance=='A'), 'insuranceResultRow1Accepted', IF(OR(qext.warrantyAcceptance=='D',qext.nwcAcceptance=='D'), 'insuranceResultRow1Declined', ''))}">
+      <td>
+        <apex:inputField value="{!qext.quoting.Insurance_Warranty_Options__c}" rendered="{!OR(AND(qext.quoting.Insurance_Warranty_Options__c!='Integrity',qext.warrantyEditActive),AND(qext.quoting.Insurance_Warranty_Options__c=='Integrity',qext.nwcEditActive))}"
+          id="warrantySelector">
+          <apex:actionSupport event="onchange" action="{!qext.onChangeWARR}" reRender="pnlInsProd" focus="warrantySelector" status="stsProd"
+          />
+        </apex:inputField>
+        <apex:outputText value="{!qext.quoting.Insurance_Warranty_Options__c}" rendered="{!NOT(OR(AND(qext.quoting.Insurance_Warranty_Options__c!='Integrity',qext.warrantyEditActive),AND(qext.quoting.Insurance_Warranty_Options__c=='Integrity',qext.nwcEditActive)))}"
+        />
+        <apex:outputPanel rendered="{!qext.quoting.Insurance_Warranty_Options__c=='Integrity'}">
+          <br/> &nbsp;[Asset: {!qext.Opp.Application__r.Type_of_Asset__c}]
+          <apex:pageMessage summary="{!qext.messageNWCWarning}" id="messageNWCWarning" severity="warning" rendered="{!IF(qext.messageNWCWarning=null, false, true)}"
+          />
+        </apex:outputPanel>
+        <apex:outputText value="Warranty [not selected]" rendered="{!AND(AND(NOT(qext.warrantyEditActive),NOT(qext.nwcEditActive)),ISBLANK(qext.quoting.Insurance_Warranty_Options__c))}"
+          styleClass="ins-prod-empty" />
+      </td>
+      <td>
+        <apex:outputPanel rendered="{!NOT(qext.quoting.Insurance_Warranty_Options__c=='Integrity')}">
+          <apex:selectList value="{!qext.warrantyLevel}" multiselect="false" size="1" rendered="{!qext.warrantyEditActive}">
+            <apex:selectOptions value="{!qext.warrantyOptions}" />
+          </apex:selectList>
+          <apex:outputText value="{!qext.warrantyLevel}" rendered="{!NOT(qext.warrantyEditActive)}" />
+        </apex:outputPanel>
+        <apex:outputPanel rendered="{!qext.quoting.Insurance_Warranty_Options__c=='Integrity'}" id="pnlNwc">
+          <table width="290">
+            <tr>
+              <td>
+                <apex:outputText value="Product Type:" />
+              </td>
+              <td colspan="3">
+                <apex:selectList value="{!qext.nwcParam.type_p}" multiselect="false" size="1" styleClass="{!IF(qext.isAssetCar,'selectList', 'selectListA')}"
+                  onchange="calculateNWC()" rendered="{!qext.nwcEditActive}" id="listTypeNWC">
+                  <apex:selectOptions value="{!qext.nwcTypePOptions}" />
+                </apex:selectList>
+                <apex:outputText value="{!qext.nwcParam.type_p}" rendered="{!NOT(qext.nwcEditActive)}" />
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <apex:outputText value="Category:" />
+              </td>
+              <td>
+                <apex:selectList value="{!qext.nwcPlan}" multiselect="false" size="1" styleClass="selectListA" id="nwcPlan" onchange="calculateNWC()"
+                  rendered="{!qext.nwcEditActive}">
+                  <apex:selectOptions value="{!qext.nwcPlanOptions}" />
+                </apex:selectList>
+                <apex:outputText value="{!qext.nwcPlan}" rendered="{!NOT(qext.nwcEditActive)}" />
+              </td>
+
+              <td>Term:&nbsp;</td>
+              <td>
+                <apex:selectList value="{!qext.nwcTerm}" multiselect="false" size="1" styleClass="selectListA" onchange="calculateNWC()" rendered="{!qext.nwcEditActive}">
+                  <apex:selectOptions value="{!qext.nwcTermOptions}" />
+                </apex:selectList>
+                <apex:outputText value="{!qext.nwcTerm}" rendered="{!NOT(qext.nwcEditActive)}" />
+              </td>
+            </tr>
+            <tr>
+              <td colspan="1">&nbsp;</td>
+              <td colspan="3">
+                <apex:outputPanel rendered="{!qext.nwcEditActive}">
+                  <apex:inputCheckbox value="{!qext.nwcParam.isManuallyNWCPrice}" onchange="checkManuallyNWCPrice()" title="Retail price manually"
+                  />
+                </apex:outputPanel>
+                <apex:outputPanel rendered="{!NOT(qext.nwcEditActive)}">
+                  (
+                  <strong>{!IF(qext.nwcParam.isManuallyNWCPrice,'Yes','No')}</strong>)&nbsp;
+                </apex:outputPanel>
+                <apex:outputText value="Retail price manually" />
+              </td>
+            </tr>
+            <tr>
+              <td colspan="4">
+                <apex:outputText label="Cost" id="NWCMessage" value="{!qext.nwcMessage}" style="font-weight: bold;color: red;" />
+              </td>
+            </tr>
+          </table>
+        </apex:outputPanel>
+      </td>
+      <td>
+        <apex:outputPanel rendered="{!NOT(qext.quoting.Insurance_Warranty_Options__c=='Integrity')}">
+          <apex:input type="number" html-step="0.01" value="{!qext.warranty}" html-placeholder="$" styleClass="insuranceInput" rendered="{!qext.warrantyEditActive}">
+            <apex:actionSupport event="onchange" reRender="WARRPayment" status="stsProd" />
+          </apex:input>
+          <apex:outputText value="{0, number, $##,###,##0.00}" rendered="{!NOT(qext.warrantyEditActive)}" id="warranty">
+            <apex:param value="{!qext.warranty}" />
+          </apex:outputText>
+        </apex:outputPanel>
+        <apex:outputPanel rendered="{!qext.quoting.Insurance_Warranty_Options__c=='Integrity'}" id="NWCRetailPrice">
+          <apex:outputText value="{0, number, $##,###,##0.00}" rendered="{!OR(NOT(qext.nwcParam.isManuallyNWCPrice),NOT(qext.nwcEditActive))}">
+            <apex:param value="{!qext.nwc}" />
+          </apex:outputText>
+          <apex:input type="number" html-step="0.01" value="{!qext.nwc}" html-placeholder="$" styleClass="insuranceInput" rendered="{!AND(qext.nwcParam.isManuallyNWCPrice,qext.nwcEditActive)}"
+            id="nwc_input" />
+        </apex:outputPanel>
+      </td>
+      <td>
+        <apex:outputPanel rendered="{!NOT(qext.quoting.Insurance_Warranty_Options__c=='Integrity')}">
+          <apex:input type="number" html-step="0.01" value="{!qext.warrantyIncome}" html-placeholder="$" styleClass="insuranceInput" rendered="{!qext.warrantyEditActive}"
+          />
+          <apex:outputText value="{0, number, $##,###,##0.00}" rendered="{!NOT(qext.warrantyEditActive)}" id="warrantyIncome">
+            <apex:param value="{!qext.warrantyIncome}" />
+          </apex:outputText>
+        </apex:outputPanel>
+        <apex:outputPanel rendered="{!qext.quoting.Insurance_Warranty_Options__c=='Integrity'}" id="NWCComission">
+          <apex:outputText value="{0, number, $##,###,##0.00}" rendered="{!OR(NOT(qext.nwcParam.isManuallyNWCPrice), NOT(qext.nwcEditActive))}">
+            <apex:param value="{!qext.nwcIncome}" />
+          </apex:outputText>
+          <apex:input type="number" html-step="0.01" value="{!qext.nwcIncome}" html-placeholder="$" styleClass="insuranceInput" rendered="{!AND(qext.nwcParam.isManuallyNWCPrice,qext.nwcEditActive)}"
+            id="nwcIncome_input" />
+        </apex:outputPanel>
+      </td>
+      <td align="center">
+        <apex:outputPanel rendered="{!NOT(qext.quoting.Insurance_Warranty_Options__c=='Integrity')}">
+          <apex:outputPanel rendered="{!qext.warrantyEditActive}">
+            <apex:selectList value="{!qext.warrantyPayType}" multiselect="false" size="1" id="warrantyPayType">
+              <apex:selectOptions value="{!qext.warrantyPayTypeOptions}" />
+              <apex:actionSupport event="onchange" action="{!realtimeNafCalc}" reRender="realtimeNaf, cci, cciIncome, WARRPayment" focus="warrantyPayType"
+                status="stsProd" />
+            </apex:selectList>
+          </apex:outputPanel>
+          <apex:outputPanel rendered="{!NOT(qext.warrantyEditActive)}">
+            {!IF(ISBLANK(qext.warrantyPayType),'-none-',qext.warrantyPayType)}
+          </apex:outputPanel>
+        </apex:outputPanel>
+        <apex:outputPanel rendered="{!qext.quoting.Insurance_Warranty_Options__c=='Integrity'}">
+          {!IF(ISBLANK(qext.nwcPayType),'-none-',qext.nwcPayType)}
+        </apex:outputPanel>
+      </td>
+      <td align="center">
+        <apex:outputPanel rendered="{!NOT(qext.quoting.Insurance_Warranty_Options__c=='Integrity')}">
+          <apex:outputText value="{!qext.warrantyTerm}" />
+        </apex:outputPanel>
+        <apex:outputPanel rendered="{!qext.quoting.Insurance_Warranty_Options__c=='Integrity'}">
+          <apex:outputText value="{!qext.nwcTerm}" id="nwcTerm2" />
+        </apex:outputPanel>
+      </td>
+      <td align="center">
+        <apex:outputPanel rendered="{!NOT(qext.quoting.Insurance_Warranty_Options__c=='Integrity')}">
+          <apex:outputText value="{0, number, $##,###,##0.00}" id="WARRPayment">
+            <apex:param value="{!qext.WARRPayment}" />
+          </apex:outputText>
+        </apex:outputPanel>
+        <apex:outputPanel rendered="{!qext.quoting.Insurance_Warranty_Options__c=='Integrity'}">
+          <apex:outputText value="{0, number, $##,###,##0.00}" id="NWCPayment">
+            <apex:param value="{!qext.nwcPayment}" />
+          </apex:outputText>
+        </apex:outputPanel>
+      </td>
+      <td align="center">
+        <apex:outputPanel rendered="{!NOT(qext.quoting.Insurance_Warranty_Options__c=='Integrity')}">
+          <apex:commandButton value="Accept" action="{!qext.acceptQuoteWRR}" reRender="{!formId}" styleClass="{!IF(qext.warrantyAcceptance=='A','acceptQuoteButtonsClicked','acceptQuoteButtons')}"
+            status="stsProd" />
+          <apex:commandButton value="Decline" action="{!qext.declineQuoteWRR}" reRender="{!formId}" styleClass="{!IF(qext.warrantyAcceptance=='D','decQuoteButtonsClicked','decQuoteButtons')}"
+            status="stsProd" />
+        </apex:outputPanel>
+        <apex:outputPanel rendered="{!qext.quoting.Insurance_Warranty_Options__c=='Integrity'}">
+          <apex:commandButton value="Accept" action="{!qext.acceptQuoteNWC}" reRender="{!formId}" status="stsProd" styleClass="{!IF(qext.nwcAcceptance=='A','acceptQuoteButtonsClicked','acceptQuoteButtons')}"
+          />
+          <apex:commandButton value="Decline" action="{!qext.declineQuoteNWC}" reRender="{!formId}" status="stsProd" styleClass="{!IF(qext.nwcAcceptance=='D','decQuoteButtonsClicked','decQuoteButtons')}"
+          />
+        </apex:outputPanel>
+      </td>
+    </tr>
+    <tr>
+      <td colspan="9" align="right">
+        <apex:actionStatus startText="(Processing...)" id="stsProd" />
+        <apex:commandButton value="Re-create Quote" styleClass="calculateButtons" action="{!qext.reCreateQuote}" reRender="{!formId}"
+          status="stsProd" rendered="{!qext.isInsProdReadonly}" />
+        <apex:commandButton value="Preview Presentation" styleClass="calculateButtons" action="{!qext.previewCustomerPresentation}" reRender="{!formId}"
+            onComplete="openPreview()" status="stsProd" />
+        <apex:commandButton value="Send Presentation" styleClass="calculateButtons" action="{!qext.sendCustomerPresentation}" reRender="{!formId}"
+          status="stsProd" />
+      </td>
+    </tr>
+    <tr style="display: {!IF(qext.hasCustomerEmailSent, '','none')}">
+      <td colspan="9">
+        <p>
+          <span class="fa fa-user {!qext.customerPresentationStatusStyle}"></span> Customer Presentation Status:
+          <strong>
+            <apex:outputField value="{!qext.quote.Customer_Choice_Status__c}" rendered="{!NOT(ISBLANK(qext.quote.Customer_Choice_Status__c))}"
+            />
+            <apex:outputText value="Sent" rendered="{!ISBLANK(qext.quote.Customer_Choice_Status__c)}" /> </strong>
+          <!-- Insurance Acknowledgement Form -->
+          &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+          <!-- end -->
+        </p>
+      </td>
+    </tr>
+  </table>
+  <apex:outputPanel id="pnlPreview">
+    <apex:outputPanel rendered="{!qext.openPreviewPresentation}">
+      <script>
+        function openPreview() {
+          window.open("{!$Page.InsurancePresentation}?P={!qext.presentationUrlCode}");
+        }
+      </script>
+    </apex:outputPanel>
+    <apex:outputPanel rendered="{!NOT(qext.openPreviewPresentation)}">
+      <script>
+        function openPreview() { }
+      </script>
+    </apex:outputPanel>
+  </apex:outputPanel>
+</apex:component>

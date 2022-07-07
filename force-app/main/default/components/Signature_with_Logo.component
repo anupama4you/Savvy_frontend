@@ -1,0 +1,173 @@
+<apex:component access="global" controller="Portal_Lead_AttemptController">
+  <table class="ql-table-blob" id="topTable" width="500">
+    <tbody>
+      <tr style="display: none" valign="top">
+        <td style="
+            background-color: #ffffff;
+            beditid: r1st1;
+            blabel: header;
+            vertical-align: top;
+            height: 0;
+            text-align: left;
+          "></td>
+      </tr>
+      <tr style="display: none" valign="top">
+        <td style="
+            background-color: #ffffff;
+            beditid: r2st1;
+            blabel: accent1;
+            height: 0;
+          "></td>
+      </tr>
+      <tr valign="top">
+        <td style="
+            background-color: #ffffff;
+            beditid: r3st1;
+            color: #000000;
+            blabel: main;
+            font-size: 12pt;
+            font-family: arial;
+          ">
+          <table height="150" cellspacing="5" width="550" cellpadding="5" border="0">
+            <tbody>
+              <tr height="150" valign="top">
+                <td style="
+                    background-color: #ffffff;
+                    beditid: r3st1;
+                    color: #000000;
+                    blabel: main;
+                    font-size: 12pt;
+                    font-family: arial;
+                  ">
+                  <div style="">
+                    <div style="">
+                      <div style="">
+                        <div style="
+                                                font-size: medium;
+                                                color: rgb(0, 0, 0);
+                                                font-family: 'Times New Roman';
+                                                font-style: normal;
+                                                font-variant-ligatures: normal;
+                                                font-variant-caps: normal;
+                                                font-weight: 400;
+                                                letter-spacing: normal;
+                                                orphans: 2;
+                                                text-align: start;
+                                                text-indent: 0px;
+                                                text-transform: none;
+                                                white-space: normal;
+                                                widows: 2;
+                                                word-spacing: 0px;
+                                                -webkit-text-stroke-width: 0px;
+                                                text-decoration-style: initial;
+                                                text-decoration-color: initial;
+                                                position: relative;
+                                              ">
+                          <p style="margin-bottom: 5px">
+                            <span style="
+                                                    font-family: Calibri;
+                                                    font-weight: bold;
+                                                    color: rgb(89, 89, 89);
+                                                    font-size: 16px;
+                                                  ">{!ContactVar.Name}</span>
+                            <span style="
+                                                    font-family: Calibri;
+                                                    font-weight: bold;
+                                                    color: rgb(89, 89, 89);
+                                                    font-size: 16px;
+                                                  ">
+                              <span>&nbsp;</span>- {!IF(ISBLANK(UserVar.Title),'Finance Consultant',UserVar.Title)} </span>
+                          </p>
+                        </div>
+                        <div style="
+                                                font-size: medium;
+                                                color: rgb(0, 0, 0);
+                                                font-family: 'Times New Roman';
+                                                font-style: normal;
+                                                font-variant-ligatures: normal;
+                                                font-variant-caps: normal;
+                                                font-weight: 400;
+                                                letter-spacing: normal;
+                                                orphans: 2;
+                                                text-align: start;
+                                                text-indent: 0px;
+                                                text-transform: none;
+                                                white-space: normal;
+                                                widows: 2;
+                                                word-spacing: 0px;
+                                                -webkit-text-stroke-width: 0px;
+                                                text-decoration-style: initial;
+                                                text-decoration-color: initial;
+                                                max-width: 570px;
+                                                margin: 2px 2px 2px 0px;
+                                              " id="tp1s">
+                          <table border="0" cellpadding="0" cellspacing="0" width="570" style="width: 570px">
+                            <tbody>
+                              <tr valign="top">
+                                <td style="
+                                                        padding-left: 0px;
+                                                        width: 10px;
+                                                        padding-right: 10px;
+                                                        vertical-align: middle;
+                                                      ">
+                                  <apex:image id="Logo" value="{!AccountVar.Business_Logo__c}" height="50" style="height:50px;max-width:unset;" />
+                                </td>
+                                <td style="
+                                                        text-align: initial;
+                                                        font: 15px Arial;
+                                                        color: rgb(100, 100, 100);
+                                                        padding: 0px 2px;
+                                                      ">
+                                  <div style="
+                                                          color: rgb(89, 89, 89);
+                                                          font-size: 15px;
+                                                          font-family: 'Calibri Light';
+                                                          padding: 5px 0px;
+                                                        ">
+                                    <span style="color: rgb(89, 89, 89)">
+                                      <apex:outputText value="P: {!ContactVar.Phone}" rendered="{!NOT(ISBLANK(ContactVar.Phone))}" />
+                                      <apex:outputText value=" | " rendered="{!NOT(ISBLANK(AccountVar.Fax))}" />
+                                      <apex:outputText value="F: {!AccountVar.Fax}" rendered="{!NOT(ISBLANK(AccountVar.Fax))}" />
+                                      <apex:outputText value=" | " rendered="{!OR(NOT(ISBLANK(ContactVar.Phone)),NOT(ISBLANK(AccountVar.Fax)))}" />
+                                      <apex:outputText value="M: {!ContactVar.MobilePhone}" rendered="{!NOT(ISBLANK(ContactVar.MobilePhone))}" />
+                                    </span>
+                                    <br />
+                                    <span style="color: rgb(89, 89, 89)">E: </span>
+                                    <a style="
+                                                            color: rgb(65, 129, 235);
+                                                            display: inline-block;
+                                                          " href="mailto:{!ContactVar.Email}">{!ContactVar.Email}</a>
+                                    <span>&nbsp;</span>
+                                    <span style="
+                                                            color: rgb(89, 89, 89);
+                                                            display: inline-block;
+                                                          ">|</span>
+                                    <span>&nbsp;</span>
+                                    <span style="color: rgb(89, 89, 89)"> W: </span>
+                                    <a style="
+                                                            color: rgb(65, 129, 235);
+                                                            display: inline-block;
+                                                          " href="{!AccountVar.Business_Website__c}">{!AccountVar.Business_Website__c}</a>
+                                    <span>&nbsp;</span>
+                                    <br />
+                                    <span style="color: rgb(89, 89, 89)">A: {!AccountVar.Business_Address__c}</span>
+                                  </div>
+                                </td>
+                              </tr>
+                            </tbody>
+                          </table>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+
+
+</apex:component>

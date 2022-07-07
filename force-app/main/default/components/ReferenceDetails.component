@@ -1,0 +1,30 @@
+<apex:component >
+	<apex:attribute name="app" type="Application__c" description="Application Data" required="true"/>
+	<table width="100%" border="1">
+        <tr><td colspan="4" class="tableCaption"><strong>Personal References</strong></td></tr>
+        <tr>
+        	<td class="labelDate">Name</td>
+            <td><apex:outputField value="{!app.Personal_Reference_1_Full_Name__c}"/></td>
+            <td class="labelDate">Name</td>
+            <td><apex:outputField value="{!app.Personal_Reference_2_Full_Name__c}"/></td>
+        </tr>
+        <tr>
+        	<td class="labelDate">Relationship</td>
+            <td><apex:outputField value="{!app.Personal_Reference_1_Relationship__c}"/></td>
+            <td class="labelDate">Relationship</td>
+            <td><apex:outputField value="{!app.Personal_Reference_2_Relationship__c}"/></td>
+        </tr>
+        <tr>
+        	<td class="labelDate">Address</td>
+            <td><apex:outputField value="{!app.Personal_Reference_1_Address__c}"/></td>
+            <td class="labelDate">Address</td>
+            <td><apex:outputField value="{!app.Personal_Reference_2_Address__c}"/></td>
+        </tr>
+        <tr>
+        	<td class="labelDate">Phone</td>
+            <td><apex:outputField value="{!app.Personal_Reference_1_Phone__c}"/></td>
+            <td class="labelDate">Phone</td>
+            <td><apex:outputField value="{!app.Personal_Reference_2_Phone__c}"/></td>
+        </tr>
+    </table>
+</apex:component>

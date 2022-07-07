@@ -1,0 +1,75 @@
+<apex:component >
+	<apex:attribute name="app" type="Application__c" description="Application Data" required="true"/>
+    <apex:attribute name="srv" type="Application_Servicing__c" description="Servicing Calculation Data" required="true"/>
+    <apex:attribute name="loanList" type="Application_Loan__c[]" description="Servicing Calculation Data"/>
+    <apex:attribute name="assetLoanList" type="PersonalAssetDTO[]" description="List of Asset Properties"/>
+
+    <table width="100%" border="1">
+        <tr><td colspan="7" class="tableCaption"><strong>Mortgage &amp; Car Loans</strong></td></tr>
+        <tr>
+            <td width="2%" class="cellHeading">#</td>
+            <td class="cellHeading">Loan Type</td>
+            <td class="cellHeading">Lender</td>
+            <td class="cellHeading">Amount Owning</td>
+            <td class="cellHeading">Payment</td>
+            <td class="cellHeading">Frequency</td>
+            <td class="cellHeading">Payout</td>
+        </tr>
+        <apex:repeat value="{!assetLoanList}" var="p">
+            <tr>
+                <td>{!p.order})</td>
+                <td>
+                    <apex:outputText value="Mortgage" rendered="{!p.data['RecordType.Name']=='Property Asset'}"/>
+                    <apex:outputText value="Car Loan" rendered="{!p.data['RecordType.Name']=='Vehicle Asset'}"/>
+                </td>
+                <td><apex:outputField value="{!p.data['Lender__c']}"/></td>
+                <td><apex:outputField value="{!p.data['Amount_Owing__c']}"/>&nbsp;</td>
+                <td><apex:outputField value="{!p.data['Payment__c']}" rendered="{!p.data['RecordType.Name']=='Vehicle Asset'}"/>
+                    <apex:outputField value="{!p.data['Payment__c']}" rendered="{!AND(p.data['RecordType.Name']=='Property Asset',!srv.Is_Split_Rent_Mortgage__c)}"/>
+                    <apex:outputText value="{0, Number, Currency}" rendered="{!AND(p.data['RecordType.Name']=='Property Asset',srv.Is_Split_Rent_Mortgage__c)}">
+                        <apex:param value="{!p.data['Payment__c']/2}" />
+                    </apex:outputText>&nbsp;
+                </td>
+                <td>
+                    <apex:outputText value="{!p.data['Frequency__c']}"/>&nbsp;
+                </td>
+                <td>
+                    <apex:outputText value="Yes" rendered="{!AND(p.data['Has_Loan__c'] =='Y',p.data['Is_Payout__c'])}"/>
+                    <apex:outputText value="No" rendered="{!AND(p.data['Has_Loan__c'] =='Y',NOT(p.data['Is_Payout__c']))}"/>&nbsp;
+                </td>
+            </tr>
+        </apex:repeat>
+    </table>
+    <table width="100%" border="1">
+        <tr><td colspan="7" class="tableCaption"><strong>Other Liabilities</strong></td></tr>
+        <tr>
+            <td width="2%" class="cellHeading">#</td>
+            <td class="cellHeading">Loan Type</td>
+            <td class="cellHeading">Lender</td>
+            <td class="cellHeading">Amount Owing</td>
+            <td class="cellHeading">Payment</td>
+            <td class="cellHeading">Frequency</td>
+            <td class="cellHeading">Payout?</td>
+        </tr>
+        <apex:repeat value="{!loanList}" var="a">
+            <tr>
+                <td>{!a.Order__c})</td>
+                <td><apex:outputField value="{!a.Type__c}"/></td>
+                <td><apex:outputField value="{!a.Lender__c}"/></td>
+                <td><apex:outputField value="{!a.Amount_Owing__c}"/></td>
+                <td>
+                    <apex:outputField value="{!a.Payment__c}" rendered="{!a.Type__c!='Mortgage'}"/>
+                    <apex:outputField value="{!a.Payment__c}" rendered="{!AND(a.Type__c=='Mortgage',!srv.Is_Split_Rent_Mortgage__c)}"/>
+                    <apex:outputText value="{0, Number, Currency}" rendered="{!AND(a.Type__c=='Mortgage',srv.Is_Split_Rent_Mortgage__c)}">
+                        <apex:param value="{!a.Payment__c/2}" />
+                    </apex:outputText>
+                </td>
+                <td><apex:outputField value="{!a.Frequency__c}"/></td>
+                <td>
+                    <apex:outputText value="Yes" rendered="{!a.Is_Payout__c}"/>
+                    <apex:outputText value="No" rendered="{!NOT(a.Is_Payout__c)}"/>
+                </td>
+            </tr>
+        </apex:repeat>
+    </table>
+</apex:component>

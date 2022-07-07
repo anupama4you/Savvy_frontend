@@ -1,0 +1,223 @@
+<apex:page standardController="Custom_Opportunity__c" extensions="YtdPdfExtension" renderAs="pdf">
+<apex:stylesheet value="{!$Resource.AppPdfCss}"/>
+    <apex:variable value="{!Custom_Opportunity__c}" var="o" />
+    <div class="header">
+        <table width="100%">
+            <tr style="border: 0px;" width="100%">
+                <td style="border: 0px;" width="30%" align="left">
+                    <apex:image url="{!$Resource.newSavvyLogo}" alt="Logo" />
+                </td>
+                <td style="border: 0px;" width="70%" align="left">
+                    <p><span style="color:#ee245f;">FINANCE APPLICATION</span><br/>
+                        <span style="font-size:0.8em;"><span style="color:#ee245f;">E</span> applications@savvy.com.au <font>|</font> <span style="color:#ee245f;">P</span> 1300 974 066 <font>|</font> <span style="color:#ee245f;">F</span> 1300 978 066<br/>
+                            <span style="color:#ee245f;">A</span> Level 1, 145 The Parade, Norwood, SA 5067 <font>|</font> <span style="color:#ee245f;">www</span>.savvy.<span style="color:#ee245f;">com.au</span></span></p>
+                </td>
+            </tr>
+        </table>
+    </div>
+    <div class="footer">
+        <div class="footerContent">Page <span class="pagenumber"/> of <span class="pagecount"/></div>
+    </div>
+    <div class="content">
+        <h3>
+            <apex:outputText value="Savvy Finance ANZ Year To Date Calculation for {!o.Name} (Applicant 1)" rendered="{!dto.ytdLender == 'Esanda'}" />
+            <apex:outputText value="Savvy Finance Pepper Year To Date Calculation for {!o.Name} (Applicant 1)" rendered="{!dto.ytdLender == 'Pepper'}" />
+        </h3>
+        <table width="100%">
+            <tr>
+                <td width="13%">
+                    <apex:outputLabel value="Start Date: " for="fldStartDate"/>
+                </td>
+                <td width="16%">
+                    <apex:outputText id="fldStartDate" value="{!dto.startDate}"/>
+                </td>
+                <td width="13%">
+                    <apex:outputLabel value="End Date: " for="fldNetMontIncome"/>
+                </td>
+                <td width="16%">
+                        <apex:outputText id="fldEndDate" value="{!dto.endDate}"/>
+                </td>
+                <td width="25%">
+                    <apex:outputLabel value="Weeks Between Them: " for="fldYtdWeeks"/>
+                </td>
+                <td width="14%"><strong>
+                    <apex:outputText id="fldYtdWeeks" value="{!dto.ytdWeeks}"/></strong>
+                </td>
+            </tr>
+        </table>
+        <table width="100%">
+            <tr>
+                <td>Net YTD Income From Payslips</td>
+                <td>
+                    <strong><apex:outputText styleClass="labelValueTyped" id="fldYtdIncome" value="{!dto.ytdIncome}"/></strong>
+                </td>
+                <td><strong>
+                    <apex:outputText value="{!dto.ytdMonIncome}" id="fldYtdMonIncome"/></strong>
+                </td>
+                <td>Net Monthly <apex:outputText value="(ANZ)" rendered="{!dto.ytdLender == 'Esanda'}"/></td>
+            </tr>
+            <tr>
+                <td>
+                    <apex:outputText value="Annual Gross Base Income" rendered="{!dto.ytdLender == 'Esanda'}" />
+                    <apex:outputText value="Gross YTD Income From Payslip" rendered="{!dto.ytdLender == 'Pepper'}" />
+                </td>
+                <td>
+                    <strong><apex:outputText id="fldYbaseIncome" value="{!dto.baseIncome}"/></strong>
+                </td>
+                <td><strong>
+                    <apex:outputText value="{!dto.netMonIncome}" id="fldNetMonIncome"/></strong>
+                </td>
+                <td>Net Monthly (Normal Pay <apex:outputText value=" - Amount to be entered into ANZ" rendered="{!dto.ytdLender == 'Esanda'}"/>)</td>
+            </tr>
+            <tr style="display: {!IF(dto.ytdLender == 'Pepper', '','none')}">
+                <td>Net last pay period income</td>
+                <td>
+                    <apex:outputText value="{0, Number, Currency}">
+                        <apex:param value="{!dto.latestPay1}" />
+                    </apex:outputText>
+                    &nbsp;(<apex:outputText value="{!dto.latestPayFrequency1}"/>)
+                </td>
+                <td><strong>
+                    <apex:outputText value="{0, Number, Currency}">
+                        <apex:param value="{!dto.latestPayMonthly1}" />
+                    </apex:outputText></strong>
+                </td>
+                <td>Net Monthly</td>
+            </tr>
+            <tr style="display: {!IF(dto.ytdLender == 'Esanda', '','none')}">
+                <td rowspan="3">&nbsp;</td>
+                <td>Difference:</td>
+                <td><strong><apex:outputText value="{!dto.monDifference}" id="fldMonDifference"/></strong></td>
+                <td>Net Monthly (O/T - Amount to be entered into ANZ)</td>
+            </tr>
+            <tr style="display: {!IF(dto.ytdLender == 'Esanda', '','none')}">
+                <td>Discounted by 70%</td>
+                <td><strong>
+                    <apex:outputText value="{!dto.discDiff}"/></strong>&nbsp;
+                </td>
+                <td>O/T - Amount to be used for serviceability&nbsp;</td>
+            </tr>
+            <tr style="display: {!IF(dto.ytdLender == 'Esanda', '','none')}">
+                <td>Monthly Amount to Use for Servicing</td>
+                <td><strong><apex:outputText value="{!dto.outAmount}"/></strong>&nbsp;
+                </td>
+                <td>&nbsp;</td>
+            </tr>
+            <tr style="display: {!IF(dto.ytdLender == 'Esanda', '','none')}">
+            	<td colspan="4">Note: Base income - work out ordinary hours + allowances but exclude overtime and commission/bonus.</td>
+            </tr>
+            <tr style="display: {!IF(dto.ytdLender == 'Esanda', '','none')}">
+                <td>Comments</td>
+                <td colspan="3"><apex:outputText value="{!dto.ytdComment1}"/></td>
+            </tr>
+            <!--
+            <tr>
+                
+                <td>Tax:</td>
+                <td><apex:outputText value="{!baseTax}" id="fldBaseTax"/></td>
+                <td rowspan="2">&nbsp;</td>
+            </tr>
+            <tr>
+                <td>Medicare:</td>
+                <td><strong><apex:outputText value="{!baseMedi}" id="fldBaseMedi"/></strong></td>
+                
+            </tr>
+			-->
+        </table>
+        
+        <apex:outputPanel layout="block" rendered="{!dto.isEsandaApplicant2}">
+            <h3>
+                <apex:outputText value="Savvy Finance ANZ Year To Date Calculation for {!o.Name} (Applicant 2)" rendered="{!dto.ytdLender == 'Esanda'}" />
+                <apex:outputText value="Savvy Finance Pepper Year To Date Calculation for {!o.Name} (Applicant 2)" rendered="{!dto.ytdLender == 'Pepper'}" />
+            </h3>
+            <table width="100%">
+                <tr>
+                    <td width="13%">
+                        <apex:outputLabel value="Start Date: "/>
+                    </td>
+                    <td width="16%">
+                        <apex:outputText value="{!dto.startDateA2}"/>
+                    </td>
+                    <td width="13%">
+                        <apex:outputLabel value="End Date: "/>
+                    </td>
+                    <td width="16%">
+                            <apex:outputText value="{!dto.endDateA2}"/>
+                    </td>
+                    <td width="25%">
+                        <apex:outputLabel value="Weeks Between Them: "/>
+                    </td>
+                    <td width="14%"><strong>
+                        <apex:outputText value="{!dto.ytdWeeksA2}"/></strong>
+                    </td>
+                </tr>
+            </table>
+            <table width="100%">
+                <tr>
+                    <td>Net YTD Income From Payslips:</td>
+                    <td>
+                        <strong><apex:outputText styleClass="labelValueTyped" value="{!dto.ytdIncomeA2}"/></strong>
+                    </td>
+                    <td><strong>
+                        <apex:outputText value="{!dto.ytdMonIncomeA2}"/></strong>
+                    </td>
+                    <td>Net Monthly <apex:outputText value="(ANZ)" rendered="{!dto.ytdLender == 'Esanda'}"/></td>
+                </tr>
+                <tr>
+                    <td>
+                        <apex:outputText value="Annual Gross Base Income" rendered="{!dto.ytdLender == 'Esanda'}" />
+                        <apex:outputText value="Gross YTD Income From Payslip" rendered="{!dto.ytdLender == 'Pepper'}" />
+                    </td>
+                    <td>
+                        <strong><apex:outputText value="{!dto.baseIncomeA2}"/></strong>
+                    </td>
+                    <td><strong>
+                        <apex:outputText value="{!dto.netMonIncomeA2}"/></strong>
+                    </td>
+                    <td>Net Monthly (Normal Pay <apex:outputText value=" - Amount to be entered into ANZ" rendered="{!dto.ytdLender == 'Esanda'}"/>)</td>
+                </tr>
+                <tr style="display: {!IF(dto.ytdLender == 'Pepper', '','none')}">
+                    <td>Net last pay period income</td>
+                    <td>
+                        <apex:outputText value="{0, Number, Currency}">
+                            <apex:param value="{!dto.latestPay2}" />
+                        </apex:outputText>
+                        &nbsp;(<apex:outputText value="{!dto.latestPayFrequency2}"/>)
+                    </td>
+                    <td><strong>
+                        <apex:outputText value="{0, Number, Currency}">
+                            <apex:param value="{!dto.latestPayMonthly2}" />
+                        </apex:outputText></strong>
+                    </td>
+                    <td>Net Monthly</td>
+                </tr>
+                <tr style="display: {!IF(dto.ytdLender == 'Esanda', '','none')}">
+                    <td rowspan="3">&nbsp;</td>
+                    <td>Difference:</td>
+                    <td><strong><apex:outputText value="{!dto.monDifferenceA2}"/></strong></td>
+                    <td>Net Monthly (O/T - Amount to be entered into ANZ)</td>
+                </tr>
+                <tr style="display: {!IF(dto.ytdLender == 'Esanda', '','none')}">
+                    <td>Discounted by 70%</td>
+                    <td><strong>
+                        <apex:outputText value="{!dto.discDiffA2}"/></strong>&nbsp;
+                    </td>
+                    <td>O/T - Amount to be used for serviceability&nbsp;</td>
+                </tr>
+                <tr style="display: {!IF(dto.ytdLender == 'Esanda', '','none')}">
+                    <td>Monthly Amount to Use for Servicing</td>
+                    <td><strong><apex:outputText value="{!dto.outAmountA2}"/></strong>&nbsp;
+                    </td>
+                    <td>&nbsp;</td>
+                </tr>
+                <tr style="display: {!IF(dto.ytdLender == 'Esanda', '','none')}">
+                    <td colspan="4">Note: Base income - work out ordinary hours + allowances but exclude overtime and commission/bonus.</td>
+                </tr>
+                <tr style="display: {!IF(dto.ytdLender == 'Esanda', '','none')}">
+                    <td>Comments</td>
+                    <td colspan="3"><apex:outputText value="{!dto.ytdComment2}"/></td>
+                </tr>
+            </table>
+        </apex:outputPanel>
+    </div>
+</apex:page>

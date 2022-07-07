@@ -1,0 +1,1253 @@
+<apex:page docType="html-5.0" standardController="Custom_Opportunity__c" extensions="GlassServiceEstimatorExtension" sidebar="false" showHeader="true">
+  <!-- Partner Portal Styles -->
+  <apex:outputPanel rendered="{!isBrokerPartnerUser}">
+    <style type="text/css">
+     html .brandQuaternaryBgr,
+      .titleDiv {
+        background: #ffffff !important;
+      }
+      .bPageBlock {
+        border: 1px solid white !important;
+      }
+    </style>
+  </apex:outputPanel>
+    <!-- Lelo                               2016-06-28 -->
+    <style type="text/css">
+        .rowThree {
+        background: #0099d0;
+        color: #ffffff !important;
+        padding: 5px 10px 5px 15px;
+        font-weight: bold;
+        }
+        /* Lelo */
+        
+        .customInputStyle {
+        width: 20px;
+        }
+        
+        .leftTables {
+        display: inline-block;
+        float: left;
+        width: 48%;
+        padding-left: 20px;
+        }
+        .rightTables {
+        display: inline-block;
+        width: 48%;
+        padding-left: 20px;
+        }
+        
+        .leftTables2 {
+        display: inline-block;
+        float: left;
+        width: 32%;
+        padding-left: 20px;
+        }
+        
+        .leftTablesNoFloat {
+        display: inline-block;
+        width: 38%;
+        padding-left: 20px;
+        }
+        .rightTablesNoFloat {
+        display: inline-block;
+        width: 58%;
+        padding-left: 20px;
+        }
+        
+        .rightTables2 {
+        display: inline-block;
+        width: 64%;
+        padding-left: 20px;
+        }
+        
+        .oneTables {
+        display: inline-block;
+        /*float: left;*/
+        width: 97.5%;
+        padding-left: 20px;
+        }
+        
+        .section {
+        background: #f8f8f8;
+        border: 1px solid #ddd;
+        padding-bottom: 20px;
+        }
+        
+        .subSectionTab {
+        border: 1px solid #ddd;
+        border-bottom: transparent;
+        display: inline-block;
+        background-color: #fff;
+        position: relative;
+        padding: 3px;
+        padding-right: 20px;
+        padding-left: 20px;
+        top: 20px;
+        }
+        
+        .tableSubsection {
+        width: 100%;
+        background: white;
+        border: 1px solid #ddd;
+        margin-top: 18px;
+        padding: 2px;
+        padding-left: 20px;
+        padding-top: 10px;
+        padding-bottom: 10px;
+        }
+        
+        .labelColumn {
+        width: 25%;
+        /*padding-bottom: 13px;*/
+        }
+        .dataColumn {
+        width: 25%;
+        }
+        
+        .labelOneColumn {
+        width: 30%;
+        /*padding-bottom: 13px;*/
+        }
+        .dataOneColumn {
+        width: 70%;
+        }
+        
+        .divTitle {
+        background-color: #ddd;
+        padding-top: 1px;
+        padding-bottom: 1px;
+        padding-left: 15px;
+        /*text-transform: uppercase;*/
+        font-weight: bold;
+        border: 1px solid #ddd;
+        }
+        .dataInput {
+        border: 1px solid #e0e0e0;
+        padding: 0.3em !important;;
+        min-width: 173px !important;;
+        }
+        .dataInput2 {
+        border: 1px solid #e0e0e0;
+        padding: 0.3em !important;
+        min-width: 53px !important;
+        max-width: 113px !important;
+        }
+        .dataInputFull {
+        border: 1px solid #e0e0e0;
+        padding: 0.3em !important;
+        min-width: 98% !important;
+        }
+        .selectList {
+        border: 1px solid #e0e0e0;
+        padding: 0.3em;
+        width:182px;
+        height: 25px !important;
+        }
+        .selectList2 {
+        border: 1px solid #e0e0e0;
+        padding: 0.3em;
+        width:122px;
+        height: 25px !important;
+        }
+        .selectListMultiple {
+        border: 1px solid #e0e0e0;
+        padding: 0.3em;
+        width:182px;
+        }
+        .titleDiv {
+        width: 100%;
+        height: 43px;
+        font-size: 1.0rem;
+        }
+        .toolOptions {
+        float: right;
+        text-align: right;
+        width: 60%;
+        }
+                
+        .commandButtons {
+        padding: 6px 7px !important;
+        color: #fff !important;
+        font-size: 11px !important;
+        outline: none !important;
+        background: rgb(0,0,0) !important;
+        }
+        .commandButtons:hover {
+        background: rgb(14,14,14) !important;
+        }
+        
+        .noSidebarCell, .sidebarCell .fixed {
+        height: inherit;
+        }
+        
+        /* Servicing Calculator*/
+        
+        .cellMultiTables {
+        vertical-align: top;
+        }
+        .cellExtraRigthPading {
+        padding-right: 18px;
+        }
+        .cellExtraLeftPading {
+        padding-left: 18px;
+        }
+        .incomeValue {
+        color: #1a75ff !important;
+        }
+        .notIncomeValue {
+        color: #cc0000 !important;
+        }     
+        
+        .main-content .bPageBlock {
+        border-top: 1px solid white !important;
+        }
+        .totalCalculated {
+        color: #1a75ff !important;
+        font-weight: bold;
+        font-size: 13px;
+        }
+        .bPageBlock { 
+        border-top: 1px solid white !important;
+        }
+        .div2Columns {
+        -webkit-column-count: 2; /* Chrome, Safari, Opera */
+        -moz-column-count: 2; /* Firefox */
+        column-count: 2;
+        }
+        .main-content {
+        margin-left:auto;
+        width:86%;
+        }
+        
+        .ppsr_ok{
+        color: #31B404 !important;
+        font-weight: bold;
+        }
+        
+        .ppsr_sent{
+        color: #585858!important;
+        font-weight: italic;
+        }
+        /* end */
+    </style>
+    <!-- end -->
+    <apex:includeScript value="{! $Resource.jQuery }"/>
+    <script type="text/javascript">
+    jQuery.noConflict();
+    jQuery(document).ready(function() {});
+    </script>
+    <div class="bPageBlock">
+        <apex:variable value="{!Custom_Opportunity__c}" var="opp" />
+        <c:sidebarV2 id="pnlSideBar" oppId="{!opp.Id}" appId="{!opp.Application__c}" rendered="{!NOT(isBrokerPartnerUser)}"/>
+        <!-- <apex:outputPanel layout="block" id="mainContent"> -->
+        <!-- <div id="GlassServEstimator"> -->
+        <div id="mainContent" class="{!IF(NOT(isBrokerPartnerUser),'main-content','')}">
+            <apex:pageMessages id="msgGlassServ" />
+            <apex:form styleClass="appForm" id="dataForm">
+                <!-- Jesus Mora 2019-11-08 start -->
+                <!--<apex:actionFunction action="{!loadNewUsedYearOptions}" name="loadNewUsedYearOptions" 
+                                     reRender="fldYear, fldMake, fldModel, fldVariant, fldSeries, fldAssetOptions, pnlEstimations, pnlVehicleData, pnlLTV, msgGlassServ" 
+                                     status="stsYear" />-->
+                <apex:actionFunction action="{!loadNewUsedYearOptions}" name="loadNewUsedYearOptions" 
+                                     reRender="fldYear, fldMake, fldModel, fldVariant, fldSeries, fldAssetOptions, pnlEstimations, pnlVehicleData, pnlLTV, msgGlassServ, pnlCars" 
+                                     status="stsYear" />
+                <!-- Jesus Mora 2019-11-08 end -->
+                <!--<apex:actionFunction action="{!loadLenderRedbookOptions}" name="loadLenderRedbookOptions" 
+reRender="fldMake, fldModel, fldFamily, fldBadgeRedbook, fldVariant, fldVariantRedbook, fldAssetOptions, pnlEstimations, pnlVehicleData, pnlLTV, msgGlassServ"
+status="stsMake" />-->
+                <!-- Jesus Mora 2019-11-08 start -->
+                <!--<apex:actionFunction action="{!loadLenderMakeOptions}" name="loadLenderMakeOptions" 
+                                     reRender="fldMake, fldModel, fldFamily, fldBadgeRedbook, fldVariant, fldSeries, fldVariantRedbook, fldAssetOptions, pnlEstimations, pnlVehicleData, pnlLTV, msgGlassServ"
+                                     status="stsMake" />-->
+                <apex:actionFunction action="{!loadLenderMakeOptions}" name="loadLenderMakeOptions" 
+                                     reRender="fldMake, fldModel, fldFamily, fldBadgeRedbook, fldVariant, fldSeries, fldVariantRedbook, fldAssetOptions, pnlEstimations, pnlVehicleData, pnlLTV, msgGlassServ, pnlCars"
+                                     status="stsMake" />
+                <!-- Jesus Mora 2019-11-08 end -->
+                <!-- Jesus Mora 2019-11-08 start -->
+                <!--<apex:actionFunction action="{!loadMakeModelOrFamilyOptions}" name="loadMakeModelOrFamilyOptions"
+                                     reRender="fldModel, fldFamily, fldBadgeRedbook, fldVariant, fldSeries, fldVariantRedbook, fldAssetOptions, pnlEstimations, pnlVehicleData, pnlLTV, msgGlassServ"
+                                     status="stsModel, stsFamilly" />-->
+                <apex:actionFunction action="{!loadMakeModelOrFamilyOptions}" name="loadMakeModelOrFamilyOptions"
+                                     reRender="fldModel, fldFamily, fldBadgeRedbook, fldVariant, fldSeries, fldVariantRedbook, fldAssetOptions, pnlEstimations, pnlVehicleData, pnlLTV, msgGlassServ, pnlCars"
+                                     status="stsModel" />
+                <!-- Jesus Mora 2019-11-08 end -->
+                <!-- Jesus Mora 2019-11-08 start -->
+                <!--<apex:actionFunction action="{!loadModelVariantOptions}" name="loadModelVariantOptions"
+                                     reRender="fldVariant, fldSeries, fldAssetOptions, pnlEstimations, pnlVehicleData, pnlLTV, msgGlassServ"
+                                     status="stsVariant" />-->
+                <apex:actionFunction action="{!loadModelVariantOptions}" name="loadModelVariantOptions"
+                                     reRender="fldVariant, fldSeries, fldAssetOptions, pnlEstimations, pnlVehicleData, pnlLTV, msgGlassServ, pnlCars"
+                                     status="stsVariant" />
+                <!--<apex:actionFunction action="{!loadVariantSeriesOptions}" name="loadVariantSeriesOptions"
+                                     reRender="fldSeries, fldAssetOptions, pnlEstimations, pnlVehicleData, pnlLTV, msgGlassServ"
+                                     status="stsSeries" />-->
+                <apex:actionFunction action="{!loadVariantSeriesOptions}" name="loadVariantSeriesOptions"
+                                     reRender="fldSeries, fldAssetOptions, pnlEstimations, pnlVehicleData, pnlLTV, msgGlassServ, pnlCars"
+                                     status="stsSeries" />
+                <!--<apex:actionFunction action="{!loadVariantFactoryOptions}" name="loadVariantFactoryOptions"
+                                     reRender="fldAssetOptions, pnlEstimations, pnlVehicleData, pnlLTV, msgGlassServ, pnlListCars"
+                                     status="stsAssetOptions" />-->
+                <!-- Jesus Mora 2019-11-08 end -->
+                <apex:actionFunction action="{!getVehicleKey}" name="getVehicleKey"
+                                     reRender="pnlDetailsRedbook, pnlEstimations, pnlVehicleData, pnlLTV, msgGlassServ"
+                                     status="" />
+                <apex:actionFunction action="{!loadFamilyBadgeOptions}" name="loadFamilyBadgeOptions"
+                                     reRender="fldBadgeRedbook, fldVariantRedbook, pnlEstimations, pnlVehicleData, pnlLTV, msgGlassServ"
+                                     status="stsBadgeRedbook" />
+                <apex:actionFunction action="{!loadBadgeVariantOptions}" name="loadBadgeVariantOptions"
+                                     reRender="fldVariantRedbook, pnlEstimations, pnlVehicleData, pnlLTV, msgGlassServ"
+                                     status="stsVariantRedbook" />
+                <apex:actionFunction action="{!calculateFactoryOptions}" name="calculateFactoryOptions"
+                                     reRender="pnlEstimations, pnlVehicleData, pnlLTV, msgGlassServ"
+                                     status="stsEstimation" />
+                
+                
+                <!-- HJ - PPSR Service - 11-09-2018 - I -->
+                <!--apex:actionFunction action="{!requestPPSRCertificate}" name="createCertificateRequest" status="stsReqCertf" oncomplete="createCertificateRetrieve();"
+reRender="fldVariant, fldAssetOptions, pnlEstimations, pnlVehicleData, pnlLTV, msgGlassServ, pnlVehicleId"/>
+
+<!-- HJ - PPSR Service - 11-09-2018 - F -->                
+                
+                <apex:outputPanel layout="block" styleClass="titleDiv">
+                    <h1>Asset Details - LTV for {!opp.Name}</h1>
+                    <apex:outputPanel layout="block" styleClass="toolOptions">
+                        <apex:actionStatus startText="(processing...)" id="stsSavePdf"  />&nbsp;
+                        <!-- HJ - PPSR Service - 11-09-2018 - I -->
+                        <apex:actionStatus startText="(requesting Certificate...)" id="stsReqCertf"  />&nbsp;
+                        <!-- HJ - PPSR Certificate - 03-10-2018 - F -->
+                        
+                        <!--apex:outputPanel >
+<input name="DoAction"  class="commandButtons" type="button" value="PPSR certificate" onclick="createCertificateRequest();return false;"/>
+</apex:outputPanel-->
+                        <apex:commandButton value="PPSR Certificate" action="{!requestPPSRCertificate}" styleClass="commandButtons" reRender="fldVariant, fldAssetOptions, pnlEstimations, pnlVehicleData, pnlLTV, msgGlassServ, pnlVehicleId" status="stsReqCertf" />
+                        
+                        <!-- HJ - PPSR Certificate - 03-10-2018 - F -->
+                        <apex:commandButton value="Save Asset Details" action="{!savePdf}" styleClass="commandButtons" reRender="dataForm, msgGlassServ" status="stsSavePdf" />
+                        <apex:commandButton value="Save for Pre-approval" action="{!savePreApproval}" styleClass="commandButtons" reRender="dataForm, pnlSideBar, msgGlassServ" status="stsSavePdf"/>
+                        <apex:commandButton value="Save for Amendment" action="{!saveAmendment}" styleClass="commandButtons" reRender="dataForm, pnlSideBar, msgGlassServ" status="stsSavePdf"/>
+                        <apex:commandButton value="Save for Formal Approval" action="{!saveFormalApproval}" styleClass="commandButtons" reRender="dataForm, pnlSideBar, msgGlassServ" status="stsSavePdf"/>
+                        <apex:commandButton value="Private Sale Tax Invoice" styleClass="commandButtons" action="{!goPrivateSaleTaxInvoice}" reRender="msgGlassServ" status="stsSavePdf" rendered="{!isUserSettlementTeam}"/>
+                        <apex:commandButton value="Cancel" styleClass="commandButtons" rendered="false" />
+                    </apex:outputPanel>
+                </apex:outputPanel>
+                <!--<apex:pageBlock mode="edit" id="App">-->
+                <!-- <apex:pageBlock mode="edit" id="assetDetailsForm"> -->
+                <!-- ASSET DETAILS -->
+                <apex:outputPanel layout="block" styleClass="section">  
+                    <div class="divTitle">ASSET DETAILS</div>
+                    
+                    <table width="99%">
+                        <tr>
+                            <td width="40%" class="cellMultiTables cellExtraLeftPading cellExtraRigthPading">
+                                <apex:outputPanel styleClass="subSectionTab"><h3>Asset</h3></apex:outputPanel>
+                                <table class="tableSubsection">
+                                    <tr>
+                                        <td class="labelOneColumn">Asset Type</td>
+                                        <td class="dataOneColumn">
+                                            <apex:outputPanel styleClass="requiredInput"><apex:outputPanel styleClass="requiredBlock"></apex:outputPanel></apex:outputPanel>
+                                            <apex:selectList value="{!assetType}" multiselect="false" size="1" styleClass="selectList">
+                                                <apex:actionSupport event="onchange" action="{!loadNewUsedYearOptions}" reRender="dataForm" status="stsAssetType" />
+                                                <apex:selectOption itemValue="Car" itemLabel="Car" />
+                                                <apex:selectOption itemValue="Motorcycle" itemLabel="Motorcycle" />
+                                                <apex:selectOption itemValue="Marine" itemLabel="Marine" />
+                                                <apex:selectOption itemValue="Caravan" itemLabel="Caravan" />
+                                                <apex:selectOption itemValue="Truck" itemLabel="Truck" />
+                                                <apex:selectOption itemValue="Equipment" itemLabel="Equipment" />
+                                            </apex:selectList>
+                                            <apex:actionStatus startText="   (loading...)" id="stsAssetType"  />
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td class="labelOneColumn">New / Used</td>
+                                        <td class="dataOneColumn">
+                                            <apex:outputPanel styleClass="requiredInput"><apex:outputPanel styleClass="requiredBlock"></apex:outputPanel></apex:outputPanel>
+                                            <apex:selectRadio value="{!newUsed}" id="fldNewUsed"
+                                                              onchange="loadNewUsedYearOptions()">
+                                                <apex:selectOption itemValue="new" itemLabel="New" />
+                                                <apex:selectOption itemValue="demo" itemLabel="Demo" />
+                                                <apex:selectOption itemValue="used" itemLabel="Used" />
+                                            </apex:selectRadio>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>Year of Vehicle</td>
+                                        <td>
+                                            <apex:outputPanel styleClass="requiredInput"><apex:outputPanel styleClass="requiredBlock"></apex:outputPanel></apex:outputPanel>
+                                            <apex:selectList value="{!year}" multiselect="false" size="1" styleClass="selectList" 
+                                                             id="fldYear" disabled="{!ISBLANK(newUsed)}" onchange="loadLenderMakeOptions()">
+                                                <apex:selectOptions value="{!yearSelect}" />
+                                            </apex:selectList>&nbsp;&nbsp;&nbsp;
+                                            <apex:actionStatus startText="   (loading...)" id="stsYear"  />
+                                        </td>
+                                    </tr>
+                                </table> 
+                                <apex:outputPanel layout="block" rendered="{!assetType == 'Car'}" id="pnlCarFields">
+                                    <apex:outputPanel styleClass="subSectionTab"><h3>Details</h3></apex:outputPanel>
+                                    <table class="tableSubsection">
+                                        <tr>
+                                            <td class="labelOneColumn">Make</td>
+                                            <td class="dataOneColumn">
+                                                <apex:outputPanel styleClass="requiredInput"><apex:outputPanel styleClass="requiredBlock"></apex:outputPanel></apex:outputPanel>
+                                                <apex:selectList value="{!make}" multiselect="false" size="1" styleClass="selectList" id="fldMake"
+                                                                 disabled="{!ISBLANK(year)}" onchange="loadMakeModelOrFamilyOptions()">
+                                                    <apex:selectOptions value="{!makeSelect}" />
+                                                </apex:selectList>&nbsp;&nbsp;&nbsp;
+                                                <apex:actionStatus startText="   (loading...)" id="stsMake"  />
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>Model</td>
+                                            <td>
+                                                <apex:outputPanel styleClass="requiredInput"><apex:outputPanel styleClass="requiredBlock"></apex:outputPanel></apex:outputPanel>
+                                                <apex:selectList value="{!model}" multiselect="false" size="1" styleClass="selectList" id="fldModel"
+                                                                 disabled="{!ISBLANK(make)}" onchange="loadModelVariantOptions()">
+                                                    <apex:selectOptions value="{!modelSelect}" />
+                                                </apex:selectList>&nbsp;&nbsp;&nbsp;
+                                                <apex:actionStatus startText="   (loading...)" id="stsModel"  />
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>Variant</td>
+                                            <td class="dataColumn">
+                                                <apex:outputPanel styleClass="requiredInput"><apex:outputPanel styleClass="requiredBlock"></apex:outputPanel></apex:outputPanel>
+                                                <!-- Jesus Mora 2019-11-08 start -->
+                                                <!--<apex:selectList value="{!variantDesc}" multiselect="false" size="1" styleClass="selectList" id="fldVariant"
+                                                                 disabled="{!ISBLANK(model)}" onchange="loadVariantSeriesOptions()">-->
+                                                <apex:selectList value="{!variantDesc}" multiselect="false" size="1" styleClass="selectList" id="fldVariant"
+                                                                 disabled="{!ISBLANK(model)}" onchange="loadVariantSeriesOptions()">
+                                                <!-- Jesus Mora 2019-11-08 end -->    
+                                                    <apex:selectOptions value="{!variantSelect}" />
+                                                </apex:selectList>&nbsp;&nbsp;&nbsp;
+                                                <apex:actionStatus startText="   (loading...)" id="stsVariant"  />
+                                            </td>       
+                                        </tr>
+                                        <!-- Jesus Mora 2019-11-08 start -->
+                                        <!--<tr>
+                                            <td>Factory Options</td>
+                                            <td>
+                                                <apex:outputPanel styleClass="requiredInput">
+                                                    <apex:outputPanel styleClass="requiredBlock"></apex:outputPanel>
+                                                </apex:outputPanel>
+                                                <apex:selectCheckboxes value="{!assetOptions}" layout="pageDirection" id="fldAssetOptions"
+                                                                       disabled="{!ISBLANK(variant)}" onchange="calculateFactoryOptions()">
+                                                    <apex:selectOptions value="{!assetOptionsSelect}" />
+                                                </apex:selectCheckboxes>&nbsp;&nbsp;&nbsp;
+                                                <apex:actionStatus startText="   (loading...)" id="stsAssetOptions"  />
+                                            </td>
+                                        </tr>-->
+                                        <tr>
+                                            <td>Series</td>
+                                            <td class="dataColumn">
+                                                <apex:outputPanel styleClass="requiredInput"><apex:outputPanel styleClass="requiredBlock"></apex:outputPanel></apex:outputPanel>
+                                                <apex:selectList value="{!series}" multiselect="false" size="1" styleClass="selectList" id="fldSeries"
+                                                                 disabled="{!ISBLANK(variantDesc)}">
+                                                    <apex:selectOptions value="{!seriesSelect}" />
+                                                    <apex:actionSupport event="onchange" reRender="fldVariant, fldSeries, fldAssetOptions, pnlEstimations, pnlVehicleData, pnlLTV, msgGlassServ, pnlAssetOptions, pnlFactoryOptions, pnlCars" action="{!listCars}" status="stsListCars"/>
+                                                </apex:selectList>&nbsp;&nbsp;&nbsp;
+                                                <apex:actionStatus startText="   (loading...)" id="stsSeries"  />
+                                            </td>       
+                                        </tr>
+                                        <tr>
+                                            <td colspan="2">
+                                                <br/>
+                                                <apex:outputPanel id="pnlCars">
+                                                    <apex:outputPanel id="pnlListCars">
+                                                        <apex:outputLabel value="Matching Records: {!carsSize}" rendered="{!isDetail==0}"/>
+                                                        <br/>
+                                                        <apex:actionStatus startText="   (loading...)" id="stsListCars"  />
+                                                        <apex:repeat value="{!carsList}" var="q" rendered="{!isDetail==0}"><br/><br/>
+                                                            <table styleClass="rowThree" width="100%">
+                                                                <tr>
+                                                                    <td colspan="2" class="rowThree">
+                                                                        <apex:outputLabel value="{!q.Year__c} {!glassMake.Name} {!q.Family__c} {!q.Description__c} {!q.Series__c} {!q.Style__c} {!q.CC__c} cc {!q.Engine__c} {!q.Size__c} {!q.Cylinders__c} {!q.Transmission__c}"/>
+                                                                    </td>
+                                                                </tr>
+                                                                <tr>
+                                                                    <td colspan="2">
+                                                                        <!-- <apex:outputText value="OLDER LIGHT COMMERCIAL" rendered="{!q.Model__r.Type_Source__c = 'OLC'}"/>
+                                                                        <apex:outputText value="OLDER CARS" rendered="{!q.Model__r.Type_Source__c = 'OCG'}"/>
+                                                                        <apex:outputText value="LIGHT COMMERCIAL VEHICLES" rendered="{!q.Model__r.Type_Source__c = 'CVG'}"/>
+                                                                        <apex:outputText value="PASSENGER VEHICLES" rendered="{!q.Model__r.Type_Source__c = 'PVG'}"/> -->
+                                                                        <apex:outputText value="OLDER LIGHT COMMERCIAL" rendered="{!q.Type_Source__c = 'OLC'}" />
+                                                                        <apex:outputText value="OLDER CARS" rendered="{!q.Type_Source__c = 'OCG'}" />
+                                                                        <apex:outputText value="LIGHT COMMERCIAL VEHICLES" rendered="{!q.Type_Source__c = 'CVG'}" />
+                                                                        <apex:outputText value="PASSENGER VEHICLES" rendered="{!q.Type_Source__c = 'PVG'}" />
+                                                                    </td>
+                                                                </tr>
+                                                                <tr>
+                                                                    <td>
+                                                                        <apex:outputLabel value="Date Rel: {!q.Release_Date__c}" styleClass=""/>
+                                                                    </td>
+                                                                    <td>
+                                                                        <apex:outputLabel value="NVIC: {!q.NVIC__c}" styleClass=""/>
+                                                                    </td>
+                                                                </tr>
+                                                                <tr>
+                                                                    <td>
+                                                                        <apex:outputText value="{0, number, RRP: $###,###,##0.00}" id="rrp">
+                                                                            <apex:param value="{!q.New_Price__c}" />
+                                                                        </apex:outputText>
+                                                                    </td>
+                                                                    <td>
+                                                                        <apex:outputText value="{0, number, Trade L: $###,###,##0.00}" id="tradeL" >
+                                                                            <apex:param value="{!q.Trade_Low_Price__c}" />
+                                                                        </apex:outputText>
+                                                                    </td>
+                                                                </tr>
+                                                                <td>
+                                                                    <apex:outputText value="{0, number, Trade: $###,###,##0.00}" id="trade" >
+                                                                        <apex:param value="{!q.Trade_Price__c}" />
+                                                                    </apex:outputText>
+                                                                </td>
+                                                                <td>
+                                                                    <apex:outputText value="{0, number, Retail: $###,###,##0.00}" id="retail" styleClass="matchingRecord1">
+                                                                        <apex:param value="{!q.Retail_Price__c}" />
+                                                                    </apex:outputText>
+                                                                </td>
+                                                                <tr>
+                                                                    <td>
+                                                                        <apex:outputText value="{0, number, ########} Km" id="km" style="color: red">
+                                                                            <apex:param value="{!q.Average_Kms__c*1000}" />
+                                                                        </apex:outputText> 
+                                                                    </td>
+                                                                    <td align="right">
+                                                                        <apex:actionStatus startText="   (Loading...)" id="stsLoad"  />
+                                                                        <apex:commandButton value="Select" reRender="pnlFactoryOptions, fldAssetOptions, pnlEstimations, pnlVehicleData, pnlLTV, msgGlassServ, pnlCars" action="{!loadVariantFactoryOptions}" status="stsLoad">
+                                                                            <apex:param name="detailSelected" assignTo="{!isDetail}" value="2" />
+                                                                            <apex:param name="variant" assignTo="{!variant}" value="{!q.Code__c}" />
+                                                                        </apex:commandButton>
+                                                                    </td>
+                                                                </tr>
+                                                            </table>
+                                                        </apex:repeat>
+                                                    </apex:outputPanel>
+                                                    <apex:outputPanel id="pnlInfoCar" rendered="{!isDetail==2}">
+                                                        <table styleClass="rowThree" width="100%">
+                                                            <tr>
+                                                                <td colspan="2" class="rowThree">
+                                                                    <apex:outputLabel value="{!glassVariant.Year__c} {!glassMake.Name} {!glassVariant.Family__c} {!glassVariant.Description__c} {!glassVariant.Series__c} {!glassVariant.Style__c} {!glassVariant.CC__c} cc {!glassVariant.Engine__c} {!glassVariant.Size__c} {!glassVariant.Cylinders__c} {!glassVariant.Transmission__c}"/>
+                                                                </td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td colspan="2">
+                                                                    <!-- <apex:outputText value="OLDER LIGHT COMMERCIAL" rendered="{!glassVariant.Model__r.Type_Source__c = 'OLC'}"/>
+                                                                    <apex:outputText value="OLDER CARS" rendered="{!glassVariant.Model__r.Type_Source__c = 'OCG'}"/>
+                                                                    <apex:outputText value="LIGHT COMMERCIAL VEHICLES" rendered="{!glassVariant.Model__r.Type_Source__c = 'CVG'}"/>
+                                                                    <apex:outputText value="PASSENGER VEHICLES" rendered="{!glassVariant.Model__r.Type_Source__c = 'PVG'}"/> -->
+                                                                    <apex:outputText value="OLDER LIGHT COMMERCIAL" rendered="{!glassVariant.Type_Source__c = 'OLC'}"/>
+                                                                    <apex:outputText value="OLDER CARS" rendered="{!glassVariant.Type_Source__c = 'OCG'}"/>
+                                                                    <apex:outputText value="LIGHT COMMERCIAL VEHICLES" rendered="{!glassVariant.Type_Source__c = 'CVG'}"/>
+                                                                    <apex:outputText value="PASSENGER VEHICLES" rendered="{!glassVariant.Type_Source__c = 'PVG'}"/>
+                                                                </td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td>
+                                                                    <apex:outputLabel value="Date Rel: {!glassVariant.Release_Date__c}" styleClass=""/>
+                                                                </td>
+                                                                <td>
+                                                                    <apex:outputLabel value="NVIC: {!glassVariant.NVIC__c}" styleClass=""/>
+                                                                </td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td>
+                                                                    <apex:outputText value="{0, number, RRP: $###,###,##0.00}" id="rrp">
+                                                                        <apex:param value="{!variantNewPrice}" />
+                                                                    </apex:outputText>
+                                                                </td>
+                                                                <td>
+                                                                    <apex:outputText value="{0, number, Trade L: $###,###,##0.00}" id="tradeL" >
+                                                                        <apex:param value="{!glassVariant.Trade_Low_Price__c}" />
+                                                                    </apex:outputText>
+                                                                </td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td>
+                                                                    <apex:outputText value="{0, number, Trade: $###,###,##0.00}" id="trade" >
+                                                                        <apex:param value="{!glassVariant.Trade_Price__c}" />
+                                                                    </apex:outputText>
+                                                                </td>
+                                                                <td>
+                                                                    <apex:outputText value="{0, number, Retail1: $###,###,##0.00}" id="retail" styleClass="matchingRecord1">
+                                                                        <apex:param value="{!glassVariant.Retail_Price__c}" />
+                                                                    </apex:outputText>
+                                                                </td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td>
+                                                                    <apex:outputText value="{0, number, ########} Km" id="km" style="color: red">
+                                                                        <apex:param value="{!glassVariant.Average_Kms__c*1000}" />
+                                                                    </apex:outputText> 
+                                                                </td>
+                                                                <td align="right">
+                                                                    <apex:actionStatus startText="   (Loading...)" id="stsLoad"  />
+                                                                    <apex:commandButton value="List" reRender="pnlCars" action="{!loadVariantFactoryOptions}" status="stsLoad">
+                                                                        <apex:param name="detailSelected" assignTo="{!isDetail}" value="0" />
+                                                                    </apex:commandButton>
+                                                                </td>
+                                                            </tr>
+                                                        </table>
+                                                    </apex:outputPanel>
+                                                    <apex:outputPanel id="pnlSavedCar" rendered="{!isDetail==3}">
+                                                        <table styleClass="rowThree" width="100%">
+                                                            <tr>
+                                                                <td colspan="2" class="rowThree">
+                                                                    <apex:outputLabel value="{!glassVariant.Year__c} {!glassMake.Name} {!glassVariant.Family__c} {!glassVariant.Description__c} {!glassVariant.Series__c} {!glassVariant.Style__c} {!glassVariant.CC__c} cc {!glassVariant.Engine__c} {!glassVariant.Size__c} {!glassVariant.Cylinders__c} {!glassVariant.Transmission__c}"/>
+                                                                </td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td colspan="2">
+                                                                    <!-- <apex:outputText value="OLDER LIGHT COMMERCIAL" rendered="{!glassVariant.Model__r.Type_Source__c = 'OLC'}"/>
+                                                                    <apex:outputText value="OLDER CARS" rendered="{!glassVariant.Model__r.Type_Source__c = 'OCG'}"/>
+                                                                    <apex:outputText value="LIGHT COMMERCIAL VEHICLES" rendered="{!glassVariant.Model__r.Type_Source__c = 'CVG'}"/>
+                                                                    <apex:outputText value="PASSENGER VEHICLES" rendered="{!glassVariant.Model__r.Type_Source__c = 'PVG'}"/> -->
+                                                                    <apex:outputText value="OLDER LIGHT COMMERCIAL" rendered="{!glassVariant.Type_Source__c = 'OLC'}" />
+                                                                    <apex:outputText value="OLDER CARS" rendered="{!glassVariant.Type_Source__c = 'OCG'}" />
+                                                                    <apex:outputText value="LIGHT COMMERCIAL VEHICLES" rendered="{!glassVariant.Type_Source__c = 'CVG'}" />
+                                                                    <apex:outputText value="PASSENGER VEHICLES" rendered="{!glassVariant.Type_Source__c = 'PVG'}" />
+                                                                </td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td>
+                                                                    <apex:outputLabel value="Date Rel: {!glassVariant.Release_Date__c}" styleClass=""/>
+                                                                </td>
+                                                                <td>
+                                                                    <apex:outputLabel value="NVIC: {!glassVariant.NVIC__c}" styleClass=""/>
+                                                                </td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td>
+                                                                    <apex:outputText value="{0, number, RRP: $###,###,##0.00}" id="savedRrp">
+                                                                        <apex:param value="{!variantNewPrice}" />
+                                                                    </apex:outputText>
+                                                                </td>
+                                                                <td>
+                                                                    <apex:outputText value="{0, number, Trade L: $###,###,##0.00}" id="savedTradeL" >
+                                                                        <apex:param value="{!glassVariant.Trade_Low_Price__c}" />
+                                                                    </apex:outputText>
+                                                                </td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td>
+                                                                    <apex:outputText value="{0, number, Trade: $###,###,##0.00}" id="savedTrade" >
+                                                                        <apex:param value="{!glassVariant.Trade_Price__c}" />
+                                                                    </apex:outputText>
+                                                                </td>
+                                                                <td>
+                                                                    <apex:outputText value="{0, number, Retail1: $###,###,##0.00}" id="savedRetail" styleClass="matchingRecord1">
+                                                                        <apex:param value="{!glassVariant.Retail_Price__c}" />
+                                                                    </apex:outputText>
+                                                                </td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td>
+                                                                    <apex:outputText value="{0, number, ########} Km" id="savedKm" style="color: red">
+                                                                        <apex:param value="{!glassVariant.Average_Kms__c*1000}" />
+                                                                    </apex:outputText> 
+                                                                </td>
+                                                                <td align="right">
+                                                                    <apex:actionStatus startText="   (Loading...)" id="savedStsLoad"  />
+                                                                    <apex:commandButton value="List" reRender="pnlCars" action="{!loadVariantFactoryOptions}" status="savedStsLoad">
+                                                                        <apex:param name="detailSelected" assignTo="{!isDetail}" value="0" />
+                                                                    </apex:commandButton>
+                                                                </td>
+                                                            </tr>
+                                                        </table>
+                                                    </apex:outputPanel>
+                                                </apex:outputPanel>
+                                            </td>
+                                        </tr>
+                                        <!-- Jesus Mora 2019-11-08 end -->
+                                    </table>
+                                    <apex:outputPanel rendered="{!displayRedbookForm}" id="pnlDetailsRedbook">
+                                        <apex:outputPanel styleClass="subSectionTab"><h3>Redbook Details</h3></apex:outputPanel>
+                                        <table class="tableSubsection">
+                                            <tr>
+                                                <td class="labelOneColumn">Family</td>
+                                                <td class="dataOneColumn">
+                                                    <apex:outputPanel styleClass="requiredInput"><apex:outputPanel styleClass="requiredBlock"></apex:outputPanel></apex:outputPanel>
+                                                    <apex:selectList value="{!family}" multiselect="false" size="1" styleClass="selectList" id="fldFamily"
+                                                                     disabled="{!ISBLANK(make)}" onchange="loadFamilyBadgeOptions()">
+                                                        <apex:selectOptions value="{!familySelect}" />
+                                                    </apex:selectList>&nbsp;&nbsp;&nbsp;
+                                                    <apex:actionStatus startText="   (loading...)" id="stsFamily"  />
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td class="labelOneColumn">Badge</td>
+                                                <td class="dataOneColumn">
+                                                    <apex:outputPanel styleClass="requiredInput"><apex:outputPanel styleClass="requiredBlock"></apex:outputPanel></apex:outputPanel>
+                                                    <apex:selectList value="{!badgeRedbook}" multiselect="false" size="1" styleClass="selectList" id="fldBadgeRedbook"
+                                                                     disabled="{!ISBLANK(family)}" onchange="loadBadgeVariantOptions()">
+                                                        <apex:selectOptions value="{!badgeSelectRedbook}" />
+                                                    </apex:selectList>&nbsp;&nbsp;&nbsp;
+                                                    <apex:actionStatus startText="   (loading...)" id="stsBadgeRedbook"  />
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td class="labelOneColumn">Variant</td>
+                                                <td class="dataColumn">
+                                                    <apex:outputPanel styleClass="requiredInput"><apex:outputPanel styleClass="requiredBlock"></apex:outputPanel></apex:outputPanel>
+                                                    <apex:selectList value="{!variantRedbook}" multiselect="false" size="1" styleClass="selectList" id="fldVariantRedbook"
+                                                                     disabled="{!ISBLANK(badgeRedbook)}" onchange="getVehicleKey()">
+                                                        <apex:selectOptions value="{!variantSelectRedbook}" />
+                                                    </apex:selectList>&nbsp;&nbsp;&nbsp;
+                                                    <apex:actionStatus startText="   (loading...)" id="stsVariantRedbook"  />
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td class="labelOneColumn">Redbook Key</td>
+                                                <td class="dataColumn"><apex:outputText value="{!vehicleObj.Name}"/>&nbsp;</td>
+                                            </tr>
+                                        </table>
+                                    </apex:outputPanel>
+                                    <!-- Jesus Mora 2019-11-08 start -->
+                                    <apex:outputPanel id="pnlAssetOptions">
+                                        <apex:outputPanel styleClass="subSectionTab"><h3>Factory Options</h3></apex:outputPanel>
+                                        <apex:outputPanel id="pnlFactoryOptions">
+                                            <table class="tableSubsection" cellpadding="5">
+                                                <tr>
+                                                    <td>Factory Options</td>
+                                                    <td>
+                                                        <apex:outputPanel styleClass="requiredInput">
+                                                            <apex:outputPanel styleClass="requiredBlock"></apex:outputPanel>
+                                                        </apex:outputPanel>
+                                                        <apex:selectCheckboxes value="{!assetOptions}" layout="pageDirection" id="fldAssetOptions"
+                                                                               disabled="{!ISBLANK(series)}" onchange="calculateFactoryOptions()">
+                                                            <apex:selectOptions value="{!assetOptionsSelect}" />
+                                                        </apex:selectCheckboxes>&nbsp;&nbsp;&nbsp;
+                                                        <apex:actionStatus startText="   (loading...)" id="stsAssetOptions"  />
+                                                    </td>
+                                                </tr>
+                                            </table>  
+                                        </apex:outputPanel>
+                                    </apex:outputPanel>
+                                    <!-- Jesus Mora 2019-11-08 end -->
+                                    <apex:outputPanel id="pnlEstimations">
+                                        <apex:outputPanel styleClass="subSectionTab"><h3>Estimation</h3></apex:outputPanel>
+                                        <apex:outputPanel id="pnlNewPrice">
+                                            <table class="tableSubsection" cellpadding="5">
+                                                <tr>
+                                                    <td width="20%"><apex:actionStatus startText="(loading...)" id="stsEstimation"  />&nbsp;</td>
+                                                    <td width="20%">RRP</td>
+                                                    <td width="20%">
+                                                        <apex:outputText value="Below Average" rendered="{!variantObj.Type_Source__c == 'OCG' || variantObj.Type_Source__c == 'OLC'}" />
+                                                        <apex:outputText value="Trade Low" rendered="{!variantObj.Type_Source__c != 'OCG' && variantObj.Type_Source__c != 'OLC'}" />
+                                                    </td>
+                                                    <td width="20%">
+                                                        <apex:outputText value="Average" rendered="{!variantObj.Type_Source__c == 'OCG' || variantObj.Type_Source__c == 'OLC'}" />
+                                                        <apex:outputText value="Trade" rendered="{!variantObj.Type_Source__c != 'OCG' && variantObj.Type_Source__c != 'OLC'}" />
+                                                    </td>
+                                                    <td width="20%">  
+                                                        <apex:outputText value="Above Average" rendered="{!variantObj.Type_Source__c == 'OCG' || variantObj.Type_Source__c == 'OLC'}" />
+                                                        <apex:outputText value="Retail" rendered="{!variantObj.Type_Source__c != 'OCG' && variantObj.Type_Source__c != 'OLC'}" />
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td>Glass's Value</td>
+                                                    <td>
+                                                        <h3>
+                                                        <apex:outputText value="{0, Number, Currency}">
+                                                            <apex:param value="{!variantNewPrice}" />
+                                                        </apex:outputText>
+                                                        </h3>&nbsp;
+                                                    </td>
+                                                    <td>
+                                                        <h3>
+                                                            <apex:outputText value="{0, Number, Currency}">
+                                                                <apex:param value="{!tradeLowGlassValue}" />
+                                                            </apex:outputText>
+                                                        </h3>&nbsp;
+                                                    </td>
+                                                    <td>
+                                                        <h3>
+                                                            <apex:outputText value="{0, Number, Currency}">
+                                                                <apex:param value="{!tradeGlassValue}" />
+                                                            </apex:outputText>
+                                                        </h3>&nbsp;
+                                                    </td>
+                                                    <td>
+                                                        <h3>
+                                                            <apex:outputText value="{0, Number, Currency}">
+                                                                <apex:param value="{!retailGlassValue}" />
+                                                            </apex:outputText>
+                                                        </h3>&nbsp;
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td>KM Adjustment</td>
+                                                    <td>&nbsp;</td>
+                                                    <td>
+                                                        <h3>
+                                                            <apex:outputText value="{0, Number, Currency}">
+                                                                <apex:param value="{!totalTradeLowPriceKms}" />
+                                                            </apex:outputText>
+                                                        </h3>&nbsp;
+                                                    </td>
+                                                    <td>
+                                                        <h3>
+                                                            <apex:outputText value="{0, Number, Currency}">
+                                                                <apex:param value="{!totalTradePriceKms}" />
+                                                            </apex:outputText>
+                                                        </h3>&nbsp;
+                                                    </td>
+                                                    <td>
+                                                        <h3>
+                                                            <apex:outputText value="{0, Number, Currency}">
+                                                                <apex:param value="{!totalRetailPriceKms}" />
+                                                            </apex:outputText>
+                                                        </h3>&nbsp;
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td>Value of Options</td>
+                                                    <td>
+                                                        <h3>
+                                                            <apex:outputText value="{0, Number, Currency}">
+                                                                <apex:param value="{!totalPriceOptions}" />
+                                                            </apex:outputText>
+                                                        </h3>&nbsp;
+                                                    </td>
+                                                    <td><h3>
+                                                        <apex:outputText value="{0, Number, Currency}">
+                                                            <apex:param value="{!totalTradeLowPriceOptions}" />
+                                                        </apex:outputText></h3>&nbsp;
+                                                    </td>
+                                                    <td><h3>
+                                                        <apex:outputText value="{0, Number, Currency}">
+                                                            <apex:param value="{!totalTradePriceOptions}" />
+                                                        </apex:outputText></h3>&nbsp;</td>
+                                                    <td><h3>
+                                                        <apex:outputText value="{0, Number, Currency}">
+                                                            <apex:param value="{!totalRetailPriceOptions}" />
+                                                        </apex:outputText></h3>&nbsp;</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>Adjusted Values</td>
+                                                    <td>
+                                                        <apex:outputText value="{0, Number, Currency}" styleClass="totalCalculated">
+                                                            <apex:param value="{!totalEstimated}" />
+                                                        </apex:outputText>&nbsp;
+                                                    </td>
+                                                    <td><apex:outputText value="{0, Number, Currency}" styleClass="totalCalculated">
+                                                        <apex:param value="{!tradeLowAdjustedValue}" />
+                                                        </apex:outputText>&nbsp;
+                                                    </td>
+                                                    <td><apex:outputText value="{0, Number, Currency}" styleClass="totalCalculated">
+                                                        <apex:param value="{!tradeAdjustedValue}" />
+                                                        </apex:outputText>&nbsp;
+                                                    </td>
+                                                    <td><apex:outputText value="{0, Number, Currency}" styleClass="totalCalculated">
+                                                        <apex:param value="{!reatilAdjustedValue}" />
+                                                        </apex:outputText>&nbsp;
+                                                    </td>
+                                                </tr>
+                                            </table>
+                                        </apex:outputPanel>
+                                    </apex:outputPanel>
+                                                             
+                                    
+                                                </apex:outputPanel>
+                                
+                                <apex:outputPanel layout="block" rendered="{!assetType != 'Car'}" id="pnlNoCarFields">
+                                    <apex:outputPanel styleClass="subSectionTab"><h3>Details</h3></apex:outputPanel>
+                                    <table class="tableSubsection">
+                                        <tr>
+                                            <td class="labelOneColumn">Make</td>
+                                            <td class="dataOneColumn">
+                                                <apex:outputPanel styleClass="requiredInput"><apex:outputPanel styleClass="requiredBlock"></apex:outputPanel></apex:outputPanel>
+                                                <apex:inputText styleClass="dataInput" value="{!makeOVehicle}" maxlength="100"/>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>Model</td>
+                                            <td>
+                                                <apex:outputPanel styleClass="requiredInput"><apex:outputPanel styleClass="requiredBlock"></apex:outputPanel></apex:outputPanel>
+                                                <apex:inputText styleClass="dataInput" value="{!modelOVehicle}" maxlength="100"/>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>Variant</td>
+                                            <td>
+                                                <apex:outputPanel styleClass="requiredInput"><apex:outputPanel styleClass="requiredBlock"></apex:outputPanel></apex:outputPanel>
+                                                <apex:inputText styleClass="dataInput" value="{!variantOVehicle}" maxlength="100"/>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>Series</td>
+                                            <td>
+                                                <apex:outputPanel styleClass="requiredInput"><apex:outputPanel styleClass="requiredBlock"></apex:outputPanel></apex:outputPanel>
+                                                <apex:inputText styleClass="dataInput" value="{!seriesOVehicle}" maxlength="100"/>
+                                            </td>
+                                        </tr>
+                                    </table>
+                                </apex:outputPanel>
+                            </td>
+                            <td width="60%" class="cellMultiTables">
+                                <apex:outputPanel id="pnlLTV">
+                                    <apex:outputPanel styleClass="subSectionTab"><h3>LTV</h3><apex:actionStatus startText="..." id="stsLtv"  /></apex:outputPanel>
+                                    <table class="tableSubsection" cellpadding="5">
+                                        <tr>
+                                            <td width="14%">Lenders</td>
+                                            <td width="12%">
+                                                <apex:outputPanel styleClass="requiredInput"><apex:outputPanel styleClass="requiredBlock"></apex:outputPanel></apex:outputPanel>
+                                                <apex:selectList value="{!lender}" multiselect="false" size="1" styleClass="selectList2" 
+                                                                 id="fldLender" disabledClass="{!ISBLANK(year)}">
+                                                    <apex:actionSupport event="onchange" reRender="fldLtvFee, fldLtvValue, fldNafValue, fldLvrValue, lblLtv, lblLtvLvr, fldFees, pnlCarFields" 
+                                                                        status="stsLtv" action="{!putFeesValue}" />
+                                                    <apex:selectOptions value="{!lenderOptions}" />
+                                                </apex:selectList>
+                                            </td>
+                                            <td width="14%">Type Loan</td>
+                                            <td width="12%">
+                                                <apex:outputPanel styleClass="requiredInput"><apex:outputPanel styleClass="requiredBlock"></apex:outputPanel></apex:outputPanel>
+                                                <apex:selectList value="{!typeLoan}" multiselect="false" size="1" styleClass="selectList2" 
+                                                                 id="fldTypeLoan">
+                                                    <apex:actionSupport event="onchange" reRender="fldLtvFee, fldLtvValue, fldNafValue, fldLvrValue, fldFees" 
+                                                                        status="stsLtv" action="{!putFeesValue}" />
+                                                    <apex:selectOptions value="{!typeLoanOptions}"/>
+                                                </apex:selectList>
+                                            </td>
+                                            <td width="12%">New/Used</td>
+                                            <td width="12%"><h3><apex:outputText value="{!newUsed}"/>&nbsp;</h3></td>
+                                            <td width="12%"><apex:outputText value="{!carLabel} Age"/> </td>
+                                            <td width="12%"><h3><apex:outputText value="{!ltvCarAge}"/>&nbsp;</h3></td>
+                                        </tr>
+                                        <tr>
+                                            <td><apex:outputText value="{!carLabel} Price"/></td>
+                                            <td>
+                                                <apex:outputPanel styleClass="requiredInput"><apex:outputPanel styleClass="requiredBlock"></apex:outputPanel></apex:outputPanel>
+                                                <apex:input type="number" value="{!carPrice}" html-step="0.01" html-placeholder="$" styleClass="dataInput2">
+                                                    <apex:actionSupport event="onchange" reRender="fldLtvValue, fldNafValue, fldLvrValue" status="stsLtv" />
+                                                </apex:input>
+                                            </td>
+                                            <td>Deposit/Trade in</td>
+                                            <td>
+                                                <apex:input type="number" value="{!deposit}" html-step="0.01" html-placeholder="$" styleClass="dataInput2">
+                                                    <apex:actionSupport event="onchange" reRender="fldLtvValue, fldNafValue, fldLvrValue" status="stsLtv" />
+                                                </apex:input>
+                                            </td>
+                                            <td>Fees</td>
+                                            <td>
+                                                <apex:outputPanel styleClass="requiredInput"><apex:outputPanel styleClass="requiredBlock"></apex:outputPanel></apex:outputPanel>
+                                                <apex:input type="number" value="{!fees}" html-step="0.01" html-placeholder="$" styleClass="dataInput2" id="fldFees">
+                                                    <apex:actionSupport event="onchange" reRender="fldLtvValue, fldNafValue, fldLvrValue" status="stsLtv" />
+                                                </apex:input>
+                                            </td>
+                                            <td colspan="2">
+                                                <apex:outputText value="({0, number, $##,###,##0.00})" id="fldLtvFee">
+                                                    <apex:param value="{!ltvFeeValue}" />
+                                                </apex:outputText>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>Warranty</td>
+                                            <td>
+                                                <apex:input type="number" value="{!warranty}" html-step="0.01" html-placeholder="$" styleClass="dataInput2">
+                                                    <apex:actionSupport event="onchange" reRender="fldLtvValue, fldNafValue, fldLvrValue" status="stsLtv" />
+                                                </apex:input>
+                                            </td>
+                                            <td>GAP</td>
+                                            <td>
+                                                <apex:input type="number" value="{!gap}" html-step="0.01" html-placeholder="$" styleClass="dataInput2">
+                                                    <apex:actionSupport event="onchange" reRender="fldLtvValue, fldNafValue, fldLvrValue" status="stsLtv" />
+                                                </apex:input>
+                                            </td>
+                                            <td>LPI</td>
+                                            <td>
+                                                <apex:input type="number" value="{!lpi}" html-step="0.01" html-placeholder="$" styleClass="dataInput2">
+                                                    <apex:actionSupport event="onchange" reRender="fldLtvValue, fldNafValue, fldLvrValue" status="stsLtv" />
+                                                </apex:input>
+                                            </td>
+                                            <td>LTI</td>
+                                            <td>
+                                                <apex:input type="number" value="{!lti}" html-step="0.01" html-placeholder="$" styleClass="dataInput2">
+                                                    <apex:actionSupport event="onchange" reRender="fldLtvValue, fldNafValue, fldLvrValue" status="stsLtv" />
+                                                </apex:input>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>Actual KM</td>
+                                            <td>
+                                                <apex:outputPanel styleClass="requiredInput"><apex:outputPanel styleClass="requiredBlock"></apex:outputPanel></apex:outputPanel>
+                                                <apex:input type="number" value="{!actualKms}" html-step="0.01" html-placeholder="$" styleClass="dataInput2">
+                                                    <apex:actionSupport event="onchange" action="{!calculateKmsAdjustment}" reRender="fldLtvValue, fldNafValue, fldLvrValue, pnlEstimations, msgGlassServ" status="stsLtv" />
+                                                </apex:input>
+                                            </td>
+                                            <td>Average KM</td>
+                                            <td><strong>
+                                                <apex:outputText value="{0, Number, ###,###}">
+                                                    <apex:param value="{!averageKM}" />
+                                                </apex:outputText></strong>&nbsp;
+                                            </td>
+                                            <td>Purchase Type</td>
+                                            <td>
+                                                <apex:outputPanel styleClass="requiredInput"><apex:outputPanel styleClass="requiredBlock"></apex:outputPanel></apex:outputPanel>
+                                                <apex:inputField value="{!opp.Purchase_Type__c}" styleClass="selectList2" >
+                                                    <apex:actionSupport event="onchange" action="{!selectedPurchaseType}" reRender="contractNumberLabel, contractNumber" status="stsLtv"/>
+                                                </apex:inputField>  
+                                                <!-- <apex:selectList value="{!purchaseType}" multiselect="false" size="1" styleClass="selectList2">
+<apex:selectOption itemValue="Dealer" itemLabel="Dealer"/>
+<apex:selectOption itemValue="Private" itemLabel="Private"/>
+</apex:selectList> -->                      </td>
+                                            <td>
+                                                <apex:outputPanel id="contractNumberLabel">
+                                                    <apex:outputPanel rendered="{!isRefinanceMacq}">
+                                                        <apex:outputLabel value="Contract Number"/>
+                                                    </apex:outputPanel>    
+                                                </apex:outputPanel> 
+                                            </td>
+                                            <td>
+                                                <apex:outputPanel id="contractNumber" styleClass="requiredInput">
+                                                    <apex:outputPanel rendered="{!isRefinanceMacq}">
+                                                        <apex:outputPanel styleClass="requiredBlock"></apex:outputPanel>
+                                                        <apex:inputField value="{!opp.Contract_Number__c}" html-placeholder="000-0000000-000" styleClass="dataInput2"/>
+                                                    </apex:outputPanel>
+                                                </apex:outputPanel>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td><strong><apex:outputText value="{!ltvValueLabel}" id="lblLtv"/></strong></td>
+                                            <td><h3>                                                
+                                                <apex:outputText value="{0, Number, Currency}" styleClass="totalCalculated" id="fldLtvValue">
+                                                    <apex:param value="{!ltvValue}" />
+                                                </apex:outputText></h3>
+                                            </td>
+                                            <td><strong>NAF</strong></td>
+                                            <td><h3>                                                
+                                                <apex:outputText value="{0, Number, Currency}" styleClass="totalCalculated" id="fldNafValue">
+                                                    <apex:param value="{!ltvNAFValue}" />
+                                                </apex:outputText></h3>
+                                            </td>
+                                            <td><strong><apex:outputText value="{!ltvLvrLabel}" id="lblLtvLvr"/></strong></td>
+                                            <td>
+                                                <h3>                                                
+                                                    <apex:outputText value="{0, Number, 0}%" styleClass="totalCalculated" id="fldLvrValue">
+                                                        <apex:param value="{!ltvLvrValue}" />
+                                                    </apex:outputText></h3>
+                                            </td>
+                                            <td>&nbsp;</td>
+                                        </tr>
+                                    </table>
+                                </apex:outputPanel>
+                                
+                                <apex:outputPanel id="pnlVehicleVendor">
+                                    <apex:outputPanel styleClass="subSectionTab"><h3>Vendor Details (Only mandatory at Formal Approval stage)</h3></apex:outputPanel>
+                                    <table class="tableSubsection">
+                                        <tr>
+                                            <td>Dealer Type</td>
+                                            <td><apex:inputField value="{!opp.Dealer_Type__c}"/></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                        </tr>
+                                        <tr>
+                                            <td width="12%">Name</td>
+                                            <td width="26%"><apex:inputField value="{!opp.Dealer_Name__c}" styleClass="dataInput" /></td>
+                                            <td width="12%">Contact Person</td>
+                                            <td width="22%"><apex:inputField value="{!opp.Dealer_Contact_Name__c}" styleClass="dataInput"/></td>
+                                            <td width="12%">Email</td>
+                                            <td width="16%"><apex:inputField value="{!opp.Dealer_Email__c}" styleClass="dataInput"/></td>
+                                        </tr>
+                                        <tr>
+                                            <td>Phone</td>
+                                            <td><apex:inputField value="{!opp.Dealer_Phone_Number__c}" styleClass="dataInput"/></td>
+                                            <td>Mobile</td>
+                                            <td><apex:inputField value="{!opp.Dealer_Mobile__c}" styleClass="dataInput"/></td>
+                                            <td class="labelColumn"><apex:outputLabel value="Unit Number" /></td>
+                                            <td class="dataColumn">
+                                                <apex:inputText styleClass="dataInput" label="Street Address" value="{!opp.Dealer_Unit_Number__c}"  />
+                                            </td>
+                                        </tr>
+                                        
+                                        
+                                        <tr>
+                                            <td class="labelColumn"><apex:outputLabel value="Street Number" /></td>
+                                            <td class="dataColumn">
+                                                <apex:outputPanel styleClass="requiredInput"><apex:outputPanel styleClass="requiredBlock"></apex:outputPanel></apex:outputPanel>
+                                                <apex:inputText styleClass="dataInput" label="Suburb" value="{!opp.Dealer_Street_Number__c}" />
+                                            </td>
+                                            <td class="labelColumn"><apex:outputLabel value="Street Address" /></td>
+                                            <td class="dataColumn">
+                                                <apex:outputPanel styleClass="requiredInput"><apex:outputPanel styleClass="requiredBlock"></apex:outputPanel></apex:outputPanel>
+                                                <apex:inputText styleClass="dataInput" label="Street Address" value="{!opp.Dealer_Address__c}" />
+                                            </td>
+                                            <td class="labelColumn"><apex:outputLabel value="Street Type" /></td>
+                                            <td class="dataColumn">
+                                                <apex:outputPanel styleClass="requiredInput"><apex:outputPanel styleClass="requiredBlock"></apex:outputPanel></apex:outputPanel>
+                                                <apex:selectList label="State" value="{!opp.Dealer_Street_Type__c}" multiselect="false" size="1" styleClass="selectList" >
+                                                    <apex:selectOptions value="{!streetTypeOptions}" />
+                                                </apex:selectList>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td class="labelColumn"><apex:outputLabel value="Suburb" /></td>
+                                            <td class="dataColumn">
+                                                <apex:outputPanel styleClass="requiredInput"><apex:outputPanel styleClass="requiredBlock"></apex:outputPanel></apex:outputPanel>
+                                                <apex:inputText styleClass="dataInput" label="Suburb" value="{!opp.Dealer_Suburb__c}" />
+                                            </td>
+                                            <td class="labelColumn"><apex:outputLabel value="Postcode" /></td>
+                                            <td class="dataColumn">
+                                                <apex:outputPanel styleClass="requiredInput"><apex:outputPanel styleClass="requiredBlock"></apex:outputPanel></apex:outputPanel>
+                                                <apex:inputText styleClass="dataInput" label="Postcode" value="{!opp.Dealer_Postcode__c}"  />
+                                            </td>
+                                            <td class="labelColumn"><apex:outputLabel value="State" /></td>
+                                            <td class="dataColumn">
+                                                <apex:outputPanel styleClass="requiredInput"><apex:outputPanel styleClass="requiredBlock"></apex:outputPanel></apex:outputPanel>
+                                                <apex:selectList label="State" value="{!opp.Dealer_State__c}" multiselect="false" size="1" styleClass="selectList">
+                                                    <apex:selectOptions value="{!statesOfIssue2Sel}" />
+                                                </apex:selectList>
+                                            </td>
+                                        </tr>
+                                    </table>
+                                </apex:outputPanel>
+                                <apex:outputPanel id="pnlVehicleId">
+                                    <apex:outputPanel styleClass="subSectionTab"><h3>Vehicle Identification (settlements to complete)</h3></apex:outputPanel>
+                                    <table class="tableSubsection">
+                                        <tr>
+                                            <td >Rego No.</td>
+                                            <td ><apex:input type="text" value="{!rego}" styleClass="dataInput2" size="20"/></td>
+                                            <td >State</td>
+                                            <td >
+                                                <apex:selectList value="{!regoState}" multiselect="false" size="1">
+                                                    <apex:selectOptions value="{!statesOfIssue2Sel}" />
+                                                </apex:selectList>
+                                            </td>
+                                            <td >VIN</td>
+                                            <td ><apex:input type="text" value="{!vin}" styleClass="dataInput2" size="100"/></td>
+                                            <td >Engine No.</td>
+                                            <td ><apex:input type="text" value="{!engine}" styleClass="dataInput2" size="50"/></td>
+                                            <td >Colour</td>
+                                            <td ><apex:input type="text" value="{!colour}" styleClass="dataInput2" size="100"/></td>
+                                        </tr>
+                                        <tr class="{!IF(opp.Application_AssetDetail__r.Search_Certificate_Number__c=='', 'ppsr_sent', 'ppsr_ok')}">
+                                            <td>Request Proxy Id.</td>
+                                            <td colspan="1"><apex:outputText value="{!opp.Application_AssetDetail__r.PPSR_Proxy_Id__c }"/></td>
+                                            <td>Last update.</td>
+                                            <td colspan="1"><apex:outputText value="{0,date,dd'/'MM'/'yyyy hh:mm}">
+                                                <apex:param value="{!opp.Application_AssetDetail__r.PPSR_Proxy_Last_Update__c}" /> 
+                                                </apex:outputText>
+                                            </td>
+                                            <td>PPSR Request Number.</td>
+                                            <td colspan="1"><apex:outputText value="{!opp.Application_AssetDetail__r.Search_Certificate_Number__c}"/></td>
+                                            <td>Note.</td>
+                                            <td colspan="3"><apex:outputText value="{!opp.Application_AssetDetail__r.PPSR_Proxy_Message__c }"/></td>
+                                        </tr>
+                                    </table>
+                                </apex:outputPanel>
+                                
+                                <apex:outputPanel id="pnlVehicleData" rendered="{!assetType == 'Car'}">
+                                    <apex:outputPanel styleClass="subSectionTab"><h3>Vehicle Details</h3></apex:outputPanel>
+                                    <table class="tableSubsection" cellpadding="5">
+                                        <tr>
+                                            <td width="12%">Make</td>
+                                            <td width="26%"><h3><apex:outputText value="{!makeObj.Name}"/></h3>&nbsp;</td>
+                                            <td width="12%">Year</td>
+                                            <td width="22%"><apex:outputText value="{!variantObj.Year__c}"/>&nbsp;</td>
+                                            <td width="12%">NVIC</td>
+                                            <td width="16%"><h3><apex:outputText value="{!variantObj.NVIC__c}"/>&nbsp;</h3></td>
+                                        </tr>
+                                        <tr>
+                                            <td>GlassCode</td>
+                                            <td><apex:outputText value="{!variantObj.Code__c}"/>&nbsp;</td>
+                                            <td>Family</td>
+                                            <td><apex:outputText value="{!variantObj.Family__c}"/>&nbsp;</td>
+                                            <td>Release Date</td>
+                                            <td><apex:outputText value="{!variantObj.Release_Date__c}"/>&nbsp;</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Variant</td>
+                                            <td><apex:outputText value="{!variantObj.Description__c}"/>&nbsp;</td>
+                                            <td>Style / Body</td>
+                                            <td><apex:outputText value="{!variantObj.Style__c}"/>&nbsp;</td>
+                                            <td>Series</td>
+                                            <td><apex:outputText value="{!variantObj.Series__c}"/>&nbsp;</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Class</td>
+                                            <td>
+                                                <apex:outputText value="Light Commercial Vehicles" rendered="{!variantObj.Type_Source__c = 'CVG'}" />
+                                                <apex:outputText value="Passenger Vehicles" rendered="{!variantObj.Type_Source__c = 'PVG'}" />
+                                                <apex:outputText value="Older Cars" rendered="{!variantObj.Type_Source__c = 'OCG'}" />
+                                                <apex:outputText value="Older Light Commercial" rendered="{!variantObj.Type_Source__c = 'OLC'}" />
+                                                &nbsp;</td>
+                                            <td>Engine</td>
+                                            <td><apex:outputText value="{!variantObj.Engine__c}"/>&nbsp;</td>
+                                            <td>CC</td>
+                                            <td><apex:outputText value="{!variantObj.CC__c}"/>&nbsp;</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Transmition</td>
+                                            <td><apex:outputText value="{!variantObj.Transmission__c}"/>&nbsp;</td>
+                                            <td>Size</td>
+                                            <td><apex:outputText value="{!variantObj.Size__c}"/>&nbsp;</td>
+                                            <td>Cylinders</td>
+                                            <td><apex:outputText value="{!variantObj.Cylinders__c}"/>&nbsp;</td>
+                                        </tr>
+                                        <tr>
+                                            <td colspan="6">
+                                                <h3>Standard Features</h3>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td colspan="6">
+                                                <apex:outputPanel layout="block" styleClass="div2Columns">
+                                                    <apex:repeat value="{!assetStandardFeautersData}" var="feature" >
+                                                        <apex:outputText value="[{!feature.code}] {!feature.name}"/><br/>
+                                                    </apex:repeat>
+                                                </apex:outputPanel>
+                                                &nbsp;
+                                            </td>
+                                        </tr>
+                                    </table>
+                                </apex:outputPanel>
+                            </td>
+                        </tr>
+                    </table>
+                </apex:outputPanel>
+                <!-- </apex:pageBlock> -->
+            </apex:form>
+            <apex:outputField value="{!opp.Application_AssetDetail__r.Actual_KM__c}" rendered="false"/>
+            <apex:outputField value="{!opp.Application_AssetDetail__r.Condition__c}" rendered="false"/>
+            <apex:outputField value="{!opp.Application_AssetDetail__r.Deposit__c}" rendered="false"/>
+            <apex:outputField value="{!opp.Application_AssetDetail__r.Factory_Options__c}" rendered="false"/>
+            <apex:outputField value="{!opp.Application_AssetDetail__r.Fees__c}" rendered="false"/>
+            <apex:outputField value="{!opp.Application_AssetDetail__r.GAP__c}" rendered="false"/>
+            <apex:outputField value="{!opp.Application_AssetDetail__r.Lender__c}" rendered="false"/>
+            <apex:outputField value="{!opp.Application_AssetDetail__r.Type_Loan__c}" rendered="false"/>
+            <apex:outputField value="{!opp.Application_AssetDetail__r.LPI__c}" rendered="false"/>
+            <apex:outputField value="{!opp.Application_AssetDetail__r.LTI__c}" rendered="false"/>
+            <apex:outputField value="{!opp.Application_AssetDetail__r.LVR__c}" rendered="false"/>
+            <apex:outputField value="{!opp.Application_AssetDetail__r.Make__c}" rendered="false"/>
+            <apex:outputField value="{!opp.Application_AssetDetail__r.Model__c}" rendered="false"/>
+            <apex:outputField value="{!opp.Application_AssetDetail__r.NAF__c}" rendered="false"/>
+            <apex:outputField value="{!opp.Application_AssetDetail__r.Price__c}" rendered="false"/>
+            <apex:outputField value="{!opp.Application_AssetDetail__r.RRP__c}" rendered="false"/>
+            <apex:outputField value="{!opp.Application_AssetDetail__r.Series__c}" rendered="false"/>
+            <apex:outputField value="{!opp.Application_AssetDetail__r.Type__c}" rendered="false"/>
+            <apex:outputField value="{!opp.Application_AssetDetail__r.Variant__c}" rendered="false"/>
+            <apex:outputField value="{!opp.Application_AssetDetail__r.Warranty__c}" rendered="false"/>
+            <apex:outputField value="{!opp.Application_AssetDetail__r.Year__c}" rendered="false"/>
+            <apex:outputField value="{!opp.Application_AssetDetail__r.Rego__c}" rendered="false"/>
+            <apex:outputField value="{!opp.Application_AssetDetail__r.VIN__c}" rendered="false"/>
+            <apex:outputField value="{!opp.Application_AssetDetail__r.Engine_No__c}" rendered="false"/>
+            <apex:outputField value="{!opp.Application_AssetDetail__r.Colour__c}" rendered="false"/>
+            <apex:outputField value="{!opp.Application_AssetDetail__r.Rego_State__c}" rendered="false"/>
+            <apex:outputField value="{!opp.Application_AssetDetail__r.Redbook_Key__c}" rendered="false"/>
+            <!-- Jesus Mora 2019-11-08 start -->
+            <apex:outputField value="{!opp.Application_AssetDetail__r.Variant_Desc__c}" rendered="false"/>
+            <!-- Jesus Mora 2019-11-08 end -->
+            <!-- HJ - PPSR Service - 11-09-2018 - I -->
+            <apex:outputField value="{!opp.Application_AssetDetail__r.Search_Certificate_Number__c }" rendered="false"/>
+            <apex:outputField value="{!opp.Application_AssetDetail__r.PPSR_Proxy_Id__c }" rendered="false"/> 
+            <apex:outputField value="{!opp.Application_AssetDetail__r.PPSR_Proxy_Last_Update__c }" rendered="false"/> 
+            <apex:outputField value="{!opp.Owner_Email__c }" rendered="false"/> 
+            <!-- HJ - PPSR Service - 11-09-2018 - F -->
+            <apex:outputField value="{!opp.Loan_Product__c}" rendered="false"/>
+            <apex:outputField value="{!opp.Contract_Number__c}" rendered="false"/>
+            <apex:outputField value="{!opp.Dealer_Type__c}" rendered="false"/>
+        </div>
+    </div>
+    <!-- </apex:outputPanel> -->
+</apex:page>

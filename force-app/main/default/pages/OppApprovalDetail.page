@@ -1,0 +1,386 @@
+<apex:page controller="OppApprovalDetailExtension" cache="false" title="Approval List" showHeader="true">
+	<style type="text/css">
+    
+        /* Lelo */
+
+        .customInputStyle {
+            width: 20px;
+        }
+      
+        .leftTables {
+            display: inline-block;
+            float: left;
+            width: 48%;
+            padding-left: 20px;
+        }
+        .rightTables {
+            display: inline-block;
+            width: 48%;
+            padding-left: 20px;
+        }
+        
+        .leftTables2 {
+            display: inline-block;
+            float: left;
+            width: 32%;
+            padding-left: 20px;
+        }
+        
+        .leftTablesNoFloat {
+            display: inline-block;
+            width: 38%;
+            padding-left: 20px;
+        }
+        .rightTablesNoFloat {
+            display: inline-block;
+            width: 58%;
+            padding-left: 20px;
+        }
+        
+        .rightTables2 {
+            display: inline-block;
+            width: 64%;
+            padding-left: 20px;
+        }
+      
+        .oneTables {
+            display: inline-block;
+            /*float: left;*/
+            width: 97.5%;
+            padding-left: 20px;
+        }
+      
+        .section {
+            background: #f8f8f8;
+            border: 1px solid #ddd;
+            padding-bottom: 20px;
+        }
+
+        .subSectionTab {
+            border: 1px solid #ddd;
+            border-bottom: transparent;
+            display: inline-block;
+            background-color: #fff;
+            position: relative;
+            padding: 3px;
+            padding-right: 20px;
+            padding-left: 20px;
+            top: 20px;
+        }
+        
+        .tableSubsection {
+            width: 100%;
+            background: white;
+            border: 1px solid #ddd;
+            margin-top: 18px;
+            padding: 2px;
+            padding-left: 20px;
+            padding-top: 10px;
+            padding-bottom: 10px;
+        }
+        
+        .labelColumn {
+            width: 25%;
+            /*padding-bottom: 13px;*/
+        }
+        .dataColumn {
+            width: 25%;
+        }
+      	
+        .labelOneColumn {
+            width: 30%;
+            /*padding-bottom: 13px;*/
+        }
+        .dataOneColumn {
+            width: 70%;
+        }
+        
+        .divTitle {
+            background-color: #ddd;
+            padding-top: 1px;
+            padding-bottom: 1px;
+            padding-left: 15px;
+            /*text-transform: uppercase;*/
+            font-weight: bold;
+            border: 1px solid #ddd;
+        }
+        .dataInput {
+            border: 1px solid #e0e0e0;
+            padding: 0.3em !important;;
+          /*min-width: 173px !important;;*/
+        	width:250px;
+        	height: 101px !important;
+        }
+        .dataInput2 {
+            border: 1px solid #e0e0e0;
+            padding: 0.3em !important;
+            min-width: 53px !important;
+            max-width: 113px !important;
+        }
+        .dataInputFull {
+            border: 1px solid #e0e0e0;
+            padding: 0.3em !important;
+            min-width: 98% !important;
+        }
+        .selectList {
+            border: 1px solid #e0e0e0;
+            padding: 0.3em;
+            width:255px;
+            height: 25px !important;
+        }
+        .selectList2 {
+            border: 1px solid #e0e0e0;
+            padding: 0.3em;
+            width:255px;
+            height: 111px !important;
+        }
+        .selectListMultiple {
+            border: 1px solid #e0e0e0;
+            padding: 0.3em;
+            width:182px;
+        }
+        .titleDiv {
+            width: 100%;
+            height: 43px;
+            font-size: 1.0rem;
+        }
+        .toolOptions {
+            float: right;
+            text-align: right;
+            width: 60%;
+        }
+
+        #main .bPageBlock {
+            border-top: 1px solid white !important;
+        }
+
+        .commandButtons {
+            padding: 9px 10px !important;
+            color: #fff !important;
+            font-size: 11px !important;
+            outline: none !important;
+            background: rgb(0,0,0) !important; /* Old browsers */
+        }
+        .commandButtons:hover {
+            background: #333333 !important; /* Old browsers */
+        }
+
+        .noSidebarCell, .sidebarCell .fixed {
+            height: inherit;
+        }
+        
+        /* Servicing Calculator*/
+        
+        #ServicingCalc .bPageBlock {
+            border-top: 1px solid white !important;
+        }
+        .cellMultiTables {
+            vertical-align: top;
+        }
+        .cellExtraRigthPading {
+            padding-right: 18px;
+        }
+        .cellExtraLeftPading {
+            padding-left: 18px;
+        }
+        .incomeValue {
+            color: #1a75ff !important;
+        }
+        .notIncomeValue {
+            color: #cc0000 !important;
+        }     
+        
+        #YtdCalc .bPageBlock {
+            border-top: 1px solid white !important;
+        }
+        
+        #GlassServEstimator .bPageBlock {
+            border-top: 1px solid white !important;
+        }
+        .totalCalculated {
+        	color: #1a75ff !important;
+            font-weight: bold;
+            font-size: 13px;
+        }
+        .bPageBlock { 
+        	    border-top: 1px solid white !important;
+        }
+        .div2Columns {
+            -webkit-column-count: 2; /* Chrome, Safari, Opera */
+            -moz-column-count: 2; /* Firefox */
+            column-count: 2;
+        }
+
+        .odd {
+            background-color: #e7ebee;
+        }
+        .even {
+            
+        }
+        .tableClass {
+            background-color: #ffffff;  
+        }  
+        .labelTableData1 {
+            font-size: 14px;
+            font-weight: bold;
+        }
+        #approvalCondition{
+            width: 200%;
+            height: 100%;
+        }
+    </style>
+    <apex:includeScript value="{! $Resource.jQuery }"/>
+    <script type="text/javascript">
+        jQuery.noConflict();
+        jQuery(document).ready(function() {
+            var listRequiredDocuments;
+            jQuery('.approveAction').click(function(e) {
+                if ( confirm('Are you sure you want to approve this process? Click OK to continue approving.') ) {
+                    return true;
+                }
+                e.preventDefault();
+            });
+            jQuery('.rejectAction').click(function(e) {
+                if ( confirm('Are you sure you want to reject this process? Click OK to continue rejecting.') ) {
+                    return true;
+                }
+                e.preventDefault();
+            });
+        });
+    </script>
+    <apex:outputPanel layout="block" id="approvalProcess">
+    	<apex:pageMessages id="msgPanel" />
+	    <apex:form id="formData">
+            <!--<apex:actionFunction action="{!loadNewUsedYearOptions}" name="loadNewUsedYearOptions" 
+                                     reRender="" status="stsYear" />-->
+	    	<apex:outputPanel layout="block" styleClass="titleDiv">
+	            <h1>Savvy Finance Approve/Reject Approval Request for {!opp.Name}</h1>
+	            <apex:outputPanel layout="block" styleClass="toolOptions">
+	                <apex:commandButton onclick="window.open('OppApprovalSaleConsultantsList');" value="Consultant Detailts"/>
+                    <apex:commandButton onclick="window.open('OppApprovalLenderLogins');" value="Lender Log-Ins"/>
+                    <apex:commandButton onclick="window.open('OppApprovalFavoriteLinks');" value="Favorite Links"/>
+	            </apex:outputPanel>
+	        </apex:outputPanel>
+	        <!-- ASSET DETAILS -->
+	        <apex:outputPanel layout="block" styleClass="section" id="pnlOppDetails">
+	        	<div class="divTitle">Opportunity</div>
+	        	<table width="99%">
+                    <tr>
+                    	<td width="40%" class="cellMultiTables cellExtraLeftPading cellExtraRigthPading">
+				            <apex:outputPanel styleClass="subSectionTab"><h3>Details</h3></apex:outputPanel>
+				            <table class="tableSubsection">
+				                <tr>
+                                    <td class="labelOneColumn">Opportunity</td>
+                                    <td class="dataOneColumn labelTableData1">{!opp.Name}</td>
+                                </tr>
+                                <tr>
+				                    <td class="labelOneColumn">Current Status</td>
+				                    <td class="dataOneColumn labelTableData1">{!opp.Status__c}</td>
+				                </tr>
+				                <tr>
+				                    <td class="labelOneColumn">Owner</td>
+				                    <td class="dataOneColumn">{!opp.Owner.Name}</td>
+				                </tr>
+                                <tr>
+                                    <td class="labelOneColumn">Processing Last Note</td>
+                                    <td class="dataOneColumn">{!lastNote.Data__c}</td>
+                                </tr>
+                                <tr>
+                                    <td colspan="2"><hr/></td>
+                                </tr>
+                                <tr>
+                                    <td class="labelOneColumn"><strong>Lender Last Note</strong></td>
+                                    <td class="dataOneColumn">{!lastNoteLender.Data__c}</td>
+                                </tr>
+							</table>
+						</td>
+						<td width="60%" class="cellMultiTables cellExtraLeftPading cellExtraRigthPading">
+							<apex:outputPanel styleClass="subSectionTab"><h3>APPROVAL PROCESS</h3></apex:outputPanel>
+                            <table class="tableSubsection" cellpadding="5">
+                                <tr>
+                                    <td>Comments</td>
+                                    <td>Approval Conditions</td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <apex:inputTextarea styleClass="dataInput" value="{!noteText}" cols="70" rows="7" id="fldNotes" >
+                                    	</apex:inputTextarea>
+                                    </td>
+                                    <td styleClass="approvalCondition">
+                                        <apex:selectList value="{!DocumentsRequired}" multiselect="true" id="fldDocumentsRequired" styleClass="selectList2" >
+                                            <apex:selectOptions value="{!requiredDocuments}"/>
+                                        </apex:selectList>
+                                    </td>
+                                    <td>
+                                    	<apex:commandButton value="Remove Doc"  action="{!removeDocumentsRequired}" styleClass="commandButtons" 
+                                                            reRender="fldNotes, msgPanel, fldDocumentsRequired" status="stsProcess"/>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td></td>
+                                    <td width="25%">Available Documents</td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                    </td>
+                                    <td>
+                                        <apex:outputPanel styleClass="requiredInput"><apex:outputPanel styleClass="requiredBlock"></apex:outputPanel></apex:outputPanel>
+                                        <apex:selectList value="{!documentType}" multiselect="false" size="1" styleClass="selectList" id="fldDocumentType">
+                                            <apex:selectOptions value="{!documentTypeSelect}" />
+                                        </apex:selectList>&nbsp;&nbsp;&nbsp;
+                                        <apex:actionStatus startText="   (loading...)" id="stsdocumentType"  /> &nbsp;&nbsp;&nbsp;
+                                    </td>
+                                    <td>
+                                        <apex:commandButton value="Add Doc"  action="{!addDocumentsRequired}" styleClass="commandButtons" 
+                                                            reRender="fldNotes, msgPanel, fldDocumentsRequired" status="stsProcess"/>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <apex:commandButton value="Approve" action="{!approveProcess}" styleClass="commandButtons" 
+                                        reRender="pnlOppDetails, fldNotes, msgPanel" status="stsProcess" /> &nbsp;&nbsp;&nbsp;
+                                        <apex:commandButton value="Reject" action="{!rejectProcess}" styleClass="commandButtons" 
+                                        reRender="fldNotes, msgPanel" status="stsProcess" /> &nbsp;&nbsp;&nbsp;
+                                        <apex:commandButton value="Cancel" action="{!cancelProcess}" styleClass="commandButtons" 
+                                        reRender="fldNotes, msgPanel" status="stsProcess" />
+                                        <apex:actionStatus startText="(processing...)" id="stsProcess"  />
+                                    </td>
+                                    <td></td>
+                                </tr>
+                            </table>
+						</td>
+					</tr>
+				</table>
+	        </apex:outputPanel>
+            <!-- APPROVAL HISTORY -->
+            <apex:outputPanel layout="block" styleClass="section">
+                <div class="divTitle">Approval History</div>
+                <apex:dataTable value="{!allApprovalHistory}" var="step" rowClasses="odd,even" 
+                                styleClass="tableClass"  cellpadding="4" width="100%" align="center" 
+                                cellspacing="4">
+                    <apex:column headerValue="Action" breakbefore="true" width="15%">
+                        <apex:outputField value="{!step.nodeStep.Name}" />
+                        <apex:outputText value="Approval Request Submitted" rendered="{!ISNULL(step.nodeStep)}" />
+                    </apex:column>
+                    <apex:column headerValue="Status" width="7%">
+                        <apex:image url="{!$Resource.ApprovalIcon}" width="16" height="16" rendered="{!step.instanceStep.StepStatus == 'Approved'}" />
+                        <apex:image url="{!$Resource.RejectionIcon}" width="16" height="16" rendered="{!step.instanceStep.StepStatus == 'Rejected'}" />&nbsp;&nbsp;
+                        <apex:outputField value="{!step.instanceStep.StepStatus}" />
+                    </apex:column>
+                    <apex:column headerValue="Date" width="10%">
+                        <apex:outputField value="{!step.instanceStep.CreatedDate}" />
+                    </apex:column>
+                    <apex:column headerValue="Assigned To" width="9%">
+                        <apex:outputField value="{!step.instanceStep.CreatedById}" />
+                    </apex:column>
+                    <apex:column headerValue="Actual Approver" width="9%">
+                        <apex:outputField value="{!step.instanceStep.ActorId}" />
+                    </apex:column>
+                    <apex:column headerValue="Comments" width="50%">
+                        <apex:outputField value="{!step.instanceStep.Comments}" />
+                    </apex:column>
+                </apex:dataTable>
+            </apex:outputPanel>
+	    </apex:form>
+	</apex:outputPanel>
+</apex:page>

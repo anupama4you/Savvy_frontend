@@ -1,0 +1,53 @@
+<apex:page controller="OpenNextLeadController" action="{!nextBCCLLead}" tabStyle="Lead__c" title="Next BCCL Leads" >
+    <apex:includeScript value="/support/console/40.0/integration.js"/>
+    <script type="text/javascript">
+
+        function closeCurrentTab() {
+            //First find the ID of the current primary tab to close it
+            sforce.console.getEnclosingPrimaryTabId(closeSubtab);
+        }
+        
+        var closeSubtab = function closeSubtabCallback(result) {
+            //Now that we have the primary tab ID, we can close it
+            var tabId = result.id;
+            sforce.console.closeTab(tabId);
+        };
+
+        //Open new tab
+        function openNextLeadTab(newUrl, labelLead, nameLead) {
+            //Open a new primary tab with the salesforce.com home page in it
+            sforce.console.openPrimaryTab(null, newUrl, true, 
+                labelLead, openSuccess, nameLead);
+        }
+        
+        var openSuccess = function openSuccessCallback(result) {
+            //Report whether opening the new tab was successful
+            if (result.success == true) {
+                //alert('Primary tab successfully opened');
+            } else {
+                //alert('Primary tab cannot be opened');
+            }
+        };
+    </script>
+
+    <apex:sectionHeader title="Next BCCL Lead" />
+    <apex:form >
+        <apex:outputPanel rendered="{!!hasLeadSelected}">
+            <apex:pageMessage severity="ERROR" strength="2" summary="No lead available." />
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<apex:commandButton value="Return" action="{!ReturnHome}" />
+        </apex:outputPanel>
+        <apex:outputPanel rendered="{!hasLeadSelected}">
+            <script type="text/javascript">
+                var newLeadUrl = '/apex/LeadEdit?id={!leadSel.Id}&retURL=/&nxtLead=true';
+                if (sforce.console.isInConsole()) {
+                    var tabName = 'NextLead{!leadSel.Id}';
+                    var tabLabel = 'Next Lead: {!leadSel.Name}';
+                    openNextLeadTab(newLeadUrl, tabLabel, tabName);
+                    closeCurrentTab();
+                } else {
+                    window.open(newLeadUrl,'_self');
+                }
+            </script>
+        </apex:outputPanel>
+    </apex:form>
+</apex:page>

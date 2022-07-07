@@ -1,0 +1,21 @@
+<apex:page standardController="Custom_Opportunity__c" >
+    <apex:variable value="{!Custom_Opportunity__c}" var="o"/>
+       <apex:sectionHeader title="Opportunity Edit" subtitle="{!IF(ISBLANK(o.Id), 'New Opportunity', o.Name)}"/>
+           <apex:form >
+               <apex:pageBlock >
+                   <apex:pageBlockButtons >
+                       <apex:commandButton value="Save" action="{!save}"/>
+                           </apex:pageBlockButtons>
+                               <apex:pageBlockSection >
+                                   <apex:inputField value="{!o.Name}" taborderhint="10" />
+                                   <apex:inputField value="{!o.Status__c}" required="true"/>
+                                   <apex:inputField value="{!o.Mobile_Number__c}"/>
+                                   <apex:inputField value="{!o.Email_Address__c }"/>
+                                   <apex:inputField value="{!o.Account__c}"/>
+                                   <apex:inputField value="{!o.Lead__c}"/>
+                                   <apex:inputField value="{!o.Owner_Name__c }"/>
+                               </apex:pageBlockSection>
+                   
+               </apex:pageBlock>
+           </apex:form> 
+</apex:page>

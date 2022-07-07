@@ -1,0 +1,34 @@
+<apex:page showHeader="false" sidebar="false" standardStylesheets="false">
+	<strong>Purchase Type </strong>
+	Dealer or Private sales 
+
+	<hr/><strong>Employment Type </strong>
+	FT must not be in probationary period, 
+	PT must not be in probationary period, 
+	No min with casual but must supply 6 months of history with no GAP of 4 weeks.
+
+	<hr/><strong>Credit History </strong>
+	Small non-financial paid default Ok. 
+	No unpaid defaults, payment of a default can sometime be an approval condition. 
+
+	<hr/><strong>Financed Assets </strong>
+	Cars, bikes, caravans 
+
+	<hr/><strong>Loan Terms </strong>
+	0-84 months
+
+	<hr/><strong>Term End  </strong>
+	12 years at term end  
+
+	<hr/><strong>LTV Ratios </strong>
+	Approximately 150% max of trade, however no clear guidelines are provided.  LTV doesn’t affect pricing. 
+
+	<hr/><strong>Why? &amp; When? </strong>
+	Good option when deal does not fit ANZ top rating (New car, asset backed) as rates are competitive, higher LTV does not load rate, accept strong profile with defaults occasionally. Mitigate risk with deposit. Flat interest rate which allows for a marginal transaction to be delivered a competitive rate. Streamlined, efficient application process.
+
+	<hr/><strong>Early repayment fees</strong>
+	Early repayment fee (ERF) $750. 
+	This fee reduces every month that the loan is in existence.  So on a 60 month term the ERF drops by $12.50 per month. 
+	So if a client paid out their loan 12 months early the fee would be 12 x $12.50 = $150.
+	
+</apex:page>

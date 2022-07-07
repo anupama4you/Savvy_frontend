@@ -1,0 +1,88 @@
+<apex:page controller="OppApprovalSettlementSummaryExtension" cache="false" readOnly="true" title="Approval List" showHeader="true">
+	<style type='text/css'>
+        .captionTable {
+            font-size: 16px;
+            font-weight: bold;
+        }
+        .footerTable {
+        	font-size: 14px;
+            font-weight: bold;
+        }
+        .odd {
+        	background-color: #e7ebee;
+        }
+        .even {
+        	
+        }
+        .tableClass {
+            background-color: #ffffff;	
+        }        
+    </style>
+    <apex:pageBlock title="Settlement process: {!activeStatus}">
+        <apex:pageBlockSection columns="2">
+            <apex:dataTable value="{!myApplicationsList}" var="o" id="myOppSub" rowClasses="odd,even" 
+                            styleClass="tableClass"  cellpadding="4" width="100%" align="center"
+                            captionClass="captionTable" footerClass="footerTable" cellspacing="4">
+                <apex:facet name="caption">My Applications</apex:facet>
+                <apex:facet name="footer">Total {!myApplicationsList.size}</apex:facet>
+                <apex:column headerClass=" zen-deemphasize" width="10%">
+                    <apex:facet name="header">Actions</apex:facet>
+                    <apex:outputLink value="/apex/OppApprovalDetail?id={!o.oppId}" title="Approve / Reject"> <apex:image url="{!$Resource.ApprovalIcon}" width="16" height="16" /><apex:image url="{!$Resource.RejectionIcon}" width="16" height="16" /></apex:outputLink>&nbsp;&nbsp;
+                    <apex:outputLink value="/{!o.processInstanceWorkitemId}/e?et=REASSIGN&retURL=/apex/OppApprovalSummary" title="Reassign"><apex:image url="{!$Resource.ReassignIcon}" width="16" height="16" /></apex:outputLink>
+                </apex:column>
+                <apex:column width="18%">
+                    <apex:facet name="header">Name</apex:facet>
+                    <apex:outputLink value="/{!o.oppId}"><apex:outputText value="{!o.name}"/></apex:outputLink>
+                </apex:column>
+                <apex:column width="18%">
+                    <apex:facet name="header">Opportunity Owner</apex:facet>
+                    <apex:outputLink value="/{!o.ownerId}"><apex:outputText value="{!o.ownerName}"/></apex:outputLink>
+                </apex:column>
+                <apex:column width="18%">
+                    <apex:facet name="header">Submitted Date</apex:facet>
+                    <apex:outputText value="{!o.submittedDateFormatted}"/>
+                </apex:column>
+                <apex:column width="18%">
+                    <apex:facet name="header">Lender</apex:facet>
+                    <apex:outputText value="{!o.productLender}"/>
+                </apex:column>
+                <apex:column width="18%">
+                    <apex:facet name="header">Approver</apex:facet>
+                    <apex:outputText value="{!o.approverName}"/>
+                </apex:column>
+            </apex:dataTable>
+            <!-- Others -->
+            <apex:dataTable value="{!otherApplicationsList}" var="o" id="otherOppSub" rowClasses="odd,even" 
+                            styleClass="tableClass"  cellpadding="4" width="100%" align="center" 
+                            captionClass="captionTable" footerClass="footerTable" cellspacing="4">
+                <apex:facet name="caption">Others Applications</apex:facet>
+                <apex:facet name="footer">Total {!otherApplicationsList.size}</apex:facet>
+                <apex:column headerClass=" zen-deemphasize" width="10%">
+                    <apex:facet name="header">Actions</apex:facet>
+                    <apex:outputLink value="/apex/OppApprovalDetail?id={!o.oppId}" title="Approve / Reject"> <apex:image url="{!$Resource.ApprovalIcon}" width="16" height="16" /><apex:image url="{!$Resource.RejectionIcon}" width="16" height="16" /></apex:outputLink>&nbsp;&nbsp;
+                    <apex:outputLink value="/{!o.processInstanceWorkitemId}/e?et=REASSIGN&retURL=/apex/OppApprovalSummary" title="Reassign"><apex:image url="{!$Resource.ReassignIcon}" width="16" height="16" /></apex:outputLink>
+                </apex:column>
+                <apex:column width="18%">
+                    <apex:facet name="header">Name</apex:facet>
+                    <apex:outputLink value="/{!o.oppId}"><apex:outputText value="{!o.name}"/></apex:outputLink>
+                </apex:column>
+                <apex:column width="18%">
+                    <apex:facet name="header">Opportunity Owner</apex:facet>
+                    <apex:outputLink value="/{!o.ownerId}"><apex:outputText value="{!o.ownerName}"/></apex:outputLink>
+                </apex:column>
+                <apex:column width="18%">
+                    <apex:facet name="header">Submitted Date</apex:facet>
+                    <apex:outputText value="{!o.submittedDateFormatted}"/>
+                </apex:column>
+                <apex:column width="18%">
+                    <apex:facet name="header">Lender</apex:facet>
+                    <apex:outputText value="{!o.productLender}"/>
+                </apex:column>
+                <apex:column width="18%">
+                    <apex:facet name="header">Approver</apex:facet>
+                    <apex:outputText value="{!o.approverName}"/>
+                </apex:column>
+            </apex:dataTable>
+        </apex:pageBlockSection>
+    </apex:pageBlock>
+</apex:page>

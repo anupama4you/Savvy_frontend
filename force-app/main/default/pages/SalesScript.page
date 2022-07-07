@@ -1,0 +1,737 @@
+<apex:page sidebar="true" showHeader="false" docType="html-5.0" readOnly="true" setup="false" standardStylesheets="false" title="Sales Script">
+    <head>
+        <title>Sales Script</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"/>
+        <apex:stylesheet value="{!$Resource.SalesFlowBootstrap}"/>
+        <apex:stylesheet value="{!$Resource.SalesFlowFontAwesomeCSS}"/>
+        <apex:stylesheet value="{! $Resource.AppFlowCSS }"/>
+        <apex:includeScript value="{!$Resource.SalesFlowJQueryJS321}"/>
+        <apex:includeScript value="{!$Resource.SalesFlowPopperJS}"/>
+        <apex:includeScript value="{!$Resource.SalesFlowBootstrapJS}"/>
+        
+        <meta	name="viewport" content="width=device-width, user-scalable=no, initial-scalable=1.0, maximum-scale=1.0, minimum-scale=1.0"/>
+
+        <apex:stylesheet value="{!$Resource.SalesFlowJQueryUICSS}"/>
+        <link rel="stylesheet" href="/resources/demos/style.css"/>
+        <apex:includeScript value="{!$Resource.SalesFlowJQueryJS}"/>
+        <apex:includeScript value="{!$Resource.SalesFlowJQueryUIJS}"/>
+        
+        <style>
+            .ui-tabs-vertical .ui-tabs-nav { padding: 0% .1% auto .2%; float: left; width: 35%;}
+            .ui-tabs-vertical .ui-tabs-nav li { clear: left; width: 100%; border-bottom-width: 1px !important; border-right-width: 0 !important; margin: 0 -1px .2em 0; }
+            .ui-tabs-vertical .ui-tabs-nav li a { display:block; font-size:12px;}
+            .ui-tabs-vertical .ui-tabs-nav li.ui-tabs-active { padding-bottom: 0%; padding-right: .1%; border-right-width: 1%; }
+            .ui-tabs-vertical .ui-tabs-panel { padding: 1%; float: right; width: 65%; font-size:95%; line-height: 1.5em}
+            .ui-tabs-vertical p.indent{ padding-left: 2.7% }
+            .ui-tabs-vertical p.coment{ padding-left: 2.9%}
+            
+            @media screen and (max-width:950px){
+                .ui-tabs-vertical .ui-tabs-nav {width: 5%; overflow:hidden;-webkit-transition:width 0.5s cubic-bezier(.61,.01,.37,1); position:fixed;}
+                .ui-tabs-vertical .ui-tabs-nav:hover { width: 35%;}
+                .ui-tabs-vertical .ui-tabs-panel { padding: 1%; float: right; width: 95%; font-size:95%; line-height: 1.5em}
+            }
+            #customerNotHappy{
+            	color: #00B050;
+                font-style: italic;
+            }
+        </style>
+                                   
+        <script>
+            $( function() {
+                $( "#tabs" ).tabs().addClass( "ui-tabs-vertical ui-helper-clearfix" );
+                $( "#tabs li" ).removeClass( "ui-corner-top" ).addClass( "ui-corner-left" );
+                
+                $('.rapport').on("click", function(){
+                    $('.ui-tabs-vertical .ui-tabs-nav').css("padding", "0% .1% auto .2%");
+                });                       
+                $('.preApproval').on("click", function(){
+                    $('.ui-tabs-vertical .ui-tabs-nav').css("padding", "0% .1% auto .2%");
+                });
+                $('.invoiceRequest').on("click", function(){
+                    $('.ui-tabs-vertical .ui-tabs-nav').css("padding", "0% .1% auto .2%");
+                });
+                $('.insuranceExamples').on("click", function(){
+                    $('.ui-tabs-vertical .ui-tabs-nav').css("padding", "0% .1% auto .2%");
+                });
+                $('.followUp').on("click", function(){
+                    $('.ui-tabs-vertical .ui-tabs-nav').css("padding", "0% .1% auto .2%");
+                });
+                $('.objecting').on("click", function(){
+                    $('.ui-tabs-vertical .ui-tabs-nav').css("padding", "0% .1% auto .2%");
+                });
+                $('.objectingIns').on("click", function(){
+                    $('.ui-tabs-vertical .ui-tabs-nav').css("padding", "0% .1% auto .2%");
+                }); 
+            } );                            
+                                       </script>
+    </head>
+    <body>
+        <div id="tabs">
+            <nav>
+                <ul>
+                    <li><a href="#Rapport" class="rapport">Rapport Building</a></li>
+                    <li><a href="#PreApprovalCall" class="preApproval">Pre-approval Call, VD Referral and Protection Package Reminder</a></li>
+                    <li><a href="#InvoiceRequested" class="invoiceRequest">Invoice Requested/Vendor Doc Request (Private Sale)</a></li>
+                    <li><a href="#InsuranceExamples" class="insuranceExamples">Real Life Examples – Insurance</a></li>
+                    <li><a href="#FollowUp" class="followUp">Follow Up and Follow Through and Closing</a></li>
+                    <li><a href="#Objecting" class="objecting">Objecting Handling</a></li>
+                    <li><a href="#ObjectingIns" class="objectingIns">Objection Handling For Insurance</a></li>
+                    <li><a href="#BadCreditCar " class="BadCreditCar">Objection Handling for Bad Credit Car Loans</a></li>
+                </ul>
+            </nav>
+            <div id="Rapport">
+                <div>
+                    <p><strong>Questions that you can ask about the asset</strong></p>
+                    <ol>
+                        <li>Is there a particular reason why you are looking for this car? </li>
+                        <li>How much research have you completed? </li>
+                        <li>Are you set on this make and model or are you open to look at other vehicles? </li>
+                        <li>Is the car for family? For yourself? How will you be using it?</li>
+                    </ol>
+                </div>
+                <div>
+                    <p><br></br>People/prospects are in the market to buy a car, bike etc. This is a very large and exciting purchase. Talk about the car, connect 
+                with the customer. This is where the emotion comes into the sales process.</p>    
+        		</div>
+                <div>
+                    <p><strong>Job and Career questions</strong></p>
+                    <ol>
+                        <li>So, tell me how you got into this line of work?</li>
+                        <li>Do you enjoy it?</li>
+                        <li>Did you study to get into this field?</li>
+                        <li>What are your long-term job and career goals?</li>
+                    </ol>
+                </div>
+        		<div>
+            		<p><br></br>Most people are usually working in their particular job or industry because they have worked very hard to get their either through study or persistence, most people do what they do because they enjoy the work, are good at etc. Talk about that and connect. </p>    
+				</div>
+                <div>
+                    <p><strong>Locality questions or statements</strong></p>  
+                    <p>Savvy customers reside across Australia, from all major capital cities to regional Australia. You must as a consultant have a general idea about where your customers reside and over time develop your knowledge on cities and towns across Australia and their major attractions. Trying to find a connection with a prospect around where they live build massive amount of credibility, personalises the relationship and knowing little bits of information about their backyard will allow you to develop a great connection with the customer. Knowledge will come with experience but you can start off with some basic statements such as:  <strong>Sydney lead </strong>? talk about the fact we have an office in Crows Nest.  <strong>Adelaide lead</strong>? talk about the fact we have out head office in Adelaide, Norwood. </p>
+                </div>
+                <div>
+                    <p><strong>Questions for Business Customers </strong></p> 
+                    <ol>
+                        <li>So, tell me how has business been this year? Better than last?</li>
+                        <li>What?s your plan for next 12 months of trading, any big deals/contracts coming through? </li>
+                        <li>How did you end up in this line of work?</li>
+                        <li>What kind of products do you sell, is it easy to bring in business?	</li>
+                    </ol>
+                </div>
+                <div> 
+                    <p><br></br>Business owners love to talk about their business, they spend so much time and sacrifice so much to be in business and hence love talking about their company, what they are doing today and what they are looking to achieve in the future. Use that! </p>
+                </div>
+                <div>
+                    <p><strong>General rapport building questions</strong></p>
+                    <ol>
+                        <li>How was your weekend? </li>
+                        <li>What do you do for fun?  </li>
+                        <li>Talk about favorite sport, team, whatever it may be?</li>
+                        <li>General news?</li>
+                        <li>Personal interests - Family, partner, interest, hobbies. </li>
+                        <li>Where did you vacation? </li>
+                        <li>Where his kids go to school</li>
+                    </ol>
+                </div>
+                <div>
+                    <p><br></br><strong>To build you also need to: </strong></p>
+                    <ul>
+                        <li>Always be extremely nice, caring and have energy in your voice.</li>
+                        <li>Stay POSITIVE in every instance.</li>
+                        <li>Display huge amounts of enthusiasm about your product, yourself, your job and the organisation. </li>
+                        <li>Talk about what achievements the company has accomplished, how big the company is. </li>
+                        <li>Talk about yourself, your experiences, your family, your friends, your hobbies, cars that you like, car that you drive, what you did on the weekend?.and what you?re doing this weekend?. </li>
+                        <li>Talk to customers about anything. People like to know that they are dealing with a human being and not just someone who wants to sell them something.</li>
+                        <li>Show your personality, have a joke and really have fun on the phones. Have fun and don?t be afraid to be human, open up, if they don?t talk much, then you must. If they are big talkers, let them talk?. but make sure you still control the call!  </li>
+                        <li>Don?t be afraid to have a sense of humour, you don?t need to be to formal always, know who you are speaking to and adapt.  </li>
+                        <li>Find similarities with your customers, try and find one thing in common with every customer you deal with. You will be surprised how similar all of us are.   </li>
+                        <li>The client must LIKE you. If the customer really likes you they will allow you to re-quote and WIN the business. This will only happen if you have a good relationship with your customer, this relationship can only happen through phone time ? through MEANINGFUL conversations!! A 5-minute convo consisting of just repayment and finance details will not cut it. PHONE TIME is so important. Take the time to get to know the person you are speaking to. </li>
+                        <li>Find a CONNECTION </li>
+                    </ul>
+                </div>
+                <div>
+                    <p><br></br>You will find that although we are all very different (people) there is usually some sort of a connection you can make with a person through some common interests and that?s what rapport building is all about! </p>
+                </div>
+		</div>
+        <div id="PreApprovalCall"  stylesheet=".ui-tabs-vertical .ui-tabs-nav { padding: 0% .1% 80% .2%;}">
+            <!-- <p>Hi John, its Bill from Savvy. Congratulations your loan has been approved.</p> -->
+            <p>Great!</p>
+            <!-- <p>I am happy to advise that they have also approved the inclusion of the protection benefits that we spoke about when you first enquired.</p>
+            <p>Fantastic!</p>
+            <p><strong>If the customer asks what the protected payments are? You Say...If they don’t you move straight into Next Step &amp; Vehicles Direct</strong></p>
+            <i>
+                <p>The protection benefits include 3 options you can choose from:</p>
+                <p><strong>1.  Repayment Cover</strong></p>
+                <p>This provides cover if you happen to be ill or injured and unable to work. It could be a sporting injury such as a broken arm or an illness such as glandular fever.  Your payments will be made for you whilst you are unable to go to work and it gives you the option of handing back the vehicle. Also, if you become involuntarily unemployed the payments will be paid until you can find another job. The policy will cover you for the whole term of the loan and provides unlimited claims.</p>
+                <p><strong>2. There is also Shortfall Cover</strong></p>
+                <p>If you write your car off during the term of the loan and the payout from your insurer is insufficient to payout your loan, shortfall cover will pay the difference plus provide an additional cash payment directly to you. The Cash benefit is up to $4,000 and this will be paid even if there is no GAP payout.</p>
+                <p><strong>3. The third benefit is Mechanical Breakdown</strong></p>
+                <p>If your car breaks down and requires repair, this benefit will cover the cost of parts and labour to repair your vehicle. Just about every mechanical and electronic component is covered for up to 5 years. Other benefits include no excess on claims, you can claim up to the market value of the car, accommodation, hire car, towing and parts guaranteed are all additional benefits.</p>
+                <p>Anyway, we have plenty of time to decide on any protection package you might like to take. Before we generate loan contacts I will be sending you a detailed features and benefits presentation and at that point we can discuss them in more detail.</p>
+            </i>
+             -->
+            <p>So, the next step NOW is to find a car, as previously mentioned Savvy helps most of its customers source vehicle though our car buying service Vehicles Direct.</p>    
+            <!-- <p>Vehicle Direct, is savvy’s exclusive internal fleet buying arm, is very popular free service, VD has relationships with dealers and wholesalers nationally and it’s their job to search, secure and deliver your vehicle under retail process.</p>
+            <p>Because we buy over 300 cars a month, this buying power gives us preferential pricing through our national network of dealers. They also take away all the hassle of shopping around.</p> -->
+            <p>As part of our service, I have handed your file to them, they will contact you within the next few hours, have a no-obligation chat with them to discuss your vehicle requirements. If you decide that it’s not a service that you want to proceed with, please let them know.</p>
+            <p>Thank you</p>
+        </div>
+        <div id="InvoiceRequested">
+            <div>
+                <p>Now that we have requested the invoice from the dealership/documents from seller, we?re getting closer to organizing your loan documents, as previously discussed our loan products come with protection options. It?s now time for me to run through all the available options in detail and make sure you understand them all so you can make an informed decision on what package would suit you best. I have already sent you your features and benefits presentation, can you please bring this up?  </p>    
+            </div>
+            <div>
+                <p>So first of all, let me just confirm, you have purchased (car details) for (purchase price) and we?re financing that over (loan term) with (residual) is this correct? (**We confirm this at the start to get them in the mode of saying ?yes?)</p>
+            </div>
+            <div>
+                <p><u><strong>GAP</strong></u></p>
+            </div>
+            <div>
+                <p>The first thing to run through with you is GAP protection. Have you heard of the before? Do you know what that covers? It?s something that most people take out when they finance cars these days just because your insurance company will be de-valuing your car quicker than you?re paying back the finance. Because if your car is written off or stolen your insurance company only pays you out for the market value of your car, meaning if you do find yourself in the unfortunate situation of having your vehicle written off or stolen, once you?ve recovered from the shock of not having a car anymore you?ll usually be hit with a more painful shock being that not only do you not have a car anymore, but you still owe your bank or finance company an quantity of money because your insurance company has only partially paid out your loan. So the GAP protection will ensure for you that your loan will always be paid out. It covers the financial shortfall between what your insurance company pays you out, and the amount owing on the finance, up to a threshold of $X. In addition to that, you will also be provided $X cash to cover all your out of pocket expenses in the meantime such as car hire, taxis, comprehensive insurance excess, all those additional expenses. This will ensure you?re never off the road and not paying out of your own pocket to do so. Any questions in regard to the GAP protection.</p>
+            </div>
+            <div>
+                <p><u><strong>LTI</strong></u></p>
+            </div>
+            <div>
+                <p>The next thing to run through is loan protection. If you ever fall into a circumstance outside of your control that could impair your ability to repay the loan due to illness, injury, involuntary unemployment, divorce, driving restrictive medical condition, or international job transfer, you will initially have up to (3 or 6) months of loan payments covered for you while you get yourself back on your feet. If your still out of action beyond that period, then you will be provided the option of handing the car back. Any residual value between what the car is valued at at that point and what is owing on the finance would be covered, you will be relinquished from responsibility for the loan with no damage to your credit file if you exercise that option. Any questions in regard to loan protection?</p>
+            </div>
+            <div>
+                <p><u><strong>Platinum or diamond Warranty</strong></u></p>
+            </div>
+            <div>
+                <p>The final level of protection we can provide is a warranty for your vehicle. Our warranty is what is called an exclusions warranty. An exclusions warranty covers absolutely everything on the car, only excluding wear and tear. Absolutely everything else on the car is completely covered, everything from your engine block all the way down to your power window motors. You have all parts and labor covered anywhere in Australia, and you even have lots of extras covered for you as well such as towing, or emergency accommodation if your car is immobilized away from home, you also have locksmith services covered for if you lose or break your key, or lock your key in your car, and if anything serious goes wrong with the car and your car is in the workshop for 30days or more, then the warranty will even cover your loan repayment for you whilst your car is off the road so it is a very comprehensive product. Any questions in regard to anything in the warranty?</p>
+            </div>
+            <div>
+                <p>So, as you can see from the presentation we offer 3 Packages, from fully-protected, Standard or Basic, which package would you like to proceed with?</p>
+            </div>
+        </div>
+        <div id="InsuranceExamples">
+            <di>
+                <p><strong>REAL LIFE EXAMPLE for GAP</strong></p>
+            </di>
+            <di>
+                <p class="indent">If Your Vehicle was declared a Total Loss and the Finance Contract payout figure was $35,500 the Comprehensive Vehicle Insurer settlement figure may be less, for example, $27,500. In this example, We will pay Your Financier up to $15,000 (if You had selected Cover 1). Plus provide up to $4,000 out of pocket expenses such as registration on the replacement vehicle. </p>
+            </di>
+            <di>
+                <p><strong>REAL LIFE EXAMPLE for LTI </strong></p>
+            </di>
+            <di>
+                <p class="indent">You have Level 2 Cover and You suffer from a Trauma during the Period of Insurance. One year earlier You made a claim on the Policy under the Additional Monthly Payments Option as You broke Your leg and were Disabled. Each Monthly Repayment was $1,000 and You were away from work for less than 3 months following the completion of the Non-Benefit Period ($3,000 in total was paid to Your Financier). As a result of the Trauma You elect to Hand Back the Vehicle to the Dealer. The value of the Vehicle as reasonably determined by Us is $22,000* and the Payout Figure is $35,000. You have a Shortfall of $13,000. We will pay the Financier $12,000 being the lesser of the Shortfall and Level 2 Cover of $15,000 less the $3,000 Additional Monthly Payment Option claim made one year ago. *Vehicle value is determined in accordance with the mid point between retail and trade value of the current edition of the Glasses Guide Auto Edge, for a Vehicle which is the equivalent age, make, condition and model as Your Vehicle. </p>
+            </di>
+        </div>
+<div id="FollowUp">
+    	<div>
+        	<p><strong>A few minutes after your first call with a New Opportunity </strong></p>
+    	</div>
+    	<div>
+        	<p class="indent">A courtesy?? Thank you? SMS a few minutes after your first call? Thank you John for your time over the phone, I look forward to working with you, I am available if you have any questions. <br></br></p>
+		</div>
+        <div>
+            <p><strong>Just want to confirm that you received the application pack Call? 2 hours after first contact with New Opportunity </strong></p>
+        </div>
+        <div>
+            <p class="indent">Hi John, just touching base to confirm that you received the application pack email, great that you have, if you have any questions as you go through the process please don't hesitate to call me or drop me an email.</p>
+        </div>
+        <div>
+            <p class="indent">Have a great day. </p>
+        </div>
+        <div>
+            <p class="indent">I haven't received anything</p>
+        </div>
+        <div>
+            <p class="indent">Ok, I will resend it through to you now, please make sure to look into your spam box as they sometimes get stuck there, if you have any questions or need some help please give me a call or drop me an email</p>
+        </div>
+        <div>
+            <p><strong>Closing on a call Back</strong></p>
+        </div>
+        <div>
+            <p class="indent">Hey Bill, It's Tom Calling from Savvy, How are you?..<br>That's great to hear,</br></p>
+        </div>
+        <div>
+            <p class="indent">I've been looking forward to chatting with you in regards to getting the ball rolling with the next step of the application. I'm on a bit of roll at the moment with happy clients and I don't plan to break that.</p>
+        </div>
+        <div>
+            <p class="indent">Now I'm sure you've had a chance to check out your offer I sent through last time we spoke and I wanted to find out when you're ready to now proceed with pre-approval?</p>
+        </div>
+        <div>
+            <p><strong>Follow up call to gather supporting documents app form </strong></p>
+        </div>
+        <div>
+            <p class="indent">S: Hi John, its Bill from Savvy, how are you today?   C: Great S: I sent you out an app pack on the Date, I'm keen to progress your application and get you approved, when can I expect to be receiving your information soon?  Today, Tomorrow etc. C: Tomorrow</p>
+        </div>
+        <div>
+            <p class="coment" align="center"><i><strong>"Pause and listen, you may need to go through your pitch again and again before you close this deal. Objections, questions, quotes from other companies etc. may surface here so get ready to go through your sales pitch again. #LMS"</strong></i></p>
+        </div>
+        <div>
+            <p class="indent">S: Ok, that's great, I will allocate some time tomorrow to begin your submission, so that I can plan out my day, can you give me an indication on what time it will all come through?  C: Approximately 2PM. S: Great, once I have received the application, the next step will be to get your application pre-approved, we should be able to have this all done for you within a few hours, once we have your application pre-approved we can then look at organise a vehicle for you.</p>
+        </div>
+        <div>
+            <p><strong>Touching base call backs throughout the sales process</strong></p>
+        </div>
+        <div>
+            <p><strong>Daily Follow Up</strong></p>
+        </div>
+        <div>
+            <ol>
+                <li>How are things going? </li>
+                <li>Is there anything that I can help you out with? </li>
+                <li>How is the VD process coming along? </li>
+                <li>If they decided to proceed themselves with car hunting, how is the car shopping going, can we help?</li>
+                <li>Offer Vehicles Direct again??..if they are struggling to find a car!</li>
+                <li>Talk about the NEXT STEP </li>
+            </ol>
+        </div>
+        <div>
+            <p class="indent">[Be the LAST MAN STANDING and you will win the business, if you want to be the LAST MAN STANDING, your follow up calls and follow throughs are an absolute must]</p>
+        </div>
+</div>
+        <div id="Objecting">
+            <apex:outputPanel layout="block" styleClass="container-fluid">
+                <apex:outputPanel layout="block" styleClass="row rowHeader rowHeaderObjecting">
+                    <apex:outputPanel layout="block" styleClass="col-sm stepTitle">
+                        Objecting Handling
+                    </apex:outputPanel>
+                </apex:outputPanel>
+                <apex:outputPanel layout="block" styleClass="row boxPanel2">
+                    <apex:outputPanel layout="block" styleClass="col-sm">
+                        Be <strong>VERY</strong> surprised when a client says <strong>"NO"</strong>   -   Oh Ok, what is stopping you from proceeding?
+                        <br/><br/>
+                    </apex:outputPanel>
+                </apex:outputPanel>
+                <apex:outputPanel layout="block" styleClass="row">
+                    <apex:outputPanel layout="block" styleClass="col-sm">
+                        <div id="accordion" role="tablist" aria-multiselectable="true">
+                            <div class="card">
+                                <div class="card-header" role="tab" id="objecting1">
+                                    <h5 class="mb-0">
+                                        <a data-toggle="collapse" data-parent="#accordion" href="#collapseObj1" aria-expanded="true" aria-controls="collapseObj1">
+                                            Just send information
+                                        </a>
+                                    </h5>
+                                </div>
+                                <div id="collapseObj1" class="collapse show" role="tabpanel" aria-labelledby="objecting1">
+                                    <div class="card-block">
+                                        #1 - I’d be happy to John. Quick questions though and please be honest with me: When do you think you’ll be serious about moving on something like this? <br/>
+                                        #2 - If you like what you see, when would you be ready to place and order? Or, sure, and after you review it, how soon are you looking to make a decision on it?  <br/>
+                                        #3 - Absolutely. By the way, what would you need to see to say yes to it?
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="card">
+                                <div class="card-header" role="tab" id="objecting2">
+                                    <h5 class="mb-0">
+                                        <a class="collapsed" data-toggle="collapse" data-parent="#accordion" href="#collapseObj2" aria-expanded="false" aria-controls="collapseObj2">
+                                            Go ahead and send me your information
+                                        </a>
+                                    </h5>
+                                </div>
+                                <div id="collapseObj2" class="collapse" role="tabpanel" aria-labelledby="objecting2">
+                                    <div class="card-block">
+                                        #1 - Sure, and after you review it, how soon are you going to make a decision on it? <br/>
+                                        #2 - Sure, And what would you need to see to say yes to it?
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="card">
+                                <div class="card-header" role="tab" id="objecting3">
+                                    <h5 class="mb-0">
+                                        <a class="collapsed" data-toggle="collapse" data-parent="#accordion" href="#collapseObj3" aria-expanded="false" aria-controls="collapseObj3">
+                                            Put that quote in writing and sent it to me
+                                        </a>
+                                    </h5>
+                                </div>
+                                <div id="collapseObj3" class="collapse" role="tabpanel" aria-labelledby="objecting3">
+                                    <div class="card-block">
+                                        #1 - I’d be happy to, and from what we’ve just discussed, does it sound like you’d go with it? <br/>
+                                        #2 - Absolutely. How does this compare with the other quotes you’ve received so far?  <br/>
+                                        #3 - Great, based on the quote I just gave you does this sound like it fits into your budget? <br/>
+                                        #4 - I’d be happy to, and after you get it, what happens next?
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="card">
+                                <div class="card-header" role="tab" id="objecting4">
+                                    <h5 class="mb-0">
+                                        <a class="collapsed" data-toggle="collapse" data-parent="#accordion" href="#collapseObj4" aria-expanded="false" aria-controls="collapseObj4">
+                                            I need to think about it/need to wait until next week/month/I’ll get back to you
+                                        </a>
+                                    </h5>
+                                </div>
+                                <div id="collapseObj4" class="collapse" role="tabpanel" aria-labelledby="objecting4">
+                                    <div class="card-block">
+                                        #1 - John, what I’m hearing from you is essentially a ‘no” – and that’s alright. As a sales rep, I hear that all the time and it doesn’t bother me. It just means I haven’t yet explained the value proposition right. Tell me, what would it take to convince you that this would be a good idea to move forward with – and please be honest with me. <br/>
+                                        #2 - No problem John, When should I call you back on this? And what is going to happen between then and now that will convince you to move forward with this?
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="card">
+                                <div class="card-header" role="tab" id="objecting5">
+                                    <h5 class="mb-0">
+                                        <a class="collapsed" data-toggle="collapse" data-parent="#accordion" href="#collapseObj5" aria-expanded="false" aria-controls="collapseObj5">
+                                            I need to show this or talk to my partner, wife etc?
+                                        </a>
+                                    </h5>
+                                </div>
+                                <div id="collapseObj5" class="collapse" role="tabpanel" aria-labelledby="objecting5">
+                                    <div class="card-block">
+                                        <p>That’s perfectly fine, John. I think you should show this to (whomever they claim they need to show this to). And let me ask you something – if after you show this to (whomever they claim they need to show this to).  And he/she says “It look good John, whatever you want to do, is this something that YOU would move forward with today?</p>
+                                        <p>[Now be aware that any answer other than ‘YES’ means that this objection is just a smokescreen and you haven’t uncovered the real objection, and your job now will be to keep qualifying to see what else is standing in the way. Questions like the following will help to bring other objections to light:] </p>
+                                        <p>What else might prevent you from moving forward with this?  Or  What do you think would hold him/her back from moving forward with this? 
+                                            Or  What other solutions do you think they are leaning toward? <br/>
+                                            [On the other hand, if your prospect says he would move forward with this, then you’ve got to confirm this and make him your ally.]</p>
+                                        <p>Great, well I’ll give you some time to speak with (whomever they claim they need to show this to), Can I schedule a follow up call tomorrow afternoon to discuss next steps?</p>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="card">
+                                <div class="card-header" role="tab" id="objecting6">
+                                    <h5 class="mb-0">
+                                        <a class="collapsed" data-toggle="collapse" data-parent="#accordion" href="#collapseObj6" aria-expanded="false" aria-controls="collapseObj6">
+                                            I can get a better deal elsewhere
+                                        </a>
+                                    </h5>
+                                </div>
+                                <div id="collapseObj6" class="collapse" role="tabpanel" aria-labelledby="objecting6">
+                                    <div class="card-block">
+                                        John, my customers tell me this all the time, and sometimes they genuinely can get a better deal, but a lot of times they cant. I’ll tell you what I’ll do. I’ll go over each item you’ve been quoted by this other company, in other words I will compare apples with apples, and if everything is equal, Ill see if I can do even better on that. If I can, you’ll get an even better deal and if I can’t, Ill tell you so. Either way, you’ll win. Now, do you have that other quote in front of you? Great, Go ahead and email it to me and I’ll to work for you. How does that sound?	
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="card">
+                                <div class="card-header" role="tab" id="objecting7">
+                                    <h5 class="mb-0">
+                                        <a class="collapsed" data-toggle="collapse" data-parent="#accordion" href="#collapseObj7" aria-expanded="false" aria-controls="collapseObj7">
+                                            The price is too high
+                                        </a>
+                                    </h5>
+                                </div>
+                                <div id="collapseObj7" class="collapse" role="tabpanel" aria-labelledby="objecting7">
+                                    <div class="card-block">
+                                        <p>[Sample softening statements] I understand that or I hear exactly what you are saying</p>
+                                        <p>[Isolate the objection before answering it] I understand John, and let me ask you a question. Assuming the price on this car loan weren’t an issue, is this the solution you feel is right for you today? Or ‘Is this something you would go ahead and move forward with today?</p>
+                                        <p>[How easy is that. Any answer other than “YES” means that this is just a smokescreen and not the real objection. If that’s the case, then it’s up to you to do more probing here to find out exactly what is stopping them from moving forward].</p>
+                                        <p>[If, however, they say yes, price is the only thing holding them back, then you move into the following].</p>
+                                        <p>Ok great, John. Lets work together to get this working for you today then. First of all, where does our price need to be for you to move forward with us today?</p>
+                                        <p>[If your prospect gives you a price that you can reach, then before you just agree to terms , you must first get commitment for your prospect that this is something they are going to move forward with today – assuming you can meet those terms. If you can match that price they are willing to pay, say:]</p>
+                                        <p>Ok, now John, that price (and terms) are going to need some approval on my end and I’ll go get that right now, but before I do, let me make sure that if I can get you (review the details), then this is something you-re prepared to move forward with today, right? </p>
+                                        <p>[Only after they agree to the deal should you put them on hold or hang up and call back in 5 minutes and make the appropriate arrangements. After you’ve done that, come back on the line and say:]</p>
+                                        <p>Ok, that’s all done on this end, so congratulations. Here’s what we need to do now……then close the sale.</p>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="card">
+                                <div class="card-header" role="tab" id="objecting8">
+                                    <h5 class="mb-0">
+                                        <a class="collapsed" data-toggle="collapse" data-parent="#accordion" href="#collapseObj8" aria-expanded="false" aria-controls="collapseObj8">
+                                            If you are not able to close your customer even if you have matched the price or beaten the quote #1
+                                        </a>
+                                    </h5>
+                                </div>
+                                <div id="collapseObj8" class="collapse" role="tabpanel" aria-labelledby="objecting8">
+                                    <div class="card-block">
+                                        <p>[Yes, you will still have customers that are not prepared to commit, you need to now persuade them that you are the best person broker to organise their finance so use the following script]</p>
+                                        <p>Bill I get what’s your saying, I know you have a lot of options out there, it’s not the first time a customer has told me they want keep looking around in hope of a better deal. What we’ve found is that customers who tend to go out looking for a better deal will always end up coming back as this is what we specialise in.</p>
+                                        <p><strong>Away response</strong>, In the end this just takes up more time and quite often ends in frustration as your back where you’re started except 2 steps behind. So wouldn’t you prefer to save yourself from that outcome by getting pre approval right now?</p>
+                                        <p><strong>Towards response</strong>, personally I would prefer to more effectively make use of your time getting your application approved so you can enjoy driving around in your new car. If you’re as excited as I think you are about getting your new ……Make of vehicle…… I would love to help out by organising your pre approval.</p>
+                                        <p><strong>Last resort</strong>, The true difference between most lenders is minimal at best. Here at Savvy we prefer to be honest and upfront with our client from the beginning and if you do choose to get another quote, (which is fine) let us know so we can compare apples with apples. I’m more than certain you will find yourself better off with us every time. </p>
+                                        <p>Look at this point it makes sense to submit your pre approval so I can get to work on what’s Import to you which is making sure you actually get your new car, so what do you say we make this happen.</p>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="card">
+                                <div class="card-header" role="tab" id="objecting9">
+                                    <h5 class="mb-0">
+                                        <a class="collapsed" data-toggle="collapse" data-parent="#accordion" href="#collapseObj9" aria-expanded="false" aria-controls="collapseObj9">
+                                            What’s your commission? That’s too high.
+                                        </a>
+                                    </h5>
+                                </div>
+                                <div id="collapseObj9" class="collapse" role="tabpanel" aria-labelledby="objecting9">
+                                    <div class="card-block">
+                                        <P>The fee for our service is $770. John, the only brokers who cut their fees are the desperate ones that are struggling to win any business. I work 12 hours a day and my back-office staff work very hard also to deliver fast turnaround and a great overall experience. I don’t compromise on my service at all. </P>
+                                        <p>Even still, the fee we charge is modest for the work we do and its already the lowest fee charged in the industry. Please also note that the fee is included into the finance and the repayment I have already quoted for you. I hope you are ok with this and we can continue with finalising your finance.</p>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="card">
+                                <div class="card-header" role="tab" id="objecting10">
+                                    <h5 class="mb-0">
+                                        <a class="collapsed" data-toggle="collapse" data-parent="#accordion" href="#collapseObj10" aria-expanded="false" aria-controls="collapseObj10">
+                                            The interest rate is too high
+                                        </a>
+                                    </h5>
+                                </div>
+                                <div id="collapseObj10" class="collapse" role="tabpanel" aria-labelledby="objecting10">
+                                    <div class="card-block">
+                                        <p>[some customers may continue to state that the interest rate we have offered is too high even though we have offered our best rate, and the customer has not delivered us a written quote from another provider] </p>
+                                        <p>I can assure you that the interest rate being offered is the best on the market, based on your profile. As previously mentioned we are a comparison service. It’s our job and responsibility to maintain a diverse lender panel, this ranges from all the major banks, to other large financiers. We have integrated systems with all the major financiers and what we have offered is the absolute cheapest. I can guarantee that. </p>
+                                        <p>Our feeds are issued to us from the financiers in real time and there is no other rate on the market that is any better than this. </p>
+                                        <p>I would love to win your business, most of our business comes from repeat clientele, they continue to come back because we offer the best rate, upfront and every time.  </p>
+                                        <p>Let’s proceed with a pre-approval, what do you say?</p>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="card">
+                                <div class="card-header" role="tab" id="objecting11">
+                                    <h5 class="mb-0">
+                                        <a class="collapsed" data-toggle="collapse" data-parent="#accordion" href="#collapseObj11" aria-expanded="false" aria-controls="collapseObj11">
+                                            I would still like to look around?
+                                        </a>
+                                    </h5>
+                                </div>
+                                <div id="collapseObj11" class="collapse" role="tabpanel" aria-labelledby="objecting11">
+                                    <div class="card-block">
+                                        <p>#1 - John, what I’m hearing from you is essentially a ‘no” – and that’s alright. As a sales rep, I hear that all the time and it doesn’t bother me. It just means I haven’t yet explained the value proposition right. Tell me, what would it take to convince you that this would be a good idea to move forward with – and please be honest with me. </p>
+                                        <p>[Wait for response, customer may provide you with a response that allows you to handle the objection and move forward with it, if they are not receptive and want to continue to look around you really need to re-state our value proposition.]</p>
+                                        <p>Obviously, I understand and appreciate that people like to shop around, it’s natural for everyone to want to get the very best deal and most people on average will at least contact 3 or more providers before making a decision, however, this is exactly what you employ us to do for you. </p>
+                                        <p>Savvy, at its core, is a shopping service for its customers, it compares from every bank and lender in the market, the winning financiers comes down to which lender offers your profile the very best rates and terms.</p>
+                                        <p>In saying this I am not here to put any pressure on you, I suppose I just want to clarify what we are employed to do.</p>
+                                        <p> I want all of my customers to feel 100% comfortable in dealing with me before they make a commitment so happy to leave it with you for now and schedule a follow up call, let’s say tomorrow at XXXX.</p>
+                                        <p>If in the meantime you have any questions I am always available on direct line and on the mobile after hours. If you decide you would like to proceed I will send you our application pack via email so you have it on file. </p>
+                                        <p>I look forward to working with you</p>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="card">
+                                <div class="card-header" role="tab" id="objecting12">
+                                    <h5 class="mb-0">
+                                        <a class="collapsed" data-toggle="collapse" data-parent="#accordion" href="#collapseObj12" aria-expanded="false" aria-controls="collapseObj12">
+                                            Is that the cheapest you can offer me?
+                                        </a>
+                                    </h5>
+                                </div>
+                                <div id="collapseObj12" class="collapse" role="tabpanel" aria-labelledby="objecting12">
+                                    <div class="card-block">
+                                        <p>[some customers may continue to ask if what we have offered is the cheapest even though we have offered our best rate, and the customer has not delivered us a written quote from another provider] </p>
+                                        <p>I can assure you that what I have offered you is the best on the market, based on your profile. As previously mentioned we are a comparison service. It’s our job and responsibility to maintain a diverse lender panel, this ranges from all the major banks, to other large financiers. We have integrated systems with all the major financiers and what we have offered is the absolute cheapest. I can guarantee that. </p>
+                                        <p>Our feeds are issued to us from the financiers in real time and there is no other rate on the market that is any better than this.  </p>
+                                        <p>I would love to win your business, most of our business comes from repeat clientele, they continue to come back because we offer the best rate, upfront and every time.  </p>
+                                        <p>Let’s proceed with a pre-approval, what do you say?</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </apex:outputPanel>
+                </apex:outputPanel>
+            </apex:outputPanel>   
+        </div>
+    <div id="ObjectingIns">
+        <apex:outputPanel layout="block" styleClass="container-fluid">
+            <apex:outputPanel layout="block" styleClass="row">
+                <apex:outputPanel layout="block" styleClass="col-sm">
+                    <div id="accordion" role="tablist" aria-multiselectable="true">
+                        <div class="card">
+                            <div class="card-header" role="tab" id="objecting13">
+                                <h5 class="mb-0">
+                                    <a data-toggle="collapse" data-parent="#accordion" href="#collapseObj13" aria-expanded="true" aria-controls="collapseObj1">
+                                        No, I don’t want any of the packages? 
+                                    </a>
+                                </h5>
+                            </div>
+                            <div id="collapseObj13" class="collapse show" role="tabpanel" aria-labelledby="objecting13">
+                                <div class="card-block">
+                                    Ok, that’s fine, our packages are not always perfect, hence why we have the ability to customize your own, out of all of the products presented which one do you believe you will get the best use out of?
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card">
+                            <div class="card-header" role="tab" id="objecting14">
+                                <h5 class="mb-0">
+                                    <a class="collapsed" data-toggle="collapse" data-parent="#accordion" href="#collapseObj14" aria-expanded="false" aria-controls="collapseObj2">
+                                        No, not interested in anything? 
+                                    </a>
+                                </h5>
+                            </div>
+                            <div id="collapseObj14" class="collapse" role="tabpanel" aria-labelledby="objecting14">
+                                <div class="card-block">
+                                    OK, Look John, what I’ll do is I’ll leave this presentation with you, I am like you and I usually don’t buy products on the spot without first giving myself some time to digest all the information and then determine if I will get any use of something I am about to buy,  Please have a further read through the presentation I have sent through tonight before you make a decision, I wouldn’t be persisting with this if it wasn’t for good reason, these protection packages are quality, the amount of calls I get  from happy customers that have fell into trouble and utilized the protection benefits we organized is staggering, I also get calls from customers wanting to discuss executing the protection benefits that end up disappointed because they declined them. Anyway, I have sent you through some testimonials from several customers that have had some great experiences
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="card">
+                            <div class="card-header" role="tab" id="objecting15">
+                                <h5 class="mb-0">
+                                    <a class="collapsed" data-toggle="collapse" data-parent="#accordion" href="#collapseObj15" aria-expanded="false" aria-controls="collapseObj3">
+                                        I have plenty of savings so I don’t need GAP? 
+                                    </a>
+                                </h5>
+                            </div>
+                            <div id="collapseObj15" class="collapse" role="tabpanel" aria-labelledby="objecting15">
+                                <div class="card-block">
+                                    John, many customers say the same thing and your right, if you have the savings in the bank, then you can cover the GAP but do you want to? GAP’s a good investment.  On an average 25K loan, 2.5 years into the loan contract would generally give you 5K GAP, would you prefer to pay 5K in one lump sum, or pay $4 a week over 5 years, think about what most people waste $4 a week on. I think it’s a great investment, out of all the protection packages, this is the one that most people take out as it deliver you great coverage for a small weekly cost. So what do you think? 
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="card">
+                            <div class="card-header" role="tab" id="objecting16">
+                                <h5 class="mb-0">
+                                    <a class="collapsed" data-toggle="collapse" data-parent="#accordion" href="#collapseObj16" aria-expanded="false" aria-controls="collapseObj4">
+                                        Would like to think about it?
+                                    </a>
+                                </h5>
+                            </div>
+                            <div id="collapseObj16" class="collapse" role="tabpanel" aria-labelledby="objecting16">
+                                <div class="card-block">
+                                    Sure, that’s the whole point of this presentation, it’s produced to provide you with all the information you require to make a decision in your own time and respond. We still have at least 24 hours before we are ready to generate loan documents which gives you plenty of time to look over all options again, when you are ready to proceed, just tick whichever package or custom option you would like and I will receive instant notification, this presentation feeds directly back into our online system.
+                                </div>
+                            </div>
+                        </div>				  
+                    </div>
+                </apex:outputPanel>
+            </apex:outputPanel>
+        </apex:outputPanel>
+    </div>
+<div id="BadCreditCar">
+    <apex:outputPanel layout="block" styleClass="container-fluid">
+        <apex:outputPanel layout="block" styleClass="row">
+            <apex:outputPanel layout="block" styleClass="col-sm">
+                <div id="accordion" role="tablist" aria-multiselectable="true">
+                    <div class="card">
+                        <div class="card-header" role="tab" id="objecting17">
+                            <h5 class="mb-0">
+                                <a data-toggle="collapse" data-parent="#accordion" href="#collapseObj17" aria-expanded="true" aria-controls="collapseObj17">
+                                    Interest rate is too high…. I am not going to pay that much  
+                                </a>
+                            </h5>
+                        </div>
+                        <div id="collapseObj17" class="collapse show" role="tabpanel" aria-labelledby="objecting17">
+                            <div class="card-block">
+                                <p>
+                                    I agree, the interest rate that is charged with a non-conforming loan is very high, it’s because of the extra risk involved because of the issues you on your credit file in the past. These financiers are prepared to give you a second chance and help you build you credit score when other financiers do not. 
+                                </p>
+                                <p>
+                                    This facility however should only be used as a short-term fix, once you have delivered a few years’ worth of strong repayment history and your credit score increases we can look to refinance you into a new facility with prime rates. 
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div class="card-header" role="tab" id="objecting18">
+                            <h5 class="mb-0">
+                                <a class="collapsed" data-toggle="collapse" data-parent="#accordion" href="#collapseObj18" aria-expanded="false" aria-controls="collapseObj18">
+                                    If customer is pressing hard on an interest rate you need to give a range  
+                                </a>
+                            </h5>
+                        </div>
+                        <div id="collapseObj18" class="collapse" role="tabpanel" aria-labelledby="objecting18">
+                            <div class="card-block">
+                                I can understand that you would like to know what the interest rate will be, as previously mentioned I cannot provide you with the exact rate because it does work on a ‘rate for risk’ basis and every deal is priced on its own merits. Due to the credit issues you have had in the past these specialist lenders do charge a premium, the rate could be anywhere in between 15% - 29%. The best way to assess the cost associated however is to assess the repayments because generally they usually work out quite affordable to the borrower. Based on your ‘Loan Amount’ your repayment will be approximately ‘repayment’
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div class="card-header" role="tab" id="objecting19">
+                            <h5 class="mb-0">
+                                <a class="collapsed" data-toggle="collapse" data-parent="#accordion" href="#collapseObj19" aria-expanded="false" aria-controls="collapseObj19">
+                                    I just want a quote, please do not ask me any questions 
+                                </a>
+                            </h5>
+                        </div>
+                        <div id="collapseObj19" class="collapse" role="tabpanel" aria-labelledby="objecting19">
+                            <div class="card-block">
+                                I understand Mr. Customer, but asset financing works on a ‘rate for risk’ basis so in order for me to offer you the very best deal, and interest rate, I need to ask you a few questions so that I can ascertain your profile. Once I have understood your position and requirements, I will then be able to provide you with the best, most accurate quote. 
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div class="card-header" role="tab" id="objecting20">
+                            <h5 class="mb-0">
+                                <a class="collapsed" data-toggle="collapse" data-parent="#accordion" href="#collapseObj20" aria-expanded="false" aria-controls="collapseObj20">
+                                    What is the interest rate?  
+                                </a>
+                            </h5>
+                        </div>
+                        <div id="collapseObj20" class="collapse" role="tabpanel" aria-labelledby="objecting20">
+                            <div class="card-block">
+                                <p>
+                                    Unfortunately, because you have had issues with your credit file there is no set rate that I can tell you at this point. Once I have submitted your application to a lender and they have assessed the risk, they then will provide us with an interest rate and repayment. Once I have gathered up all your information I will then be able to come back to you with an exact rate and repayment. At that point you can decide if you want to proceed or not. This application is no obligation so if you are not comfortable with your repayments you can decide not to proceed at any point. 
+                                </p>
+                                <p id="customerNotHappy">
+                                    If customer is still not happy you can tell them the following  
+                                </p>
+                                <p>
+                                    To give you an idea though on a 10K loan your looking at around $80 per week, or $160 per week on a 20K loan. This would be worst case. 
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+					<div class="card">
+                        <div class="card-header" role="tab" id="objecting21">
+                            <h5 class="mb-0">
+                                <a class="collapsed" data-toggle="collapse" data-parent="#accordion" href="#collapseObj21" aria-expanded="false" aria-controls="collapseObj21">
+                                    Struggling to get a bad credit car loan customer across the line    
+                                </a>
+                            </h5>
+                        </div>
+                        <div id="collapseObj21" class="collapse" role="tabpanel" aria-labelledby="objecting21">
+                            <div class="card-block">
+                                <p>
+                                    I understand your hesitation John to proceed due the higher interest rate, but this type of loan has a lot of benefits that can help get yourself back on track, let me ask you, would you like to buy a house in the next 5-10 years.
+                                </p>
+                                <p>
+                                    Yes, I do  
+                                </p>
+                                <p>
+                                    That’s great, this is where this car loan can help put your self into a position whereby when you are ready to take out a home loan you have proven to lenders that you are credit worthy through a good repayment history on this loan. 
+                                </p>
+                                <p>
+                                    You see at the moment, you are paying a higher rate on a smaller loan amount which does not have so much of an impact on repayments, however if you don’t look to improve your credit rating and then go for a non-conforming home loan which is usually 3-4%. The interest you will paying on $400,000 home loan with a higher rate will hurt a lot more that a higher rate on a smaller lend. 
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+					<div class="card">
+                        <div class="card-header" role="tab" id="objecting22">
+                            <h5 class="mb-0">
+                                <a class="collapsed" data-toggle="collapse" data-parent="#accordion" href="#collapseObj22" aria-expanded="false" aria-controls="collapseObj22">
+                                    I am not sure, I have been everywhere already, I don’t want to waste anybody’s time, I think I’ll get declined 
+                                </a>
+                            </h5>
+                        </div>
+                        <div id="collapseObj22" class="collapse" role="tabpanel" aria-labelledby="objecting22">
+                            <div class="card-block">
+                                <p>
+                                    I hear where you are coming from but considering the information that you have provided me with I really do think there is a chance for approval here. At the end of the day its not going to cost you anything. Once you send me all the information I will do a quick assessment to determine what we are able to do for you. I am very confident that we can assist, we have a range of lenders on our panel that specialise in this type of financing. I also have a lot of experience working with these types of applications. This is my focus day in day out, helping people with credit issues get approved and giving them a second chance. 
+                                </p>
+                                <p>
+                                    As I said it doesn’t cost a thing so let’s proceed in getting an application underway, I already have 70% of the info so all that I need is another 5 minutes of your time to complete the app.   
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+					<div class="card">
+                        <div class="card-header" role="tab" id="objecting23">
+                            <h5 class="mb-0">
+                                <a class="collapsed" data-toggle="collapse" data-parent="#accordion" href="#collapseObj23" aria-expanded="false" aria-controls="collapseObj23">
+                                    Do you think I have a chance of getting approved? 
+                                </a>
+                            </h5>
+                        </div>
+                        <div id="collapseObj23" class="collapse" role="tabpanel" aria-labelledby="objecting23">
+                            <div class="card-block">
+                                <p>
+                                    I can’t guarantee anything but considering all the information you have provided me with I think there is a good chance to get this across the line. We specialise in helping people that have had a few issues on their credit file, this application does not cost you anything and it’s no obligation. If after I receive all your information I can see that there is no chance for approval I will not proceed. 
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </apex:outputPanel>
+        </apex:outputPanel>
+    </apex:outputPanel>
+</div>
+</div>
+</body>
+</apex:page>

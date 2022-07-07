@@ -1,0 +1,651 @@
+<apex:page docType="html-5.0" standardController="Custom_Opportunity__c" extensions="InsuranceAcknowledgementFormExtension">
+  <apex:stylesheet value="{!$Resource.InsuranceAcknowledgementForm}" />
+  <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" />
+  <apex:variable value="{!Custom_Opportunity__c}" var="o" />
+  <div class="header">
+    <table width="100%">
+      <tr width="100%">
+        <td width="25%" align="left">
+          <div class="top-note">
+            Only accept insurance policy
+            <br/> you purchased through us
+          </div>
+        </td>
+        <td width="50%" align="center">
+          <span class="main-title">INSURANCE ACKNOWLEDGEMENT FORM</span>
+        </td>
+        <td width="25%" align="right">
+          <apex:image url="{!$Resource.SavvyLogo2017}" alt="Logo" height="42" rendered="{!NOT(isPartnerUser)}" />
+          <apex:image url="{!businessLogo}" alt="Logo" height="42" rendered="{!isPartnerUser}" />
+        </td>
+      </tr>
+    </table>
+  </div>
+  <div class="footer">
+    <apex:outputPanel layout="block" rendered="{!NOT(isPartnerUser)}" styleClass="footerContent">
+      <p>
+        <strong>Quantum Savvy Pty Ltd ACL Licence No 414426 ABN 12 134 138 686</strong>
+        acts as an agent for Eric &amp; Suncorp not as your agent. Any information provided to you does not take into consideration
+        your objectives, financial situation or needs, which you should consider before deciding to accept a product. You should
+        also read and consider the PDS before deciding whether to acquire any product mentioned.
+      </p>
+      <p align="center">
+        <strong>Savvy Finance Phone: 1300 974 066 Fax: 1300 978 066 Address: Level 1, 145 The Parade Norwood SA 5067</strong>
+      </p>
+    </apex:outputPanel>
+    <apex:outputPanel layout="block" rendered="{!isPartnerUser}" styleClass="footerContent">
+      <p>
+        <strong>{!businessName} ACL Licence No {!businessACL} ABN {!businessABN}</strong> acts as an agent for Eric &amp; Suncorp not
+        as your agent. Any information provided to you does not take into consideration your objectives, financial situation
+        or needs, which you should consider before deciding to accept a product. You should also read and consider the PDS
+        before deciding whether to acquire any product mentioned.
+      </p>
+      <p align="center">
+        <strong>{!businessName} Phone: {!businessPhone}
+          <apex:outputPanel layout="inline" rendered="{!NOT(ISBLANK(businessFax))}">
+            Fax: {!businessFax}</apex:outputPanel> Address: {!businessAddress}
+        </strong>
+      </p>
+    </apex:outputPanel>
+  </div>
+  <div class="content">
+    <apex:outputPanel layout="block" rendered="{!NOT(isPartnerUser)}" styleClass="footerContent">
+      <p align="justify" class="intro">
+        <strong>Quantum Savvy Pty Ltd, is recognised by the Australian Securities and Investments Commission (ASIC) as an Authorised
+          Representative of both Eric Insurance Ltd ABN 18 009 129 793 &amp; Suncorp Insurance Australia Pty Ltd ABN 80 000
+          886 680.</strong>
+      </p>
+    </apex:outputPanel>
+    <apex:outputPanel layout="block" rendered="{!isPartnerUser}" styleClass="footerContent">
+      <p align="justify" class="intro">
+        <strong>{!businessName}, is recognised by the Australian Securities and Investments Commission (ASIC) as an Authorised Representative
+          of both Eric Insurance Ltd ABN 18 009 129 793 &amp; Suncorp Insurance Australia Pty Ltd ABN 80 000 886 680.</strong>
+      </p>
+    </apex:outputPanel>
+    <p align="justify" class="intro">
+      Under our credit licence we are obligated to assist you in deciding whether to use any of the financial services we provide
+      and to give you general information to help you decide, but cannot advise you on whether the terms are specifically appropriate
+      for your individual objectives, financial situation or needs.
+    </p>
+    <p align="justify" class="intro">
+      We are to provide you with a verbal
+      <strong>General Advice Warning</strong>, and a
+      <strong>Product Disclosure Statement</strong> for any financial product we may recommend, arrange or issue to you. In addition,
+      we are to make available our
+      <strong>Credit Guide</strong> if we provide you with any financial services.
+    </p>
+    <br/>
+    <p align="center">
+      <span class="main-title">CUSTOMER DECLARATION</span>
+    </p>
+    <br/>
+    <apex:outputPanel layout="block" id="pnlGAP" rendered="{!AND(displayGAPRTI,NOT(excludeInsuranceProducts))}">
+      <p align="justify">
+        <span class="main-title">SHORTFALL INSURANCE</span> I/ We understand that if I / we do not purchase
+        <strong>Shortfall Insurance</strong> that, in the event of a "Total Loss" of the motor vehicle (eg: Theft / Fire / Accident),
+        any financial shortfall from the Motor Comprehensive Insurance payout/Original Purchase Price will be met by me / us.
+      </p>
+      <p align="justify">
+        <strong>I / We acknowledge that I / we have been offered Shortfall Insurance and I / we:</strong>
+      </p>
+      <br/>
+      <table width="100%">
+        <tr>
+          <td width="10%">&nbsp;</td>
+          <td width="35%" valign="middle" align="center" class="{!IF(acceptedGAPRTI,'ins-selected','ins-unselected')}">
+            <strong>ACCEPT to purchase this product</strong>
+          </td>
+          <td width="10%">&nbsp;</td>
+          <td width="35%" valign="middle" align="center" class="{!IF(declinedGAPRTI,'ins-selected','ins-unselected')}">
+            <strong>DECLINE to purchase this product</strong>
+          </td>
+          <td width="10%">&nbsp;</td>
+        </tr>
+      </table>
+      <br/>
+      <hr/>
+    </apex:outputPanel>
+    <apex:outputPanel layout="block" id="pnlLPI" rendered="{!AND(displayLPI,NOT(excludeInsuranceProducts))}">
+      <p align="justify">
+        <span class="main-title">Repayment Cover (LOAN PROTECTION)</span> I / We understand that if I / we do not purchase
+        <strong>Repayment Cover (Loan Protection)</strong> and I / we become disabled or involuntarily unemployed before the loan is
+        repaid, I / we am/are responsible for continuing to make the Loan repayments. In addition I/we am/are aware that we
+        will lose the option of car handback cover by declining this insurance.
+      </p>
+      <p align="justify">
+        <strong>I / We acknowledge that I / we have been offered Repayment Cover (Loan Protection) and I / we:</strong>
+      </p>
+      <br/>
+      <table width="100%">
+        <tr>
+          <td width="10%">&nbsp;</td>
+          <td width="35%" valign="middle" align="center" class="{!IF(acceptedLPI,'ins-selected','ins-unselected')}">
+            <strong>ACCEPT to purchase this product</strong>
+          </td>
+          <td width="10%">&nbsp;</td>
+          <td width="35%" valign="middle" align="center" class="{!IF(declinedLPI,'ins-selected','ins-unselected')}">
+            <strong>DECLINE to purchase this product</strong>
+          </td>
+          <td width="10%">&nbsp;</td>
+        </tr>
+      </table>
+      <br/>
+      <hr/>
+    </apex:outputPanel>
+    <apex:outputPanel layout="block" id="pnlWarr" rendered="{!AND(displayWARR,NOT(excludeInsuranceProducts))}">
+      <p align="justify">
+        <span class="main-title">EXTENDED WARRANTY</span> I / We understand that if I / we do not purchase
+        <strong>Extended Warranty</strong> that, should the vehicle require repairs for damage / failure outside any statutory and
+        / or manufacturer’s warranty period, these costs will be borne by me / us.
+      </p>
+      <p align="justify">
+        <strong>I / We acknowledge that I / we have been offered Extended Warranty and I / we:</strong>
+      </p>
+      <br/>
+      <table width="100%">
+        <tr>
+          <td width="10%">&nbsp;</td>
+          <td width="35%" valign="middle" align="center" class="{!IF(acceptedWARR,'ins-selected','ins-unselected')}">
+            <strong>ACCEPT to purchase this product</strong>
+          </td>
+          <td width="10%">&nbsp;</td>
+          <td width="35%" valign="middle" align="center" class="{!IF(declinedWARR,'ins-selected','ins-unselected')}">
+            <strong>DECLINE to purchase this product</strong>
+          </td>
+          <td width="10%">&nbsp;</td>
+        </tr>
+      </table>
+      <br/>
+      <hr/>
+    </apex:outputPanel>
+    <br/>
+    <apex:outputPanel layout="block" rendered="{!NOT(excludeInsuranceProducts)}">
+      <!-- <apex:outputPanel layout="block" rendered="{!a.No_of_People__c == 1}"> -->
+      <table width="100%" cellpadding="5">
+        <tr>
+          <td width="35%" style="border-bottom: 3px dotted #ddd;">
+            <p>&nbsp;</p>
+          </td>
+          <td width="2%">&nbsp;</td>
+          <td width="35%">&nbsp;</td>
+          <td width="3%">&nbsp;</td>
+          <td width="25%" style="border-bottom: 3px dotted #ddd;">&nbsp;</td>
+        </tr>
+        <tr>
+          <td>
+            Completed by:&nbsp;
+            <strong>
+              <apex:outputText value="{!customeFullname}" />
+            </strong>
+          </td>
+          <td>&nbsp;</td>
+          <td>&nbsp;</td>
+          <td>&nbsp;</td>
+          <td>Date:&nbsp;
+            <apex:outputText value=" {!quoting.Insurance_Choice_Date__c}" />
+          </td>
+        </tr>
+      </table>
+      <!-- </apex:outputPanel>
+  		<apex:outputPanel layout="block" rendered="{!a.No_of_People__c == 2}">
+  		    <table width="100%" cellpadding="5">
+  		    	<tr>
+  		    		<td width="35%" style="border-bottom: 3px dotted #ddd;">
+  		    			<p>&nbsp;</p>
+  		    		</td>
+  		    		<td width="2%">&nbsp;</td>
+  		    		<td width="35%" style="border-bottom: 3px dotted #ddd;">&nbsp;</td>
+  		    		<td width="3%">&nbsp;</td>
+  		    		<td width="25%" style="border-bottom: 3px dotted #ddd;">&nbsp;</td>
+  		    	</tr>
+  		    	<tr>
+  		    		<td>
+  		    			Completed by:&nbsp;
+  	    				<strong>
+  	    					<apex:outputField value="{!a.First_Name__c}"/>&nbsp;
+  	    					<apex:outputField value="{!a.Last_Name__c}"/>
+  	    				</strong>
+  	    			</td>
+  		    		<td>&nbsp;</td>
+  	    			<td>
+  	    				Completed by:&nbsp;
+  	    				<strong>
+  		    				<apex:outputField value="{!a.First_Name_2__c}"/>&nbsp;
+  		    				<apex:outputField value="{!a.Last_Name_2__c}"/>
+  		    			</strong>
+  			    	</td>
+  		    		<td>&nbsp;</td>
+  		    		<td>Date: &nbsp; <apex:outputText value="{!quoting.Insurance_Choice_Date__c}"/></td>
+  		    	</tr>
+  		    </table>-->
+    </apex:outputPanel>
+    <apex:outputPanel layout="block" rendered="{!isThereAdditionalInfo}" styleClass="page-break" />
+    <!-- Additional Info -->
+    <!-- LTI -->
+    <apex:outputPanel layout="block" rendered="{!isLTIAdditionalInfo}">
+      <p align="center">
+        <span class="main-title">Loan Termination Insurance - Health Information</span>
+      </p>
+      <table width="100%">
+        <tr>
+          <td>I understand that any pre-existing medical condition I am aware of today may be excluded from being covered under
+            any eligible products</td>
+          <td align="right" width="10%">
+            <strong>[
+              <apex:outputField value="{!mainDriver.Health_Info_Question_1__c}" />]</strong>
+          </td>
+        </tr>
+        <!-- <tr>
+      				<td>Do you have any condition caused directly or indirectly by illness or injury that you had symptoms of, or was the subject of, a medical consultation in the past 12 months?</td>
+      				<td align="right" width="10%"><strong>[<apex:outputField value="{!mainDriver.Health_Info_Question_1__c}"/>]</strong></td>
+      			</tr>
+      			<tr>
+      				<td>Are you presently suffering from any illness, or injury, or condition?</td>
+      				<td align="right"><strong>[<apex:outputField value="{!mainDriver.Health_Info_Question_2__c}"/>]</strong></td>
+      			</tr> -->
+        <tr style="display: {!IF(ISBLANK(mainDriver.Health_Full_Details__c), 'none','')}">
+          <td colspan="2">
+            <u>Please Give Full Details:</u> &nbsp;&nbsp;
+            <strong>
+              <apex:outputField value="{!mainDriver.Health_Full_Details__c}" />
+            </strong>
+          </td>
+        </tr>
+      </table>
+    </apex:outputPanel>
+    <!-- Integrity -->
+    <apex:outputPanel layout="block" rendered="{!hasIntegrityAdditionalInfo}">
+      <p align="center">
+        <span class="main-title">Integrity Qualifying Questions</span>
+      </p>
+      <table width="100%">
+        <tr>
+          <td>{!integrityQ1}</td>
+          <td align="right" width="10%">
+            <strong>[{!integrityQ1Res}]</strong>
+          </td>
+        </tr>
+        <tr>
+          <td>{!integrityQ2}</td>
+          <td align="right" width="10%">
+            <strong>[{!integrityQ2Res}]</strong>
+          </td>
+        </tr>
+        <tr>
+          <td>{!integrityQ3}</td>
+          <td align="right" width="10%">
+            <strong>[{!integrityQ3Res}]</strong>
+          </td>
+        </tr>
+        <tr>
+          <td>{!integrityQ4}</td>
+          <td align="right" width="10%">
+            <strong>[{!integrityQ4Res}]</strong>
+          </td>
+        </tr>
+        <tr>
+          <td>{!integrityQ5}</td>
+          <td align="right" width="10%">
+            <strong>[{!integrityQ5Res}]</strong>
+          </td>
+        </tr>
+      </table>
+    </apex:outputPanel>
+    <!-- MV -->
+    <apex:outputPanel layout="block" rendered="{!displayMV}">
+      <p align="center">
+        <span class="main-title">Full-comprehensive - details</span>
+      </p>
+      <table width="100%">
+        <tr>
+          <td>
+            Would you like to proceed with this policy?
+          </td>
+          <td align="right" valign="top" width="10%">
+            <strong>[
+              <apex:outputText value="Yes" rendered="{!acceptedMV}" />
+              <apex:outputText value="No" rendered="{!declinedMV}" /> ]
+            </strong>
+          </td>
+        </tr>
+      </table>
+      <!-- <table width="100%">
+      			<tr>
+  	    			<td>Standard Excess Selected: <strong>[<apex:outputField value="{!quote.MV_Standard_Excess__c}"/>]</strong></td>
+  	    			<td align="center">Amount Covered: <strong>[<apex:outputField value="{!quote.MV_Amount_Covered__c}"/>]</strong></td>
+  	    			<td align="right">Windscreen Protection: <strong>[<apex:outputText value="Yes" rendered="{!quote.Windscreen_Protection__c}"/><apex:outputText value="No" rendered="{!!quote.Windscreen_Protection__c}"/>]</strong></td>
+  	    		</tr>
+      		</table> -->
+      <apex:outputPanel layout="block" rendered="{!IsMVExtraQuestions}">
+        <table width="100%">
+          <tr>
+            <td>
+              During the period of ownership, will the vehicle be used for any of the following activities?
+              <ul>
+                <li>Hire or rental</li>
+                <li>Paid driving / riding lessons</li>
+                <li>Delivery or courier use</li>
+                <li>Security patrols</li>
+                <li>Under an Operating lease</li>
+                <li>A business pool vehicle</li>
+                <li>Racing, pace making, reliability trials, rallies, or any experiments or demonstrations in connection with the
+                  motor trade.</li>
+              </ul>
+            </td>
+            <td align="right" valign="top" width="10%">
+              <strong>[
+                <apex:outputField value="{!quote.Is_Vehicle_MV_Commercial__c}" />]</strong>
+            </td>
+          </tr>
+          <tr>
+            <td>
+              Is the vehicle fitted with any Modifications or Accessories that do not comply with the standards for registration and Australian
+              design rules?
+            </td>
+            <td align="right" valign="top" width="10%">
+              <strong>[
+                <apex:outputField value="{!quote.Is_Vehicle_Modified__c}" />]</strong>
+            </td>
+          </tr>
+        </table>
+      </apex:outputPanel>
+    </apex:outputPanel>
+    <!-- MV -->
+    <apex:outputPanel layout="block" rendered="{!isMVAdditionalInfo}">
+      <p align="center">
+        <span class="main-title">Full-comprehensive - additional information</span>
+      </p>
+      <table width="100%">
+        <tr>
+          <td colspan="2">
+            <u>
+              <strong>Motoring Offenses</strong>
+            </u>
+          </td>
+        </tr>
+        <tr>
+          <td>In the last 5 years have you or anyone who is likely to drive the car had their driving licence refused, suspended,
+            cancelled or endorsed (including any Good Behaviour Period)?</td>
+          <td align="right" width="10%">
+            <strong>[
+              <apex:outputText value="Yes" rendered="{!quote.Has_Motoring_Offences__c}" />
+              <apex:outputText value="No" rendered="{!!quote.Has_Motoring_Offences__c}" />]</strong>
+          </td>
+        </tr>
+      </table>
+      <apex:outputPanel rendered="{!quote.Has_Motoring_Offences__c}">
+        <hr/>
+        <apex:repeat value="{!offenceList}" var="a">
+          <table width="100%">
+            <tr>
+              <td width="20%">Driver</td>
+              <td width="20%">:
+                <strong>
+                  <apex:outputField value="{!a.Driver__r.First_Name__c}" />&nbsp;
+                  <apex:outputField value="{!a.Driver__r.Last_Name__c}" />
+                </strong>
+              </td>
+              <td width="20%">Date Of Offence</td>
+              <td width="40">:
+                <strong>
+                  <apex:outputField value="{!a.Date__c}" />
+                </strong>
+              </td>
+            </tr>
+            <tr>
+              <td>Number Of Demerit Points</td>
+              <td>:
+                <strong>
+                  <apex:outputField value="{!a.Number__c}" />
+                </strong>
+              </td>
+              <td>Details Of Offence</td>
+              <td>:
+                <strong>
+                  <apex:outputField value="{!a.Detail__c}" />
+                </strong>
+              </td>
+            </tr>
+          </table>
+          <hr/>
+        </apex:repeat>
+      </apex:outputPanel>
+      <br/>
+      <table width="100%">
+        <tr>
+          <td colspan="2">
+            <u>
+              <strong>Licence Refused / Suspended / Cancelled / Endorsed</strong>
+            </u>
+          </td>
+        </tr>
+        <tr>
+          <td>In the last 5 years have you or anyone who is likely to drive the car had their driving licence refused, suspended,
+            cancelled or endorsed (including any Good Behaviour Period)?</td>
+          <td align="right" width="10%">
+            <strong>[
+              <apex:outputText value="Yes" rendered="{!quote.Has_Licence_Santioned__c}" />
+              <apex:outputText value="No" rendered="{!!quote.Has_Licence_Santioned__c}" />]</strong>
+          </td>
+        </tr>
+      </table>
+      <apex:outputPanel rendered="{!quote.Has_Licence_Santioned__c}">
+        <hr/>
+        <apex:repeat value="{!licencetList}" var="a">
+          <table width="100%">
+            <tr>
+              <td width="20%">Driver</td>
+              <td width="20%">:
+                <strong>
+                  <apex:outputField value="{!a.Driver__r.First_Name__c}" />&nbsp;
+                  <apex:outputField value="{!a.Driver__r.Last_Name__c}" />
+                </strong>
+              </td>
+              <td width="20%">Date Driving Licence Refused</td>
+              <td width="40">:
+                <strong>
+                  <apex:outputField value="{!a.Date__c}" />
+                </strong>
+              </td>
+            </tr>
+            <tr>
+              <td>Period Of Suspension (Months)</td>
+              <td>:
+                <strong>
+                  <apex:outputField value="{!a.Number__c}" />
+                </strong>
+              </td>
+              <td>Details Of Licence Refusal</td>
+              <td>:
+                <strong>
+                  <apex:outputField value="{!a.Detail__c}" />
+                </strong>
+              </td>
+            </tr>
+          </table>
+          <hr/>
+        </apex:repeat>
+      </apex:outputPanel>
+      <br/>
+      <table width="100%">
+        <tr>
+          <td colspan="2">
+            <u>
+              <strong>Accident / Claim History</strong>
+            </u>
+          </td>
+        </tr>
+        <tr>
+          <td>In the last 5 years have you or anyone who is likely to drive the car had an At fault accident with a motor vehicle
+            or had a motor vehicle stolen, damaged (including hail) or destroyed by fire where recovery of costs was not made
+            by your insurer?</td>
+          <td align="right" width="10%">
+            <strong>[
+              <apex:outputText value="Yes" rendered="{!quote.Has_Accident_History__c}" />
+              <apex:outputText value="No" rendered="{!!quote.Has_Accident_History__c}" />]</strong>
+          </td>
+        </tr>
+      </table>
+      <apex:outputPanel rendered="{!quote.Has_Accident_History__c}">
+        <hr/>
+        <apex:repeat value="{!accidentList}" var="a">
+          <table width="100%">
+            <tr>
+              <td width="20%">Driver</td>
+              <td width="20%">:
+                <strong>
+                  <apex:outputField value="{!a.Driver__r.First_Name__c}" />&nbsp;
+                  <apex:outputField value="{!a.Driver__r.Last_Name__c}" />
+                </strong>
+              </td>
+              <td width="20%">Date Driving Licence Refused</td>
+              <td width="40">:
+                <strong>
+                  <apex:outputField value="{!a.Date__c}" />
+                </strong>
+              </td>
+            </tr>
+            <tr>
+              <td>Amount Of Loss $</td>
+              <td>:
+                <strong>
+                  <apex:outputField value="{!a.Amount__c}" />
+                </strong>
+              </td>
+              <td>Name Of Insurer At Accident</td>
+              <td>:
+                <strong>
+                  <apex:outputField value="{!a.Name_Insurer__c}" />
+                </strong>
+              </td>
+            </tr>
+            <tr>
+              <td>Was This Driver At Fault</td>
+              <td>:
+                <strong>
+                  <apex:outputField value="{!a.Is_Driver_Fault__c}" />
+                </strong>
+              </td>
+              <td>Was The Vehicle Stolen, Damaged (Inc Hail) Or Destroyed By Fire</td>
+              <td>:
+                <strong>
+                  <apex:outputField value="{!a.Was_Vehicle_Affected__c}" />
+                </strong>
+              </td>
+            </tr>
+            <tr>
+              <td>Details Of Accident</td>
+              <td colspan="3">:
+                <strong>
+                  <apex:outputField value="{!a.Detail__c}" />
+                </strong>
+              </td>
+            </tr>
+          </table>
+          <hr/>
+        </apex:repeat>
+      </apex:outputPanel>
+      <br/>
+      <apex:outputPanel layout="block" rendered="{!excludeInsuranceProducts}" styleClass="page-break" />
+      <table width="100%">
+        <tr>
+          <td colspan="2">
+            <u>
+              <strong>Other Information</strong>
+            </u>
+          </td>
+        </tr>
+        <tr>
+          <td>In the last five years have you or anyone who is likely to drive the car ever been charged or convicted of a criminal
+            offence, including drug and alcohol related offences?</td>
+          <td align="right" width="10%">
+            <strong>[
+              <apex:outputText value="Yes" rendered="{!quote.Other_Info_Question_1__c}" />
+              <apex:outputText value="No" rendered="{!!quote.Other_Info_Question_1__c}" />]</strong>
+          </td>
+        </tr>
+        <tr style="display: {!IF(ISBLANK(quote.Other_Info_Details_1__c), 'none','')}">
+          <td colspan="2">
+            <u>Details on criminal offence (include driver, date, and description):</u>
+            <p>
+              <strong>
+                <apex:outputField value="{!quote.Other_Info_Details_1__c}" />
+              </strong>
+            </p>
+          </td>
+        </tr>
+      </table>
+      <hr/>
+      <table width="100%">
+        <tr>
+          <td>In the last five years have you or anyone who is likely to drive the car ever had an insurance policy refused, denied
+            or cancelled or special conditions applied, endorsed or excess imposed by an insurer?</td>
+          <td align="right" width="10%">
+            <strong>[
+              <apex:outputText value="Yes" rendered="{!quote.Other_Info_Question_2__c}" />
+              <apex:outputText value="No" rendered="{!!quote.Other_Info_Question_2__c}" />]</strong>
+          </td>
+        </tr>
+        <tr style="display: {!IF(ISBLANK(quote.Other_Info_Details_2__c), 'none','')}">
+          <td colspan="2">
+            <u>Details on criminal offence (include driver, date, and description):</u>
+            <p>
+              <strong>
+                <apex:outputField value="{!quote.Other_Info_Details_2__c}" />
+              </strong>
+            </p>
+          </td>
+        </tr>
+      </table>
+    </apex:outputPanel>
+    <apex:outputPanel layout="block" rendered="{!IsFailureReasons}" styleClass="failure-text">
+      <p>
+        <u>
+          <strong>Failure Reasons</strong>
+        </u>
+      </p>
+      <ul>
+        <apex:repeat value="{!reasons}" var="r">
+          <li>
+            <apex:outputField value="{!r.Reason__c}" />
+          </li>
+        </apex:repeat>
+      </ul>
+      <apex:outputPanel layout="block" rendered="{!!ISBLANK(quote.MV_Declining_Notes__c)}">
+        <ul>
+          <li>
+            <apex:outputField value="{!quote.MV_Declining_Notes__c}" />
+          </li>
+        </ul>
+      </apex:outputPanel>
+    </apex:outputPanel>
+    <apex:outputPanel layout="block" rendered="{!OR(isThereAdditionalInfo,excludeInsuranceProducts)}">
+      <table width="100%" cellpadding="5">
+        <tr>
+          <td width="35%" style="border-bottom: 3px dotted #ddd;">
+            <p>&nbsp;</p>
+          </td>
+          <td width="2%">&nbsp;</td>
+          <td width="35%">&nbsp;</td>
+          <td width="3%">&nbsp;</td>
+          <td width="25%" style="border-bottom: 3px dotted #ddd;">&nbsp;</td>
+        </tr>
+        <tr>
+          <td>
+            Completed by:&nbsp;
+            <strong>
+              <apex:outputText value="{!customeFullname}" />
+            </strong>
+          </td>
+          <td>&nbsp;</td>
+          <td>&nbsp;</td>
+          <td>&nbsp;</td>
+          <td>Date:&nbsp;
+            <apex:outputText value=" {!quoting.Insurance_Choice_Date__c}" />
+          </td>
+        </tr>
+      </table>
+    </apex:outputPanel>
+  </div>
+  <apex:outputField value="{!o.Application__c}" rendered="false" />
+  </apex:page>

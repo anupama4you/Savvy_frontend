@@ -1,0 +1,18 @@
+<apex:component >
+    <apex:attribute name="opp" type="Custom_Opportunity__c" description="Opportunity Data" required="true"/>
+    <table width="100%" border="1">
+        <tr><td colspan="2" class="tableCaption">Supplier Details</td></tr>
+        <tr>
+            <td width="25%" class="labelDate">Name</td>
+            <td width="75%"><apex:outputField value="{!opp.Dealer_Name__c}"/></td>
+        </tr>
+        <tr>
+            <td class="labelDate">Type</td>
+            <td><apex:outputField value="{!opp.Purchase_Type__c}"/></td>
+        </tr>
+        <tr>
+            <td class="labelDate">Address</td>
+            <td><apex:outputField value="{!opp.Dealer_Address__c}"/></td>
+        </tr>
+    </table>
+</apex:component>

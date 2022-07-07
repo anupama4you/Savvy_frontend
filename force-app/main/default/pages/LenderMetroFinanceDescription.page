@@ -1,0 +1,42 @@
+<apex:page showHeader="false" sidebar="false" standardStylesheets="false">
+	<strong>Loan size</strong>
+	$5,000 - $150,000
+
+	<hr/><strong>Purchase Type</strong> 
+	Dealer or Private sales . Sale and leaseback.
+
+	<hr/><strong>Employment Type </strong>
+	Full-Documentation - tax Returns. 
+	Low Documentation – no tax returns.  
+	For low-doc to get approved customer must either be asset backed, if not asset backed 30% deposit is required.  
+	Will allow commercial product for PAYG if using for work purposes.
+
+	<hr/><strong>Credit History </strong>
+	Clean history 
+
+	<hr/><strong>Financed Assets </strong>
+	Cars, trucks, equipment 
+
+	<hr/><strong>Loan Terms</strong> 
+	0-60 months
+
+	<hr/><strong>Term End  </strong>
+	10 years at term end for cars. 
+	up to 15 years at term end for other wheeled assets.
+
+	<hr/><strong>LTV Ratios </strong>
+	Fair market value
+
+	<hr/><strong>Why? &amp; When? </strong>
+	Rates are ok for self dec. 
+	Will look at sale and leaseback for purchased vehicles > 3 months. 
+	Good rates for non asset backed clients. 
+	Will allow PAYG to take a chattel mortgage. 
+
+	<hr/><strong>Base Rate</strong>
+	5.05%
+
+	<hr/><strong>Early repayment fees</strong>
+	still waiting to hear back
+	
+</apex:page>

@@ -1,0 +1,328 @@
+<apex:page standardController="Custom_Opportunity__c" extensions="GlassServicePdfExtension" renderAs="pdf">
+<apex:stylesheet value="{!$Resource.AppPdfCss}"/>
+    <apex:variable value="{!Custom_Opportunity__c}" var="o" />
+    <div class="header">
+        <table width="100%">
+            <tr style="border: 0px;" width="100%">
+                <td style="border: 0px;" width="30%" align="left">
+                  <apex:outputPanel rendered="{!ISBLANK(AccountVar.Business_Logo__c)}">
+                    <!--Display default Logo if Portal User has no logo.-->
+                    <apex:image url="{!$Resource.newSavvyLogo}" alt="Logo" />
+                  </apex:outputPanel>
+                  <apex:outputPanel rendered="{!NOT(ISBLANK(AccountVar.Business_Logo__c))}">
+                    <!--Display Portal User's Logo if available-->
+                    <apex:image id="Logo" value="{!AccountVar.Business_Logo__c}" height="60" />
+                  </apex:outputPanel>
+                </td>
+                <td style="border: 0px;" width="70%" align="left">
+                    <p>
+                      <span>ASSET DETAILS DOCUMENT</span><br/>
+                      <!-- <span style="font-size:0.8em;"><span style="color:#ee245f;">E</span> applications@savvy.com.au <font>|</font> <span style="color:#ee245f;">P</span> 1300 974 066 <font>|</font> <span style="color:#ee245f;">F</span> 1300 978 066<br/>
+                      <span style="color:#ee245f;">A</span> Level 1, 145 The Parade, Norwood, SA 5067 <font>|</font> <span style="color:#ee245f;">www</span>.savvy.<span style="color:#ee245f;">com.au</span></span> -->
+                    </p>
+                </td>
+            </tr>
+        </table>
+    </div>
+    <div class="footer">
+        <div class="footerContent">Page <span class="pagenumber"/> of <span class="pagecount"/></div>
+    </div>
+    <div class="content">
+    
+        <h3>Asset Details - LTV for {!o.Name}</h3>
+        
+        <table class="tableSubsection" cellpadding="5">
+            <tr>
+            	<td>Asset Ttype</td>
+                <td colspan="5"><apex:outputText value="{!assetType}"/></td>
+            </tr>
+            <tr>
+                <td width="14%">Lenders</td>
+                <td width="12%"><apex:outputText value="{!lender}"/></td>
+                <td width="14%">Type Loan</td>
+                <td width="12%"><apex:outputText value="{!typeLoan}"/></td>
+                <td width="12%">New/Used</td>
+                <td width="12%"><apex:outputText value="{!newUsed}"/></td>
+            </tr>
+            <tr>
+                <td width="12%">{!carLabel} Age</td>
+                <td width="12%"><apex:outputText value="{!carAge}"/></td>
+                <td>{!carLabel} Price</td>
+                <td><apex:outputText value="{!carPrice}"/></td>
+                <td>Deposit/Trade in</td>
+                <td><apex:outputText value="{!deposit}"/></td>
+            </tr>
+            <tr>
+                <td>Fees</td>
+                <td><apex:outputText value="{!fees}"/></td>
+                <td>Warranty</td>
+                <td><apex:outputText value="{!warranty}"/></td>
+                <td>GAP</td>
+                <td><apex:outputText value="{!gap}"/></td>
+            </tr>
+            <tr>
+                <td>LPI</td>
+                <td><apex:outputText value="{!lpi}"/></td>
+                <td>LTI</td>
+                <td><apex:outputText value="{!lti}"/></td>
+                <td colspan="2">&nbsp;</td>
+            </tr>
+            <tr>
+                <td>Actual KM</td>
+                <td><apex:outputText value="{!actualKms}"/></td>
+                <td>Average KM</td>
+                <td>
+                    <apex:outputText value="{0, Number, ###,###}" rendered="{!assetType == 'Car'}">
+                        <apex:param value="{!averageKmValue}" />
+                    </apex:outputText>
+                    <apex:outputText value="N/A" rendered="{!assetType != 'Car'}" />
+                </td>
+                <td>Purchase Type</td>
+                <td><apex:outputText value="{!purchaseType}"/></td>
+            </tr>
+            <tr>
+                <td><apex:outputText value="{!ltvLabel}"/></td>
+                <td><apex:outputText value="{!ltvValue}"/></td>
+                <td><strong>NAF</strong></td>
+                <td><apex:outputText value="{!NAF}"/></td>
+                <td><apex:outputText value="{!lvrLabel}"/></td>
+                <td><apex:outputText value="{!lvrValue}"/></td>
+            </tr>
+        </table>
+        <br/>
+        <table width="100%">
+            <tr>
+                <td colspan="6">Vendor Details</td>
+            </tr>
+            <tr>
+                <td width="12%">Name</td>
+                <td width="26%"><apex:outputText value="{!vendorName}"/></td>
+                <td width="12%">Contact Person</td>
+                <td width="22%"><apex:outputText value="{!vendorContact}"/></td>
+                <td width="12%">Email</td>
+                <td width="16%"><apex:outputText value="{!vendorEmail}"/></td>
+            </tr>
+            <tr>
+                <td>Address</td>
+                <td><apex:outputText value="{!vendorAddress}"/></td>
+                <td>Phone</td>
+                <td><apex:outputText value="{!vendorPhone}"/></td>
+                <td>Mobile</td>
+                <td><apex:outputText value="{!vendorMobile}"/></td>
+            </tr>
+        </table>
+        <br/>
+        <table width="100%">
+            <tr>
+                <td colspan="6">Vehicle Identification</td>
+            </tr>
+            <tr>
+                <td width="15%">Rego No.</td>
+                <td width="27%"><apex:outputText value="{!rego}"/></td>
+                <td width="15%">State</td>
+                <td width="13%"><apex:outputText value="{!regoState}"/></td>
+                <td width="15%">Colour</td>
+                <td width="15%"><apex:outputText value="{!colour}"/></td>
+            </tr>
+            <tr>
+                <td>VIN</td>
+                <td><apex:outputText value="{!vin}"/></td>
+                <td>Engine No.</td>
+                <td><apex:outputText value="{!engine}"/></td>
+                <td>Redbook Key</td>
+                <td><apex:outputText value="{!redbookKey}"/></td>
+            </tr>
+        </table>
+        <br/>
+        <apex:outputPanel layout="block" rendered="{!assetType == 'Car'}">
+            <table width="100%">
+                <tr>
+                    <td width="12%">Make</td>
+                    <td width="26%"><apex:outputText value="{!make}"/>&nbsp;</td>
+                    <td width="12%">Year</td>
+                    <td width="22%"><apex:outputText value="{!variantObj.Year__c}"/>&nbsp;</td>
+                    <td width="12%">NVIC</td>
+                    <td width="16%"><apex:outputText value="{!variantObj.NVIC__c}"/>&nbsp;</td>
+                </tr>
+                <tr>
+                    <td>GlassCode</td>
+                    <td><apex:outputText value="{!variantObj.Code__c}"/>&nbsp;</td>
+                    <td>Family</td>
+                    <td><apex:outputText value="{!variantObj.Family__c}"/>&nbsp;</td>
+                    <td>Release Date</td>
+                    <td><apex:outputText value="{!variantObj.Release_Date__c}"/>&nbsp;</td>
+                </tr>
+                <tr>
+                    <td>Variant</td>
+                    <td><apex:outputText value="{!variantObj.Description__c}"/>&nbsp;</td>
+                    <td>Style / Body</td>
+                    <td><apex:outputText value="{!variantObj.Style__c}"/>&nbsp;</td>
+                    <td>Series</td>
+                    <td><apex:outputText value="{!variantObj.Series__c}"/>&nbsp;</td>
+                </tr>
+                <tr>
+                    <td>Class</td>
+                    <td>
+                        <apex:outputText value="Light Commercial Vehicles" rendered="{!modelTypeSource = 'CVG'}" />
+                        <apex:outputText value="Passenger Vehicles" rendered="{!modelTypeSource = 'PVG'}" />
+                        <apex:outputText value="Older Cars" rendered="{!modelTypeSource = 'OCG'}" />
+                        <apex:outputText value="Older Light Commercial" rendered="{!modelTypeSource = 'OLC'}" />
+                        &nbsp;</td>
+                    <td>Engine</td>
+                    <td><apex:outputText value="{!variantObj.Engine__c}"/>&nbsp;</td>
+                    <td>CC</td>
+                    <td><apex:outputText value="{!variantObj.CC__c}"/>&nbsp;</td>
+                </tr>
+                <tr>
+                    <td>Transmition</td>
+                    <td><apex:outputText value="{!variantObj.Transmission__c}"/>&nbsp;</td>
+                    <td colspan="4">&nbsp;</td>
+                </tr>
+            </table>
+            
+            <table width="100%">
+                <tr>
+                    <td width="20%">&nbsp;</td>
+                    <td width="20%">RRP</td>
+                    <td width="20%">
+                        <apex:outputText value="Below Average" rendered="{!modelTypeSource == 'OCG' || modelTypeSource == 'OLC'}" />
+                        <apex:outputText value="Trade Low" rendered="{!modelTypeSource != 'OCG' && modelTypeSource != 'OLC'}" />
+                    </td>
+                    <td width="20%">
+                        <apex:outputText value="Average" rendered="{!modelTypeSource == 'OCG' || modelTypeSource == 'OLC'}" />
+                        <apex:outputText value="Trade" rendered="{!modelTypeSource != 'OCG' && modelTypeSource != 'OLC'}" />
+                    </td>
+                    <td width="20%">
+                        <apex:outputText value="Above Average" rendered="{!modelTypeSource == 'OCG' || modelTypeSource == 'OLC'}" />
+                        <apex:outputText value="Retail" rendered="{!modelTypeSource != 'OCG' && modelTypeSource != 'OLC'}" />
+                    </td>
+                </tr>
+                <tr>
+                    <td>Glass's Value</td>
+                    <td>
+                        <apex:outputText value="{0, Number, Currency}">
+                            <apex:param value="{!newPriceValue}" />
+                        </apex:outputText>&nbsp;
+                    </td>
+                    <td>
+                            <apex:outputText value="{0, Number, Currency}">
+                                <apex:param value="{!tradeLowGlassValue}" />
+                            </apex:outputText>&nbsp;
+                    </td>
+                    <td>
+                            <apex:outputText value="{0, Number, Currency}">
+                                <apex:param value="{!tradeGlassValue}" />
+                            </apex:outputText>&nbsp;
+                    </td>
+                    <td>
+                            <apex:outputText value="{0, Number, Currency}">
+                                <apex:param value="{!retailGlassValue}" />
+                            </apex:outputText>&nbsp;
+                    </td>
+                </tr>
+                <tr>
+                    <td>KM Adjustment</td>
+                    <td>&nbsp;</td>
+                    <td>
+                        <apex:outputText value="{0, Number, Currency}">
+                            <apex:param value="{!totalTradeLowPriceKms}" />
+                        </apex:outputText>&nbsp;
+                    </td>
+                    <td>
+                        <apex:outputText value="{0, Number, Currency}">
+                            <apex:param value="{!totalTradePriceKms}" />
+                        </apex:outputText>&nbsp;
+                    </td>
+                    <td>
+                        <apex:outputText value="{0, Number, Currency}">
+                            <apex:param value="{!totalRetailPriceKms}" />
+                        </apex:outputText>&nbsp;
+                    </td>
+                </tr>
+                <tr>
+                    <td>Value of Options</td>
+                    <td>
+                        <apex:outputText value="{0, Number, Currency}">
+                            <apex:param value="{!totalPriceOptions}" />
+                        </apex:outputText>&nbsp;
+                    </td>
+                    <td>
+                        <apex:outputText value="{0, Number, Currency}">
+                            <apex:param value="{!totalTradeLowPriceOptions}" />
+                        </apex:outputText>&nbsp;
+                    </td>
+                    <td>
+                        <apex:outputText value="{0, Number, Currency}">
+                            <apex:param value="{!totalTradePriceOptions}" />
+                        </apex:outputText>&nbsp;</td>
+                    <td>
+                        <apex:outputText value="{0, Number, Currency}">
+                            <apex:param value="{!totalRetailPriceOptions}" />
+                        </apex:outputText>&nbsp;</td>
+                </tr>
+                <tr>
+                    <td>Adjusted Values</td>
+                    <td>
+                        <apex:outputText value="{0, Number, Currency}" styleClass="totalCalculated">
+                            <apex:param value="{!newPriceAdjustedValue}" />
+                        </apex:outputText>&nbsp;
+                    </td>
+                    <td><apex:outputText value="{0, Number, Currency}" styleClass="totalCalculated">
+                        <apex:param value="{!tradeLowAdjustedValue}" />
+                        </apex:outputText>&nbsp;
+                    </td>
+                    <td><apex:outputText value="{0, Number, Currency}" styleClass="totalCalculated">
+                        <apex:param value="{!tradeAdjustedValue}" />
+                        </apex:outputText>&nbsp;
+                    </td>
+                    <td><apex:outputText value="{0, Number, Currency}" styleClass="totalCalculated">
+                        <apex:param value="{!reatilAdjustedValue}" />
+                        </apex:outputText>&nbsp;
+                    </td>
+                </tr>
+            </table>
+            
+            <table width="100%">
+                <tr>
+                    <td colspan="6">
+                        <h3>Optional Features Included</h3>
+                        <apex:outputPanel layout="block" styleClass="div2Columns">
+                            <apex:outputText value="{!options}"/>, &nbsp;
+                        </apex:outputPanel>
+                        &nbsp;
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="6">
+                        <h3>Standard Features</h3>
+                        <p style="font-size: 10pt;">
+                            <apex:repeat value="{!assetStandardFeautersData}" var="feature" >
+                                <apex:outputText value="[{!feature.code}] {!feature.name}"/>, &nbsp;
+                            </apex:repeat>
+                        </p>
+                        &nbsp;
+                    </td>
+                </tr>
+            </table>
+        </apex:outputPanel>
+        <apex:outputPanel layout="block" rendered="{!assetType != 'Car'}">
+            <table width="100%">
+                <tr>
+                    <td width="12%">Make</td>
+                    <td width="26%"><apex:outputText value="{!makeOVehicle}"/>&nbsp;</td>
+                    <td width="12%">Year</td>
+                    <td width="22%"><apex:outputText value="{!year}"/>&nbsp;</td>
+                    <td width="12%">Model</td>
+                    <td width="16%"><apex:outputText value="{!modelOVehicle}"/>&nbsp;</td>
+                </tr>
+                <tr>
+                    <td>Variant</td>
+                    <td><apex:outputText value="{!variantOVehicle}"/>&nbsp;</td>
+                    <td>Series</td>
+                    <td><apex:outputText value="{!seriesOVehicle}"/>&nbsp;</td>
+                    <td colspan="2">&nbsp;</td>
+                </tr>
+            </table>
+        </apex:outputPanel>
+    </div>
+</apex:page>

@@ -20,6 +20,7 @@
       <span class="my-button-label">Submit for Formal Approval</span>
     </button>
     <button
+      if:true={showSettledButton}
       class="slds-button slds-button_neutral"
       onclick={handleSettleClick}
       disabled={disableSettledButton}
@@ -55,6 +56,7 @@
     onyes={handlerBrokerSupportYes}
     lender-settings={lenderSettings}
     has-lender-api={displayAPIConfirmation}
+    is-external={isExternal}
   ></c-partner-approval-broker-support>
   <!-- --------------- -->
   <!-- Formal Approval -->
@@ -64,6 +66,7 @@
     opp-name={oppName}
     show-modal={displayFormalApproval}
     onclose={handlerFormalClose}
+    oncancel={handlerBrokerSupportCancel}
     lender-settings={lenderSettings}
     has-lender-api={displayAPIConfirmation}
   ></c-partner-approval-formal-submission>

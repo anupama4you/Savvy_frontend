@@ -1,0 +1,6 @@
+<apex:page controller="SaasuInterface">
+    <apex:pageMessages />
+    <apex:form >
+        <apex:commandButton value="Go" action="{!Go}" />
+    </apex:form>     
+</apex:page>

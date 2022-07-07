@@ -1,0 +1,131 @@
+<apex:page standardController="Custom_Opportunity__c" extensions="YtdPdfExtension" renderAs="pdf">
+    <apex:stylesheet value="{!$Resource.AppPdfCss}"/>
+    <apex:variable value="{!Custom_Opportunity__c}" var="o" />
+    <div class="header">
+        <table style="border: 0px;" width="100%">
+            <tr style="border: 0px;" width="100%">
+                <td style="border: 0px;" width="30%" align="left">
+                    <apex:image url="{!$Resource.newSavvyLogo}" alt="Logo" />
+                </td>
+                <td style="border: 0px;" width="70%" align="left">
+                    <p><span style="color:#ee245f;">FINANCE APPLICATION</span><br/>
+                        <span style="font-size:0.8em;"><span style="color:#ee245f;">E</span> applications@savvy.com.au <font>|</font> <span style="color:#ee245f;">P</span> 1300 974 066 <font>|</font> <span style="color:#ee245f;">F</span> 1300 978 066<br/>
+                            <span style="color:#ee245f;">A</span> Level 1, 145 The Parade, Norwood, SA 5067 <font>|</font> <span style="color:#ee245f;">www</span>.savvy.<span style="color:#ee245f;">com.au</span></span></p>
+                </td>
+            </tr>
+        </table>
+    </div>
+    <div class="footer">
+        <div class="footerContent">Page <span class="pagenumber"/> of <span class="pagecount"/></div>
+    </div>
+    <div class="content">
+    
+        <h3>Savvy Finance Macquarie Year To Date Calculation for {!o.Name} (Applicant 1)</h3>
+        <table width="100%">
+            <tr>
+                <td colspan="2">&nbsp;</td>
+                <td>Employment Start or YTD Start Date</td>
+                <td><apex:outputText value="{!dto.startYtdDate}" /></td>
+            </tr>
+            <tr>
+                <td>Net Year-to-Date From Payslip</td>
+                <td><apex:outputText value="{!dto.ytdIncome}" /></td>
+                <td>Most Recent Payslip Period Start</td>
+                <td><apex:outputText value="{!dto.startDate}" /></td>
+            </tr>
+            <tr>
+                <td>Most Recent Payslip Net Income</td>
+                <td><apex:outputText value="{!dto.baseIncome}" /></td>
+                <td> Most Recent Payslip Period End</td>
+                <td><apex:outputText value="{!dto.endDate}" /></td>
+            </tr>
+            <tr>
+                <td>Frequency</td>
+                <td>Year-to-Date</td>
+                <td>Pay Period</td>
+                <td><apex:outputText value="{!dto.ytdMacPayPeriodDays}"/>&nbsp;days</td>
+            </tr>
+        </table>
+        <br/>
+        <table width="100%">
+            <tr>
+                <td>&nbsp;</td>
+                <td><strong>Net Year-to-Date Salary</strong></td>
+                <td><strong>Pay Period</strong></td>
+            </tr>
+            <tr>
+                <td>Monthly</td>
+                <td><apex:outputText value="{!dto.ytdMacMonthlyNetYtdSalary}" /></td>
+                <td><apex:outputText value="{!dto.ytdMacMonthlyPayPeriodNetSalary}" /></td>
+            </tr>
+            <tr>
+                <td>Annually</td>
+                <td><apex:outputText value="{!dto.ytdMacAnnuallyNetYtdSalary}" /></td>
+                <td><apex:outputText value="{!dto.ytdMacAnnuallyPayPeriodNetSalary}" /></td>
+            </tr>
+            <tr>
+                <td colspan="3">Comments:</td>
+            </tr>
+            <tr>
+                <td colspan="3">
+                    <apex:outputText value="{!dto.ytdMacComments}" />
+                </td>
+            </tr>
+        </table>
+        
+    	<apex:outputPanel layout="block" rendered="{!dto.isMacquarieApplicant2}">
+            <h3>Savvy Finance Macquarie Year To Date Calculation for {!o.Name} (Applicant 2)</h3>
+            <table width="100%">
+                <tr>
+                    <td colspan="2">&nbsp;</td>
+                    <td>Employment Start or YTD Start Date</td>
+                    <td><apex:outputText value="{!dto.startYtdDateA2}" /></td>
+                </tr>
+                <tr>
+                    <td>Net Year-to-Date From Payslip</td>
+                    <td><apex:outputText value="{!dto.ytdMacNetYtdSalaryA2}" /></td>
+                    <td>Most Recent Payslip Period Start</td>
+                    <td><apex:outputText value="{!dto.ytdMacStartDateA2}" /></td>
+                </tr>
+                <tr>
+                    <td>Most Recent Payslip Net Income</td>
+                    <td><apex:outputText value="{!dto.ytdMacPayPeriodNetSalaryA2}" /></td>
+                    <td> Most Recent Payslip Period End</td>
+                    <td><apex:outputText value="{!dto.ytdMacEndDateA2}" /></td>
+                </tr>
+                <tr>
+                    <td>Frequency</td>
+                    <td>Year-to-Date</td>
+                    <td>Pay Period</td>
+                    <td><apex:outputText value="{!dto.ytdMacPayPeriodDaysA2}"/>&nbsp;days</td>
+                </tr>
+            </table>
+            <br/>
+            <table width="100%">
+                <tr>
+                    <td>&nbsp;</td>
+                    <td><strong>Net Year-to-Date Salary</strong></td>
+                    <td><strong>Pay Period</strong></td>
+                </tr>
+                <tr>
+                    <td>Monthly</td>
+                    <td><apex:outputText value="{!dto.ytdMacMonthlyNetYtdSalaryA2}" /></td>
+                    <td><apex:outputText value="{!dto.ytdMacMonthlyPayPeriodNetSalaryA2}" /></td>
+                </tr>
+                <tr>
+                    <td>Annually</td>
+                    <td><apex:outputText value="{!dto.ytdMacAnnuallyNetYtdSalaryA2}" /></td>
+                    <td><apex:outputText value="{!dto.ytdMacAnnuallyPayPeriodNetSalaryA2}" /></td>
+                </tr>
+                <tr>
+                    <td colspan="3">Comments:</td>
+                </tr>
+                <tr>
+                    <td colspan="3">
+                        <apex:outputText value="{!dto.ytdMacCommentsA2}" />
+                    </td>
+                </tr>
+            </table>
+        </apex:outputPanel>
+</div>
+</apex:page>

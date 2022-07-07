@@ -1,0 +1,15 @@
+<!--quickAdd.cmp-->
+<aura:component controller="CustomDeleteRecordController" implements="force:lightningQuickAction,force:hasRecordId">
+  <aura:attribute name="recordId" type="String" access="global" />
+  <aura:attribute name="isRecordDeleted" type="boolean"/>
+    <lightning:tile>
+        <aura:set attribute="media">
+            <lightning:icon iconName="action:delete"/>
+        </aura:set>
+        <h1>Are you sure to delete the current record?</h1>
+        <p><i><strong>Note:</strong> the record will be permanently deleted and can not be restored.[{!v.recordId} - {!v.isRecordDeleted}]</i></p>
+        <lightning:button label="Yes, delete" onclick="{!c.deleteRecord}" variant="destructive-text" />
+    </lightning:tile>
+    
+
+</aura:component>

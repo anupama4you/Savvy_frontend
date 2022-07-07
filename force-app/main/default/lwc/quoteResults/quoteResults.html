@@ -1,0 +1,111 @@
+<template>
+  <lightning-card>
+    <div class="slds-grid slds-wrap slds-gutters c-result-data">
+      <div class="slds-col c-title-section">
+        <span class="c-title">Commission and Repayment</span>
+      </div>
+    </div>
+    <div class="slds-grid slds-wrap slds-gutters c-result-data">
+      <!-- Commission -->
+      <div class="slds-col slds-size_3-of-12">Estimated Commission</div>
+      <div class="slds-col slds-size_3-of-12">
+        <lightning-formatted-number
+            value={results.commission}
+            format-style="currency"
+            currency-code="AUD"
+            class="c-read-only-field"
+          ></lightning-formatted-number>
+      </div>
+      <!-- NAF -->
+      <div class="slds-col slds-size_3-of-12">NAF</div>
+      <div class="slds-col slds-size_3-of-12">
+        <lightning-formatted-number
+            value={results.naf}
+            format-style="currency"
+            currency-code="AUD"
+            class="c-read-only-field c-total-field"
+          ></lightning-formatted-number>
+      </div>
+      <!-- DOF -->
+      <div class="slds-col slds-size_3-of-12">DOF</div>
+      <div class="slds-col slds-size_3-of-12">
+        <lightning-formatted-number
+            value={results.dof}
+            format-style="currency"
+            currency-code="AUD"
+            class="c-read-only-field"
+          ></lightning-formatted-number>
+      </div>
+      <!-- Rental -->
+      <div class="slds-col slds-size_3-of-12">Rental</div>
+      <div class="slds-col slds-size_3-of-12">
+        <lightning-formatted-number
+            value={results.rental}
+            format-style="currency"
+            currency-code="AUD"
+            class="c-read-only-field"
+          ></lightning-formatted-number>
+      </div>
+      <!-- Insurance Income -->
+      <div class="slds-col slds-size_3-of-12">Insurance Income</div>
+      <div class="slds-col slds-size_3-of-12">
+        <lightning-formatted-number
+            value={results.insurances}
+            format-style="currency"
+            currency-code="AUD"
+            class="c-read-only-field"
+          ></lightning-formatted-number>
+      </div>
+      <!-- Monthly Payment -->
+      <div class="slds-col slds-size_3-of-12">Monthly Payment</div>
+      <div class="slds-col slds-size_3-of-12">
+        <lightning-formatted-number
+            value={results.monthlyPayment}
+            format-style="currency"
+            currency-code="AUD"
+            class="c-read-only-field"
+          ></lightning-formatted-number>
+      </div>
+      <!-- TOTAL Commission (GST Exc) -->
+      <div class="slds-col slds-size_3-of-12">TOTAL Commission (GST Exc)</div>
+      <div class="slds-col slds-size_3-of-12">
+        <lightning-formatted-number
+            value={results.totalCommissionGSTExc}
+            format-style="currency"
+            currency-code="AUD"
+            class="c-read-only-field"
+          ></lightning-formatted-number>
+      </div>
+      <!-- Fortnightly Payment -->
+      <div class="slds-col slds-size_3-of-12">Fortnightly Payment</div>
+      <div class="slds-col slds-size_3-of-12">
+        <lightning-formatted-number
+            value={results.fortnightlyPayment}
+            format-style="currency"
+            currency-code="AUD"
+            class="c-read-only-field"
+          ></lightning-formatted-number>
+      </div>
+      <!-- TOTAL Commission (GST Inc) -->
+      <div class="slds-col slds-size_3-of-12">TOTAL Commission (GST Inc)</div>
+      <div class="slds-col slds-size_3-of-12">
+        <lightning-formatted-number
+            value={results.totalCommissionGSTInc}
+            format-style="currency"
+            currency-code="AUD"
+            class="c-read-only-field c-total-field"
+          ></lightning-formatted-number>
+      </div>
+      <!-- Weekly Payment -->
+      <div class="slds-col slds-size_3-of-12">Weekly Payment</div>
+      <div class="slds-col slds-size_3-of-12">
+        <lightning-formatted-number
+            value={results.weeklyPayment}
+            format-style="currency"
+            currency-code="AUD"
+            class="c-read-only-field"
+          ></lightning-formatted-number>
+      </div>
+    </div>
+  </lightning-card>
+</template>

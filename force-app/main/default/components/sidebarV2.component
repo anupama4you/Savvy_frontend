@@ -1,0 +1,126 @@
+<apex:component controller="SidebarV2Controller">
+  <apex:attribute name="oppId" type="Id" description="Opportunity Id" required="true" assignTo="{!opportunityId}" />
+  <apex:attribute name="appId" type="Id" description="Application Id" assignTo="{!applicationId}" />
+  <apex:attribute name="showLenders" type="Boolean" description="Show button to select a new Lender" />
+  <apex:attribute name="showFlowHelp" type="Boolean" description="Flow Help" default="false" />
+  <apex:stylesheet value="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css" />
+  <apex:stylesheet value="{! $Resource.SidebarCompCSS}" />
+  <apex:includeLightning />
+  <div id="sidebarV2">
+    <div class="heading">
+      <strong>Sales Tools</strong>
+    </div>
+    <ul class="fa-ul">
+      <li>
+        <i class="fa-li fa fa-file-o fa-lg"></i>
+        <apex:outputLink value="{!$Page.OppApplication}?id={!oppId}">Application Form</apex:outputLink>
+        &nbsp;
+        <!-- <apex:image url="{!$Resource[appFormPreaprovalStatus]}" title="Pre-Approval" height="18" /> -->
+      </li>
+      <li>
+        <i class="fa-li fa fa-balance-scale fa-lg"></i>
+        <apex:outputLink value="{!$Page.LenderComparisonFilter}?id={!oppId}">Lender Comparison</apex:outputLink>
+      </li>
+      <li>
+        <i class="fa-li fa fa-usd fa-lg"></i>
+        <apex:outputLink value="{!$Page.BlankCalculator}?id={!oppId}&quoting={!lenderQuoting}">Quoting Tools</apex:outputLink>
+        &nbsp;
+        <apex:image url="{!$Resource[quotingPreaprovalStatus]}" title="Pre-Approval" height="18" />
+        <apex:image url="{!$Resource[quotingAmendmentStatus]}" title="Amendment" height="18" />
+        <apex:image url="{!$Resource[quotingFormalAprovalStatus]}" title="Formal Approval" height="18" />
+      </li>
+      <!--<li><i class="fa-li fa fa-calculator fa-lg"></i> <a href='#YTDCalculator' id="ytdCalc">YTD Calculator</a></li>-->
+      <!--<li>
+        <i class="fa-li fa fa-calculator fa-lg"></i>
+        <apex:outputLink value="{!$Page.OppApplication}?id={!oppId}&sec=YTD">YTD/Income Calculator</apex:outputLink>
+        <apex:outputLink value="{!$Page.YTDCalculator}?id={!oppId}">YTD/Income Calculator</apex:outputLink>
+        &nbsp;
+        <apex:image url="{!$Resource[ytdPreaprovalStatus]}" title="Pre-Approval" height="18" />
+      </li>-->
+      <!--<li><i class="fa-li fa fa-cog fa-lg"></i> <a href='#ServicingCalculator' id="servicingCalc">Servicing Calculator</a></li>-->
+      <li>
+        <i class="fa-li fa fa-cog fa-lg"></i>
+        <apex:outputLink value="{!$Page.ServicingCalculator}?id={!oppId}">Servicing Calculator</apex:outputLink>
+        <!-- <apex:outputLink value="{!$Page.OppApplication}?id={!oppId}&sec=SRV">Servicing Calculator</apex:outputLink> -->
+        &nbsp;
+        <apex:image url="{!$Resource[servPreaprovalStatus]}" title="Pre-Approval" height="18" />
+      </li>
+      <li>
+        <i class="fa-li fa fa-gears fa-lg"></i>
+        <apex:outputLink value="{!$Page.GlassServiceEstimator}?id={!oppId}">Asset Details - LTV</apex:outputLink>
+        &nbsp;
+        <apex:image url="{!$Resource[assetLTVPreaprovalStatus]}" title="Pre-Approval" height="18" />
+        <apex:image url="{!$Resource[assetLTVAmendmentStatus]}" title="Amendment" height="18" />
+        <apex:image url="{!$Resource[assetLTVFormalAprovalStatus]}" title="Formal Approval" height="18" />
+      </li>
+      <li>
+        <i class="fa-li fa fa-tags fa-lg"></i>
+        <apex:outputLink value="{!$Page.OppApplication}?id={!oppId}&sec=NTS">Notes</apex:outputLink>
+      </li>
+      <li>
+        <i class="fa-li fa fa-credit-card-alt fa-lg"></i>
+        <apex:outputLink value="{!$Page.CreditHistory}?id={!oppId}">Credit History</apex:outputLink>
+      </li>
+      <li>
+        <i class="fa-li fa fa-money fa-lg"></i>
+        <apex:outputLink value="/{!oppId}" id="GoBack">Go back to Opportunity</apex:outputLink>
+      </li>
+    </ul>
+    <apex:form id="barForm">
+      <apex:commandButton value="Show All Lenders" styleClass="SideButtons" rendered="{!showLenders}" onclick="window.location='/apex/BlankCalculator?id={!oppId}'; return false;"
+      />
+      <br/>
+      <p>&nbsp;</p>
+      <span class="textBarOptions">Submit for:</span>
+      <br/>
+      <apex:commandButton value="Pre-approval" styleClass="SideButtons" onclick="window.location='/apex/ValidatePreApprovalSubmit?id={!oppId}'; return false;"
+      />
+      <br/>
+      <apex:commandButton value="Amendment" styleClass="SideButtons" onclick="window.location='/apex/ValidateAmendmentSubmit?id={!oppId}'; return false;"
+      />
+      <br/>
+      <apex:commandButton value="Formal Approval" styleClass="SideButtons" onclick="window.location='/apex/ValidateFormalApprovalSubmit?id={!oppId}'; return false;"
+      />
+      <br/>
+      <!-- Flow -->
+      <apex:outputPanel rendered="{!showFlowHelp}" id="pnlFlowHelp">
+        <p>&nbsp;</p>
+        <span class="textBarOptions">Flow:</span>
+        <br/>
+        <apex:commandButton value="Sales Script" styleClass="SideButtons" onclick="window.open('/apex/SalesScript','Sales Script');"
+          reRender="pnlFlowHelp" immediate="true" status="stsFlow" />
+      </apex:outputPanel>
+    </apex:form>
+    <br/>
+    <div class="lwc-approval">
+      <div id="lwcApprovalOption"></div>
+    </div>
+    
+    <p>Opp Name: {!oppName}</p>
+    <p>Status: {!oppStatus}</p>
+    <p>Partner External? {!isPartnerExternal}</p>
+    <br/>
+    <!-- <div id="MCMessageText"></div> -->
+  </div>
+  <script>
+    const reloadPage = () => {
+      location.reload();
+    }
+    $Lightning.use("c:ApprovalOptionOutApp", function () {
+      $Lightning.createComponent("c:partnerApprovalOptions",
+        {
+          "recordId": "{!oppId}",
+          "oppManualName": "{!oppName}",
+          "oppManualStatus": "{!oppStatus}",
+          "oppPartnerExternal": {!isPartnerExternal},
+          "hideSettledOption": true,
+          "callBackAction": reloadPage
+        },
+        "lwcApprovalOption",
+        function (cmp) {
+          console.log('LWC Componenet added in VF page');
+        });
+    });
+  </script>
+  
+</apex:component>

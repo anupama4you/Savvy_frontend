@@ -1,0 +1,59 @@
+<apex:component >
+	<apex:attribute name="srv" type="Application_Servicing__c" description="Servicing Calculation Data" required="true"/>
+    <apex:attribute name="applicantType" type="String" description="Applicant Type" required="true"/>
+    <apex:attribute name="incomesApp" type="Application_Income__c[]" description="Income"/>
+    <apex:attribute name="app" type="Application__c" description="Application Data"/>
+    <apex:attribute name="isSecondJobApplic1" type="boolean" description="Applicant Employment"/>
+    <apex:attribute name="isSecondJobApplic2" type="boolean" description="Applicant Employment"/>
+	<table width="100%" border="1">
+        <tr><td colspan="2" class="tableCaption"><strong>Servicing Income - {!applicantType}</strong></td></tr>
+        <tr>
+            <td width="25%" class="labelDate">Pay Frequency</td>
+            <td width="25%">
+                <apex:outputField value="{!srv.IncomePayFrecuency_1__c}" rendered="{!applicantType='Applicant 1'}"/>
+				<apex:outputField value="{!srv.IncomePayFrecuency_1b__c}" rendered="{!AND(isSecondJobApplic1,applicantType='Applicant 1 Second Job')}"/>
+				<apex:outputField value="{!srv.IncomePayFrecuency_2__c}" rendered="{!AND(app.No_of_People__c==2,applicantType='Applicant 2')}"/>
+				<apex:outputField value="{!srv.IncomePayFrecuency_2b__c}" rendered="{!AND(isSecondJobApplic2,applicantType='Applicant 2 Second Job',app.No_of_People__c==2)}"/>
+            </td>
+        </tr>
+        <tr>
+            <td class="labelDate">Amount</td>
+            <td>
+                <apex:outputField value="{!srv.Income_1__c}" rendered="{!applicantType='Applicant 1'}"/>
+				<apex:outputField value="{!srv.Income_1b__c}" rendered="{!AND(isSecondJobApplic1,applicantType='Applicant 1 Second Job')}"/>
+				<apex:outputField value="{!srv.Income_2__c}" rendered="{!AND(app.No_of_People__c==2,applicantType='Applicant 2')}"/>
+				<apex:outputField value="{!srv.Income_2b__c}" rendered="{!AND(isSecondJobApplic2,applicantType='Applicant 2 Second Job',app.No_of_People__c==2)}"/>
+            </td>
+        </tr>
+        <tr>
+            <td class="labelDate" valign="top">Gross Annual Income</td>
+            <td valign="top">
+                <apex:outputField value="{!srv.Gross_Annual_Income_1__c}" rendered="{!applicantType='Applicant 1'}"/>
+				<apex:outputField value="{!srv.Gross_Annual_Income_1_Second_Job__c}" rendered="{!AND(isSecondJobApplic1,applicantType='Applicant 1 Second Job')}"/>
+				<apex:outputField value="{!srv.Gross_Annual_Income_2__c}" rendered="{!AND(app.No_of_People__c==2,applicantType='Applicant 2')}"/>
+				<apex:outputField value="{!srv.Gross_Annual_Income_2_Second_Job__c}" rendered="{!AND(isSecondJobApplic2,applicantType='Applicant 2 Second Job',app.No_of_People__c==2)}"/>
+            </td>
+        </tr>
+    </table>
+    <apex:outputPanel rendered="{!AND(IncomesApp!=null,OR(applicantType='Applicant 1',AND(app.No_of_People__c==2,applicantType='Applicant 2')))}">
+    <table width="100%" border="1">
+        <tr>
+            <td colspan="4" class="cellHeading">Other Income - {!applicantType}</td>
+        </tr>
+        <tr>
+            <td width="5%">#</td>
+            <td width="20%">Income Type</td>
+            <td width="50%">After Tax Income</td>
+            <td width="25%">Frequency</td>
+        </tr>
+        <apex:repeat value="{!IncomesApp}" var="a">
+            <tr>
+                <td>{!a.Order__c})</td>
+                <td><apex:outputField styleClass="dataInput" value="{!a.Type__c}"/></td>
+                <td><apex:outputField styleClass="dataInput" value="{!a.Income__c}"/></td>
+                <td><apex:outputField styleClass="dataInput" value="{!a.Frequency__c}"/></td>
+            </tr>
+        </apex:repeat>
+    </table>
+    </apex:outputPanel>
+</apex:component>

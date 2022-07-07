@@ -1,0 +1,39 @@
+<apex:page showHeader="false" sidebar="false" standardStylesheets="false">
+	<strong>Purchase Type </strong>
+	Dealer or Private sales 
+
+	<hr/><strong>Employment Type </strong>
+	FT must not be in probationary period,   
+	PT must not be in probationary period, 
+	Casual must be 12 months minimum (this will be a tier C price grade), 
+	Full-doc and low-doc.
+
+	<hr/><strong>Credit History </strong>
+	Clean history, paid non-financial defaults as long as profile supports. Will consider small unpaid defaults. 
+
+	<hr/><strong>Financed Assets </strong>
+	Cars
+
+	<hr/><strong>Loan Terms </strong>
+	0-84 months
+
+	<hr/><strong>Term End  </strong>
+	15 years at term end, no change in tier structure so will stay A &amp; B. 
+	15-20 years at term end, automatic tier C.
+
+	<hr/><strong>LTV Ratios </strong>
+	Approximately 150% max of trade, however no clear guidelines are provided.  LTV doesn’t affect pricing. 
+
+	<hr/><strong>Why? &amp; When? </strong>
+	Good with older vehicles whether private or dealer, low rates for asset backed customers regardless of vehicle age, do not load rate like ANZ. Marginal transactions will be considered with a deposit. Quick and easy low-doc product. Will do Private Sales on Low-doc. If asset backed will come in at Tier A, no deposit required. Non-asset backed, no previous credit, 10% deposit required &amp; no requirement to be GST registered, this comes with a 45K max loan amount and will fall into either Tier B or C.
+
+	<hr/><strong>Early repayment fees</strong>
+	$600 amortised over the term plus $150 fee.
+
+	<hr/><strong>To add in calculator</strong>
+
+	A – must be a property owner/buyer. 
+	B – must have comparable confirmable credit, non-property owner. 
+	C – Casual, defaults, first lends, weaker overall profile, 15+ years term end.
+
+</apex:page>

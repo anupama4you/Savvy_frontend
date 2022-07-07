@@ -1,0 +1,387 @@
+<apex:page showHeader="false" sidebar="false" controller="OppEmailUnsubscriptionExtension" title="Savvy - Tailored protection package">
+	<head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" />
+		<link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet"/>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" ></script>
+        <script>
+       		jQuery.noConflict();
+       		jQuery(function() {
+			    jQuery(".video").click(function () {
+			      var theModal = jQuery(this).data("target"),
+			      videoSRC = jQuery(this).attr("data-video"),
+			      videoSRCauto = 'https://www.youtube.com/embed/' + videoSRC + "?modestbranding=1&rel=0&controls=0&showinfo=0&html5=1&autoplay=1";
+			      jQuery(theModal + ' iframe').attr('src', videoSRCauto);
+			      jQuery(theModal + ' button.close').click(function () {
+			        jQuery(theModal + ' iframe').attr('src', videoSRC);
+			      });
+			    });
+			  });
+
+			// jQuery('.video').on('hidden.bs.modal', function (e) {
+			// 	alert('Player closed');
+			// 	jQuery('.video').find('iframe').attr('src', '');
+			// 	});
+       	</script>
+       	<style type="text/css">
+       		.h1, h1 {
+			    font-size: 36px !important;
+			    font-weight: 600 !important;
+			}
+			.h3, h3 {
+			    font-size: 20px !important;
+			}
+       		.pricing-heading {
+			    text-align: center;
+			}
+			.toplogo {
+			    /*text-align: right;*/
+			}
+	        .pricing-block-grid {
+	            padding: 8px;
+	            color: white;
+	        }
+	        .pricing-block {
+			    position: relative;
+			    -webkit-transition: all 0.3s ease 0s;
+			    -moz-transition: all 0.3s ease 0s;
+			    -o-transition: all 0.3s ease 0s;
+			    -ms-transition: all 0.3s ease 0s;
+			    transition: all 0.3s ease 0s;
+			}
+	        .pricing-block.green.grey {
+			    background-color: #000;
+			    border-radius: 2px;
+			}
+			.pricing-block .currency {
+			    margin: 5px 0;
+			    padding: 10px 0 15px 20px;
+			    position: relative;
+			}
+			.sign {
+			    font-family: 'Roboto', sans-serif;
+			    font-size: 20px;
+			    font-weight: 500;
+			    line-height: 45px;
+			}
+			.cost {
+			    font-family: 'Roboto', sans-serif;
+			    font-size: 35px;
+			    font-weight: 600;
+			    line-height: 40px;
+			    vertical-align: top;
+			}
+			.week {
+			    font-family: 'Roboto', sans-serif;
+			    font-size: 20px;
+			    font-weight: 500;
+			    line-height: 45px;
+			}
+			.pricing-block.green.grey h3 {
+			    color: #fff;
+			}
+			.pricing-block h3 {
+			    color: #fff;
+			}
+			.pricing-block h3 {
+			    font-family: 'Roboto', sans-serif;
+			    font-size: 20px;
+			    font-weight: 600;
+			    margin: 0;
+			    padding: 30px 0 5px 20px;
+			}
+			.pricing-block.green.grey .heading {
+			    background-color: #1c1c1c;
+			    color: #fff;
+			    padding: 1px 1px 5px 1px;
+			}
+			.pricing-block.green.grey .single-heading {
+			    color: #fff;
+			    /*padding: 1px 1px 5px 1px;*/
+			}
+			.pricing-block.green.grey p {
+			    margin-right: 2%;
+			    display: inline-block;
+			}
+			.pricing-block p {
+			    font-family: 'Roboto', sans-serif;
+			    font-size: 15px;
+			    font-weight: 600;
+			    padding: 0 0 0 20px;
+			}
+			.month {
+			    font-family: 'Roboto', sans-serif;
+			    font-size: 20px;
+			    font-weight: 100;
+			    margin: 5px 0 0 0;
+			}
+			.videolink {
+			    position: relative;
+			}
+			span.fa.fa-file-pdf-o {
+			    font-size: 15px;
+			}
+			.pricing-block ul {
+			    list-style: none;
+			    margin: 5px 0 10px;
+			    padding: 0;
+			}
+			.pricing-block ul li, .pricing-block ul li:hover {
+			    color: #fff;
+			}
+			.pricing-block ul li, .pricing-block ul li span {
+			    display: block;
+			    font-family: 'Roboto', sans-serif;
+			    font-size: 15px;
+			    font-weight: 300;
+			    outline: medium none;
+			    padding: 10px 30px 10px 30px;
+			    text-decoration: none;
+			}
+			.pricing-block ul li {
+			    display: block;
+			    position: relative;
+			}
+			.pricing-block ul li .fa {
+			    font-size: 20px;
+			    left: 0;
+			    padding: 0 0 0 0px;
+			    position: absolute;
+			    top: 17px;
+			}
+			.pricing-block .pricing-btn {
+			    margin: 20px 0 40px;
+			    text-align: center;
+			}
+			.pricing-block, .pricing-block.black-red:hover .currency, .pricing-block.black-yellow:hover .currency, .pricing-block.black-purple:hover .currency, .pricing-block.black-green:hover .currency {
+			    -webkit-transition: all 0.3s ease 0s;
+			    -moz-transition: all 0.3s ease 0s;
+			    -o-transition: all 0.3s ease 0s;
+			    -ms-transition: all 0.3s ease 0s;
+			    transition: all 0.3s ease 0s;
+			}
+			.pricing-block {
+			    position: relative;
+			    -webkit-transition: all 0.3s ease 0s;
+			    -moz-transition: all 0.3s ease 0s;
+			    -o-transition: all 0.3s ease 0s;
+			    -ms-transition: all 0.3s ease 0s;
+			    transition: all 0.3s ease 0s;
+			}
+			.pricing-block .popular-label {
+			    position: absolute;
+			    top: -12px;
+			    width: 100%;
+			}
+			.pricing-block.green.grey .popular-label .tag {
+			    background-color: #ee245f;
+			    border-radius: 2px;
+			    color: #fff;
+			}
+			.pricing-block .popular-label .tag {
+			    height: 25px;
+			    line-height: 27px;
+			    text-align: center;
+			    text-transform: uppercase;
+			    width: 140px;
+			    margin: 0 auto;
+			}
+			.pricing-block .popular-label .tag .tag-text {
+			    font-size: 12px;
+			    font-weight: 600;
+			    position: relative;
+			}
+			.heading a {
+			    color: #fff;
+			}
+			.heading a:hover {
+			    color: #e0e3e5;
+			}
+			.single-heading a {
+			    color: #fff;
+			    vertical-align: -webkit-baseline-middle;
+			}
+			.single-heading a:hover {
+			    color: #e0e3e5;
+			}
+			.videolink span {
+			    font-size: 17px;
+			}
+			.actionlink span {
+			    font-size: 24px;
+			}
+			.pricing-block .customer-choice {
+			    position: absolute;
+			    top: 15px;
+			    width: 100%;
+			    color: #00da33;
+			    font-size: 4.5em;
+			    margin-left: 210px;
+			}
+			.pricing-block .extraText {
+				font-family: 'Roboto', sans-serif;
+			    font-size: 14px;
+			    font-weight: 500;
+			    padding: 0 0 20px 50px;
+			}
+			.extraText a {
+				color: #000000;
+				background: #fff;
+			    padding: 6px;
+			    border-radius: 2px;
+			    margin-right: 13px;
+			    border: 1px solid #fff;
+			    font-size: 13px;
+			}
+			.extraText a:hover {
+				color: #ffffff;
+				text-decoration: none;
+			    background: none;
+			    border: 1px solid #fff;
+			    font-size: 13px;
+			}
+			.fixGridDiv{
+			    height: 360px;
+			    overflow-y: scroll;
+			}
+			/* Buttons */
+			.pricing-block.green.grey .pricing-btn a {
+			    background: #fff;
+			    border: 1px solid #fff;
+			    color: #000;
+			}
+			.pricing-block.green.grey.active,
+			.pricing-block.green.grey:hover{
+				background-color:#232323;
+			}
+			footer .copyright{
+				text-align:center;
+				font-size:13px;
+				font-weight:300;
+				margin-top:30px;
+			}
+			p.copyright{
+				text-align:center;
+				font-size:13px;
+				font-weight:300;
+				margin-top:30px;
+			}
+			@media (min-width: 1200px)
+			.pricing-block .pricing-btn a {
+			    padding: 8px 40px;
+			}
+			@media (min-width: 990px)
+			.pricing-block .pricing-btn a {
+			    padding: 8px 20px;
+			}
+			.pricing-block .pricing-btn a {
+			    border-radius: 0;
+			    font-family: 'Roboto', sans-serif;
+			    font-size: 16px;
+			    font-weight: 600;
+			    padding: 6px 40px;
+			    -webkit-transition: all 0.3s ease 0s;
+			    -moz-transition: all 0.3s ease 0s;
+			    -o-transition: all 0.3s ease 0s;
+			    -ms-transition: all 0.3s ease 0s;
+			    transition: all 0.3s ease 0s;
+			}
+			.btn {
+				color: #fff !important;
+			    background: #2a2a2c repeat-x right top !important;
+			    padding: 10px !important;
+			}
+			.standard-pricing .pricing-block{
+			  min-height: 895px;
+			}
+
+			.basic-pricing .pricing-block{
+			  min-height: 446px;
+			}
+
+			.basic-pricing .pricing-block.green.grey .pricing-btn,
+			.standard-pricing .pricing-block.green.grey .pricing-btn{
+			  position: absolute;
+			  width: 100%;
+			  bottom: 0;
+			}
+
+			.standard-pricing .pricing-block.green.grey .pricing-btn a{
+			  max-width: 225px;
+			  margin: 0 auto;
+			}
+			.single-heading td {
+			    font-family: 'Roboto', sans-serif;
+			    color: #ffffff;
+			    font-size: 15px;
+			    font-weight: 600;
+			    padding: 0 0 0 12px;
+			}
+			@media ( min-width: 990px ){
+			  .pricing-block .pricing-btn a{
+			    padding: 8px 20px;
+			  }
+			}
+
+			@media ( min-width: 1000px ){
+			  .standard-pricing .pricing-block{
+			    min-height: 895px;
+			  }
+			}
+
+			@media ( min-width: 1300px ){
+			  .standard-pricing .pricing-block{
+			    min-height: 915px;
+			  }
+			}
+
+			@media ( min-width: 1200px ){
+			  .pricing-block .pricing-btn a{
+			    padding: 8px 40px;
+			  }
+			}
+        </style>
+	</head>
+	<!-- <apex:includeScript value="{!URLFOR($Resource.jquery)}"/>
+	<link href="{!URLFOR($Resource.Bootstrap, 'bootstrap-3.3.7-dist/css/bootstrap.min.css')}" rel="stylesheet" media="screen"/>
+    <apex:includeScript value="{!URLFOR($Resource.Bootstrap, 'bootstrap-3.3.7-dist/js/bootstrap.min.js')}"/> -->
+	<apex:form id="frmData">
+		<div class="container">
+			<!-- HEADING START -->
+			<apex:outputPanel layout="block" styleClass="row">
+				<div class="col-md-12">
+					<div class="pricing-heading clearfix">
+						<!-- ::before -->
+						<p>&nbsp;</p>
+						<div class="toplogo">
+							<apex:image url="{!$Resource.SavvyLogo2017}"/>
+						</div>
+						<br/><br/>
+						<apex:outputPanel rendered="{!NOT(hasBennProcessed)}" >
+							<p><h4>We're sorry to see you go. Please click below to confirm your unsubscription.</h4></p>
+							<p>&nbsp;</p>
+							<p>
+								<div class="pricing-btn clearfix">
+									<apex:commandLink value="Unsubscribe" action="{!unsubscribeEmail}" 
+		                                             reRender="frmData" styleClass="btn" />
+		                        </div>
+		                    </p>
+                        </apex:outputPanel>
+                        <apex:outputPanel rendered="{!hasBennProcessed}" >
+							<p><h3>Unsubscribe successful.</h3></p>
+							<p>&nbsp;</p>
+							<p><h3>Thanks you for updating your email preferences. Please note, this change may take up to 48 hours.</h3></p>
+						</apex:outputPanel>
+						<apex:outputPanel rendered="{!NOT(ISNULL(errorMessage))}" >
+							<p>{!errorMessage}</p>
+						</apex:outputPanel>
+						<!-- ::after -->
+					</div>
+				</div>
+			</apex:outputPanel>
+		</div>
+		<!-- <footer>
+	    	<p class="copyright">© Quantum Savvy Pty Ltd / ABN 12 134 138 686 / ACL 414426 / Savvy is a trade mark of Quantum Savvy Pty Ltd.</p>
+	    </footer> -->
+	</apex:form>	
+</apex:page>

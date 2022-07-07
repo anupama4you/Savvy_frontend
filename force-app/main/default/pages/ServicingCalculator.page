@@ -1,0 +1,2182 @@
+<apex:page lightningStylesheets="true" docType="html-5.0" standardController="Custom_Opportunity__c" extensions="OppApplicationExtension"
+  sidebar="false" showHeader="true" id="OppApplication" title="App - {!Custom_Opportunity__c.Name}" action="{!modeServicing}">
+  <!-- Partner Portal Styles -->
+  <apex:outputPanel rendered="{!isBrokerPartnerUser}">
+    <style type="text/css">
+      html .brandQuaternaryBgr,
+      .titleDiv {
+        background: #ffffff !important;
+      }
+
+      .bPageBlock {
+        border: 1px solid white !important;
+      }
+
+      html .brandSecondaryBrd {
+        border-top-color: #eaeaea !important;
+      }
+    </style>
+  </apex:outputPanel>
+  <apex:includeScript value="https://maps.googleapis.com/maps/api/js?key=AIzaSyDZOnXNm6118fHjx4fUaA39OVQT9H0hP_8&libraries=places&language=en"
+  />
+  <apex:stylesheet value="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css" />
+  <apex:includeScript value="{!$Resource.jQuery}" />
+  <apex:stylesheet value="{!$Resource.AppCss}" />
+  <apex:includeScript value="{!$Resource.SalesFlowJQueryUICSS}" />
+  <apex:includeScript value="{!$Resource.SalesFlowJQueryUIJS}" />
+  <apex:stylesheet value="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css" />
+  <apex:includeScript value="{!$Resource.addressLookup}" />
+  <!-- <apex:slds />  -->
+  <!-- Lelo                               2016-06-28 -->
+  <style type="text/css">
+    /* Lelo */
+
+    .customInputStyle {
+      width: 20px;
+    }
+
+    .leftTablesNotFloat {
+      display: inline-block;
+      width: 48%;
+      padding-left: 20px;
+      vertical-align: top;
+    }
+
+    .leftTables {
+      display: inline-block;
+      float: left;
+      width: 48%;
+      padding-left: 20px;
+      vertical-align: top;
+    }
+
+    .rightTables {
+      display: inline-block;
+      width: 48%;
+      padding-left: 20px;
+      vertical-align: top;
+    }
+
+    .leftTables2 {
+      display: inline-block;
+      float: left;
+      width: 32%;
+      padding-left: 20px;
+    }
+
+    .leftTables2NotFloat {
+      display: inline-block;
+      width: 32%;
+      padding-left: 20px;
+    }
+
+    .leftTables3NotFloat {
+      display: inline-block;
+      width: 48%;
+      padding-left: 20px;
+    }
+
+    .rightTables2 {
+      display: inline-block;
+      width: 64%;
+      padding-left: 20px;
+    }
+
+    .oneTables {
+      display: inline-block;
+      /*float: left;*/
+      width: 97.5%;
+      padding-left: 20px;
+    }
+
+    .section {
+      background: #f8f8f8;
+      border: 1px solid #ddd;
+      padding-bottom: 20px;
+      display: flow-root;
+    }
+
+    .subSectionTab {
+      border: 1px solid #ddd;
+      border-bottom: transparent;
+      display: inline-block;
+      background-color: #fff;
+      position: relative;
+      padding: 3px;
+      padding-right: 20px;
+      padding-left: 20px;
+      top: 20px;
+    }
+
+    .tableSubsection {
+      width: 100%;
+      background: white;
+      border: 1px solid #ddd;
+      margin-top: 18px;
+      padding: 2px;
+      padding-left: 20px;
+      padding-top: 10px;
+      padding-bottom: 10px;
+    }
+    
+    .tableSubsectionSE {
+      width: 100%;
+      background: white;
+      margin-top: 18px;
+      padding: 2px;
+      padding-top: 10px;
+      padding-bottom: 10px;
+    }
+
+    .labelColumn {
+      width: 25%;
+      /*padding-bottom: 13px;*/
+    }
+
+    .dataColumn {
+      width: 25%;
+    }
+
+    .divTitle {
+      background-color: #ddd;
+      padding-top: 1px;
+      padding-bottom: 1px;
+      padding-left: 15px;
+      /*text-transform: uppercase;*/
+      font-weight: bold;
+      border: 1px solid #ddd;
+    }
+
+    .dataInput {
+      border: 1px solid #e0e0e0;
+      padding: 0.3em !important;
+      ;
+      min-width: 173px !important;
+      ;
+    }
+
+    .dataInput2 {
+      border: 1px solid #e0e0e0;
+      padding: 0.3em !important;
+      min-width: 70px !important;
+      max-width: 70px !important;
+    }
+
+    .dataInput3 {
+      border: 1px solid #e0e0e0;
+      width: 114px;
+      height: 13px !important;
+    }
+
+    .dataInput4 {
+      border: 1px solid #e0e0e0;
+      width: 114px;
+      height: 13px !important;
+    }
+
+    .dataInputFull {
+      border: 1px solid #e0e0e0;
+      padding: 0.3em !important;
+      min-width: 98% !important;
+    }
+
+    .dataInputCheckBox {
+      border: 1px solid #e0e0e0;
+      padding: 0.3em !important;
+      ;
+      min-width: 10px !important;
+      ;
+    }
+
+    .selectList {
+      border: 1px solid #e0e0e0;
+      padding: 0.3em !important;
+      width: 182px;
+      height: 25px !important;
+    }
+
+    .selectList2 {
+      border: 1px solid #e0e0e0;
+      padding: 0.3em !important;
+      width: 90px;
+      height: 25px !important;
+    }
+
+    .selectList3 {
+      border: 1px solid #e0e0e0;
+      padding: 0.3em;
+      width: 45px;
+      height: 25px !important;
+    }
+
+    .selectList4 {
+      border: 1px solid #e0e0e0;
+      padding: 0.3em;
+      width: 124px;
+      height: 25px !important;
+    }
+
+    .selectList5 {
+      border: 1px solid #e0e0e0;
+      width: 90px;
+      height: 25px !important;
+    }
+
+    .titleDiv {
+      width: 100%;
+      height: 43px;
+      font-size: 1.0rem;
+    }
+
+    .toolOptions {
+      float: right;
+      text-align: right;
+      width: 45%;
+      padding-top: 7px;
+    }
+
+    /* #main .bPageBlock {
+        border-top: 1px solid white !important;
+        } */
+
+    .commandButtons {
+      padding: 5px 6px !important;
+      color: #fff !important;
+      font-size: 10px !important;
+      outline: none !important;
+      background: rgb(0, 0, 0) !important;
+      /* Old browsers */
+    }
+
+    .commandButtons:hover {
+      background: rgb(14, 14, 14) !important;
+      /* Old browsers */
+    }
+
+    .noSidebarCell,
+    .sidebarCell .fixed {
+      height: inherit;
+    }
+
+    /* Servicing Calculator*/
+
+    #ServicingCalc .bPageBlock {
+      border-top: 1px solid white !important;
+    }
+
+    .cellMultiTables {
+      vertical-align: top;
+    }
+
+    .cellExtraRigthPading {
+      padding-right: 18px;
+    }
+
+    .incomeValue {
+      color: #1a75ff !important;
+    }
+
+    .notIncomeValue {
+      color: #cc0000 !important;
+    }
+
+    #YtdCalc .bPageBlock {
+      border-top: 1px solid white !important;
+    }
+
+    #notesSection .bPageBlock {
+      border-top: 1px solid white !important;
+    }
+
+    .textBarOptions {
+      font-size: 12px !important;
+      font-weight: bold;
+    }
+
+    .process_pending {
+      color: white !important;
+      background-color: grey !important;
+    }
+
+    .process_done {
+      color: white !important;
+      background-color: green !important;
+    }
+
+    .comment1 {
+      font-size: 0.8em !important;
+      font-style: italic;
+    }
+
+    .bEditBlock input {
+      min-width: 2px !important;
+    }
+
+    .none_sec {
+      background: white;
+      border-style: none;
+      padding: 30px;
+      margin-top: 40px;
+      
+    }
+
+    /* end */
+
+    .objecting-ui-widget-header {
+      border: 1px solid #dddddd;
+      background: #e9e9e9;
+      color: #333333;
+      font-weight: bold;
+    }
+
+    .objecting-ui-widget-content {
+      border: 1px solid #f5c6cb !important;
+      background: #f8d7da !important;
+      color: #721c24 !important;
+    }
+
+    /*PopUp - HJ - I*/
+
+    .customPopup {
+      background-color: #FFFFFF!important;
+      border-style: solid;
+      border-width: 2px;
+      left: 35%;
+      padding: 40px;
+      position: absolute;
+      z-index: 9998;
+
+      /* These are the 3 css properties you will need to tweak so the pop
+        up displays in the center of the screen. First set the width. Then set
+        margin-left to negative half of what the width is. You can also add
+        the height property for a fixed size pop up.*/
+      top: 25%;
+      width: 500px;
+      display: table;
+      opacity: 1;
+
+    }
+
+    .disabledTextBox {
+      background-color: white;
+      border: 1px solid;
+      color: black;
+      cursor: default;
+      width: 90px;
+      display: table;
+      padding: 2px 1px;
+      text-align: right;
+    }
+
+    .closeButton {
+      float: left;
+    }
+
+    .customPopupBackground {
+      background: rgb(0, 0, 0, 0.5);
+      filter: alpha(opacity=20);
+      position: absolute;
+      width: 100%;
+      height: 25%;
+      left: 0;
+      z-index: 9998;
+    }
+
+    /*PopUp - HJ - F*/
+
+    .div4Columns {
+      -webkit-column-count: 4;
+      /* Chrome, Safari, Opera */
+      -moz-column-count: 4;
+      /* Firefox */
+      column-count: 4;
+    }
+
+    .resultValue {
+      font-weight: bold;
+      background-color: #F8F8F8;
+      text-color: #FFFFFF;
+    }
+
+    .headValue {
+      background-color: #E6E8EA;
+    }
+
+    .tableDetails {
+      width: 95%;
+      background: white;
+      border: 1px solid #ddd;
+      margin-top: 15px;
+      padding: 2px;
+      padding-left: 20px;
+      padding-top: 10px;
+      padding-bottom: 10px;
+    }
+
+    .main-content {
+      margin-left: auto;
+      width: 86%;
+    }
+  </style>
+  <!-- end -->
+  <script type="text/javascript">
+    //Jesus Mora
+    google.maps.event.addDomListener(window, 'load', initAutocompleteu);
+
+    var addressLookups = ['addressLookup_1', 'addressLookup_2', 'addressLookup_3', 'addressLookup_4', 'addressLookup_5', 'addressLookup_6', 'addressLookup_7', 'addressLookup_8', 'addressLookup_9', 'addressLookup_10',
+      'addressLookup_11', 'addressLookup_12', 'addressLookup_13', 'addressLookup_14', 'addressLookup_15', 'addressLookup_16', 'addressLookup_17', 'addressLookup_23', 'addressLookup_31', 'addressLookup_24',
+      'addressLookup_25', 'addressLookup_26', 'addressLookup_27', 'addressLookup_28', 'addressLookup_29', 'addressLookup_30', 'addressLookup_32', 'addressLookup_33', 'addressLookup_19', 'addressLookup_20',
+      'addressLookup_21', 'addressLookup_18', 'addressLookup_34', 'addressLookup_35', 'addressLookup_36', 'addressLookup_37', 'addressLookup_38', 'addressLookup_39', 'addressLookup_40', 'addressLookup_41',
+      'addressLookup_42', 'addressLookup_56', 'addressLookup_57'];
+
+    var lookup = "OppApplication:AppFormXXX:applicationForm:";
+    var fields = ["unit", "street", "Postcode", "locality", "state", "street_address", "st"];
+
+    google.maps.event.addDomListener(window, 'load', initAutocompleteu2);
+
+    var addressLookups2 = ['addressLookup_43', 'addressLookup_44', 'addressLookup_45', 'addressLookup_46'];
+
+    var lookup2 = "OppApplication:AppFormXXX:applicationForm:";
+
+    jQuery.noConflict();
+    jQuery(document).ready(function () {
+
+      jQuery('#nav li a').on('click', function () {
+        jQuery('li a.selected').removeClass('selected');
+        jQuery(this).addClass('selected');
+      });
+
+      //<!-- The self-designed sidebar -->
+      
+
+    //<!-- Make servicing calculator output in centre -->
+    //<!-- jQuery(".servOutputColumn").parents("table").eq(0).addClass("servOutputCentre"); -->
+    //<!-- The javascript validation for input value -->
+
+    //<!-- prefill fields -->
+    var clientFirstName = document.getElementById("{!$Component.OppApplication:AppForm:App:clientFirstName}");
+    var clientLastName = document.getElementById("{!$Component.OppApplication:AppForm:App:clientLastName}");
+    var clientMobileNumber = document.getElementById("{!$Component.OppApplication:AppForm:App:clientMobileNumber}");
+    var clientEmailAddress = document.getElementById("{!$Component.OppApplication:AppForm:App:clientEmailAddress}");
+    jQuery(clientFirstName).val("{!Custom_Opportunity__c.Account__r.FirstName}");
+    jQuery(clientLastName).val("{!Custom_Opportunity__c.Account__r.LastName}");
+    jQuery(clientMobileNumber).val("{!Custom_Opportunity__c.Mobile_Number__c}");
+    jQuery(clientEmailAddress).val("{!Custom_Opportunity__c.Email_Address__c}");
+        
+    });
+  </script>
+  <apex:variable value="{!Custom_Opportunity__c}" var="o" />
+  <c:sidebarV2 id="pnlSideBar" oppId="{!o.Id}" appId="{!o.Application__c}" showFlowHelp="true" rendered="{!NOT(isBrokerPartnerUser)}"
+  />
+  <div id="mainContent" class="{!IF(NOT(isBrokerPartnerUser),'main-content','')}">
+    <apex:pageMessages id="msgServicingCalc" />
+    <apex:variable value="{!Custom_Opportunity__c}" var="o" />
+    <apex:form styleClass="appForm" id="servicingcalc">
+
+      <apex:actionFunction action="{!servCalculateCentreLink}" name="servCalculateCentreLink" status="totalAmountStatus" reRender="fldCalcCLinkIncome, fldCalcCLinkTotalIncome, fldCalcCLinkIncomePercentage, fldCalcCLinkAnnualToLoannet, fldCalcTotAmountLoanPayment"
+      />
+      <!-- <apex:actionFunction action="{!servCalculateCreditCard}" name="servCalculateCreditCard" 
+reRender="fldCalcTotOtherDebts, fldCalcCCardMonthlyPayment, fldCalcTotAmountLoanPayment" status="totalAmountStatus" /> -->
+      <apex:actionFunction action="{!servCalculateRentMtgePaid}" name="servCalculateRentMtgePaid" reRender="fldCalcTotRentMtgPaid, fldCalcTotLiabilities, fldCalcTotAmountLoanPayment, fldCalcNetPartnerIncome, msgServicingCalc, fldTotRentMorg"
+        status="totalAmountStatus" />
+      <apex:actionFunction action="{!servCalculateTotalNetMonthlyIncome}" name="servCalculateTotalNetMonthlyIncome" reRender="pnlLender, pnltotals, pnlServIncome"
+        status="totalAmountStatus" /><!--Joy-->
+      <apex:actionFunction action="{!servCalculateLivingExpenses}" name="servCalculateLivingExpenses" reRender="fldCalcTotAmountLoanPayment, fldCalcTotLivingExpenses, msgServicingCalc"
+        status="totalAmountStatus" />
+      <apex:actionFunction action="{!calculateAmountAvalilableLoanPayment}" name="calculateAmountAvalilableLoanPayment" reRender="fldCalcTotAmountLoanPayment, msgServicingCalc"
+        status="totalAmountStatus" />
+      <apex:outputPanel layout="block" styleClass="titleDiv">
+        <h1>Servicing Calculator for {!Custom_Opportunity__c.Name}</h1>
+        <apex:outputPanel layout="block" styleClass="toolOptions">
+          <apex:actionStatus startText="processing... " id="genPdfDocument" />
+          <apex:commandButton value="Calculate" action="{!servCalculateV2}" styleClass="commandButtons" rendered="false" />
+          <apex:commandButton value="Save Servicing calculation" action="{!ServicingPdf2}" styleClass="commandButtons" reRender="msgServicingCalc"
+            status="genPdfDocument" />
+          <apex:commandButton value="Save Pre-approval" action="{!sericingSavePreApproval}" styleClass="commandButtons" reRender="pnlSideBar, msgServicingCalc"
+            status="genPdfDocument" />
+          <apex:commandButton value="Cancel" action="{!Cancel}" styleClass="commandButtons" rendered="false" />
+        </apex:outputPanel>
+      </apex:outputPanel>
+      <apex:pageBlock mode="edit" id="servicingCalc">
+
+        <!-- SECTION: INITIAL PARAMETERS -->
+        <apex:outputPanel layout="block" styleClass="section">
+          <div class="divTitle">CALCULATOR</div>
+          <apex:outputPanel styleClass="leftTables">
+            <apex:outputPanel styleClass="subSectionTab">
+              <h3>Self Employed</h3>
+            </apex:outputPanel>
+            <table class="tableSubsection">
+              <tr>
+                <td colspan="2">
+                  <apex:inputCheckbox value="{!isServLowDocSelfEmployed}" styleClass="customInputStyle">Self Employed
+                    <apex:actionSupport event="onclick" reRender="selfMsg" status="selfEmp" />
+                  </apex:inputCheckbox>
+                  <apex:actionStatus startText="(processing...)" id="selfEmp" />
+                  <apex:pageMessage id="selfMsg" severity="info" title="Note:" summary="Company Pty Ltd does not require a servicing calculation for any approval process."
+                    rendered="{!OR(o.ApplicationYTD__r.Self_Employed_Type__c=='Company Pty Ltd',o.Application__r.Business_Structure__c=='Company',o.ApplicationYTD__r.Self_Employed_Type__c=='Trust',o.Application__r.Business_Structure__c=='Trust')}"
+                  />
+                </td>
+              </tr>
+            </table>
+            <!-- <apex:outputPanel layout="block" id="pnlLender" rendered="{!!isServLowDocSelfEmployed}"> -->
+            <apex:outputPanel layout="block" id="pnlLender">
+              <apex:outputPanel styleClass="subSectionTab">
+                <h3>Lender</h3>
+              </apex:outputPanel>
+              <table class="tableSubsection">
+                <tr>
+                  <td width="50%" class="cellMultiTables">
+                    <table width="100%">
+                      <tr>
+                        <td class="labelColumn">Lender</td>
+                        <td class="dataColumn">
+                          <apex:outputPanel styleClass="requiredInput">
+                            <apex:outputPanel styleClass="requiredBlock"></apex:outputPanel>
+                          </apex:outputPanel>
+                          <apex:selectList value="{!servCalcLender}" multiselect="false" size="1" styleClass="selectList">
+                            <apex:actionSupport event="onchange" status="totalAmountStatus" action="{!servCalculateLivingExpenses}" reRender="fldCalcState, fldCalcArea, fldServCalcNoDependents, fldCalcRentPayAmount, pnltotals, fldCalcNetPartnerIncome, pnlLender,msgServicingCalc,pnlServCreditCard"
+                            />
+                            <apex:param name="opinionSelected" assignTo="{!isOpinion}" value="0" />
+                            <apex:selectOptions value="{!servCalcLenderSelect}" />
+                          </apex:selectList>
+                        </td>
+                      </tr>
+                      <!-- <tr>
+<td class="labelColumn">State</td>
+<td class="dataColumn">
+<apex:selectList value="{!servCalcState}" multiselect="false" size="1" styleClass="selectList"
+disabled="{!servCalcLender != 'GEO'}" id="fldCalcState">
+<apex:actionSupport event="onchange" action="{!servCalculateLivingExpenses}" reRender="fldCalcRentPayAmount, pnltotals" status="totalAmountStatus" />
+<apex:selectOptions value="{!statesOfIssue2Sel}" />
+</apex:selectList>
+</td>
+</tr> -->
+                      <tr>
+                        <td class="labelColumn">Marital Status</td>
+                        <!-- type was originally -->
+                        <td class="dataColumn">
+                          <apex:outputPanel styleClass="requiredInput">
+                            <apex:outputPanel styleClass="requiredBlock"></apex:outputPanel>
+                          </apex:outputPanel>
+                          <apex:outputField value="{!o.Application__r.Marital_Status_1__c}" />
+                          <!-- <apex:selectList value="{!servCalcType}" multiselect="false" size="1" styleClass="selectList">
+<apex:actionSupport event="onchange" action="{!servCalculateLivingExpenses}" reRender="fldCalcRentPayAmount, fldCalcNetPartnerIncome, pnltotals" status="totalAmountStatus"/>
+<apex:selectOptions value="{!servCalcTypeSelect}" />
+</apex:selectList> -->
+                        </td>
+                      </tr>
+                      <tr>
+                        <td class="labelColumn">No. of Dependents</td>
+                        <td class="dataColumn">
+                          <apex:outputPanel styleClass="requiredInput">
+                            <apex:outputPanel styleClass="requiredBlock"></apex:outputPanel>
+                          </apex:outputPanel>
+                          <apex:outputField value="{!o.Application__r.No_of_Dependants_1__c}" />
+                          <!-- <apex:selectList value="{!servCalcNoDependents}" multiselect="false" size="1" styleClass="selectList" id="fldServCalcNoDependents">
+<apex:actionSupport event="onchange" action="{!servCalculateLivingExpenses}" reRender="fldCalcRentPayAmount, pnltotals" status="totalAmountStatus" />
+<apex:selectOptions value="{!ServCalcNoDependentsSelectOptions}" id="fldServCalcNoDependentsOpt"/>
+</apex:selectList> -->
+                        </td>
+                      </tr>
+                      <tr>
+                        <td class="labelColumn">State</td>
+                        <td>
+                          <apex:outputLabel value="{!servCalcState}"  />
+                        </td>
+                      </tr>
+                      <tr>
+                        <td class="labelColumn">Area</td>
+                        <td class="dataColumn">
+                          <apex:selectList value="{!servCalcArea}" multiselect="false" size="1" styleClass="selectList" rendered="{! IF(isFirstmac, true, false)}">
+                            <apex:actionSupport event="onchange" status="totalAmountStatus" action="{!servCalculateLivingExpenses}" reRender="fldCalcState, fldCalcArea, fldServCalcNoDependents, fldCalcRentPayAmount, pnltotals, fldCalcNetPartnerIncome"
+                            />
+                            <apex:selectOptions value="{!servAreaSelect}" />
+                          </apex:selectList>
+                          <apex:outputText value="{!servArea}" />
+                        </td>
+                      </tr>
+                      <!-- <tr>
+                                              <td class="labelColumn" valign="top">NAF <span class="comment1">*(Only mandatory for Green Light)</span></td>
+                                              <td class="dataColumn">
+                                              <strong><apex:outputField value="{!o.NAF_Net_Amount_Financed__c}"/></strong> <span class="comment1">*(Last quoting saved)</span><br/>
+                                              <apex:input type="number" value="{!servCalcNAF}" html-step="0.01" html-placeholder="$" styleClass="dataInput"
+                                              >
+                                              <apex:actionSupport event="onchange" status="totalAmountStatus" action="{!servCalculateLivingExpenses}"
+                                              reRender="fldCalcNetPartnerIncome, pnltotals, msgServicingCalc"/>
+                                              </apex:input>
+                                              </td>
+                                              </tr> -->
+                    </table>
+                  </td>
+                  <td width="50%" class="cellMultiTables">
+                    <table width="100%">
+                      <tr>
+                        <td class="labelColumn">Are you splitting expenses?</td>
+                        <td class="dataColumn">
+                          <apex:selectList value="{!servCalcSplittingExpenses}" multiselect="false" size="1" styleClass="selectList">
+                            <apex:actionSupport event="onchange" status="totalAmountStatus" action="{!calculateSplitExpenses}" reRender="fldCalcNetPartnerIncome, pnltotals, msgServicingCalc"
+                            />
+                            <apex:selectOptions value="{!yesNoOptions}" />
+                          </apex:selectList>
+                          <!-- reRender="fldCalcPartnerIncome, fldCalcNetPartnerIncome, pnltotals"/> -->
+                        </td>
+                      </tr>
+                      <tr>
+                        <td class="labelColumn">Partner's income</td>
+                        <td class="dataColumn">
+                          <apex:input type="number" value="{!servCalcPartnerIncome}" html-step="0.01" html-placeholder="$" styleClass="dataInput" id="fldCalcPartnerIncome">
+                            <apex:actionSupport event="onblur" status="totalAmountStatus" action="{!calculateSplitExpenses}" reRender="fldCalcNetPartnerIncome, pnltotals, msgServicingCalc"
+                            />
+                          </apex:input>
+                          <!-- disabled="{!servCalcSplittingExpenses != 'Yes'}"> -->
+                        </td>
+                      </tr>
+                      <tr>
+                        <td class="labelColumn">Net Partner's Income</td>
+                        <td class="dataColumn">
+                          <h4>
+                            <apex:outputText value="{0, Number, Currency}" id="fldCalcNetPartnerIncome">
+                              <apex:param value="{!servCalcSplitNetPartIncomeTotal}" />
+                            </apex:outputText>
+                          </h4>&nbsp;&nbsp;&nbsp;
+                          <apex:actionStatus startText="   calculating..." id="totalSplitStatus" />
+                        </td>
+                      </tr>
+                    </table>
+                  </td>
+                </tr>
+              </table>
+            </apex:outputPanel>
+            
+            <!-- YTD Calculator Section -->
+            <apex:outputPanel layout="block" styleClass="toolOptions">
+                <h1>Lender:</h1>&nbsp;&nbsp;
+                <apex:selectList value="{!ytdCalcLender}" multiselect="false" size="1" styleClass="selectList">
+                    <apex:actionSupport event="onchange" action="{!clearYTDCalcSectionFields}" rerender="ytdCalcSection"/>
+                    <apex:selectOptions value="{!ytdCalcLenderSelect}" />
+                </apex:selectList>
+            </apex:outputPanel>
+            <apex:pageBlock id="ytdCalcSection" mode="maindetail">
+                <!--None -->
+                <apex:outputPanel layout="block" styleClass="none_sec" rendered="{!ytdCalcLender == 'None'}">
+                    <h3>
+                        Please select Lender for YTD/Income Calculator.
+                    </h3>        
+                </apex:outputPanel>
+                
+                <!-- ANZ AND PEPPER -->
+                <apex:outputPanel layout="block" rendered="{!OR(ytdCalcLender == 'Esanda',ytdCalcLender == 'Pepper')}">
+                    <apex:outputPanel styleClass="subSectionTab" rendered="{!OR(ytdCalcLender == 'Esanda',ytdCalcLender == 'Pepper')}">
+                        <Strong><apex:outputText value="ANZ - YTD INCOME/OVERTIME ASSESSMENT" rendered="{!ytdCalcLender == 'Esanda'}" /></Strong>
+                        <Strong><apex:outputText value="Pepper - YTD INCOME" rendered="{!ytdCalcLender == 'Pepper'}" /></Strong>
+                    </apex:outputPanel>
+                    <table class="tableSubsection">
+                        <tr>
+                            <td>Start Date</td>
+                            <td>
+                                <apex:outputPanel styleClass="requiredInput">
+                                    <apex:outputPanel styleClass="requiredBlock"></apex:outputPanel>
+                                </apex:outputPanel>
+                                <apex:input styleClass="dataInput" value="{!startDate}" type="date">
+                                    <apex:actionSupport event="onblur" action="{!ytdCalcWeeksBeteenDates}" reRender="fldYtdWeeks" status="stsCalcWeeks" />
+                                </apex:input>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>End Date</td>
+                            <td>
+                                <apex:outputPanel styleClass="requiredInput">
+                                    <apex:outputPanel styleClass="requiredBlock"></apex:outputPanel>
+                                </apex:outputPanel>
+                                <apex:input styleClass="dataInput" value="{!endDate}" type="date">
+                                    <apex:actionSupport event="onblur" action="{!ytdCalcWeeksBeteenDates}" reRender="fldYtdWeeks" status="stsCalcWeeks" />
+                                </apex:input>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Weeks Between Above Dates</td>
+                            <td>
+                                <h3>
+                                    <apex:outputText value="{0, number, ##,###,###.#}" id="fldYtdWeeks">
+                                        <apex:param value="{!ytdWeeks}" />
+                                    </apex:outputText>
+                                </h3>&nbsp;&nbsp;
+                                <apex:actionStatus startText="   (calculating...)" id="stsCalcWeeks" />
+                            </td>
+                        </tr>
+                        <tr>
+                          <td style="padding-top: 10px; padding-bottom: 10px" colspan="4"><Strong><u></u></Strong></td>    
+                        </tr>
+                        <tr>
+                            <td width="20%">Net YTD Income From Payslips</td>
+                            <td width="20%">
+                                <apex:outputPanel styleClass="requiredInput">
+                                    <apex:outputPanel styleClass="requiredBlock"></apex:outputPanel>
+                                </apex:outputPanel>
+                                <apex:input styleClass="dataInput" type="auto" html-step="0.01" value="{!ytdIncome}" html-placeholder="$">
+                                    <apex:actionSupport event="onchange" action="{!ytdCalcWeeksBeteenDates}" reRender="fldYtdMonIncome, fldMonDifference, fldDiscDiffO, fldOutAmountO" status="stsYtdMonIncome" />
+                                </apex:input>
+                            </td>
+                            <td width="15%">
+                                <h3>
+                                    <apex:outputText value="{0, Number, Currency}" id="fldYtdMonIncome">
+                                        <apex:param value="{!ytdMonIncome}" />
+                                    </apex:outputText>
+                                </h3>&nbsp;&nbsp;
+                                <apex:actionStatus startText="   (calculating...)" id="stsYtdMonIncome" />
+                            </td>
+                            <td width="45%">Net Monthly
+                                <apex:outputText value=" (ANZ)" rendered="{!ytdCalcLender == 'Esanda'}" /> </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <apex:outputText value="Annual Gross Base Income" rendered="{!ytdCalcLender == 'Esanda'}" />
+                                <apex:outputText value="Gross YTD Income From Payslip" rendered="{!ytdCalcLender == 'Pepper'}" />
+                            </td>
+                            <td>
+                                <apex:outputPanel styleClass="requiredInput">
+                                    <apex:outputPanel styleClass="requiredBlock"></apex:outputPanel>
+                                </apex:outputPanel>
+                                <apex:input styleClass="dataInput" type="number" html-step="0.01" value="{!baseIncome}" html-placeholder="$">
+                                    <apex:actionSupport event="onchange" action="{!ytdCalcWeeksBeteenDates}" reRender="fldNetMonIncome, fldMonDifference, fldDiscDiffO, fldOutAmountO"
+                                                        status="stsNetMonIncome" />
+                                </apex:input>
+                                
+                            </td>
+                            <td>
+                                <h3>
+                                    <apex:outputText value="{0, Number, Currency}" id="fldNetMonIncome">
+                                        <apex:param value="{!netMonIncome}" />
+                                    </apex:outputText>
+                                </h3>&nbsp;&nbsp;
+                                <apex:actionStatus startText="   (calculating...)" id="stsNetMonIncome" />
+                            </td>
+                            <td>Net Monthly (Normal Pay
+                                <apex:outputText value=" - Amount to be entered into ANZ" rendered="{!ytdCalcLender == 'Esanda'}"/>)
+                            </td>
+                        </tr>
+                        <tr style="display: {!IF(ytdCalcLender == 'Pepper', '','none')}">
+                            <td>Net last pay period income</td>
+                            <td>
+                                <apex:outputPanel styleClass="requiredInput">
+                                    <apex:outputPanel styleClass="requiredBlock"></apex:outputPanel>
+                                </apex:outputPanel>
+                                <apex:input type="number" html-step="0.01" value="{!latestPay2}" html-placeholder="$" styleClass="dataInput2">
+                                    <apex:actionSupport event="onchange" action="{!ytdCalcNetLastestPay2}" reRender="fldNetLastestIncome2" status="stsNetLastestIncome2"/>
+                                </apex:input>
+                               
+                                <apex:selectList value="{!latestPayFrequency2}" multiselect="false" size="1" styleClass="selectList2">
+                                    <apex:actionSupport event="onchange" action="{!ytdCalcNetLastestPay2}" reRender="fldNetLastestIncome2" status="stsNetLastestIncome2"/>
+                                    <apex:selectOptions value="{!frequency}" />
+                                </apex:selectList>
+                                
+                            </td>
+                            <td>
+                                <h3>  
+                                    <apex:outputText value="{0, Number, Currency}" id="fldNetLastestIncome2">
+                                        <apex:param value="{!latestPayMonthly2}" />
+                                    </apex:outputText>
+                                </h3>&nbsp;&nbsp;
+                                <apex:actionStatus startText="   (calculating...)" id="stsNetLastestIncome2" />
+                            </td>
+                            <td>Net Monthly</td>
+                        </tr>
+                        <tr style="display: {!IF(ytdCalcLender == 'Esanda', '','none')}">
+                            <td></td>
+                            <td>Difference</td>
+                            <td>
+                                <h3>
+                                    <apex:outputText value="{0, Number, Currency}" id="fldMonDifference">
+                                        <apex:param value="{!monDifference}" />
+                                    </apex:outputText>
+                                </h3>&nbsp;
+                            </td>
+                            <td>Net Monthly (O/T - Amount to be entered into ANZ)</td>
+                        </tr>
+                        <tr style="display: {!IF(ytdCalcLender == 'Esanda', '','none')}">
+                            <td>&nbsp;</td>
+                            <td>Discounted by 70%</td>
+                            <td>
+                                <h3>
+                                    <apex:outputText value="{0, Number, Currency}" id="fldDiscDiffO">
+                                        <apex:param value="{!discDiff}" />
+                                    </apex:outputText>
+                                </h3>&nbsp;
+                            </td>
+                            <td>O/T - Amount to be used for serviceability&nbsp;</td>
+                        </tr>
+                        <tr style="display: {!IF(ytdCalcLender == 'Esanda', '','none')}">
+                            <td>&nbsp;</td>
+                            <td>Monthly Amount to Use for Servicing</td>
+                            <td>
+                                <h3>
+                                    <apex:outputText value="{0, Number, Currency}" id="fldOutAmountO">
+                                        <apex:param value="{!outAmount}" />
+                                    </apex:outputText>
+                                </h3>&nbsp;
+                            </td>
+                            <td>&nbsp;</td>
+                        </tr>
+                        <tr style="display: {!IF(ytdCalcLender == 'Esanda', '','none')}">
+                            <td colspan="4">Base income - work out ordinary hours + allowances but exclude overtime and commission/bonus.</td>
+                        </tr>
+                    </table>
+                </apex:outputPanel>
+               
+                <!-- MACQUARIE -->
+                <apex:outputPanel layout="block" rendered="{!ytdCalcLender == 'Macquarie'}">
+                    <apex:outputPanel styleClass="subSectionTab" >
+                        <Strong><apex:outputText value="MACQUARIE" /></Strong>
+                    </apex:outputPanel>
+                    <table class="tableSubsection">
+                        <tr>
+                            <td style="padding-bottom: 10px" colspan="4"><Strong><u>Details</u></Strong></td>  
+                        </tr>
+                        <tr>
+                            <td>Employment Start or YTD Start Date</td>
+                            <td>
+                                <apex:outputPanel styleClass="requiredInput">
+                                    <apex:outputPanel styleClass="requiredBlock"></apex:outputPanel>
+                                </apex:outputPanel>
+                                <apex:input styleClass="dataInput" value="{!ytdMacYtdStartDate}" type="date">
+                                    <apex:actionSupport event="onblur" action="{!ytdMacDayssBeteenDates}" reRender="pnlYtdMacResults, fldYtdMacPayPeriodDays, msgYtdCalc"
+                                                        status="stsYtdMacCalcStatus" />
+                                </apex:input>
+                            </td>
+                         </tr>
+                         <tr>
+                            <td>Net Year-to-Date From Payslip</td>
+                            <td>
+                                <apex:outputPanel styleClass="requiredInput">
+                                    <apex:outputPanel styleClass="requiredBlock"></apex:outputPanel>
+                                </apex:outputPanel>
+                                <apex:input styleClass="dataInput" type="number" html-step="0.01" value="{!ytdMacNetYtdSalary}" html-placeholder="$">
+                                    <apex:actionSupport event="onblur" action="{!ytdMacNetYTDSalary}" reRender="fldYtdMacMonthlyNetYtdSalary, fldYtdMacAnnuallyNetYtdSalary"
+                                                        status="stsYtdMacCalcStatus" />
+                                </apex:input>
+                            </td>
+                         </tr>
+                         <tr>
+                             <td colspan="2">&nbsp;</td>
+                         </tr>
+                         <tr>
+                            <td>Most Recent Payslip Period Start</td>
+                            <td>
+                                <apex:outputPanel styleClass="requiredInput">
+                                    <apex:outputPanel styleClass="requiredBlock"></apex:outputPanel>
+                                </apex:outputPanel>
+
+                                <apex:input styleClass="dataInput" value="{!ytdMacStartDate}" type="date">
+                                    <apex:actionSupport event="onblur" action="{!ytdMacDayssBeteenDates}" reRender="pnlYtdMacResults, fldYtdMacPayPeriodDays, msgYtdCalc"
+                                                        status="stsYtdMacCalcStatus" />
+                                </apex:input>
+                            </td>
+                         </tr>
+                         <tr>
+                            <td>Most Recent Payslip Period End</td>
+                            <td>
+                                <apex:outputPanel styleClass="requiredInput">
+                                    <apex:outputPanel styleClass="requiredBlock"></apex:outputPanel>
+                                </apex:outputPanel>
+                                
+                                <apex:input styleClass="dataInput" value="{!ytdMacEndDate}" type="date">
+                                    <apex:actionSupport event="onblur" action="{!ytdMacDayssBeteenDates}" reRender="fldYtdMacMonthlyNetYtdSalary,fldYtdMacAnnuallyNetYtdSalary,pnlYtdMacResults, fldYtdMacPayPeriodDays, msgYtdCalc"
+                                                        status="stsYtdMacCalcStatus" />
+                                </apex:input>
+                            </td>
+                         </tr>
+                         <tr>
+                            <td>Most Recent Payslip Net Income</td>
+                            <td>
+                                <apex:outputPanel styleClass="requiredInput">
+                                    <apex:outputPanel styleClass="requiredBlock"></apex:outputPanel>
+                                </apex:outputPanel>
+                               
+                                <apex:input styleClass="dataInput" type="number" html-step="0.01" value="{!ytdMacPayPeriodNetSalary}" html-placeholder="$">
+                                    <apex:actionSupport event="onblur" action="{!ytdMacCalcPayPeriodSalary}" reRender="fldYtdMacMonthlyPayPeriodNetSalary, fldYtdMacAnnuallyPayPeriodNetSalary"
+                                                        status="stsYtdMacCalcStatus" />
+                                </apex:input>
+                            </td>
+                         </tr>
+                         <tr>
+                            <td>Pay Period</td>
+                            <td>
+                                <h3>
+                                    <apex:outputText value="{0, number, ##,###,###.#} days" id="fldYtdMacPayPeriodDays">
+                                        <apex:param value="{!ytdMacPayPeriodDays}" />
+                                    </apex:outputText>
+                                </h3>
+                            </td>
+                         </tr>
+                         <tr>
+                            <td>Frequency</td>
+                            <td>Year-to-Date</td>
+                         </tr>
+                         <tr>
+                            <td style="padding-top: 10px; padding-bottom: 10px" colspan="4"><Strong><u>Result</u></Strong></td>  
+                         </tr>
+                         <tr>
+                            <td class="labelColumn">&nbsp;</td>
+                            <td class="labelColumn">
+                                <strong>Net Year-to-Date Salary</strong>
+                            </td>
+                            <td class="labelColumn">
+                                <strong>Pay Period</strong>
+                            </td>                                            
+                         </tr>
+                         <tr>
+                            <td class="labelColumn">Monthly</td>
+                            <td class="labelColumn">
+                                <h3>
+                                    <apex:outputText value="{0, Number, Currency}" id="fldYtdMacMonthlyNetYtdSalary">
+                                        <apex:param value="{!ytdMacMonthlyNetYtdSalary}" />
+                                    </apex:outputText>
+                                </h3>&nbsp;&nbsp;
+                            </td>
+                            <td class="labelColumn">
+                                <h3>
+                                    <apex:outputText value="{0, Number, Currency}" id="fldYtdMacMonthlyPayPeriodNetSalary">
+                                        <apex:param value="{!ytdMacMonthlyPayPeriodNetSalary}" />
+                                    </apex:outputText>
+                                </h3>&nbsp;&nbsp;
+                            </td>
+                         </tr>
+                         <tr>
+                            <td class="labelColumn">Annually</td>
+                            <td class="labelColumn">
+                                <h3>
+                                    
+                                    <apex:outputText value="{0, Number, Currency}" id="fldYtdMacAnnuallyNetYtdSalary">
+                                        <apex:param value="{!ytdMacAnnuallyNetYtdSalary}" />
+                                    </apex:outputText>
+                                </h3>&nbsp;
+                            </td>
+                            <td class="labelColumn">
+                                <h3>
+                                    <apex:outputText value="{0, Number, Currency}" id="fldYtdMacAnnuallyPayPeriodNetSalary">
+                                        <apex:param value="{!ytdMacAnnuallyPayPeriodNetSalary}" />
+                                    </apex:outputText>
+                                </h3>&nbsp;
+                            </td>
+                         </tr>
+                         <tr>
+                            <td align="right" colspan="3">
+                                <apex:actionStatus startText="(calculating...)" id="stsYtdMacCalcStatus" />&nbsp;&nbsp;&nbsp;
+                            </td>
+                         </tr>
+                    </table>
+                 </apex:outputPanel>
+                 
+                  <!-- OTHERS -->
+                <apex:outputPanel layout="block" rendered="{!ytdCalcLender == 'Others'}">
+                    <apex:outputPanel styleClass="subSectionTab" >
+                        <Strong><apex:outputText value="OTHERS - YTD CALCULATOR FOR ONE INDIVIDUAL" /> </Strong>
+                    </apex:outputPanel>
+                    <table class="tableSubsection">
+                        <tr>
+                            <td style="padding-bottom: 10px" colspan="4"><Strong><u>Dates</u></Strong></td>  
+                        </tr> 
+                        <tr>
+                            <td width="30%">Financial Year Start Date</td>
+                            <td width="20%"> 
+                                <apex:outputPanel styleClass="requiredInput">
+                                    <apex:outputPanel styleClass="requiredBlock"></apex:outputPanel>
+                                </apex:outputPanel>
+                              
+                                <apex:input styleClass="dataInput" value="{!startDateOth}" type="date">
+                                    <apex:actionSupport event="onblur" action="{!ytdCalculate}" reRender="fldYtdWeeksO, fldYtdMonIncomeO, fldAnnualIncomeO, msgYtdCalc" status="stsCalcWeeksO" />
+                                </apex:input>
+                            </td>
+                            <td width="15%">Lender</td>
+                            <td width="35%"> 
+                                 
+                                <apex:selectList value="{!ytdLenderApplic}" multiselect="false" size="1" styleClass="selectList4">
+                                    <!--<apex:actionSupport event="onchange" action="{!clearYTDEsandaOtherFields}" reRender="ytdCalc, msgYtdCalc" status="ytdGenPdfDocument"/>-->
+                                    <apex:actionSupport event="onchange" reRender="ytdCalcSection" status="ytdGenPdfDocument"/>
+                                    <apex:selectOptions value="{!ytdLenderOptionsApplic}"/>
+                                </apex:selectList>&nbsp;
+                            </td>
+                        </tr> 
+                        <tr>
+                            <td>Pay Period End Date</td>
+                            <td>
+                                <apex:outputPanel styleClass="requiredInput">
+                                    <apex:outputPanel styleClass="requiredBlock"></apex:outputPanel>
+                                </apex:outputPanel>
+                                
+                                <apex:input styleClass="dataInput" value="{!endDateOth}" type="date">
+                                    <apex:actionSupport event="onblur" action="{!ytdCalculate}" reRender="fldYtdWeeksO, fldYtdMonIncomeO, fldAnnualIncomeO, msgYtdCalc"
+                                                        status="stsCalcWeeksO" />
+                                </apex:input>
+                            </td>
+                        </tr> 
+                        <tr>
+                            <td>Weeks Between Above Dates</td>
+                            <td>
+                                <h3>
+                                    <apex:outputText value="{0, number, ##,###,###.#}" id="fldYtdWeeksO">
+                                        <apex:param value="{!ytdWeeksOth}" />
+                                    </apex:outputText>
+                                </h3>&nbsp;&nbsp;
+                                <apex:actionStatus startText="   (calculating...)" id="stsCalcWeeksO" />
+                            </td>
+                        </tr>
+                        <tr>
+                          <td style="padding-top: 10px; padding-bottom: 10px" colspan="4"><Strong><u>Income</u></Strong></td>    
+                        </tr>
+                        <tr>
+                            <td width="30%">Gross YTD Income From Payslip</td>
+                            <td width="20%">
+                                <apex:outputPanel styleClass="requiredInput">
+                                    <apex:outputPanel styleClass="requiredBlock"></apex:outputPanel>
+                                </apex:outputPanel>
+
+                                <apex:input styleClass="dataInput4" type="number" html-step="0.01" value="{!ytdIncomeOth}" html-placeholder="$">
+                                    <apex:actionSupport event="onchange" action="{!ytdCalculate}" reRender="fldYtdMonIncomeO, fldAnnualIncomeO, msgYtdCalc" status="stsYtdMonIncomeO"/>
+                                </apex:input>
+                            </td>
+                            <td width="15%">
+                                <h3>
+                                    <apex:outputText value="{0, Number, Currency}" id="fldYtdMonIncomeO">
+                                        <apex:param value="{!ytdMonIncomeOth}" />
+                                    </apex:outputText>
+                                </h3>
+                            </td>
+                            <td width="35%">Net Monthly&nbsp;&nbsp;
+                                <apex:actionStatus startText="   (calculating...)" id="stsYtdMonIncomeO" /></td>
+                        </tr>
+                        <tr>
+                            <td></td>
+                            <td>Annualised Income</td>
+                            <td>
+                                <h3>  
+                                    <apex:outputText value="{0, Number, Currency}" id="fldAnnualIncomeO">
+                                        <apex:param value="{!annualIncomeOth}" />
+                                    </apex:outputText>
+                                </h3>&nbsp;
+                            </td>
+                            <td>Gross PA inc O/T&nbsp;</td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <apex:outputLabel value="Gross Annual Income" rendered="{!ytdLenderApplic == 'Firstmac'}"/>
+                            </td>
+                            <td>                          
+                               <apex:input value="{!ytdGrossAnnualIncomeApplic1}" rendered="{!ytdLenderApplic == 'Firstmac'}" styleClass="dataInput3" type="number" html-placeholder="$"/>
+                            </td> 
+                        </tr>
+                    </table>
+                </apex:outputPanel>
+                
+                <!-- Self-Employed- -->
+                <apex:outputPanel layout="block" rendered="{!ytdCalcLender == 'Self-Employed'}">
+                    <apex:outputPanel styleClass="subSectionTab" >
+                        <Strong><apex:outputText value="YTD/Income SELF-EMPLOYED" /></Strong>
+                    </apex:outputPanel>
+                    <table width="100%" class="tableSubsection">
+                        <tr>
+                            <td width="50%" valign="top">
+                                <apex:outputPanel layout="block" id="pnlYTDSelf">
+                                    <apex:outputPanel >
+                                        <h3>Applicant 1 - Income</h3>
+                                    </apex:outputPanel> 
+                                    <table class="tableSubsectionSE">
+                                        <tr>
+                                            <td>
+                                                <table width="100%">
+                                                    <tr>
+                                                        <td width="40%" valign="top">Self-Employed Class</td>
+                                                        <!--<td>&nbsp;</td> -->
+                                                        <td width="60%">
+                                                            <apex:outputPanel styleClass="requiredInput">
+                                                                <apex:outputPanel styleClass="requiredBlock"></apex:outputPanel>
+                                                            </apex:outputPanel>
+                                                            <apex:selectList value="{!fldSelfEmployedClass}" multiselect="false" size="1" styleClass="selectList">
+                                                                <apex:selectOption itemValue="" itemLabel="None" />
+                                                                <apex:selectOption itemValue="Full-Doc" itemLabel="Full-Doc" />
+                                                                <apex:selectOption itemValue="Low-Doc" itemLabel="Low-Doc" />
+                                                            </apex:selectList>
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td width="40%" valign="top">Self-Employed Type</td>
+                                                        <!--<td>&nbsp;</td> -->
+                                                        <td width="60%">
+                                                            <apex:outputPanel styleClass="requiredInput">
+                                                                <apex:outputPanel styleClass="requiredBlock"></apex:outputPanel>
+                                                            </apex:outputPanel>
+                                                            
+                                                            <apex:selectList value="{!fldSelfEmployedType}" multiselect="false" size="1" styleClass="selectList">
+                                                                <apex:selectOption itemValue="" itemLabel="None" />
+                                                                <apex:selectOption itemValue="Company Pty Ltd" itemLabel="Company Pty Ltd" />
+                                                                <apex:selectOption itemValue="Sole Trader" itemLabel="Sole Trader" />
+                                                                <apex:selectOption itemValue="Trust" itemLabel="Trust" />
+                                                                <apex:actionSupport event="onchange" action="{!fullDocumentationTotalApp1}" reRender="pnlYTDSelf" status="stsFdTotal" />
+                                                            </apex:selectList>     
+                                                        </td>
+                                                    </tr>
+                                                    <tr style="display: {!IF(fldSelfEmployedType=='Trust', '','none')}">
+                                                        <td>
+                                                            <apex:outputPanel styleClass="requiredInput">
+                                                                <apex:outputPanel styleClass="requiredBlock"></apex:outputPanel>
+                                                            </apex:outputPanel>
+                                                            <apex:outputPanel layout="block" id="pnlTrust" rendered="{!fldSelfEmployedType=='Trust'}">
+                                                                <apex:outputText value="How many Trustees?" />&nbsp;&nbsp;&nbsp;
+                                                                
+                                                                <apex:selectList value="{!trusteesNumber}" multiselect="false" size="1" styleClass="selectList2 ">
+                                                                    <apex:selectOption itemValue="" itemLabel="None" />
+                                                                    <apex:selectOption itemValue="1" itemLabel="1" />
+                                                                    <apex:selectOption itemValue="2" itemLabel="2" />
+                                                                    <apex:actionSupport event="onchange" reRender="pnlYTDSelf" status="stsFdTotal" />
+                                                                </apex:selectList>
+                                                            </apex:outputPanel>
+                                                        </td>
+                                                    </tr>
+                                                    <tr style="display: {!IF(fldSelfEmployedType=='Company Pty Ltd', '','none')}">
+                                                        <td>Sales $</td>
+                                                        <td>
+                                                            <apex:input styleClass="dataInput" type="number" html-step="0.01" value="{!fdSales}" html-placeholder="$"/>
+                                                        </td>
+                                                    </tr>
+                                                </table>
+                                                <hr/>
+                                            </td>
+                                            <td width="{!IF(AND(fldSelfEmployedType=='Trust',trusteesNumber=='2'),'50%','1%')}" valign="bottom"><hr/></td>
+                                        </tr>
+                                        <tr>
+                                            <td align="center">
+                                                <apex:outputPanel rendered="{!fldSelfEmployedType=='Trust'}"><h3>1st Trustee details</h3></apex:outputPanel>
+                                                <table width="100%">
+                                                    <tr>
+                                                        <td width="40%">
+                                                            <apex:outputText value="Net Profit Before Tax" rendered="{!fldSelfEmployedType!='Trust'}" />
+                                                            <apex:outputText value="Trust disbursement" rendered="{!fldSelfEmployedType=='Trust'}" />
+                                                        </td>
+                                                        <td width="60%">
+                                                            <apex:outputPanel styleClass="requiredInput">
+                                                                <apex:outputPanel styleClass="requiredBlock"></apex:outputPanel>
+                                                            </apex:outputPanel>
+                                                            
+                                                            <apex:input styleClass="dataInput" type="number" html-step="0.01" value="{!fdNetProfit}" html-placeholder="$">
+                                                                <apex:actionSupport event="onchange" action="{!getFullDocumentationTotalApp1}" reRender="fldFdTotal, fldFdTotal2, fldFdSubTotal" status="stsFdTotal"
+                                                                                    />
+                                                            </apex:input>
+                                                        </td>
+                                                    </tr>
+                                                    <tr style="display: {!IF(fldSelfEmployedType!='Trust', '','none')}">
+                                                        <td>Depreciation</td>
+                                                        <td>                             
+                                                            <apex:input styleClass="dataInput" type="number" html-step="0.01" value="{!fdDepreciation}" html-placeholder="$">
+                                                                <apex:actionSupport event="onchange" action="{!getFullDocumentationTotalApp1}" reRender="fldFdTotal, fldFdTotal2, fldFdSubTotal" status="stsFdTotal" />
+                                                            </apex:input>
+                                                        </td>
+                                                    </tr>
+                                                    <tr style="display: {!IF(fldSelfEmployedType!='Trust', '','none')}">
+                                                        <td>Interest</td>
+                                                        <td>
+                                                           
+                                                            <apex:input styleClass="dataInput" type="number" html-step="0.01" value="{!fdInterest}" html-placeholder="$">
+                                                                <apex:actionSupport event="onchange" action="{!getFullDocumentationTotalApp1}" reRender="fldFdTotal, fldFdTotal2, fldFdSubTotal" status="stsFdTotal" />
+                                                            </apex:input>
+                                                        </td>
+                                                    </tr>
+                                                    <tr style="display: {!IF(fldSelfEmployedType!='Trust', '','none')}">
+                                                        <td>Director's Salary</td>
+                                                        <td>
+                                                            
+                                                            <apex:input styleClass="dataInput" type="number" html-step="0.01" value="{!fdDirectorSalary}" html-placeholder="$">
+                                                                <apex:actionSupport event="onchange" action="{!getFullDocumentationTotalApp1}" reRender="fldFdTotal, fldFdTotal2, fldFdSubTotal" />
+                                                            </apex:input> &nbsp;&nbsp;&nbsp;&nbsp;
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td>
+                                                            <apex:outputText value="Net Profit Before Tax" rendered="{!OR(fldSelfEmployedType=='Company Pty Ltd',fldSelfEmployedType=='Trust')}"
+                                                                             />
+                                                            <apex:outputText value="Net Profit After Tax" rendered="{!fldSelfEmployedType=='Sole Trader'}" />
+                                                        </td>
+                                                        <td>
+                                                            <h3>
+                                                                <apex:outputText value="{0, Number, Currency}" id="fldFdTotal" rendered="{!OR(fldSelfEmployedType=='Company Pty Ltd',fldSelfEmployedType=='Trust')}">
+                                                                    <apex:param value="{!fdNetProfitCalc}" />
+                                                                </apex:outputText>
+                                                                <apex:outputText value="{0, Number, Currency}" id="fldFdTotal2" rendered="{!fldSelfEmployedType=='Sole Trader'}">
+                                                                    <apex:param value="{!fdNetProfit2 * 12}" />
+                                                                </apex:outputText>
+                                                            </h3>
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td>Monthly Income (after tax)</td>
+                                                        <td>
+                                                            <h3>
+                                                                <apex:outputText value="{0, Number, Currency}" id="fldFdSubTotal">
+                                                                    <apex:param value="{!fdNetProfit2 }" />
+                                                                </apex:outputText>
+                                                            </h3>&nbsp;&nbsp;&nbsp;&nbsp;
+                                                            <apex:actionStatus startText="   (calculating...)"
+                                                                               id="stsFdTotal" />
+                                                        </td>
+                                                    </tr>
+                                                </table>
+                                            </td>
+                                            
+                                            <td align="center">
+                                                
+                                                <br/>
+                                                <apex:outputPanel rendered="{!AND(fldSelfEmployedType=='Trust',trusteesNumber=='2')}">
+                                                    <h3>2nd Trustee details</h3>
+                                                    <table width="100%">
+                                                        <tr>
+                                                            <td width="40%">
+                                                                <apex:outputText value="Net Profit Before Tax" rendered="{!fldSelfEmployedType!='Trust'}" />
+                                                                <apex:outputText value="Trust disbursement" rendered="{!fldSelfEmployedType=='Trust'}" />
+                                                            </td>
+                                                            <td width="60%">
+                                                                <apex:outputPanel styleClass="requiredInput">
+                                                                    <apex:outputPanel styleClass="requiredBlock"></apex:outputPanel>
+                                                                </apex:outputPanel>
+                                                                <apex:input styleClass="dataInput" type="number" html-step="0.01" value="{!fdNetProfit_2}" html-placeholder="$">
+                                                                    <apex:actionSupport event="onchange" action="{!getFullDocumentationTotal2App1}" reRender="fldFdTotalB, fldFdTotal2B, fldFdSubTotalB" status="stsFdTotalB"/>
+                                                                </apex:input>
+                                                            </td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td>
+                                                                <apex:outputText value="Net Profit Before Tax" rendered="{!OR(fldSelfEmployedType=='Company Pty Ltd',fldSelfEmployedType=='Trust')}"
+                                                                                 />
+                                                                <apex:outputText value="Net Profit After Tax" rendered="{!fldSelfEmployedType=='Sole Trader'}" />
+                                                            </td>
+                                                            <td>
+                                                                <h3>
+                                                                    <apex:outputText value="{0, Number, Currency}" id="fldFdTotalB" rendered="{!OR(fldSelfEmployedType=='Company Pty Ltd',fldSelfEmployedType=='Trust')}">
+                                                                        <apex:param value="{!fdNetProfitCalc2}" />
+                                                                    </apex:outputText>
+                                                                    <apex:outputText value="{0, Number, Currency}" id="fldFdTotal2B" rendered="{!fldSelfEmployedType=='Sole Trader'}">
+                                                                        <apex:param value="{!fdNetProfit2_2 * 12}" />
+                                                                    </apex:outputText>
+                                                                </h3>
+                                                            </td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td>Monthly Income (after tax)</td>
+                                                            <td>
+                                                                <h3>
+                                                                    <apex:outputText value="{0, Number, Currency}" id="fldFdSubTotalB">
+                                                                        <apex:param value="{!fdNetProfit2_2}" />
+                                                                    </apex:outputText>
+                                                                </h3>&nbsp;&nbsp;&nbsp;&nbsp;
+                                                                <apex:actionStatus startText="   (calculating...)"  id="stsFdTotalB" />
+                                                            </td>
+                                                        </tr>
+                                                    </table>
+                                                </apex:outputPanel>
+                                            </td>
+                                        </tr>
+                                    </table>  
+                                </apex:outputPanel>
+                            </td>
+                        </tr>
+                    </table>
+                </apex:outputPanel>
+            </apex:pageBlock>
+            
+
+          </apex:outputPanel>
+          <!-- <apex:outputPanel styleClass="rightTables" id="pnltotals" rendered="{!!isServLowDocSelfEmployed}"> -->
+          <apex:outputPanel styleClass="rightTables" id="pnltotals">
+            <apex:outputPanel styleClass="subSectionTab">
+              <h3>TOTAL</h3>
+            </apex:outputPanel>
+            <table class="tableSubsection">
+              <tr>
+                <td width="45%">NET MONTHLY INCOME</td>
+                <td width="20%" class="incomeValue">
+                  <h4>
+                    <apex:outputText value="{0, Number, Currency}" id="fldCalcTotNetMonthlyIncome">
+                      <apex:param value="{!servCalcTotNetMonthlyIncome}" />
+                    </apex:outputText>
+                  </h4>
+                </td>
+                <td width="35%">&nbsp;</td>
+              </tr>
+              <tr>
+                <td>Liabilities</td>
+                <td class="notIncomeValue">
+                  <apex:outputText value="{0, Number, Currency}" id="fldCalcTotLiabilities">
+                    <apex:param value="{!servCalcTotLiabilities}" />
+                  </apex:outputText>
+                </td>
+                <td>&nbsp;</td>
+              </tr>
+              <tr>
+                <td>Rent / Mortgage / Board</td>
+                <td class="notIncomeValue">
+                  <apex:outputText value="{0, Number, Currency}" id="fldCalcTotRentMtgPaid">
+                    <apex:param value="{!servCalcSplitRentMortgageTotal}" />
+                  </apex:outputText>
+                </td>
+                <td>
+                  <apex:inputCheckbox value="{!servCalcSplitRentMortgage}" id="fldServSplitRent" disabled="{!OR(servCalcSplittingExpenses != 'Yes',AND(servCalcType != 'Defacto',servCalcType != 'Married'))}"
+                    styleClass="dataInputCheckBox">
+                    <apex:actionSupport event="onclick" status="totalAmountStatus" action="{!calculateSplitExpenses}" reRender="fldCalcNetPartnerIncome, fldCalcTotRentMtgPaid, fldCalcTotLivingExpenses, fldCalcTotAmountLoanPayment, msgServicingCalc, fldTotRentMorg, pnltotals"
+                    />
+                  </apex:inputCheckbox>Split &nbsp;&nbsp;&nbsp;
+                  <i>Total:&nbsp;
+                    <apex:outputText value="({0, Number, Currency})" id="fldTotRentMorg">
+                      <apex:param value="{!servCalcTotRentMtgPaid}" />
+                    </apex:outputText>
+                  </i>
+                </td>
+              </tr>
+              <tr>
+                  <td>Living Expenses</td>
+                <td class="notIncomeValue">
+                  <apex:outputText value="{0, Number, Currency}" id="fldCalcTotLivingExpenses">
+                    <apex:param value="{!servCalcSplitLivingExpensesTotal}" />
+                  </apex:outputText>
+                </td>
+                <td>
+                  <apex:inputCheckbox value="{!servCalcCSplitLivingExpenses}" id="fldServSplitLiving" disabled="{!OR(servCalcSplittingExpenses != 'Yes',AND(servCalcType != 'Defacto',servCalcType != 'Married'))}"
+                    styleClass="dataInputCheckBox">
+                    <apex:actionSupport event="onclick" status="totalAmountStatus" action="{!calculateSplitExpenses}" reRender="fldCalcTotLivingExpenses, fldCalcTotRentMtgPaid, fldCalcNetPartnerIncome, fldCalcTotAmountLoanPayment, msgServicingCalc, fldTotLivExpenses, pnltotals"
+                    />
+                  </apex:inputCheckbox>Split &nbsp;&nbsp;&nbsp;
+                  <i>Total:&nbsp;
+                    <apex:outputText value="({0, Number, Currency})" id="fldTotLivExpenses">
+                      <apex:param value="{!servCalcTotLivingExpenses}" />
+                    </apex:outputText>
+                  </i>
+                </td>
+              </tr>
+              <tr>
+                <td>Credit Cards</td>
+                <td class="notIncomeValue">
+                  <apex:outputText value="{0, Number, Currency}" rendered="{!NOT(OR(servCalcLender='LIB', servCalcLender='PEP', servCalcLender='LAP', servCalcLender='MAC', servCalcLender='Latitude', servCalcLender='GRE'))}">
+                    <apex:param value="{!totalCreditCards}" />
+                  </apex:outputText>
+                  <apex:outputText value="{0, Number, Currency}" rendered="{!OR(servCalcLender='LIB', servCalcLender='PEP', servCalcLender='MAC', servCalcLender='GRE')}">
+                    <apex:param value="{!totalCreditCards/0.03*0.038}" />
+                  </apex:outputText>
+                  <apex:outputText value="{0, Number, Currency}" rendered="{!OR(servCalcLender='LAP', servCalcLender='Latitude')}">
+                    <apex:param value="{!totalCreditCards/0.03*0.042}" />
+                  </apex:outputText>
+                </td>
+                <td>&nbsp;</td>
+              </tr>
+              <tr style="display: {!IF(OR(servCalcLender=='MAC',servCalcLender=='FINA',servCalcLender=='GRE'), '','none')}">
+                <td>Buffer </td>
+                <td class="notIncomeValue">
+                  <apex:outputText value="{0, Number, Currency}">
+                    <apex:param value="{!servCalcBuffer}" />
+                  </apex:outputText>
+                </td>
+                <td>&nbsp;</td>
+              </tr>
+              <tr style="display: {!IF(OR(servCalcLender=='MAC'), '','none')}">
+                <td>Mortgage Buffer </td>
+                <td class="notIncomeValue">
+                  <apex:outputText value="{0, Number, Currency}">
+                    <apex:param value="{!servCalcMortgageBuffer}" />
+                  </apex:outputText>
+                </td>
+                <td>&nbsp;</td>
+              </tr>
+              <tr>
+                <td>Monthly Repayment (Quoting tool)</td>
+                <td class="notIncomeValue">
+                  <apex:outputText value="{0, Number, Currency}">
+                    <apex:param value="{!servMonthlyRepayment}" />
+                  </apex:outputText>
+                </td>
+                <td>&nbsp;</td>
+              </tr>
+              <tr>
+                <td>Amount available for loan payment</td>
+                <td>
+                  <h3>
+                    <apex:outputText value="{0, Number, Currency}" id="fldCalcTotAmountLoanPayment">
+                      <apex:param value="{!servCalcTotAmountLoanPayment}" />
+                    </apex:outputText>
+                  </h3>&nbsp;&nbsp;&nbsp;
+                  <apex:actionStatus startText="(calculating...)" id="totalAmountStatus" />
+                </td>
+                <td>&nbsp;</td>
+              </tr>
+            </table>
+
+            <!-- Sergio 05-07-17 -->
+            <apex:outputPanel styleClass="subSectionTab">
+              <h3>Living Expenses </h3>
+            </apex:outputPanel>
+            <table class="tableSubsection">
+              <tr>
+                <td class="labelColumn">
+                  <apex:outputLabel value="{!$ObjectType.Application__c.fields.Basic_Living_Expenses_Per_Month__c.Label}" />
+                </td>
+                <td class="dataColumn">
+                  <apex:outputPanel styleClass="requiredInput">
+                    <apex:outputPanel styleClass="requiredBlock"></apex:outputPanel>
+                  </apex:outputPanel>
+                  <apex:inputField styleClass="dataInput" id="livexp1" value="{!o.Application__r.Basic_Living_Expenses_Per_Month__c}">
+                    <apex:actionSupport event="onchange" action="{!servCalculateLivingExpenseValues}" reRender="fldCalcTotLivingExpenses, fldCalcTotAmountLoanPayment, totalLivExp"
+                      status="totalAmountStatus" />
+                  </apex:inputField>
+
+                </td>
+                <td class="labelColumn">
+                  <apex:outputLabel value="{!$ObjectType.Application__c.fields.Childcare_Child_Maintenance_Per_Month__c.Label}" />
+                </td>
+                <td class="dataColumn">
+                  <apex:outputPanel styleClass="requiredInput">
+                    <apex:outputPanel styleClass="requiredBlock"></apex:outputPanel>
+                  </apex:outputPanel>
+                  <apex:inputField styleClass="dataInput" value="{!o.Application__r.Childcare_Child_Maintenance_Per_Month__c}">
+                    <apex:actionSupport event="onchange" action="{!servCalculateLivingExpenseValues}" reRender="fldCalcTotLivingExpenses, fldCalcTotAmountLoanPayment, totalLivExp"
+                      status="totalAmountStatus" />
+                  </apex:inputField>
+
+                </td>
+              </tr>
+              <tr>
+                <td class="labelColumn">
+                  <apex:outputLabel value="{!$ObjectType.Application__c.fields.Mobile_Phone_Internet_Pay_TV_per_Month__c.Label}" />
+                </td>
+                <td class="dataColumn">
+                  <apex:outputPanel styleClass="requiredInput">
+                    <apex:outputPanel styleClass="requiredBlock"></apex:outputPanel>
+                  </apex:outputPanel>
+                  <apex:inputField styleClass="dataInput" value="{!o.Application__r.Mobile_Phone_Internet_Pay_TV_per_Month__c}">
+                    <apex:actionSupport event="onchange" action="{!servCalculateLivingExpenseValues}" reRender="fldCalcTotLivingExpenses, fldCalcTotAmountLoanPayment, totalLivExp"
+                      status="totalAmountStatus" />
+                  </apex:inputField>
+
+                </td>
+                <td class="labelColumn">
+                  <apex:outputLabel value="{!$ObjectType.Application__c.fields.Insurance_Expenses_per_Month__c.Label}" />
+                </td>
+                <td class="dataColumn">
+                  <apex:outputPanel styleClass="requiredInput">
+                    <apex:outputPanel styleClass="requiredBlock"></apex:outputPanel>
+                  </apex:outputPanel>
+                  <apex:inputField styleClass="dataInput" value="{!o.Application__r.Insurance_Expenses_per_Month__c}">
+                    <apex:actionSupport event="onchange" action="{!servCalculateLivingExpenseValues}" reRender="fldCalcTotLivingExpenses, fldCalcTotAmountLoanPayment, totalLivExp"
+                      status="totalAmountStatus" />
+                  </apex:inputField>
+
+                </td>
+              </tr>
+              <tr>
+                <td class="labelColumn">
+                  <apex:outputLabel value="{!$ObjectType.Application__c.fields.Travel_Transport_Expenses_per_Month__c.Label}" />
+                </td>
+                <td class="dataColumn">
+                  <apex:outputPanel styleClass="requiredInput">
+                    <apex:outputPanel styleClass="requiredBlock"></apex:outputPanel>
+                  </apex:outputPanel>
+                  <apex:inputField styleClass="dataInput" value="{!o.Application__r.Travel_Transport_Expenses_per_Month__c}">
+                    <apex:actionSupport event="onchange" action="{!servCalculateLivingExpenseValues}" reRender="fldCalcTotLivingExpenses, fldCalcTotAmountLoanPayment, totalLivExp"
+                      status="totalAmountStatus" />
+                  </apex:inputField>
+
+                </td>
+                <td class="labelColumn">
+                  <apex:outputLabel value="Total Living Expenses" />
+                </td>
+                <td class="dataColumn">
+                  <apex:outputPanel styleClass="requiredInput">
+                    <apex:outputPanel styleClass="requiredBlock"></apex:outputPanel>
+                  </apex:outputPanel>
+                  <apex:outputText styleClass="dataInput" value="{!totalLivExp}" id="totalLivExp" />
+                </td>
+              </tr>
+              <tr>
+                <td class="labelColumn">
+                  <apex:outputLabel value="{!$ObjectType.Application__c.fields.Other_Expenses_per_Month__c.Label}" />
+                </td>
+                <td class="dataColumn">
+                  <apex:inputField styleClass="dataInput" value="{!o.Application__r.Other_Expenses_per_Month__c}">
+                    <apex:actionSupport event="onchange" action="{!servCalculateLivingExpenseValues}" reRender="fldCalcTotLivingExpenses, fldCalcTotAmountLoanPayment, totalLivExp"
+                      status="totalAmountStatus" />
+                  </apex:inputField>
+
+                </td>
+                <td class="labelColumn">
+                  <apex:outputLabel value="{!$ObjectType.Application__c.fields.Income_Type_Expenses__c.Label}" />
+                </td>
+                <td class="dataColumn">
+                  <apex:inputField styleClass="dataInput" value="{!o.Application__r.Income_Type_Expenses__c}">
+
+                  </apex:inputField>
+
+                </td>
+              </tr>
+            </table>
+            <!-- Until here Sergio 05-07-17 -->
+            <p>&nbsp;</p>
+            <p>&nbsp;</p>
+            <p>&nbsp;</p>
+          </apex:outputPanel>
+          <!-- <apex:outputPanel styleClass="rightTables" id="pnlSpaces" rendered="{!isServLowDocSelfEmployed}">
+            <p>&nbsp;</p>
+          </apex:outputPanel> -->
+        </apex:outputPanel>
+
+        <!-- SECTION: INCOME-->
+        <!-- <apex:outputPanel layout="block" styleClass="section" id="pnlServIncome" rendered="{!!isServLowDocSelfEmployed}">   -->
+        <apex:outputPanel layout="block" styleClass="section" id="pnlServIncome">
+          <div class="divTitle">INCOME</div>
+          <apex:outputPanel styleClass="{!IF(o.Application__r.No_of_People__c == 1,'leftTablesNotFloat','leftTables')}">
+            <apex:outputPanel styleClass="subSectionTab">
+              <h3>Applicant 1</h3>
+            </apex:outputPanel>
+            <table class="tableSubsection">
+              <tr>
+                <td width="50%" valign="top">
+                  <table width="100%">
+                    <tr>
+                      <td colspan="6" class="labelColumn">
+                        <strong>Employment Income</strong>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td class="labelColumn">Pay Frequency</td>
+                      <td class="dataColumn">
+                        <apex:outputPanel styleClass="requiredInput">
+                          <apex:outputPanel styleClass="requiredBlock"></apex:outputPanel>
+                        </apex:outputPanel>
+                        <!--<apex:outputText value="{!servCalcIncomePayFrecuency1}" / >-->
+                        <apex:selectList value="{!servCalcIncomePayFrecuency1}" multiselect="false" size="1" styleClass="selectList" onchange="servCalculateTotalNetMonthlyIncome()"><!--Joy-->
+                            <apex:selectOption itemValue="Annually" itemLabel="Annually" />
+                            <apex:selectOption itemValue="Monthly" itemLabel="Monthly" />
+                            <apex:selectOption itemValue="Fortnightly" itemLabel="Fortnightly" />
+                            <apex:selectOption itemValue="Weekly" itemLabel="Weekly" />
+                        </apex:selectList> 
+                      </td>
+                    </tr>
+                    <tr>
+                      <td class="labelColumn">Amount</td>
+                      <td class="dataColumn">
+                        <apex:outputPanel styleClass="requiredInput">
+                          <apex:outputPanel styleClass="requiredBlock"></apex:outputPanel>
+                        </apex:outputPanel>
+                        <!-- <strong>
+                          <apex:outputText value="{0, Number, Currency}" rendered="{!isServLowDocSelfEmployed}">
+                            <apex:param value="{!servCalcIncomeAmount1}" />
+                          </apex:outputText>
+                        </strong> -->
+                        <apex:input type="number" value="{!servCalcIncomeAmount1}" html-step="0.01" html-placeholder="$" styleClass="dataInput" onchange="servCalculateTotalNetMonthlyIncome()"/>
+                      </td>
+                    </tr>
+                    <!--Joy Start-->
+                    <tr>
+                      <td>Gross Annual Income</td>
+                      <td>
+                        <strong>
+                          <apex:outputText value="{0, Number, Currency}">
+                            <apex:param value="{!grossAnnualIncome1}" />
+                          </apex:outputText>
+                        </strong>
+                      </td>
+                    </tr>
+                    <!--Joy End-->
+                    <tr style="display: {!IF(isSecondJobApplic1==true, '','none')}">
+                      <td colspan="6" class="labelColumn">
+                        <strong>Second Job</strong>
+                      </td>
+                    </tr>
+                    <tr style="display: {!IF(isSecondJobApplic1==true, '','none')}">
+                      <td class="labelColumn">Pay Frequency</td>
+                      <td class="dataColumn">
+                        <!--<apex:outputText value="{!servCalcIncomePayFrecuency1}" />-->
+                        <apex:selectList value="{!servCalcIncomePayFrecuency1b}" multiselect="false" size="1" styleClass="selectList" onchange="servCalculateTotalNetMonthlyIncome()"><!--Joy-->
+                          <apex:selectOption itemValue="Annually" itemLabel="Annually" />
+                          <apex:selectOption itemValue="Monthly" itemLabel="Monthly" />
+                          <apex:selectOption itemValue="Fortnightly" itemLabel="Fortnightly" />
+                          <apex:selectOption itemValue="Weekly" itemLabel="Weekly" />
+                        </apex:selectList>
+                      </td>
+                    </tr>
+                    <tr style="display: {!IF(isSecondJobApplic1==true, '','none')}">
+                      <td class="labelColumn">Amount</td>
+                      <td class="dataColumn">
+                        <apex:outputPanel styleClass="requiredInput">
+                          <apex:outputPanel styleClass="requiredBlock"></apex:outputPanel>
+                        </apex:outputPanel>
+                        <!-- <strong>
+                          <apex:outputText value="{0, Number, Currency}" rendered="{!isServLowDocSelfEmployed}">
+                            <apex:param value="{!secondJobApplic1.Monthly_Income__c}" />
+                          </apex:outputText>
+                        </strong> -->
+                        <apex:input type="number" value="{!servCalcIncomeAmount1b}" html-step="0.01" html-placeholder="$" styleClass="dataInput"
+                          onchange="servCalculateTotalNetMonthlyIncome()" />
+                      </td>
+                    </tr>
+                    <tr style="display: {!IF(isSecondJobApplic1==true, '','none')}">
+                      <td>Gross Annual Income</td>
+                      <td>
+                        <strong>
+                          <apex:outputText value="{0, Number, Currency}">
+                            <apex:param value="{!grossAnnualIncome1SecondJob}" />
+                          </apex:outputText>
+                        </strong>
+                      </td>
+                    </tr>
+                  </table>
+                </td>
+                <td width="50%" valign="top">
+                  <table width="96%">
+                    <tr>
+                      <td colspan="2" class="dataColumn">
+                        <strong>Other Income</strong>
+                      </td>
+                    </tr>
+                    <tr>
+                      <th>Type</th>
+                      <th>After Tax Income Per Month</th>
+                    </tr>
+                    <apex:repeat value="{!applicantIncomes1}" var="a">
+                      <tr>
+                        <td>
+                          <apex:outputField value="{!a.Type__c}" />
+                        </td>
+                        <td>
+                          <apex:outputField value="{!a.Monthly_Income__c}" rendered="{!a.Type__c!='Rental Income'}" />
+                          <apex:outputText value="{0, Number, Currency} *(20% discounted)" rendered="{!a.Type__c='Rental Income'}">
+                            <apex:param value="{!a.Monthly_Income__c*0.8}" />
+                          </apex:outputText>
+                        </td>
+                      </tr>
+                    </apex:repeat>
+                    <tr>
+                      <td>TOTAL</td>
+                      <td>
+                        <strong>
+                          <apex:outputText value="{0, Number, Currency}">
+                            <apex:param value="{!totalOtherIncomeApp1}" />
+                          </apex:outputText>
+                        </strong>
+                      </td>
+                    </tr>
+                  </table>
+                </td>
+              </tr>
+            </table>
+          </apex:outputPanel>
+          <apex:outputPanel layout="block" styleClass="rightTables" rendered="{!o.Application__r.No_of_People__c == 2}">
+            <apex:outputPanel styleClass="subSectionTab">
+              <h3>Applicant 2</h3>
+            </apex:outputPanel>
+            <table class="tableSubsection">
+              <tr>
+                <td width="50%" valign="top">
+                  <table width="100%">
+                    <tr>
+                      <td colspan="6" class="labelColumn">
+                        <strong>Employment Income</strong>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td class="labelColumn">Pay Frequency</td>
+                      <td class="dataColumn">
+                        <!--<apex:outputText value="{!servCalcIncomePayFrecuency2}" />--><!--Joy-->
+                          <!--Joy START-->
+                          <apex:selectList value="{!servCalcIncomePayFrecuency2}" multiselect="false" size="1" styleClass="selectList" onchange="servCalculateTotalNetMonthlyIncome()"><!--Joy-->
+                              <apex:selectOption itemValue="Annually" itemLabel="Annually" />
+                              <apex:selectOption itemValue="Monthly" itemLabel="Monthly" />
+                              <apex:selectOption itemValue="Fortnightly" itemLabel="Fortnightly" />
+                              <apex:selectOption itemValue="Weekly" itemLabel="Weekly" />
+                          </apex:selectList> 
+                          <!--<apex:selectList value="{!servCalcIncomePayFrecuency2}" multiselect="false" size="1" styleClass="selectList"
+                                           onclick="servCalculateTotalNetMonthlyIncome()" >
+                              <apex:selectOptions value="{!frequency}" />
+                          </apex:selectList>
+                          <!--Joy END-->
+                      </td>
+                    </tr>
+                    <tr>
+                      <td class="labelColumn">Amount</td>
+                      <td class="dataColumn">
+                        <apex:input type="number" value="{!servCalcIncomeAmount2}" html-step="0.01" html-placeholder="$" styleClass="dataInput" onchange="servCalculateTotalNetMonthlyIncome()"
+                        />
+                      </td>
+                    </tr>
+                    <!--Joy Start-->
+                    <tr>
+                      <td>Gross Annual Income</td>
+                      <td>
+                        <strong>
+                          <apex:outputText value="{0, Number, Currency}">
+                            <apex:param value="{!grossAnnualIncome2}" />
+                          </apex:outputText>
+                        </strong>
+                      </td>
+                    </tr>
+                    <!--Joy End-->
+                    <tr style="display: {!IF(isSecondJobApplic2==true, '','none')}">
+                      <td colspan="6" class="labelColumn">
+                        <strong>Second Job</strong>
+                      </td>
+                    </tr>
+                    <tr style="display: {!IF(isSecondJobApplic2==true, '','none')}">
+                      <td class="labelColumn">Pay Frequency</td>
+                      <td class="dataColumn">
+                        <!--<apex:outputText value="{!servCalcIncomePayFrecuency2}" />-->
+                        <apex:selectList value="{!servCalcIncomePayFrecuency2b}" multiselect="false" size="1" styleClass="selectList" onchange="servCalculateTotalNetMonthlyIncome()"><!--Joy-->
+                          <apex:selectOption itemValue="Annually" itemLabel="Annually" />
+                          <apex:selectOption itemValue="Monthly" itemLabel="Monthly" />
+                          <apex:selectOption itemValue="Fortnightly" itemLabel="Fortnightly" />
+                          <apex:selectOption itemValue="Weekly" itemLabel="Weekly" />
+                        </apex:selectList>
+                      </td>
+                    </tr>
+                    <tr style="display: {!IF(isSecondJobApplic2==true, '','none')}">
+                      <td class="labelColumn">Amount</td>
+                      <td class="dataColumn">
+                        <apex:outputPanel styleClass="requiredInput">
+                          <apex:outputPanel styleClass="requiredBlock"></apex:outputPanel>
+                        </apex:outputPanel>
+                        <!-- <strong>
+                          <apex:outputText value="{0, Number, Currency}" rendered="{!isServLowDocSelfEmployed}">
+                            <apex:param value="{!secondJobApplic2.Monthly_Income__c}" />
+                          </apex:outputText>
+                        </strong> -->
+                        <apex:input type="number" value="{!servCalcIncomeAmount2b}" html-step="0.01" html-placeholder="$" styleClass="dataInput"
+                          onchange="servCalculateTotalNetMonthlyIncome()" />
+                      </td>
+                    </tr>
+                    <tr style="display: {!IF(isSecondJobApplic2==true, '','none')}">
+                      <td>Gross Annual Income</td>
+                      <td>
+                        <strong>
+                          <apex:outputText value="{0, Number, Currency}">
+                            <apex:param value="{!grossAnnualIncome2SecondJob}" />
+                          </apex:outputText>
+                        </strong>
+                      </td>
+                    </tr>
+                  </table>
+                </td>
+                <td width="50%" valign="top">
+                  <table width="96%">
+                    <tr>
+                      <td colspan="2" class="dataColumn">
+                        <strong>Other Income</strong>
+                      </td>
+                    </tr>
+                    <tr>
+                      <th>Type</th>
+                      <th>After Tax Income Per Month</th>
+                    </tr>
+                    <apex:repeat value="{!applicantIncomes2}" var="a">
+                      <tr>
+                        <td>
+                          <apex:outputField value="{!a.Type__c}" />
+                        </td>
+                        <td>
+                          <apex:outputField value="{!a.Income__c}" rendered="{!a.Type__c!='Rental Income'}" />
+                          <apex:outputText value="{0, Number, Currency} *(20% discounted)" rendered="{!a.Type__c='Rental Income'}">
+                            <apex:param value="{!a.Income__c*0.8}" />
+                          </apex:outputText>
+                        </td>
+                      </tr>
+                    </apex:repeat>
+                    <tr>
+                      <td>TOTAL</td>
+                      <td>
+                        <strong>
+                          <!-- <apex:outputField value="{!o.Application__r.Total_Other_Income_2__c}"/> -->
+                          <apex:outputText value="{0, Number, Currency}">
+                            <apex:param value="{!totalOtherIncomeApp2}" />
+                          </apex:outputText>
+                        </strong>
+                      </td>
+                    </tr>
+                    <!-- <tr>
+<td colspan="6" class="dataColumn"><strong>Other Income</strong></td>
+</tr>
+<tr>
+<td class="labelColumn">Pay Frequency</td>
+<td class="dataColumn">
+<apex:selectList value="{!servCalcOtherIncomePayFrecuency2}" multiselect="false" size="1" styleClass="selectList"
+onclick="servCalculateTotalNetMonthlyIncome()" >
+<apex:selectOptions value="{!frequency}" />
+</apex:selectList>
+</td>
+</tr>
+<tr>
+<td class="labelColumn">Type</td>
+<td class="dataColumn">
+<apex:selectList value="{!servCalcOtherIncomeType2}" multiselect="false" size="1" styleClass="selectList" 
+>
+<apex:selectOptions value="{!servCalcOtherIncomeTypeSelect}"/>
+</apex:selectList>
+</td>
+</tr>
+<tr>
+<td class="labelColumn">Amount</td>
+<td class="dataColumn">
+<apex:input type="number" value="{!servCalcOtherIncomeAmount2}" html-step="0.01" html-placeholder="$" styleClass="dataInput"
+onblur="servCalculateTotalNetMonthlyIncome()" />
+</td>
+</tr> -->
+                  </table>
+                </td>
+              </tr>
+            </table>
+            <p>&nbsp;</p>
+            <p>&nbsp;</p>
+          </apex:outputPanel>
+        </apex:outputPanel>
+
+
+        <!-- SECTION: EXPENSES-->
+        <!-- <apex:outputPanel layout="block" styleClass="section" rendered="{!!isServLowDocSelfEmployed}">  -->
+        <apex:outputPanel layout="block" styleClass="section">
+          <div class="divTitle">EXPENSES</div>
+          <apex:outputPanel styleClass="oneTables">
+            <table width="100%">
+              <tr>
+                <td width="50%" class="cellMultiTables cellExtraRigthPading">
+                  <apex:outputPanel styleClass="subSectionTab">
+                    <h3>Liability</h3>
+                  </apex:outputPanel>
+                  <table class="tableSubsection">
+                    <tr>
+                      <th width="30%">Loan Type</th>
+                      <th width="30%">Lender</th>
+                      <th width="20%">Payment</th>
+                      <th width="20%">Frecuency</th>
+                    </tr>
+                    <!-- <tr style= "display: {!If(AND(!ISBLANK(o.Application__r.Loan_Type_1__c),o.Application__r.Loan_Type_1__c!='Mortgage'), '','none')}">
+<td><apex:outputField value="{!o.Application__r.Loan_Type_1__c}" /></td>
+<td><apex:outputField value="{!o.Application__r.Other_Loans_Lender_1__c}" /></td>
+<td>
+<apex:outputField value="{!o.Application__r.Loans_Monthly_Payments_1__c}" rendered="{!!o.Application__r.Loan_Repaid_1__c}" />
+<apex:outputText value="$ 0.00 (payout)" rendered="{!o.Application__r.Loan_Repaid_1__c}" />
+</td>
+<td><apex:outputField value="{!o.Application__r.Loan_Frequency_1__c}" /></td>
+</tr>
+<tr style= "display: {!If(AND(!ISBLANK(o.Application__r.Loan_Type_2__c),o.Application__r.Loan_Type_2__c!='Mortgage'), '','none')}">
+<td><apex:outputField value="{!o.Application__r.Loan_Type_2__c}" /></td>
+<td><apex:outputField value="{!o.Application__r.Other_Loans_Lender_2__c}" /></td>
+<td>
+<apex:outputField value="{!o.Application__r.Loans_Monthly_Payments_2__c}" rendered="{!!o.Application__r.Loan_Repaid_2__c}" />
+<apex:outputText value="$ 0.00 (payout)" rendered="{!o.Application__r.Loan_Repaid_2__c}" />
+</td>
+<td><apex:outputField value="{!o.Application__r.Loan_Frequency_2__c}" /></td>
+</tr>
+<tr style= "display: {!If(AND(!ISBLANK(o.Application__r.Loan_Type_3__c),o.Application__r.Loan_Type_3__c!='Mortgage'), '','none')}">
+<td><apex:outputField value="{!o.Application__r.Loan_Type_3__c}" /></td>
+<td><apex:outputField value="{!o.Application__r.Other_Loans_Lender_3__c}" /></td>
+<td>
+<apex:outputField value="{!o.Application__r.Loans_Monthly_Payments_3__c}" rendered="{!!o.Application__r.Loan_Repaid_3__c}" />
+<apex:outputText value="$ 0.00 (payout)" rendered="{!o.Application__r.Loan_Repaid_3__c}" />
+</td>
+<td><apex:outputField value="{!o.Application__r.Loan_Frequency_3__c}" /></td>
+</tr> -->
+                    <!-- <tr style= "display: {!If(AND(!ISBLANK(o.Application__r.Loan_Type_4__c),o.Application__r.Loan_Type_4__c!='Mortgage'), '','none')}">
+<td><apex:outputField value="{!o.Application__r.Loan_Type_4__c}" /></td>
+<td><apex:outputField value="{!o.Application__r.Other_Loans_Lender_4__c}" /></td>
+<td>
+<apex:outputField value="{!o.Application__r.Loans_Monthly_Payments_4__c}" rendered="{!!o.Application__r.Loan_Repaid_4__c}" />
+<apex:outputText value="$ 0.00 (payout)" rendered="{!o.Application__r.Loan_Repaid_4__c}" />
+</td>
+<td><apex:outputField value="{!o.Application__r.Loan_Frequency_4__c}" /></td>
+</tr>
+<tr style= "display: {!If(AND(!ISBLANK(o.Application__r.Loan_Type_5__c),o.Application__r.Loan_Type_5__c!='Mortgage'), '','none')}">
+<td><apex:outputField value="{!o.Application__r.Loan_Type_5__c}" /></td>
+<td><apex:outputField value="{!o.Application__r.Other_Loans_Lender_5__c}" /></td>
+<td>
+<apex:outputField value="{!o.Application__r.Loans_Monthly_Payments_5__c}" rendered="{!!o.Application__r.Loan_Repaid_5__c}" />
+<apex:outputText value="$ 0.00 (payout)" rendered="{!o.Application__r.Loan_Repaid_5__c}" />
+</td>
+<td><apex:outputField value="{!o.Application__r.Loan_Frequency_5__c}" /></td>
+</tr>
+<tr style= "display: {!If(AND(!ISBLANK(o.Application__r.Loan_Type_6__c),o.Application__r.Loan_Type_6__c!='Mortgage'), '','none')}">
+<td><apex:outputField value="{!o.Application__r.Loan_Type_6__c}" /></td>
+<td><apex:outputField value="{!o.Application__r.Other_Loans_Lender_6__c}" /></td>
+<td>
+<apex:outputField value="{!o.Application__r.Loans_Monthly_Payments_6__c}" rendered="{!!o.Application__r.Loan_Repaid_6__c}" />
+<apex:outputText value="$ 0.00 (payout)" rendered="{!o.Application__r.Loan_Repaid_6__c}" />
+</td>
+<td><apex:outputField value="{!o.Application__r.Loan_Frequency_6__c}" /></td>
+</tr> -->
+                    <apex:repeat value="{!vehicleAssetLoanList}" var="a">
+                      <tr>
+                        <td>
+                          <apex:outputText value="Car Loan" />
+                        </td>
+                        <td>
+                          <apex:outputField value="{!a.Lender__c}" />
+                        </td>
+                        <td>
+                          <apex:outputField value="{!a.Payment__c}" rendered="{!!a.Is_Payout__c}" />
+                          <apex:outputText value="$ 0.00 (payout)" rendered="{!a.Is_Payout__c}" />
+                        </td>
+                        <td>
+                          <apex:outputField value="{!a.Frequency__c}" />
+                        </td>
+                      </tr>
+                    </apex:repeat>
+                    <apex:repeat value="{!loanList}" var="a">
+                      <tr>
+                        <td>
+                          <apex:outputField value="{!a.data.Type__c}" />
+                        </td>
+                        <td>
+                          <apex:outputField value="{!a.data.Lender__c}" />
+                        </td>
+                        <td>
+                          <apex:outputField value="{!a.data.Payment__c}" rendered="{!!a.data.Is_Payout__c}" />
+                          <apex:outputText value="$ 0.00 (payout)" rendered="{!a.data.Is_Payout__c}" />
+                        </td>
+                        <td>
+                          <apex:outputField value="{!a.data.Frequency__c}" />
+                        </td>
+                      </tr>
+                    </apex:repeat>
+                  </table>
+                </td>
+                <td width="50%" class="cellMultiTables">
+                  <apex:outputPanel styleClass="subSectionTab">
+                    <h3>Rent / Mortgage / Board</h3>
+                  </apex:outputPanel>
+                  <table class="tableSubsection">
+                    <tr style="display: {!If(!OR(o.Application__r.Current_Residence_Status_1__c = 'Renting(Agent)', o.Application__r.Current_Residence_Status_1__c = 'Renting(Private)', o.Application__r.Current_Residence_Status_1__c = 'Parents/Relative'),'none','')}">
+                      <td class="labelColumn">Rent</td>
+                      <td class="dataColumn">
+                        {!o.Application__r.Residential_Payment_Frequency_1__c}
+                      </td>
+                      <td>
+                        <apex:outputField value="{!o.Application__r.Rent_per_month_1__c}" />
+                      </td>
+                    </tr>
+                    <tr style="display: {!If(!OR(o.Application__r.Current_Residence_Status_1__c = 'Parents/Relative',o.Application__r.Current_Residence_Status_1__c = 'Boarding'),'none','')}">
+                      <td class="labelColumn">Board</td>
+                      <td class="dataColumn">
+                        {!o.Application__r.Residential_Payment_Frequency_1__c}
+                      </td>
+                      <td>
+                        <apex:outputField value="{!o.Application__r.Board_per_Month_1__c}" />
+                      </td>
+                    </tr>
+                    <tr style="display: {!If(AND(o.Application__c!=null,applicationTotalMortgage > 0),'','none')}">
+                      <td class="labelColumn">Mortgage</td>
+                      <td class="dataColumn">
+                        Monthly
+                      </td>
+                      <td>
+                        <apex:outputText value="{0, Number, Currency}">
+                          <apex:param value="{!applicationTotalMortgage}" />
+                        </apex:outputText>
+                      </td>
+                    </tr>
+                  </table>
+                </td>
+              </tr>
+              <tr>
+                <td class="cellMultiTables cellExtraRigthPading">
+                  <apex:outputPanel styleClass="subSectionTab">
+                    <h3>Credit Cards</h3>
+                  </apex:outputPanel>
+                  <apex:outputPanel id="pnlServCreditCard">
+
+                    <table class="tableSubsection">
+                      <tr>
+                        <td>Issuer</td>
+                        <td>Credit Limit</td>
+                        <td>
+                          <apex:outputText value="Monthly Payment (3%)" rendered="{!NOT(OR(servCalcLender='LIB',servCalcLender='PEP', servCalcLender='LAP', servCalcLender='MAC', servCalcLender='Latitude', servCalcLender='GRE'))}"
+                          />
+                          <apex:outputText value="Monthly Payment (3.8%)" rendered="{!OR(servCalcLender='LIB', servCalcLender='PEP', servCalcLender='MAC',servCalcLender='GRE')}"
+                          />
+                          <apex:outputText value="Monthly Payment (4.2%)" rendered="{!OR(servCalcLender='LAP', servCalcLender='Latitude')}" />
+                        </td>
+                      </tr>
+                      <apex:repeat value="{!creditCardsList}" var="a">
+                        <tr>
+                          <td>
+                            <apex:outputField value="{!a.data['Issuer__c']}" />
+                          </td>
+                          <td>
+                            <apex:outputField value="{!a.data['Limit__c']}" />
+                          </td>
+                          <td>
+                            <c:CreditCards lenderCode="{!servCalcLender}" isPayout="{!a.data['Is_Payout__c']}" limit="{!a.data['Limit__c']}" />
+                          </td>
+                        </tr>
+                      </apex:repeat>
+                      <tr>
+                        <td>&nbsp;</td>
+                        <td>
+                          <apex:outputText value="TOTAL" />
+                        </td>
+                        <td>
+                          <strong>
+                            <apex:outputText value="{0, Number, Currency}" rendered="{!NOT(OR(servCalcLender='LIB', servCalcLender='PEP', servCalcLender='LAP', servCalcLender='MAC', servCalcLender='Latitude', servCalcLender='GRE'))}">
+                              <apex:param value="{!totalCreditCards}" />
+                            </apex:outputText>
+                            <apex:outputText value="{0, Number, Currency}" rendered="{!OR(servCalcLender='LIB', servCalcLender='PEP', servCalcLender='MAC', servCalcLender='GRE')}">
+                              <apex:param value="{!totalCreditCards/0.03*0.038}" />
+                            </apex:outputText>
+                            <apex:outputText value="{0, Number, Currency}" rendered="{!OR(servCalcLender='LAP', servCalcLender='Latitude')}">
+                              <apex:param value="{!totalCreditCards/0.03*0.042}" />
+                            </apex:outputText>
+                          </strong>
+                        </td>
+                      </tr>
+                    </table>
+                  </apex:outputPanel>
+                </td>
+                <td class="cellMultiTables">
+                  <apex:outputPanel styleClass="subSectionTab">
+                    <h3>Liberty Calculator</h3>
+                  </apex:outputPanel>
+                  <table class="tableSubsection">
+                    <tr>
+                      <td class="labelColumn">Net - Non Centrelink Income</td>
+                      <td class="dataColumn">
+                        <apex:input type="number" value="{!servCalcCLinkNetNonCentIncome}" html-step="0.01" html-placeholder="$" styleClass="dataInput"
+                          onblur="servCalculateCentreLink()" />
+                      </td>
+                    </tr>
+                    <tr>
+                      <td class="labelColumn">Centrelink Income</td>
+                      <td class="dataColumn">
+                        <apex:outputText value="{0, Number, Currency}" id="fldCalcCLinkIncome">
+                          <apex:param value="{!servCalcCLinkIncome}" />
+                        </apex:outputText>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td class="labelColumn">Total Assessable Income</td>
+                      <td class="dataColumn">
+                        <apex:outputText value="{0, Number, Currency}" id="fldCalcCLinkTotalIncome">
+                          <apex:param value="{!servCalcCLinkTotalIncome}" />
+                        </apex:outputText>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td class="labelColumn">Centrelink Income %</td>
+                      <td class="dataColumn">
+                        <apex:outputText value="{0, Number, ##}%" id="fldCalcCLinkIncomePercentage">
+                          <apex:param value="{!servCalcCLinkIncomePercentage}" />
+                        </apex:outputText>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td class="labelColumn">Annual C/L to Loannet</td>
+                      <td class="dataColumn">
+                        <apex:outputText value="{0, Number, Currency}" id="fldCalcCLinkAnnualToLoannet">
+                          <apex:param value="{!servCalcCLinkAnnualToLoannet}" />
+                        </apex:outputText>
+                      </td>
+                    </tr>
+                  </table>
+                </td>
+              </tr>
+            </table>
+          </apex:outputPanel>
+        </apex:outputPanel>
+
+      </apex:pageBlock>
+    </apex:form>
+
+  </div>
+
+  <!-- Opportunity -->
+  <apex:outputField value="{!o.First_Name__c}" rendered="false" />
+  <apex:outputField value="{!o.Last_Name__c}" rendered="false" />
+  <apex:outputField value="{!o.Email_Address__c}" rendered="false" />
+  <apex:outputField value="{!o.Mobile_Number__c}" rendered="false" />
+
+  <!-- Application -->
+  <apex:outputField value="{!o.Application__r.State__c}" rendered="false" />
+  <apex:outputField value="{!o.Application__r.Application_Type__c}" rendered="false" />
+  <apex:outputField value="{!o.Application__r.Net_Income_1__c}" rendered="false" />
+  <apex:outputField value="{!o.Application__r.Payment_Frequency_1__c}" rendered="false" />
+  <apex:outputField value="{!o.Application__r.Net_Income_2__c}" rendered="false" />
+  <apex:outputField value="{!o.Application__r.Payment_Frequency_2__c}" rendered="false" />
+  <apex:outputField value="{!o.Application__r.Business_ABN__c}" rendered="false" />
+  
+  <!-- Calculator Fields -->
+  <apex:outputField value="{!o.ApplicationYTD__r.Comment_1__c}" rendered="false" />
+  <apex:outputField value="{!o.ApplicationYTD__r.Comment_2__c}" rendered="false" />
+  <apex:outputField value="{!o.ApplicationYTD__r.Difference_1__c}" rendered="false" />
+  <apex:outputField value="{!o.ApplicationYTD__r.Difference_2__c}" rendered="false" />
+  <apex:outputField value="{!o.ApplicationYTD__r.Discounted_1__c}" rendered="false" />
+  <apex:outputField value="{!o.ApplicationYTD__r.Discounted_2__c}" rendered="false" />
+  <apex:outputField value="{!o.ApplicationYTD__r.End_Date_1__c}" rendered="false" />
+  <apex:outputField value="{!o.ApplicationYTD__r.End_Date_2__c}" rendered="false" />
+  <apex:outputField value="{!o.ApplicationYTD__r.Income_1_1__c}" rendered="false" />
+  <apex:outputField value="{!o.ApplicationYTD__r.Income_1_2__c}" rendered="false" />
+  <apex:outputField value="{!o.ApplicationYTD__r.Income_2_1__c}" rendered="false" />
+  <apex:outputField value="{!o.ApplicationYTD__r.Income_2_2__c}" rendered="false" />
+  <apex:outputField value="{!o.ApplicationYTD__r.Income_Monthly_1_1__c}" rendered="false" />
+  <apex:outputField value="{!o.ApplicationYTD__r.Income_Monthly_1_2__c}" rendered="false" />
+  <apex:outputField value="{!o.ApplicationYTD__r.Income_Monthly_2_1__c}" rendered="false" />
+  <apex:outputField value="{!o.ApplicationYTD__r.Income_Monthly_2_2__c}" rendered="false" />
+  <apex:outputField value="{!o.ApplicationYTD__r.Lender__c}" rendered="false" />
+  <apex:outputField value="{!o.ApplicationYTD__r.Monthly_Amount_Servicing_1__c}" rendered="false" />
+  <apex:outputField value="{!o.ApplicationYTD__r.Monthly_Amount_Servicing_2__c}" rendered="false" />
+  <apex:outputField value="{!o.ApplicationYTD__r.Start_Date_1__c}" rendered="false" />
+  <apex:outputField value="{!o.ApplicationYTD__r.Start_Date_2__c}" rendered="false" />
+  <apex:outputField value="{!o.ApplicationYTD__r.Type__c}" rendered="false" />
+  <apex:outputField value="{!o.ApplicationYTD__r.Weeks_1__c}" rendered="false" />
+  <apex:outputField value="{!o.ApplicationYTD__r.Weeks_2__c}" rendered="false" />
+  <apex:outputField value="{!o.ApplicationYTD__r.Annually_1_1__c}" rendered="false" />
+  <apex:outputField value="{!o.ApplicationYTD__r.Annually_1_2__c}" rendered="false" />
+  <apex:outputField value="{!o.ApplicationYTD__r.Annually_2_1__c}" rendered="false" />
+  <apex:outputField value="{!o.ApplicationYTD__r.Annually_2_2__c}" rendered="false" />
+  <apex:outputField value="{!o.ApplicationYTD__r.Self_Employed_Class__c}" rendered="false" />
+  <apex:outputField value="{!o.ApplicationYTD__r.Self_Employed_Type__c}" rendered="false" />
+  <apex:outputField value="{!o.ApplicationYTD__r.Start_Date_A_1__c}" rendered="false" />
+  <apex:outputField value="{!o.ApplicationYTD__r.Start_Date_A_2__c}" rendered="false" />
+  <apex:outputField value="{!o.ApplicationYTD__r.Latest_Payment_1__c}" rendered="false" />
+  <apex:outputField value="{!o.ApplicationYTD__r.Latest_Payment_Frequency_1__c}" rendered="false" />
+  <apex:outputField value="{!o.ApplicationYTD__r.Latest_Payment_Monthly_1__c}" rendered="false" />
+  <apex:outputField value="{!o.ApplicationYTD__r.Latest_Payment_2__c}" rendered="false" />
+  <apex:outputField value="{!o.ApplicationYTD__r.Latest_Payment_Frequency_2__c}" rendered="false" />
+  <apex:outputField value="{!o.ApplicationYTD__r.Latest_Payment_Monthly_2__c}" rendered="false" />
+  <apex:outputField value="{!o.ApplicationYTD__r.Trustess_Number__c }" rendered="false" />
+  <apex:outputField value="{!o.ApplicationYTD__r.Net_Profit_2__c}" rendered="false" />
+  <apex:outputField value="{!o.ApplicationYTD__r.Sales__c}" rendered="false" />
+  <apex:outputField value="{!o.ApplicationYTD__r.GrossAnnualIncomeApplic1__c}" rendered="false" />
+  <apex:outputField value="{!o.ApplicationYTD__r.GrossAnnualIncomeApplic2__c}" rendered="false" />
+  <apex:outputField value="{!o.ApplicationYTD__r.Sales_2__c}" rendered="false" />
+  <apex:outputField value="{!o.ApplicationYTD__r.Self_Employed_Class_2__c}" rendered="false" />
+  <apex:outputField value="{!o.ApplicationYTD__r.Self_Employed_Type_2__c}" rendered="false" />
+  <apex:outputField value="{!o.ApplicationYTD__r.Trustess_Number_2__c}" rendered="false" />
+  <apex:outputField value="{!o.ApplicationYTD__r.Net_Profit_2_2__c}" rendered="false" />
+
+  <apex:outputField value="{!o.ApplicationServicing__r.Is_Self_Employed__c}" rendered="false" />
+  <apex:outputField value="{!o.ApplicationServicing__r.Is_Split_Living_Expenses__c}" rendered="false" />
+  <apex:outputField value="{!o.ApplicationServicing__r.Is_Split_Rent_Mortgage__c}" rendered="false" />
+  <apex:outputField value="{!o.ApplicationServicing__r.Is_Splitting_Expenses__c}" rendered="false" />
+  <apex:outputField value="{!o.ApplicationServicing__r.Lender_Code__c}" rendered="false" />
+  <apex:outputField value="{!o.ApplicationServicing__r.Net_Non_Centrelink__c}" rendered="false" />
+  <apex:outputField value="{!o.ApplicationServicing__r.Partner_Income__c}" rendered="false" />
+  <apex:outputField value="{!o.ApplicationServicing__r.Net_Partner_Income__c}" rendered="false" />
+  <apex:outputField value="{!o.ApplicationServicing__r.Total_Amount_Available__c}" rendered="false" />
+  <apex:outputField value="{!o.ApplicationServicing__r.Total_Credit_Cards__c}" rendered="false" />
+  <apex:outputField value="{!o.ApplicationServicing__r.Total_Liabilities__c}" rendered="false" />
+  <apex:outputField value="{!o.ApplicationServicing__r.Total_Living_Expenses__c}" rendered="false" />
+  <apex:outputField value="{!o.ApplicationServicing__r.Total_Living_Expenses_Full__c}" rendered="false" />
+  <apex:outputField value="{!o.ApplicationServicing__r.Total_Net_Monthly_Income__c}" rendered="false" />
+  <apex:outputField value="{!o.ApplicationServicing__r.Total_Rent_Mortgage__c}" rendered="false" />
+  <apex:outputField value="{!o.ApplicationServicing__r.Total_Rent_Mortgage_Full__c}" rendered="false" />
+  <apex:outputField value="{!o.ApplicationServicing__r.Income_1__c}" rendered="false" />
+  <apex:outputField value="{!o.ApplicationServicing__r.Income_1b__c}" rendered="false" />
+  <apex:outputField value="{!o.ApplicationServicing__r.Income_2__c}" rendered="false" />
+  <apex:outputField value="{!o.ApplicationServicing__r.Income_2b__c}" rendered="false" />
+  <apex:outputField value="{!o.ApplicationServicing__r.IncomePayFrecuency_1b__c}" rendered="false" />
+  <apex:outputField value="{!o.ApplicationServicing__r.IncomePayFrecuency_2b__c}" rendered="false" />
+  <apex:outputField value="{!o.ApplicationServicing__r.Net_Profit_After_Tax__c}" rendered="false" />
+  <apex:outputField value="{!o.ApplicationServicing__r.Net_Profit_Before_Tax__c}" rendered="false" />
+  <apex:outputField value="{!o.ApplicationServicing__r.NAF__c}" rendered="false" />
+  <apex:outputField value="{!o.ApplicationServicing__r.Area__c}" rendered="false" />
+  <apex:outputField value="{!o.ApplicationServicing__r.State__c}" rendered="false" />
+  <apex:outputField value="{!o.ApplicationServicing__r.Mortgage_Buffer__c}" rendered="false" />
+</apex:page>

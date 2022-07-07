@@ -1,0 +1,197 @@
+<apex:page standardController="Custom_Opportunity__c" extensions="PreliminaryAssessmentExtension" renderAs="pdf">
+    <apex:stylesheet value="{!$Resource.AppPdfCss}"/>
+    
+    <div class="header">
+        <table style="border: 0px;" >
+            <tr style="border: 0px;">
+                <td style="border: 0px;" align="left">
+                    <apex:outputPanel rendered="{!ISBLANK(AccountVar.Business_Logo__c)}"><!--Display default Logo if Portal User has no logo.-->
+                      <apex:image url="{!$Resource.newSavvyLogo}" alt="Logo" />
+                    </apex:outputPanel>
+                    <apex:outputPanel rendered="{!NOT(ISBLANK(AccountVar.Business_Logo__c))}"><!--Display Portal User's Logo if available-->
+                      <apex:image id="Logo" value="{!AccountVar.Business_Logo__c}" height="60"/>
+                    </apex:outputPanel>
+                </td>
+                <td style="border: 0px;" align="left" valign="middle">
+                  <span style="color:#000000;font-size:1.5em;">PRELIMINARY ASSESSMENT</span>
+                  <!-- <span style="font-size:0.8em;"><span style="color:#000000;">E</span> applications@savvy.com.au <font>|</font> <span style="color:#000000;">P</span> 1300 974 066 <font>|</font> <span style="color:#000000;">F</span> 1300 978 066<br/>
+                  <span style="color:#000000;">A</span> Level 1, 145 The Parade, Norwood, SA 5067 <font>|</font> <span style="color:#000000;">www</span>.savvy.<span style="color:#000000;">com.au</span></span> -->
+                </td>
+            </tr>
+        </table>
+    </div>
+    <div class="footer">
+        <div class="footerContent">Page <span class="pagenumber"/> of <span class="pagecount"/></div>
+    </div>
+    <div class="content">
+        <apex:variable value="{!Custom_Opportunity__c}" var="o" />
+        <h3>A. Custom Details</h3>
+        <table width="100%">
+            <tr>
+                <td>Applicant 1:</td>
+                <td colspan="3">{!o.Application__r.Title_1__c} {!o.Application__r.First_Name__c} {!o.Application__r.Middle_Name__c} {!o.Application__r.Last_Name__c}</td>
+            </tr>
+            <tr>
+                <td width="20%">Telephone 1:</td>
+                <td width="30%">{!o.Application__r.Mobile_Number__c}</td>
+                <td width="20%">Email 1:</td>
+                <td width="30%">{!o.Application__r.Email_Address__c}</td>
+            </tr>
+        </table>
+        <apex:outputPanel layout="block" rendered="{!o.Application__r.No_of_People__c == 2}">
+        <table width="100%">
+            <tr>
+                <td>Applicant 2:</td>
+                <td colspan="3">{!o.Application__r.Title_2__c} {!o.Application__r.First_Name_2__c} {!o.Application__r.Middle_Name_2__c} {!o.Application__r.Last_Name_2__c}</td>
+            </tr>
+            <tr>
+                <td width="20%">Telephone 2:</td>
+                <td width="30%">{!o.Application__r.Mobile_Number_2__c}</td>
+                <td width="20%">Email 2:</td>
+                <td width="30%">{!o.Application__r.Email_Address_2__c}</td>
+            </tr>
+        </table>
+        </apex:outputPanel>
+        <table width="100%">
+            <tr>
+                <td width="70%">Is this assessment being conducted within 90 days prior to "credit assistance" being provided?</td>
+                <td width="30%"> Yes </td>
+            </tr>
+        </table>
+        <p>
+            NB: "Credit Assistance" means suggesting a consumer apply for finance to a particular lender or assisting a consumer to make a finance application to a particular lender.
+        </p>
+        
+        <h3>B. Customer Objectives</h3>
+        <table width="100%">
+            <tr>
+            	<td>Customer Objective (Loan Type / Loan Product / Goods Type):</td>
+                <td colspan="2">{!quo.Loan_Type__c} &nbsp;/&nbsp; {!quo.Loan_Product__c} &nbsp;/&nbsp; {!quo.Goods_type__c}</td>
+            </tr>
+            <tr>
+            	<td width="35%">Amount Financed</td>
+                <td width="33%">Repayments</td>
+                <td  width="32%">Repayment Frequency</td>
+            </tr>
+            <tr>
+            	<td>$ {!quo.NAF__c}</td>
+                <td>$ {!quo.Repayment_Monthly__c}</td>
+                <td>Monthly</td>
+            </tr>
+        </table>
+        
+        <h3>C. Capacity to Repay Without Substantial Hardship</h3>
+        <p>
+            Substantial Hardship is defined by an inability to meet reasonable and immediate family living expenses.
+        </p>
+        <table width="70%" align="center">
+            <tr>
+            	<td width="50%"><strong>Income</strong></td>
+                <td width="50%"><strong>$</strong></td>
+            </tr>
+            <tr>
+            	<td>Applicant Net Income</td>
+                <td>{!servCalc.applicantIncome1}</td>
+            </tr>
+            <tr>
+            	<td>Co Borrower Net Income</td>
+                <td>{!servCalc.applicantIncome2}</td>
+            </tr>
+            <tr>
+            	<td>Other Income</td>
+                <td>{!servCalc.totalOthresIncomeText}</td>
+            </tr>
+            <tr>
+            	<td>Total Income</td>
+                <td>{!servCalc.netMonthlyIncome}</td>
+            </tr>
+            <tr>
+            	<td>Less</td>
+                <td></td>
+            </tr>
+            <tr>
+            	<td>Expenses</td>
+                <td>$</td>
+            </tr>
+            <tr>
+            	<td>Rent</td>
+                <td>{!servCalc.rentMtgePaid}</td>
+            </tr>
+            <tr>
+            	<td>Living Expenses</td>
+                <td>{!servCalc.livingExpenses}</td>
+            </tr>
+            <tr>
+            	<td>Existing Loans Payments</td>
+                <td>{!servCalc.totLiabilities}</td>
+            </tr>
+            <tr>
+            	<td>Credit Card Payments</td>
+                <td>{!servCalc.otherDebts}</td>
+            </tr>
+            <tr>
+            	<td>This Commitment</td>
+                <td>$ {!quo.Repayment_Monthly__c}</td>
+            </tr>
+            <tr>
+            	<td>Total Expenses</td>
+                <td>
+                	<apex:outputText label=" " value="{0, number, Currency}">
+                        <apex:param value="{!totalExpenses}"/>
+                    </apex:outputText>
+                </td>
+            </tr>
+            <tr>
+            	<td>Monthly Surplus/Deficiency</td>
+                <td>
+                	<apex:outputText label=" " value="{0, number, Currency}">
+                        <apex:param value="{!totalSurplusDeficiency}"/>
+                    </apex:outputText>
+                </td>
+            </tr>
+        </table>
+        
+        <h3>D. Capacity to Pay</h3>
+        <table width="100%">
+            <tr>
+            	<td width="90%">Given the client's objectives, is the proposed facility "NOT unsuitable"?</td>
+                <td width="10%">Yes</td>
+            </tr>
+            <tr>
+            	<td>Is a surplus evident based on the information supplied by the client?</td>
+                <td>Yes</td>
+            </tr>
+            <tr>
+            	<td>Are there reasonable prospects for the client's level of income to continue?</td>
+                <td>Yes</td>
+            </tr>
+            <tr>
+            	<td>Has an Assets &amp; Liabilities statement been completed on the customer?</td>
+                <td>Yes</td>
+            </tr>
+            <tr>
+            	<td>Do all supporting documents match up with stated financial information?</td>
+                <td>Yes</td>
+            </tr>
+            <tr>
+            	<td>Taking into account the above information regarding the client's capacity and commitments, is the proposed facility "NOT unsuitable"?</td>
+                <td>Yes</td>
+            </tr>
+            <tr>
+            	<td>Does the client/s fully understand all aspects of the proposed transaction and has the client/s confirmed that the proposed payments are within their financial capabilities to meet from normal income?</td>
+                <td>Yes</td>
+            </tr>
+        </table>
+        
+        <h3>E. Authorised Employee</h3>
+		<table width="100%">
+            <tr>
+                <td width="15%">Name:</td>
+                <td width="50%">{!o.Owner.Name}</td>
+                <td width="10%">Date:</td>
+                <td width="25%">{!today}</td>
+            </tr>
+        </table>
+        
+    </div>
+</apex:page>

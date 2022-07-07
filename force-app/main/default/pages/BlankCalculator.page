@@ -1,0 +1,503 @@
+<apex:page docType="html-5.0" standardController="Custom_Opportunity__c" extensions="BlankCalculatorEstension" sidebar="false"
+  showHeader="true" id="BlankCalc" action="{!validate}">
+  <apex:includeLightning />
+  <apex:variable value="{!Custom_Opportunity__c}" var="o" />
+  <apex:outputPanel rendered="{!isBrokerPartnerUser}">
+    <style type="text/css">
+      html .brandQuaternaryBgr { background:#FFFFFF!important; }
+    </style>
+  </apex:outputPanel>
+  <style type="text/css">
+    /* #mainContent {
+      margin-left: auto;
+      width: 86%;
+    } */
+    .main-content {
+      margin-left: auto;
+      width: 86%;
+    }
+    
+  </style>
+  
+  <c:sidebarV2 oppId="{!o.Id}" 
+    appId="{!o.Application__c}" 
+    rendered="{!NOT(isBrokerPartnerUser)}"  
+  />
+  <div id="mainContent" class="{!IF(NOT(isBrokerPartnerUser),'main-content','')}">
+    <apex:pageMessages id="pageMessage" />
+    <!-- <h3>Please select a calculator, thank you.</h3> -->
+    <br/>
+    <apex:outputPanel layout="block" rendered="{!NOT(isBrokerPartnerUser)}">
+      <table align="center" width="100%" cellpadding="7">
+        <tr>
+          <td align="center" valign="Top">
+            <apex:outputLink value="{!$Page.GeneralCalculator}?id={!o.Id}">
+            <!-- <apex:outputLink value="https://dev-quantumsavvy.cs6.force.com/holabroker/s/sales-tools/asset-details?recordId={!o.Id}"> -->
+              <strong>General</strong>
+              <br/>
+              <apex:image url="{!$Resource.GeneralLogo}" height="40" />
+            </apex:outputLink>
+          </td>
+          <td align="center" valign="Top">
+            <apex:outputLink value="{!$Page.EsandaCommercial}?id={!o.Id}">
+              <strong>ANZ Commercial</strong>
+              <br/>
+              <apex:image url="{!$Resource.ANZLogo}" height="40" />
+            </apex:outputLink>
+          </td>
+          <td align="center" valign="Top">
+            <apex:outputLink value="{!$Page.EsandaOthers}?id={!o.Id}">
+              <strong>ANZ Others</strong>
+              <br/>
+              <apex:image url="{!$Resource.ANZLogo}" height="40" />
+            </apex:outputLink>
+          </td>
+          <td align="center" valign="Top">
+            <apex:outputLink value="{!$Page.MacquarieConsumer}?id={!o.Id}">
+              <strong>Macquarie Consumer</strong>
+              <br/>
+              <apex:image url="{!$Resource.MacquarieLogo}" height="40" />
+            </apex:outputLink>
+          </td>
+          <td align="center" valign="Top">
+            <apex:outputLink value="{!$Page.MacquarieCommercial}?id={!o.Id}">
+              <strong>Macquarie Commercial</strong>
+              <br/>
+              <apex:image url="{!$Resource.MacquarieLogo}" height="40" />
+            </apex:outputLink>
+          </td>
+          <td align="center" valign="Top">
+            <apex:outputLink value="{!$Page.Money3Calculator}?id={!o.Id}">
+              <strong>Money 3</strong>
+              <br/>
+              <apex:image url="{!$Resource.Money3Logo}" height="40" />
+            </apex:outputLink>
+          </td>
+        </tr>
+        <tr>
+          <td colspan="6">&nbsp;</td>
+        </tr>
+        <tr>
+          <td align="center" valign="Top">
+            <apex:outputLink value="{!$Page.PepperCalculatorMV}?id={!o.Id}">
+              <strong>Pepper MV/Caravan</strong>
+              <br/>
+              <apex:image url="{!$Resource.PepperLogo}" height="40" />
+            </apex:outputLink>
+          </td>
+          <td align="center" valign="Top">
+            <apex:outputLink value="{!$Page.PepperCalculatorLeisure}?id={!o.Id}">
+              <strong>Pepper Bikes/Boats/Others</strong>
+              <br/>
+              <apex:image url="{!$Resource.PepperLogo}" height="40" />
+            </apex:outputLink>
+          </td>
+          <td align="center" valign="Top">
+            <apex:outputLink value="{!$Page.PepperPL}?id={!o.Id}">
+              <strong>Pepper PL</strong>
+              <br/>
+              <apex:image url="{!$Resource.PepperLogo}" height="40" />
+            </apex:outputLink>
+          </td>
+          <td align="center" valign="Top">
+            <apex:outputLink value="{!$Page.PepperComm}?id={!o.Id}">
+              <strong>Pepper Commercial</strong>
+              <br/>
+              <apex:image url="{!$Resource.PepperLogo}" height="40" />
+            </apex:outputLink>
+          </td>
+          <td align="center" valign="Top">
+            <apex:outputLink value="{!$Page.FirstmacCalculator}?id={!o.Id}">
+              <strong>Firstmac</strong>
+              <br/>
+              <apex:image url="{!$Resource.FirstmacLogo}" height="40" />
+            </apex:outputLink>
+          </td>
+          <td align="center" valign="Top">
+            <apex:outputLink value="{!$Page.NowFinanceCalculator}?id={!o.Id}">
+              <strong>Now Finance</strong>
+              <br/>
+              <apex:image url="{!$Resource.NowFinanceLogo}" height="40" />
+            </apex:outputLink>
+          </td>
+        </tr>
+        <tr>
+          <td colspan="6">&nbsp;</td>
+        </tr>
+        <tr>
+          <td align="center" valign="Top">
+            <apex:outputLink value="{!$Page.LatitudeCalculator}?id={!o.Id}">
+              <strong>Latitude</strong>
+              <br/>
+              <apex:image url="{!$Resource.LatitudeLogo3}" height="40" />
+            </apex:outputLink>
+          </td>
+          <td align="center" valign="Top">
+            <apex:outputLink value="{!$Page.LatitudePersonalCalculator}?id={!o.Id}">
+              <strong>Latitude PL</strong>
+              <br/>
+              <apex:image url="{!$Resource.LatitudeLogo3}" height="40" />
+            </apex:outputLink>
+          </td>
+          <td align="center" valign="Top">
+            <apex:outputLink value="{!$Page.AfsCalculator}?id={!o.Id}">
+              <strong>AFS Consumer</strong>
+              <br/>
+              <apex:image url="{!$Resource.AFSLogo}" height="40" />
+            </apex:outputLink>
+          </td>
+          <td align="center" valign="Top">
+            <apex:outputLink value="{!$Page.AfsCommercialCalculator}?id={!o.Id}">
+              <strong>AFS Commercial</strong>
+              <br/>
+              <apex:image url="{!$Resource.AFSLogo}" height="40" />
+            </apex:outputLink>
+          </td>
+          <td align="center" valign="Top">
+            <apex:outputLink value="{!$Page.FinanceOne}?id={!o.Id}">
+              <strong>Finance One</strong>
+              <br/>
+              <apex:image url="{!$Resource.FinanceOneLogo}" height="40" />
+            </apex:outputLink>
+          </td>
+          <td align="center" valign="Top">
+            <apex:outputLink value="{!$Page.FinanceOneComm}?id={!o.Id}">
+              <strong>Finance One Commercial</strong>
+              <br/>
+              <apex:image url="{!$Resource.FinanceOneLogo}" height="40" />
+            </apex:outputLink>
+          </td>
+        </tr>
+        <tr>
+          <td colspan="6">&nbsp;</td>
+        </tr>
+        <tr>
+          <td align="center" valign="Top">
+            <apex:outputLink value="{!$Page.LibertyDrive}?id={!o.Id}">
+              <strong>Liberty</strong>
+              <br/>
+              <apex:image url="{!$Resource.LibertyLogo}" height="40" />
+            </apex:outputLink>
+          </td>
+          <td align="center" valign="Top">
+            <apex:outputLink value="{!$Page.LibertyLeisure}?id={!o.Id}">
+              <strong>Liberty Leisure</strong>
+              <br/>
+              <apex:image url="{!$Resource.LibertyLogo}" height="40" />
+            </apex:outputLink>
+          </td>
+          <td align="center" valign="Top">
+            <apex:outputLink value="{!$Page.LibertyCommercial}?id={!o.Id}">
+              <strong>Liberty Commercial</strong>
+              <br/>
+              <apex:image url="{!$Resource.LibertyLogo}" height="40" />
+            </apex:outputLink>
+          </td>
+          <td align="center" valign="Top">
+            <apex:outputLink value="{!$Page.RateSetterCalculator}?id={!o.Id}">
+              <strong>Plenti</strong>
+              <br/>
+              <apex:image url="{!$Resource.PlentiLogo}" height="40" />
+            </apex:outputLink>
+          </td>
+          <td align="center" valign="Top">
+            <apex:outputLink value="{!$Page.PlentiCommercial}?id={!o.Id}">
+              <strong>Plenti Commercial</strong>
+              <br/>
+              <apex:image url="{!$Resource.PlentiLogo}" height="40" />
+            </apex:outputLink>
+          </td>
+          <td align="center" valign="Top">
+            <apex:outputLink value="{!$Page.RatesetterPL}?id={!o.Id}">
+              <strong>Plenti PL</strong>
+              <br/>
+              <apex:image url="{!$Resource.PlentiLogo}" height="40" />
+            </apex:outputLink>
+          </td>
+        </tr>
+        <tr>
+          <td colspan="6">&nbsp;</td>
+        </tr>
+        <tr>
+          <td align="center" valign="Top">
+            <apex:outputLink value="{!$Page.WisrCalculator}?id={!o.Id}">
+              <strong>Wisr PL</strong>
+              <br/>
+              <apex:image url="{!$Resource.WisrLogo}" height="40" />
+            </apex:outputLink>
+          </td>
+          <td align="center" valign="Top">
+            <apex:outputLink value="{!$Page.WisrVLCalc}?id={!o.Id}">
+              <strong>Wisr Car Loan</strong>
+              <br/>
+              <apex:image url="{!$Resource.WisrLogo}" height="40" />
+            </apex:outputLink>
+          </td>
+          <td align="center" valign="Top">
+            <apex:outputLink value="{!$Page.BOQCalculator}?id={!o.Id}">
+              <strong>Bank Of Queensland</strong>
+              <br/>
+              <apex:image url="{!$Resource.BOQLogo}" height="40" />
+            </apex:outputLink>
+          </td>
+          <td align="center" valign="Top">
+            <apex:outputLink value="{!$Page.BOQCommercial}?id={!o.Id}">
+              <strong>Bank Of Queensland (Commercial)</strong>
+              <br/>
+              <apex:image url="{!$Resource.BOQLogo}" height="40" />
+            </apex:outputLink>
+          </td>
+          <td align="center" valign="Top">
+            <apex:outputLink value="{!$Page.YamahaMarineCalculator}?id={!o.Id}">
+              <strong>AMMF</strong>
+              <br/>
+              <apex:image url="{!$Resource.YamahaLogo}" height="40" />
+            </apex:outputLink>
+          </td>
+          <td align="center" valign="Top">
+            <apex:outputLink value="{!$Page.GreenLightCalculator}?id={!o.Id}">
+              <strong>Green Light</strong>
+              <br/>
+              <apex:image url="{!$Resource.GreenLightLogo}" height="40" />
+            </apex:outputLink>
+          </td>
+        </tr>
+        <tr>
+          <td colspan="6">&nbsp;</td>
+        </tr>
+        <tr>
+          <td align="center" valign="Top">
+            <apex:outputLink value="{!$Page.ProspaCalculator}?id={!o.Id}">
+              <strong>Prospa</strong>
+              <br/>
+              <apex:image url="{!$Resource.ProspaLogo}" height="40" />
+            </apex:outputLink>
+          </td>
+          <td align="center" valign="Top">
+            <apex:outputLink value="{!$Page.MoneyPlace}?id={!o.Id}">
+              <strong>Money Place</strong>
+              <br/>
+              <apex:image url="{!$Resource.MoneyPlaceLogo}" height="40" />
+            </apex:outputLink>
+          </td>
+          <td align="center" valign="Top">
+            <apex:outputLink value="{!$Page.ACLCalculator}?id={!o.Id}">
+              <strong>Affordable Car Loan</strong>
+              <br/>
+              <apex:image url="{!$Resource.ACLLogo}" height="40" />
+            </apex:outputLink>
+          </td>
+          <td align="center" valign="Top">
+            <apex:outputLink value="{!$Page.CarStartFinanceCalculator}?id={!o.Id}">
+              <strong>Car Start Finance</strong>
+              <br/>
+              <apex:image url="{!$Resource.CarStartFinanceLogo}" height="40" />
+            </apex:outputLink>
+          </td>
+          <td align="center" valign="Top">
+            <apex:outputLink value="{!$Page.AzoraCalc}?id={!o.Id}">
+              <strong>Azora Consumer</strong>
+              <br/>
+              <apex:image url="{!$Resource.AzoraLogo}" height="40" />
+            </apex:outputLink>
+          </td>
+          <td align="center" valign="Top">
+            <apex:outputLink value="{!$Page.MetroCalculator}?id={!o.Id}">
+              <strong>Metro</strong>
+              <br/>
+              <apex:image url="{!$Resource.MetroLogo}" height="40" />
+            </apex:outputLink>
+          </td>
+        </tr>
+        <tr>
+          <td align="center" valign="Top">
+            <apex:outputLink value="{!$Page.UMELoans}?id={!o.Id}">
+              <strong>UME Loans</strong>
+              <br/>
+              <apex:image url="{!$Resource.UMELoansLogo}" height="40" />
+            </apex:outputLink>
+          </td>
+          <td align="center" valign="Top">
+            <apex:outputLink value="{!$Page.SocietyOne}?id={!o.Id}">
+              <strong>Society One</strong>
+              <br/>
+              <apex:image url="{!$Resource.SocietyOneLogo}" height="40" />
+            </apex:outputLink>
+          </td>
+          <td align="center" valign="Top">
+            <apex:outputLink value="{!$Page.Westpac}?id={!o.Id}">
+              <strong>Westpac</strong>
+              <br/>
+              <apex:image url="{!$Resource.WestpacLogo}" height="40" />
+            </apex:outputLink>
+          </td>
+          <td align="center" valign="Top">
+            <apex:outputLink value="{!$Page.APF}?id={!o.Id}">
+              <strong>APF</strong>
+              <br/>
+              <apex:image url="{!$Resource.APFLogo}" height="40" />
+            </apex:outputLink>
+          </td>
+          <td colspan="2"></td>
+        </tr>
+        <!--New Calculators -->
+        <tr>
+          <td colspan="6"><hr/></td>
+        </tr>
+        <tr>
+          <td align="center" valign="Top">
+            <apex:outputLink value="{!$Page.ShiftAsset}?id={!o.Id}">
+              <strong>Shift Asset</strong>
+              <br/>
+              <apex:image url="{!$Resource.ShiftLogo}" height="40" />
+            </apex:outputLink>
+          </td>
+          <td align="center" valign="Top">
+            <apex:outputLink value="{!$Page.ShiftOTL}?id={!o.Id}">
+              <strong>Shift (ODR and Term Loan)</strong>
+              <br/>
+              <apex:image url="{!$Resource.ShiftLogo}" height="40" />
+            </apex:outputLink>
+          </td>
+          <td align="center" valign="Top">
+            <apex:outputLink value="{!$Page.GrowAssetCar}?id={!o.Id}">
+              <strong>Grow Asset Car</strong>
+              <br/>
+              <apex:image url="{!$Resource.GrowLogo}" height="40" />
+            </apex:outputLink>
+          </td>
+          <td align="center" valign="Top">
+            <apex:outputLink value="{!$Page.GrowBusinessLoan}?id={!o.Id}">
+              <strong>Grow Business Loan</strong>
+              <br/>
+              <apex:image url="{!$Resource.GrowLogo}" height="40" />
+            </apex:outputLink>
+          </td>
+          <td align="center" valign="Top">
+            <apex:outputLink value="{!$Page.AngleFinance}?id={!o.Id}">
+              <strong>Angle Finance</strong>
+              <br/>
+              <apex:image url="{!$Resource.AngleFinanceLogo}" height="40" />
+            </apex:outputLink>
+          </td>
+          <td align="center" valign="Top">
+            <apex:outputLink value="{!$Page.Morris}?id={!o.Id}">
+              <strong>Morris</strong>
+              <br/>
+              <apex:image url="{!$Resource.MorrisLogo}" height="40" />
+            </apex:outputLink>
+          </td>
+        </tr>
+        <tr>
+          <td align="center" valign="Top">
+            <apex:outputLink value="{!$Page.Selfco}?id={!o.Id}">
+              <strong>Selfco</strong>
+              <br/>
+              <apex:image url="{!$Resource.SelfcoLogo}" height="40" />
+            </apex:outputLink>
+          </td>
+          <td align="center" valign="Top">
+            <apex:outputLink value="{!$Page.SilverChef}?id={!o.Id}">
+              <strong>Silver Chef</strong>
+              <br/>
+              <apex:image url="{!$Resource.SilverChefLogo}" height="40" />
+            </apex:outputLink>
+          </td>
+          <td align="center" valign="Top">
+            <apex:outputLink value="{!$Page.CapitalFinance}?id={!o.Id}">
+              <strong>Capital Finance</strong>
+              <br/>
+              <apex:image url="{!$Resource.CapitalFinanceLogo}" height="40" />
+            </apex:outputLink>
+          </td>
+          <td align="center" valign="Top">
+            <apex:outputLink value="{!$Page.Fleetpartners}?id={!o.Id}">
+              <strong>Fleet Partners</strong>
+              <br/>
+              <apex:image url="{!$Resource.FleetPartnersLogo}" height="40" />
+            </apex:outputLink>
+          </td>
+          <td align="center" valign="Top">
+            <apex:outputLink value="{!$Page.GroupGeneral}?id={!o.Id}">
+              <strong>Group and General</strong>
+              <br/>
+              <apex:image url="{!$Resource.GroupAndGeneralLogo}" height="40" />
+            </apex:outputLink>
+          </td>
+          <td align="center" valign="Top">
+            <apex:outputLink value="{!$Page.CommercialEquityGroup}?id={!o.Id}">
+              <strong>Commercial Equity Group</strong>
+              <br/>
+              <apex:image url="{!$Resource.CommercialEquityGroupLogo}" height="40" />
+            </apex:outputLink>
+          </td>
+        </tr>
+        <tr>
+          <td colspan="6">&nbsp;</td>
+        </tr>
+        <!--END-->
+      </table>
+    </apex:outputPanel>
+    
+    <apex:outputPanel layout="block" rendered="false">
+      <div id="quotingContainer" />
+      <script>
+        var oppId = '{!Custom_Opportunity__c.Id}';
+        $Lightning.use("c:QuotingToolsApp", function () {
+          $Lightning.createComponent("c:CalculatorHomePage",
+            { recordId: oppId },
+            "quotingContainer",
+            function (cmp) {
+              console.log("c:QuotingToolsApp loaded successfully in VF page");
+            }
+          );
+        });
+      </script>
+    </apex:outputPanel>
+    
+  </div>
+  <apex:outputField value="{!o.Name}" rendered="false" />
+  <apex:outputField value="{!o.Loan_Product__r.Lender__c}" rendered="false" />
+  <apex:outputField value="{!o.Loan_Product__c}" rendered="false" />
+  <apex:outputField value="{!o.Preapproval_Auth_Date__c}" rendered="false" />
+
+  <div>Message: 
+    <span><div id="MCMessageText"></div></span>
+  </div>
+  <script src="/support/console/52.0/integration.js" type="text/javascript" />
+  <script>
+    // Load the MessageChannel token in a variable
+    var SAMPLEMC = "{!$MessageChannel.AprovalChannel__c}";
+    var subscriptionToMC;
+
+    function publishMC() {
+      const message = {
+        messageToSend: document.getElementById('theMessage').value,
+        sourceSystem: "From VisualForce Page"
+      };
+      sforce.one.publish(SAMPLEMC, message);
+    }
+
+    // Display message in the textarea field
+    function displayMessage(message) {
+      var textLabel = document.querySelector("#MCMessageText");
+      textLabel.innerHTML = message ? JSON.stringify(message, null, '\t') : 'no message payload';
+    }
+
+    function subscribeMC() {
+      if (!subscriptionToMC) {
+        subscriptionToMC = sforce.one.subscribe(SAMPLEMC, displayMessage);
+      }
+    }
+
+    function unsubscribeMC() {
+      if (subscriptionToMC) {
+        sforce.one.unsubscribe(subscriptionToMC);
+        subscriptionToMC = null;
+      }
+    }
+
+    subscribeMC();
+
+  </script>
+</apex:page>

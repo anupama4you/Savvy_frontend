@@ -1,0 +1,436 @@
+<apex:page docType="html-5.0" standardController="Custom_Opportunity__c" extensions="PrivateSalesTaxInvoiceDetailsExtension" sidebar="false" showHeader="true">
+	<!-- Lelo                               2016-06-28 -->
+    <style type="text/css">
+        /* Lelo */
+        .customInputStyle {
+            width: 20px;
+        }
+      
+        .leftTables {
+            display: inline-block;
+            float: left;
+            width: 48%;
+            padding-left: 20px;
+        }
+        .rightTables {
+            display: inline-block;
+            width: 48%;
+            padding-left: 20px;
+            vertical-align: top;
+        }
+        
+        .leftTables2 {
+            display: inline-block;
+            float: left;
+            width: 32%;
+            padding-left: 20px;
+        }
+        
+        .leftTablesNoFloat {
+            display: inline-block;
+            width: 48%;
+            padding-left: 20px;
+            vertical-align: top;
+        }
+        .rightTablesNoFloat {
+            display: inline-block;
+            width: 58%;
+            padding-left: 20px;
+        }
+        
+        .rightTables2 {
+            display: inline-block;
+            width: 64%;
+            padding-left: 20px;
+        }
+      
+        .oneTables {
+            display: inline-block;
+            /*float: left;*/
+            width: 97.5%;
+            padding-left: 20px;
+        }
+      
+        .section {
+            background: #f8f8f8;
+            border: 1px solid #ddd;
+            padding-bottom: 20px;
+        }
+
+        .subSectionTab {
+            border: 1px solid #ddd;
+            border-bottom: transparent;
+            display: inline-block;
+            background-color: #fff;
+            position: relative;
+            padding: 3px;
+            padding-right: 20px;
+            padding-left: 20px;
+            top: 20px;
+        }
+        
+        .tableSubsection {
+            width: 100%;
+            background: white;
+            border: 1px solid #ddd;
+            margin-top: 18px;
+            padding: 2px;
+            padding-left: 20px;
+            padding-top: 10px;
+            padding-bottom: 10px;
+        }
+        
+        .labelColumn {
+            width: 25%;
+            /*padding-bottom: 13px;*/
+        }
+        .dataColumn {
+            width: 25%;
+        }
+        
+        .labelOneColumn {
+            width: 30%;
+            /*padding-bottom: 13px;*/
+        }
+        .dataOneColumn {
+            width: 70%;
+        }
+        
+        .divTitle {
+            background-color: #ddd;
+            padding-top: 1px;
+            padding-bottom: 1px;
+            padding-left: 15px;
+            /*text-transform: uppercase;*/
+            font-weight: bold;
+            border: 1px solid #ddd;
+        }
+        .dataInput {
+            border: 1px solid #e0e0e0;
+            padding: 0.3em !important;;
+            min-width: 173px !important;;
+        }
+        .dataInput2 {
+            border: 1px solid #e0e0e0;
+            padding: 0.3em !important;
+            min-width: 53px !important;
+            max-width: 113px !important;
+        }
+        .dataInputFull {
+            border: 1px solid #e0e0e0;
+            padding: 0.3em !important;
+            min-width: 98% !important;
+        }
+        .selectList {
+            border: 1px solid #e0e0e0;
+            padding: 0.3em;
+            width:182px;
+            height: 25px !important;
+        }
+        .selectList2 {
+            border: 1px solid #e0e0e0;
+            padding: 0.3em;
+            width:122px;
+            height: 25px !important;
+        }
+        .selectListMultiple {
+            border: 1px solid #e0e0e0;
+            padding: 0.3em;
+            width:182px;
+        }
+        .titleDiv {
+            width: 100%;
+            height: 43px;
+            font-size: 1.0rem;
+        }
+        .toolOptions {
+            float: right;
+            text-align: right;
+            width: 60%;
+        }
+
+        #main .bPageBlock {
+            border-top: 1px solid white !important;
+        }
+
+        .commandButtons {
+            padding: 6px 7px !important;
+            color: #fff !important;
+            font-size: 11px !important;
+            outline: none !important;
+            /*text-transform: uppercase !important;*/
+            background: rgb(125,126,125) !important; /* Old browsers */
+            background: -moz-linear-gradient(top,  rgba(125,126,125,1) 0%, rgba(14,14,14,1) 100%) !important; /* FF3.6-15 */
+            background: -webkit-linear-gradient(top,  rgba(125,126,125,1) 0%,rgba(14,14,14,1) 100%) !important; /* Chrome10-25,Safari5.1-6 */
+            background: linear-gradient(to bottom,  rgba(125,126,125,1) 0%,rgba(14,14,14,1) 100%) !important; /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
+            filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#7d7e7d', endColorstr='#0e0e0e',GradientType=0 ) !important; /* IE6-9 */
+        }
+        .commandButtons:hover {
+            background: rgb(125,126,125) !important; /* Old browsers */
+            background: -moz-linear-gradient(top,  rgba(125,126,125,1) 0%, rgba(14,14,14,1) 41%) !important; /* FF3.6-15 */
+            background: -webkit-linear-gradient(top,  rgba(125,126,125,1) 0%,rgba(14,14,14,1) 41%) !important; /* Chrome10-25,Safari5.1-6 */
+            background: linear-gradient(to bottom,  rgba(125,126,125,1) 0%,rgba(14,14,14,1) 41%) !important; /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
+            filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#7d7e7d', endColorstr='#0e0e0e',GradientType=0 ) !important; /* IE6-9 */
+        }
+
+        .noSidebarCell, .sidebarCell .fixed {
+            height: inherit;
+        }
+        
+        /* Servicing Calculator*/
+        .cellMultiTables {
+            vertical-align: top;
+        }
+        .cellExtraRigthPading {
+            padding-right: 18px;
+        }
+        .cellExtraLeftPading {
+            padding-left: 18px;
+        }
+        .incomeValue {
+            color: #1a75ff !important;
+        }
+        .notIncomeValue {
+            color: #cc0000 !important;
+        }     
+        .totalCalculated {
+            color: #1a75ff !important;
+            font-weight: bold;
+            font-size: 13px;
+        }
+        .bPageBlock { 
+            border-top: 0px solid white !important;
+            border-bottom: 0px solid white; 
+            border-left: 0px solid white; 
+            border-right: 0px solid white; 
+            padding: ;
+            margin-bottom: 10px;
+        }
+        .div2Columns {
+            -webkit-column-count: 2; /* Chrome, Safari, Opera */
+            -moz-column-count: 2; /* Firefox */
+            column-count: 2;
+        }
+        #mainContent {
+            margin-left:auto;
+            width:86%;
+        }
+        .requiredInput2 {
+            background-color: #c00;
+            position: relative;
+            left: -4px;
+            width: 3px;
+            top: 1px;
+            bottom: 1px;
+        }
+        /* end */
+    </style>
+    <!-- end -->
+	<apex:variable value="{!Custom_Opportunity__c}" var="opp" />
+	<apex:variable value="{!Custom_Opportunity__c.Application_AssetDetail__r}" var="asset" />
+    <div class="bPageBlock">
+        <c:sidebarV2 id="pnlSideBar" oppId="{!opp.Id}" appId="{!opp.Application__c}"/>
+        <div id="mainContent">
+        	<apex:pageMessages id="msg" />
+            <apex:form styleClass="appForm" id="dataForm">
+            	<apex:outputPanel layout="block" styleClass="titleDiv">
+                    <h1>Private Sale Tax Invoice Details for {!opp.Name}</h1>
+                    <apex:outputPanel layout="block" styleClass="toolOptions">
+                        <apex:actionStatus startText="(processing...)" id="stsStatus"  />&nbsp;
+                        <apex:commandButton value="Save" action="{!saveData}" styleClass="commandButtons" reRender="msg" status="stsStatus" />
+                        <apex:commandButton value="Generate Tax Invoice" styleClass="commandButtons" reRender="msg" status="stsStatus"
+                        					oncomplete="window.open('/apex/PrivateSalesTaxInvoicePdf?id={!Custom_Opportunity__c.Id}');">
+                        	<!-- <apex:actionSupport event="oncomplete" oncomplete="window.open('/apex/PrivateSalesTaxInvoicePdf?id={!Custom_Opportunity__c.Id}');"/> -->
+                        </apex:commandButton>
+                    </apex:outputPanel>
+                </apex:outputPanel>
+                <apex:outputPanel layout="block" styleClass="section">  
+                    <div class="divTitle">DETAILS</div>
+                    <apex:outputPanel styleClass="leftTablesNoFloat" id="pnlDetails">
+                    	<apex:outputPanel styleClass="subSectionTab"><h3>Vendor Details</h3></apex:outputPanel>
+                        <table class="tableSubsection">
+                            <tr>
+                                <td colspan="4"><apex:inputField value="{!opp.Is_Vendor_Company__c}">
+                                    <apex:actionSupport event="onclick" action="{!adjustInvoiceAmount}" reRender="pnlDetails" status="stsStatus"/>
+                                </apex:inputField> Please tick if the vendor is a company (GST required)</td>
+                            </tr>
+                        	<tr>
+                        		<td width="20%">Name</td>
+                        		<td width="30%">
+                                    <apex:outputPanel styleClass="requiredInput"><apex:outputPanel styleClass="requiredBlock"></apex:outputPanel></apex:outputPanel>
+                                    <apex:inputField value="{!opp.Dealer_Name__c}" styleClass="dataInput"/></td>
+                                <td width="20%"><apex:outputText value="ABN" rendered="{!opp.Is_Vendor_Company__c}"/></td>
+                                <td width="30%">
+                                    <apex:outputPanel styleClass="requiredInput" rendered="{!opp.Is_Vendor_Company__c}"><apex:outputPanel styleClass="requiredBlock"></apex:outputPanel></apex:outputPanel>
+                                    <apex:inputField value="{!opp.Vendor_ABN__c}" rendered="{!opp.Is_Vendor_Company__c}" styleClass="dataInput" /></td>
+                        	</tr>
+                        	<tr>
+                        		<td>Address</td>
+                        		<td>
+                                    <apex:outputPanel styleClass="requiredInput"><apex:outputPanel styleClass="requiredBlock"></apex:outputPanel></apex:outputPanel>
+                                    <apex:inputField value="{!opp.Dealer_Address__c}" styleClass="dataInput" /></td>
+                                <td>Second Signer (optional)</td>
+                                <td><apex:inputField value="{!opp.Vendor_Name_2__c}" styleClass="dataInput"/></td>
+                            </tr>
+                        </table>
+                        <apex:outputPanel styleClass="subSectionTab"><h3>Goods</h3></apex:outputPanel>
+                        <table class="tableSubsection">
+                        	<tr>
+                        		<td>Description</td>
+                        		<td colspan="3">
+                                    <apex:outputPanel styleClass="requiredInput"><apex:outputPanel styleClass="requiredBlock"></apex:outputPanel></apex:outputPanel>
+                                    <apex:inputField value="{!asset.Invoice_Description__c}" styleClass="dataInputFull" /></td>
+                        	</tr>
+                        	<tr>
+                        		<td width="20%">Rego No.</td>
+                        		<td width="30%">
+                                    <apex:outputPanel styleClass="requiredInput"><apex:outputPanel styleClass="requiredBlock"></apex:outputPanel></apex:outputPanel>
+                                    <apex:inputField value="{!asset.Rego__c}" styleClass="dataInput" /></td>
+                        		<td width="20%">VIN</td>
+                        		<td width="30%">
+                                    <apex:outputPanel styleClass="requiredInput"><apex:outputPanel styleClass="requiredBlock"></apex:outputPanel></apex:outputPanel>
+                                    <apex:inputField value="{!asset.VIN__c}" styleClass="dataInput" /></td>
+                        	</tr>
+                        	<tr>
+                        		<td>Engine No.</td>
+                        		<td>
+                                    <apex:outputPanel styleClass="requiredInput"><apex:outputPanel styleClass="requiredBlock"></apex:outputPanel></apex:outputPanel>
+                                    <apex:inputField value="{!asset.Engine_No__c}" styleClass="dataInput" /></td>
+                        		<td>Colour</td>
+                        		<td><apex:inputField value="{!asset.Colour__c}" styleClass="dataInput" /></td>
+                        	</tr>
+                        	<tr>
+                        		<td>Odometer</td>
+                        		<td>
+                                    <apex:outputPanel styleClass="requiredInput"><apex:outputPanel styleClass="requiredBlock"></apex:outputPanel></apex:outputPanel>
+                                    <apex:inputField value="{!asset.Actual_KM__c}" styleClass="dataInput" /></td>
+                        	</tr>
+                        	<tr><td colspan="4">&nbsp;</td></tr>
+                        	<tr>
+                        		<td>Invoice Amount</td>
+                        		<td colspan="3">
+                                    <apex:outputPanel styleClass="requiredInput"><apex:outputPanel styleClass="requiredBlock"></apex:outputPanel></apex:outputPanel>
+                                    <!-- <apex:inputField value="{!opp.Tax_Invoice_Amount__c}" styleClass="dataInput">   
+                                        <apex:actionSupport event="onchange" reRender="fldGst, fldTotalGoods"/>
+                                    </apex:inputField> -->
+                                    <apex:outputText value="{0, Number, Currency}">
+                                        <apex:param value="{!opp.Tax_Invoice_Amount__c}" />
+                                    </apex:outputText>
+                        		</td>
+                        	</tr>
+                        	<tr style="display: {!IF(opp.Is_Vendor_Company__c, '','none')}">
+                        		<td>GST</td>
+                        		<td colspan="3">
+                                    <apex:outputText value="{0, Number, Currency}" id="fldGst">
+                                        <apex:param value="{!gstGoods}" />
+                                    </apex:outputText>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                                    <!-- <apex:inputField value="{!opp.Tax_Invoice_GST__c}" styleClass="dataInput">   
+                                        <apex:actionSupport event="onchange" reRender="fldTotalGoods"/>
+                                    </apex:inputField> -->
+                                </td>
+                        	</tr>
+                        	<tr>
+                        		<td>Deposit</td>
+                        		<td colspan="3">
+                                    <apex:inputField value="{!opp.Tax_Invoice_Deposit__c}" styleClass="dataInput">   
+                                        <apex:actionSupport event="onchange" reRender="fldTotalGoods"/>
+                                    </apex:inputField>
+                                    <!-- <apex:outputField value="{!opp.Loan_Product__r.Deposit__c}"/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; -->
+                                </td>
+                        	</tr>
+                            <tr>
+                                <td>Deposit to be paid / refund</td>
+                                <td colspan="3">
+                                    <apex:inputField value="{!opp.Tax_Invoice_Deposit_2__c}" styleClass="dataInput">   
+                                        <apex:actionSupport event="onchange" reRender="fldTotalGoods"/>
+                                    </apex:inputField>
+                                </td>
+                            </tr>
+                        	<tr>
+                        		<td><h3>TOTAL</h3></td>
+                        		<td colspan="3"><h3>
+                                    <apex:outputText value="{0, Number, Currency}" id="fldTotalGoods">
+                                        <apex:param value="{!totalGoods}" />
+                                    </apex:outputText>
+                                    </h3>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td>
+                        	</tr>
+                        </table>
+                    </apex:outputPanel>
+                    <apex:outputPanel styleClass="rightTables">
+                        <apex:outputPanel styleClass="subSectionTab"><h3>Disbursement Authority:</h3></apex:outputPanel>
+                        <table class="tableSubsection">
+                        	<tr>
+                        		<td width="35%">Financier</td>
+                        		<td width="65%"><apex:inputField value="{!opp.Financier__c}"  /></td>
+                        	</tr>
+                        	<tr>
+                        		<td>Account Name</td>
+                        		<td>
+                                    <apex:inputField value="{!opp.Account_Name_1__c}"  /></td>
+                        	</tr>
+                        	<tr>
+                        		<td>BSB</td>
+                        		<td><apex:inputField value="{!opp.account_bsb_1__c}" /></td>
+                        	</tr>
+                        	<tr>
+                        		<td>Account Number</td>
+                        		<td><apex:inputField value="{!opp.Account_Number_1__c}" /></td>
+                        	</tr>
+                        	<tr>
+                        		<td>Ref Number</td>
+                        		<td><apex:inputField value="{!opp.Account_Reference_1__c}" /></td>
+                        	</tr>
+                        	<tr>
+                        		<td>Amount</td>
+                        		<td>
+                        			<apex:inputField value="{!opp.Account_Amount_1__c}" >
+                        				<apex:actionSupport event="onchange" reRender="fldTotalDis"/>
+                        			</apex:inputField>
+                        		</td>
+                        	</tr>
+                        	<tr><td colspan="2">&nbsp;</td></tr>
+                        	<tr>
+                        		<td>Account Name</td>
+                        		<td><apex:inputField value="{!opp.Account_Name_2__c}"/></td>
+                        	</tr>
+                        	<tr>
+                        		<td>BSB</td>
+                        		<td><apex:inputField value="{!opp.account_bsb_2__c}"/></td>
+                        	</tr>
+                        	<tr>
+                        		<td>Account Number</td>
+                        		<td><apex:inputField value="{!opp.Account_Number_2__c}"/></td>
+                        	</tr>
+                        	<tr>
+                        		<td>Amount</td>
+                        		<td>
+                        			<apex:inputField value="{!opp.Account_Amount_2__c}">
+                        				<apex:actionSupport event="onchange" reRender="fldTotalDis"/>
+                        			</apex:inputField>
+                        		</td>
+                        	</tr>
+                        	<tr>
+                        		<td><h3>TOTAL AMOUNT DUE</h3></td>
+                        		<td><h3>
+                        			<apex:outputText value="{0, Number, Currency}" id="fldTotalDis">
+                                        <apex:param value="{!IF(opp.Account_Amount_1__c==null,0,opp.Account_Amount_1__c) + IF(opp.Account_Amount_2__c==null,0,opp.Account_Amount_2__c)}" />
+                                    </apex:outputText>
+                        		</h3></td>
+                        	</tr>
+                        </table>
+                    </apex:outputPanel>
+                </apex:outputPanel>
+            </apex:form>
+            <apex:outputField value="{!asset.Variant__c}" rendered="false"/>
+            <apex:outputField value="{!asset.Type__c}" rendered="false"/>
+            <apex:outputField value="{!asset.Condition__c}" rendered="false"/>
+            <apex:outputField value="{!asset.Year__c}" rendered="false"/>
+            <apex:outputField value="{!asset.Make__c}" rendered="false"/>
+            <apex:outputField value="{!asset.Model__c}" rendered="false"/>
+            <apex:outputField value="{!asset.Series__c}" rendered="false"/>
+            <apex:outputField value="{!opp.Loan_Product__r.Deposit__c}" rendered="false"/>
+            <apex:outputField value="{!opp.NAF_Net_Amount_Financed__c}" rendered="false"/>
+            <apex:outputField value="{!opp.Loan_Product__r.Cost_of_Goods__c}" rendered="false"/>
+        </div>
+    </div>
+</apex:page>

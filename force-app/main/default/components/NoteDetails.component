@@ -1,0 +1,24 @@
+<apex:component >
+    <apex:attribute name="notes" type="Application_Extra_Data__c[]" description="Notes"/>
+    <table width="100%" border="1">
+        <tr><td colspan="3" class="tableCaption"><strong>Comments</strong></td></tr>
+        <tr>
+            <th width="14%">Last Modified</th>
+            <th width="10%">To</th>
+            <th width="76%">Note</th>
+        </tr>
+        <apex:repeat value="{!notes}" var="n" >
+            <tr class="{!IF(n.Category__c=='Lender','lenderComment','')}">
+                <td>
+                    <apex:outputText value="{0, date, dd/MM/yyyy HH:mm}">
+                        <apex:param value="{!n.LastModifieddate}"/>
+                    </apex:outputText>
+                </td>
+                <td><apex:outputField value="{!n.Category__c}"/></td>
+                <td>
+                    <apex:outputField value="{!n.Data__c}"/>
+                </td>
+            </tr>
+        </apex:repeat>
+    </table>
+</apex:component>

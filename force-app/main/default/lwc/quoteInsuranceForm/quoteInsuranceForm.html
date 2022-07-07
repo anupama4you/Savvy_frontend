@@ -1,0 +1,216 @@
+<template>
+  <lightning-card>
+    <div class="c-card-body">
+      <div class="slds-grid slds-wrap slds-gutters c-result-data">
+        <div class="slds-col c-title-section">
+          <span class="c-title">Insurance Product</span>
+        </div>
+      </div>
+      <table class="insuranceTableDetails ">
+        <!-- Column headers -->
+        <thead>
+          <tr>
+            <td class="inTableTitle">Type</td>
+            <td class="inTableTitle">Product</td>
+            <td class="inTableTitle">Retail Price</td>
+            <td class="inTableTitle">Commission</td>
+            <td class="inTableTitle" align="center">Financed/PBM</td>
+            <td class="inTableTitle" align="center" style="text-align:center;">Term</td>
+            <td class="inTableTitle" align="center">Payment/w</td>
+            <td class="inTableTitle" style="text-align:center;" align="center">Actions</td>
+          </tr>
+        </thead>
+        <!-- Form Body -->
+        <tbody>
+          <!-- First Row -->
+          <tr>
+            <td class="inTableText">
+              <select class="slds-select" id="type-1">
+                <option value="">--None--</option>
+                <option>Eric MV</option>
+              </select>
+
+            </td>
+            <td class="inTableText" align="center">
+              <select class="slds-select" id="product-1">
+                <option value="">--None--</option>
+                <option>Option One</option>
+                <option>Option Two</option>
+              </select>
+
+            </td>
+            <td class="inTableText">
+              <lightning-input type="number" name="input7" label=" " variant="label-hidden" formatter="currency"
+                step="0.01" placeholder="0.00"></lightning-input>
+            </td>
+            <td class="inTableText">
+              <lightning-input type="number" name="input7" label=" " variant="label-hidden" formatter="currency"
+                step="0.01" placeholder="0.00"></lightning-input>
+            </td>
+            <td class="inTableText" align="center">
+              <p>(not applicable)</p>
+            </td>
+            <td class="inTableText" style="text-align:center;" align="center">12</td>
+            <td class="inTableText" align="center">&nbsp;&nbsp;</td>
+            <td class="inTableText" align="center">
+              <lightning-button-group>
+                <lightning-button class="actionButton" label="Accept" variant="success"></lightning-button>
+                <lightning-button class="actionButton" label="Decline" variant="destructive"></lightning-button>
+              </lightning-button-group>
+            </td>
+          </tr>
+          <!-- Second Row -->
+          <tr>
+            <td class="inTableText">
+
+              <select class="slds-select" id="type-2">
+                <option value="">--None--</option>
+                <option>Eric MV</option>
+              </select>
+
+            </td>
+            <td class="inTableText" align="center">
+
+              <select class="slds-select" id="product-2">
+                <option value="">--None--</option>
+                <option>Option One</option>
+                <option>Option Two</option>
+              </select>
+
+            </td>
+            <td class="inTableText">
+              <lightning-input type="number" name="input7" label=" " variant="label-hidden" formatter="currency"
+                step="0.01" placeholder="0.00"></lightning-input>
+            </td>
+            <td class="inTableText">
+              <lightning-input type="number" name="input7" label=" " variant="label-hidden" formatter="currency"
+                step="0.01" placeholder="0.00"></lightning-input>
+            </td>
+            <td class="inTableText" align="center">
+
+              <select class="slds-select" id="finance-2">
+                <option value="">--None--</option>
+                <option>Option One</option>
+                <option>Option Two</option>
+              </select>
+
+            </td>
+            <td class="inTableText" style="text-align:center;" align="center">12</td>
+            <td class="inTableText" align="center">&nbsp;&nbsp;</td>
+            <td class="inTableText" align="center">
+              <lightning-button-group>
+                <lightning-button class="actionButton" label="Accept" variant="success"></lightning-button>
+                <lightning-button class="actionButton" label="Decline" variant="destructive"></lightning-button>
+              </lightning-button-group>
+            </td>
+          </tr>
+          <!-- Third Row -->
+          <tr>
+            <td class="inTableText">
+
+              <select class="slds-select" id="type-3">
+                <option value="">--None--</option>
+                <option>Eric MV</option>
+              </select>
+
+            </td>
+            <td class="inTableText" align="center">
+
+              <select class="slds-select" id="product-3">
+                <option value="">--None--</option>
+                <option>Option One</option>
+                <option>Option Two</option>
+              </select>
+
+            </td>
+            <td class="inTableText">
+              <lightning-input type="number" name="input7" label=" " variant="label-hidden" formatter="currency"
+                step="0.01" placeholder="0.00"></lightning-input>
+            </td>
+            <td class="inTableText">
+              <lightning-input type="number" name="input7" label=" " variant="label-hidden" formatter="currency"
+                step="0.01" placeholder="0.00"></lightning-input>
+            </td>
+            <td class="inTableText" align="center">
+
+              <select class="slds-select" id="finance-3">
+                <option value="">--None--</option>
+                <option>Option One</option>
+                <option>Option Two</option>
+              </select>
+
+            </td>
+            <td class="inTableText" align="center">
+
+              <select class="slds-select" id="term-3">
+                <option value="">--None--</option>
+                <option>Option One</option>
+                <option>Option Two</option>
+              </select>
+
+            </td>
+            <td class="inTableText" align="center">&nbsp;&nbsp;</td>
+            <td class="inTableText" align="center">
+              <lightning-button-group>
+                <lightning-button class="actionButton" label="Accept" variant="success"></lightning-button>
+                <lightning-button class="actionButton" label="Decline" variant="destructive"></lightning-button>
+              </lightning-button-group>
+            </td>
+          </tr>
+          <!-- Last Row -->
+          <tr>
+            <td class="inTableText">
+
+              <select class="slds-select" id="type-4">
+                <option value="">--None--</option>
+                <option>Eric MV</option>
+              </select>
+
+            </td>
+            <td class="inTableText" align="center">
+
+              <select class="slds-select" id="product-4">
+                <option value="">--None--</option>
+                <option>Option One</option>
+                <option>Option Two</option>
+              </select>
+
+            </td>
+            <td class="inTableText">
+              <lightning-input type="number" name="input7" label=" " variant="label-hidden" formatter="currency"
+                step="0.01" placeholder="0.00"></lightning-input>
+            </td>
+            <td class="inTableText">
+              <lightning-input type="number" name="input7" label=" " variant="label-hidden" formatter="currency"
+                step="0.01" placeholder="0.00"></lightning-input>
+            </td>
+            <td class="inTableText" align="center">
+
+              <select class="slds-select" id="finance-4">
+                <option value="">--None--</option>
+                <option>Option One</option>
+                <option>Option Two</option>
+              </select>
+            </td>
+            <td class="inTableText" style="text-align:center;" align="center">12</td>
+            <td class="inTableText" align="center">&nbsp;&nbsp;</td>
+            <td class="inTableText" align="center">
+              <lightning-button-group>
+                <lightning-button class="actionButton" label="Accept" variant="success"></lightning-button>
+                <lightning-button class="actionButton" label="Decline" variant="destructive"></lightning-button>
+              </lightning-button-group>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="slds-float_right">
+        <lightning-button-group>
+          <lightning-button class="slds-m-around_xx-small presentationButton" label="Previous Presentation"
+            variant="brand"></lightning-button>
+          <lightning-button class="slds-m-around_xx-small presentationButton" label="Send Presentation" variant="brand">
+          </lightning-button>
+        </lightning-button-group>
+      </div>
+    </div>
+  </lightning-card>
+</template>

@@ -1,0 +1,44 @@
+<apex:page id="ipscape" showHeader="false" sidebar="false">
+	<apex:includeScript value="/soap/ajax/33.0/connection.js"/>
+	<apex:includeScript value="/soap/ajax/33.0/apex.js"/>
+	<apex:includeScript value="/support/console/33.0/integration.js"/>
+	<script src="https://beta-ctiadaptor.ipscape.com.au/lib/api/0.9/ipscape.integrate.min.js" type="text/javascript"></script>
+	<div>
+		<button id="agentStateBtn">GET AGENT STATE</button>
+	</div>
+	<h1>Output</h1>
+	<ul id="shell" style="padding: 0;"></ul>
+	<script type="text/javascript">
+		(function () {
+			const btn = document.getElementById('agentStateBtn');
+			btn.onclick = function() {
+				try {
+					ipscape.integrate.getAgentState((response) => {
+						writeResponse('Agent State' + response);
+					});
+				} catch (error) {
+					throw new Error('getAgentState failed::' + error);
+				}
+			};
+
+			function writeResponse(response) {
+				var el = document.querySelector("*[id$=shell]");
+				var txt = document.createElement('li');
+				txt.appendChild(document.createTextNode(`> ${response}`));
+				txt.className = 'output';
+				el.appendChild(txt);
+			};
+
+			function start() {
+				ipscape.integrate.subscribe(['system'], (rs) => {
+				writeResponse(rs);
+				});
+			};
+
+			ipscape.integrate.onReady((response) => {
+				writeResponse(response);
+				start();
+			});
+		})();
+	</script>
+</apex:page>

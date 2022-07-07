@@ -1,0 +1,19 @@
+.warning {
+  border: 2px solid #fe9339;
+}
+
+.error {
+  border: 2px solid #ea001e;
+}
+
+.info {
+  border: 2px solid #c9c9c9;
+}
+
+.success {
+  border: 2px solid #2e844a;
+}
+
+.slds-text-color_warning {
+  color: #fe9339;
+}

@@ -1,0 +1,612 @@
+<apex:page standardController="Custom_Opportunity__c" extensions="YtdPdfExtension" renderAs="pdf">
+    <apex:stylesheet value="{!$Resource.AppPdfCss}" />
+    <apex:variable value="{!Custom_Opportunity__c}" var="o" />
+    <div class="header">
+        <table width="100%">
+            <tr style="border: 0px;" width="100%">
+                <td style="border: 0px;" width="30%" align="left">
+                    <apex:image url="{!$Resource.newSavvyLogo}" alt="Logo" />
+                </td>
+                <td style="border: 0px;" width="70%" align="left">
+                    <p>
+                        <span style="color:#ee245f;">FINANCE APPLICATION</span>
+                        <br/>
+                        <span style="font-size:0.8em;">
+                            <span style="color:#ee245f;">E</span> applications@savvy.com.au
+                            <font>|</font>
+                            <span style="color:#ee245f;">P</span> 1300 974 066
+                            <font>|</font>
+                            <span style="color:#ee245f;">F</span> 1300 978 066
+                            <br/>
+                            <span style="color:#ee245f;">A</span> Level 1, 145 The Parade, Norwood, SA 5067
+                            <font>|</font>
+                            <span style="color:#ee245f;">www</span>.savvy.
+                            <span style="color:#ee245f;">com.au</span>
+                        </span>
+                    </p>
+                </td>
+            </tr>
+        </table>
+    </div>
+    <div class="footer">
+        <div class="footerContent">Page <span class="pagenumber" /> of <span class="pagecount" /></div>
+    </div>
+    <div class="content">
+        <apex:outputPanel id="YTDSection" layout="block" rendered="{!lender == 'Others'}">
+            <h3>Savvy Finance Others Year To Date Calculation for {!o.Name} (Applicant 1)</h3>
+            <table width="100%">
+                <tr>
+                    <td width="25%">
+                        <apex:outputLabel value="Financial Year Start Date: " for="fldStartDate" />
+                    </td>
+                    <td width="15%">
+                        <apex:outputText id="fldStartDate" value="{!dto.startDate}" />
+                    </td>
+                    <td width="14%">
+                        <apex:outputLabel value="Pay Period End Date: " for="fldNetMontIncome" />
+                    </td>
+                    <td width="15%">
+                        <apex:outputText id="fldEndDate" value="{!dto.endDate}" />
+                    </td>
+                    <td width="23%">
+                        <apex:outputLabel value="Weeks Between Them: " for="fldYtdWeeks" />
+                    </td>
+                    <td width="8%">
+                        <strong>
+                            <apex:outputText id="fldYtdWeeks" value="{!dto.ytdWeeks}" />
+                        </strong>
+                    </td>
+                </tr>
+                <tr>
+                    <td>YTD Income From Payslip:</td>
+                    <td colspan="2">
+                        <strong>
+                            <apex:outputText styleClass="labelValueTyped" id="fldYtdIncome" value="{!dto.ytdIncome}" />
+                        </strong>
+                    </td>
+                    <td>
+                        <strong>
+                            <apex:outputText value="{!dto.ytdMonIncome}" id="fldYtdMonIncome" />
+                        </strong>
+                    </td>
+                    <td colspan="2">Net Monthly</td>
+                </tr>
+                <tr>
+                    <td>&nbsp;</td>
+                    <td colspan="2">Annualised Income:</td>
+                    <td>
+                        <apex:outputText value="{!dto.annualIncome}" />
+                    </td>
+                    <td colspan="2">Gross PA inc O/T &nbsp;</td>
+                </tr>
+                <tr style="display: {!IF(dto.YTDGrossLenderApplic1=='Firstmac', '','none')}">
+                    <td>Lender</td>
+                    <td colspan="2"><apex:outputText value="{!dto.YTDGrossLenderApplic1}"/></td>
+                    <td><apex:outputText value="{!dto.GrossAnnualIncomeApplic1}"/></td>
+                    <td colspan="2">Gross Annual Income</td>    
+                </tr>
+            </table>
+            <apex:outputPanel layout="block" rendered="{!dto.isOthersApplicant2}">
+                <h3>Savvy Finance Others Year To Date Calculation for {!o.Name} (Applicant 2)</h3>
+                <table width="100%">
+                    <tr>
+                        <td width="25%">
+                            <apex:outputLabel value="Financial Year Start Date: " />
+                        </td>
+                        <td width="15%">
+                            <apex:outputText value="{!dto.startDateOthA2}" />
+                        </td>
+                        <td width="14%">
+                            <apex:outputLabel value="Pay Period End Date: " />
+                        </td>
+                        <td width="15%">
+                            <apex:outputText value="{!dto.endDateOthA2}" />
+                        </td>
+                        <td width="23%">
+                            <apex:outputLabel value="Weeks Between Them: " />
+                        </td>
+                        <td width="8%">
+                            <strong>
+                                <apex:outputText value="{!dto.ytdWeeksOthA2}" />
+                            </strong>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Gross YTD Income From Payslip:</td>
+                        <td colspan="2">
+                            <strong>
+                                <apex:outputText styleClass="labelValueTyped" value="{!dto.ytdIncomeOthA2}" />
+                            </strong>
+                        </td>
+                        <td>
+                            <strong>
+                                <apex:outputText value="{!dto.ytdMonIncomeOthA2}" />
+                            </strong>
+                        </td>
+                        <td colspan="2">Net Monthly</td>
+                    </tr>
+                    <tr>
+                        <td>&nbsp;</td>
+                        <td colspan="2">Annualised Income:</td>
+                        <td>
+                            <apex:outputText value="{!dto.annualIncomeOthA2}" />
+                        </td>
+                        <td colspan="2">Gross PA inc O/T &nbsp;</td>
+                    </tr>
+                    <tr style="display: {!IF(dto.YTDGrossLenderApplic2=='Firstmac', '','none')}">
+                        <td>Lender</td> 
+                        <td colspan="2"><apex:outputText value="{!dto.YTDGrossLenderApplic2}"/></td>
+                        <td><apex:outputText value="{!dto.GrossAnnualIncomeApplic2}"/></td>
+                        <td colspan="2">Gross Annual Income</td>
+                    </tr>
+                </table>
+            </apex:outputPanel>
+        </apex:outputPanel>
+        <apex:outputPanel id="YTDSectionFD" layout="block" rendered="{!lender == 'Full-Documentation'}">
+            <h3>Savvy Finance Full - Documentation (Self-Employed) Year To Date Calculation for {!o.Name}</h3>
+            <table width="100%">
+                <tr>
+                    <td width="40%">
+                        <apex:outputLabel value="Lender: " />
+                    </td>
+                    <td width="60%">
+                        <apex:outputText value="{!dto.fdLender}" />
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <apex:outputLabel value="Net Profit: " />
+                    </td>
+                    <td>
+                        <apex:outputText value="{0, Number, Currency}">
+                            <apex:param value="{!dto.fdNetProfit}" />
+                        </apex:outputText>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <apex:outputLabel value="Depreciation: " />
+                    </td>
+                    <td>
+                        <apex:outputText value="{0, Number, Currency}">
+                            <apex:param value="{!dto.fdDepreciation}" />
+                        </apex:outputText>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <apex:outputLabel value="Interest: " />
+                    </td>
+                    <td>
+                        <apex:outputText value="{0, Number, Currency}">
+                            <apex:param value="{!dto.fdInterest}" />
+                        </apex:outputText>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <apex:outputLabel value="Director's Salary: " />
+                    </td>
+                    <td>
+                        <apex:outputText value="{0, Number, Currency}">
+                            <apex:param value="{!dto.fdDirectorSalary}" />
+                        </apex:outputText>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <apex:outputLabel value="Total: " />
+                    </td>
+                    <td>
+                        <apex:outputText value="{0, Number, Currency}">
+                            <apex:param value="{!dto.fullDocumentationTotal}" />
+                        </apex:outputText>
+                    </td>
+                </tr>
+            </table>
+        </apex:outputPanel>
+        <apex:outputPanel id="YTDSectionStGeorge" layout="block" rendered="{!lender == 'St George'}">
+            <h3>Savvy Finance St George Year To Date Calculation for {!o.Name} (Applicant 1)</h3>
+            <table class="tableSubsection" width="100%">
+                <tr>
+                    <td colspan="4">
+                        <strong>Permanent Full Time or Part Time</strong>
+                    </td>
+                </tr>
+                <tr>
+                    <td width="25%">Payslip</td>
+                    <td width="25%">Frecuency</td>
+                    <td width="25%">Amount</td>
+                    <td width="25%">Monthly Total</td>
+                </tr>
+                <tr>
+                    <td>Last Payslip</td>
+                    <td>{!dto.sgtPaylipsFrecuency}</td>
+                    <td>
+                        <apex:outputText value="{0, Number, Currency}">
+                            <apex:param value="{!dto.sgtPaylipsAmount}" />
+                        </apex:outputText>
+                    </td>
+                    <td>
+                        <apex:outputText value="{0, Number, Currency}">
+                            <apex:param value="{!dto.permanentMonthlyTotal}" />
+                        </apex:outputText>
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="4">
+                        <strong>Casual</strong>
+                    </td>
+                </tr>
+                <tr>
+                    <td>1st Payslip</td>
+                    <td>{!dto.sgtPaylipsFrecuency1}</td>
+                    <td>
+                        <apex:outputText value="{0, Number, Currency}">
+                            <apex:param value="{!dto.sgtPaylipsAmount1}" />
+                        </apex:outputText>
+                    </td>
+                    <td>
+                        <apex:outputText value="{0, Number, Currency}">
+                            <apex:param value="{!dto.casualMonthlyTotal1}" />
+                        </apex:outputText>
+                    </td>
+                </tr>
+                <tr>
+                    <td>2nd Payslip</td>
+                    <td>{!dto.sgtPaylipsFrecuency2}</td>
+                    <td>
+                        <apex:outputText value="{0, Number, Currency}">
+                            <apex:param value="{!dto.sgtPaylipsAmount2}" />
+                        </apex:outputText>
+                    </td>
+                    <td>
+                        <apex:outputText value="{0, Number, Currency}">
+                            <apex:param value="{!dto.casualMonthlyTotal2}" />
+                        </apex:outputText>
+                    </td>
+                </tr>
+                <tr>
+                    <td>3rd Payslip</td>
+                    <td>{!dto.sgtPaylipsFrecuency3}</td>
+                    <td>
+                        <apex:outputText value="{0, Number, Currency}">
+                            <apex:param value="{!dto.sgtPaylipsAmount3}" />
+                        </apex:outputText>
+                    </td>
+                    <td>
+                        <apex:outputText value="{0, Number, Currency}">
+                            <apex:param value="{!dto.casualMonthlyTotal3}" />
+                        </apex:outputText>
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="3">Average</td>
+                    <td>
+                        <apex:outputText value="{0, Number, Currency}">
+                            <apex:param value="{!dto.casualTotalAverage}" />
+                        </apex:outputText>
+                    </td>
+                </tr>
+            </table>
+            <apex:outputPanel layout="block" rendered="{!dto.stGeorgeApplicant2}">
+                <h3>Savvy Finance St George Year To Date Calculation for {!o.Name} (Applicant 2)</h3>
+                <table class="tableSubsection" width="100%">
+                    <tr>
+                        <td colspan="4">
+                            <strong>Permanent Full Time or Part Time</strong>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td width="25%">Payslip</td>
+                        <td width="25%">Frecuency</td>
+                        <td width="25%">Amount</td>
+                        <td width="25%">Monthly Total</td>
+                    </tr>
+                    <tr>
+                        <td>Last Payslip</td>
+                        <td>{!dto.sgtPaylipsFrecuencyA2}</td>
+                        <td>
+                            <apex:outputText value="{0, Number, Currency}">
+                                <apex:param value="{!dto.sgtPaylipsAmountA2}" />
+                            </apex:outputText>
+                        </td>
+                        <td>
+                            <apex:outputText value="{0, Number, Currency}">
+                                <apex:param value="{!dto.permanentMonthlyTotalA2}" />
+                            </apex:outputText>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan="4">
+                            <strong>Casual</strong>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>1st Payslip</td>
+                        <td>{!dto.sgtPaylipsFrecuency1A2}</td>
+                        <td>
+                            <apex:outputText value="{0, Number, Currency}">
+                                <apex:param value="{!dto.sgtPaylipsAmount1A2}" />
+                            </apex:outputText>
+                        </td>
+                        <td>
+                            <apex:outputText value="{0, Number, Currency}">
+                                <apex:param value="{!dto.casualMonthlyTotal1A2}" />
+                            </apex:outputText>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>2nd Payslip</td>
+                        <td>{!dto.sgtPaylipsFrecuency2A2}</td>
+                        <td>
+                            <apex:outputText value="{0, Number, Currency}">
+                                <apex:param value="{!dto.sgtPaylipsAmount2A2}" />
+                            </apex:outputText>
+                        </td>
+                        <td>
+                            <apex:outputText value="{0, Number, Currency}">
+                                <apex:param value="{!dto.casualMonthlyTotal2A2}" />
+                            </apex:outputText>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>3rd Payslip</td>
+                        <td>{!dto.sgtPaylipsFrecuency3A2}</td>
+                        <td>
+                            <apex:outputText value="{0, Number, Currency}">
+                                <apex:param value="{!dto.sgtPaylipsAmount3A2}" />
+                            </apex:outputText>
+                        </td>
+                        <td>
+                            <apex:outputText value="{0, Number, Currency}">
+                                <apex:param value="{!dto.casualMonthlyTotal3A2}" />
+                            </apex:outputText>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan="3">Average</td>
+                        <td>
+                            <apex:outputText value="{0, Number, Currency}">
+                                <apex:param value="{!dto.casualTotalAverageA2}" />
+                            </apex:outputText>
+                        </td>
+                    </tr>
+                </table>
+            </apex:outputPanel>
+        </apex:outputPanel>
+        <apex:outputPanel layout="block" rendered="{!lender == 'Self-Employed'}">
+            <h3>Savvy Finance Self-Employed Year To Date Calculation/Income for {!o.Name}</h3>
+            <table width="100%">
+                <tr>
+                    <td width="40%"><apex:outputLabel value="Self-Employed: " /></td>
+                    <td width="60%">
+                        <apex:outputText value="{!dto.selfEmployedClass}" /> &nbsp;&nbsp;&nbsp; / &nbsp;&nbsp;&nbsp;
+                        <apex:outputText value="{!dto.selfEmployedType}" />
+                    </td>
+                </tr>
+            </table>
+            <apex:outputPanel layout="block" rendered="{!dto.selfEmployedType=='Trust'}">
+                <table width="100%">
+                    <tr>
+                        <td width="40%">Total Trustees:&nbsp;{!dto.trusteesNumber}</td>
+                        <td width="30%">1st Trustee</td>
+                        <td width="30%">
+                            <apex:outputText value="2nd Trustee" rendered="{!dto.trusteesNumber=='2'}"/>
+                            <apex:outputText value="N/A" rendered="{!dto.trusteesNumber!='2'}"/>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td width="40%">
+                            <apex:outputText value="Net Profit Before Tax" rendered="{!dto.selfEmployedType!='Trust'}" />
+                            <apex:outputText value="Trust disbursement" rendered="{!dto.selfEmployedType=='Trust'}" />
+                        </td>
+                        <td>
+                            <apex:outputText value="{0, Number, Currency}">
+                                <apex:param value="{!dto.fdNetProfit}" />
+                            </apex:outputText>
+                        </td>
+                        <td>
+                            <apex:outputText value="{0, Number, Currency}" rendered="{!dto.trusteesNumber=='2'}">
+                                <apex:param value="{!dto.fdNetProfit2}" />
+                            </apex:outputText>
+                            <apex:outputText value="N/A" rendered="{!dto.trusteesNumber!='2'}"/>
+                        </td>
+                    </tr>
+                    <tr style="display: {!IF(dto.selfEmployedType=='Company Pty Ltd', '','none')}">
+                        <td>(-30%)</td>
+                        <td>
+                            <apex:outputText value="{0, Number, Currency}">
+                                <apex:param value="{!dto.fdNetProfit * 0.3}" />
+                            </apex:outputText>
+                        </td>
+                        <td>
+                            <apex:outputText value="{0, Number, Currency}" rendered="{!dto.trusteesNumber=='2'}">
+                                <apex:param value="{!dto.fdNetProfit2 * 0.3}" />
+                            </apex:outputText>
+                            <apex:outputText value="N/A" rendered="{!dto.trusteesNumber!='2'}"/>
+                        </td>
+                    </tr>
+                    <tr style="display: {!IF(dto.selfEmployedType!='Trust', '','none')}">
+                        <td><apex:outputLabel value="Depreciation: " /></td>
+                        <td>
+                            <apex:outputText value="{0, Number, Currency}">
+                                <apex:param value="{!dto.fdDepreciation}" />
+                            </apex:outputText>
+                        </td>
+                        <td>
+                            <!-- <apex:outputText value="{0, Number, Currency}" rendered="{!dto.trusteesNumber=='2'}">
+                                <apex:param value="{!dto.fdDepreciation2}" />
+                            </apex:outputText> -->
+                            <apex:outputText value="N/A" rendered="{!dto.trusteesNumber!='2'}"/>
+                        </td>
+                    </tr>
+                    <tr style="display: {!IF(dto.selfEmployedType!='Trust', '','none')}">
+                        <td><apex:outputLabel value="Interest: " /></td>
+                        <td>
+                            <apex:outputText value="{0, Number, Currency}">
+                                <apex:param value="{!dto.fdInterest}" />
+                            </apex:outputText>
+                        </td>
+                        <td>
+                            <!-- <apex:outputText value="{0, Number, Currency}" rendered="{!dto.trusteesNumber=='2'}">
+                                <apex:param value="{!dto.fdInterest2}" />
+                            </apex:outputText> -->
+                            <apex:outputText value="N/A" rendered="{!dto.trusteesNumber!='2'}"/>
+                        </td>
+                    </tr>
+                    <tr style="display: {!IF(dto.selfEmployedType!='Trust', '','none')}">
+                        <td><apex:outputLabel value="Director's Salary: " /></td>
+                        <td>
+                            <apex:outputText value="{0, Number, Currency}">
+                                <apex:param value="{!dto.fdDirectorSalary}" />
+                            </apex:outputText>
+                        </td>
+                        <td>
+                            <!-- <apex:outputText value="{0, Number, Currency}" rendered="{!dto.trusteesNumber=='2'}">
+                                <apex:param value="{!dto.fdDirectorSalary2}" />
+                            </apex:outputText> -->
+                            <apex:outputText value="N/A" rendered="{!dto.trusteesNumber!='2'}"/>
+                        </td>
+                    </tr>
+                    <tr style="display: {!IF(OR(dto.selfEmployedType=='Company Pty Ltd',dto.selfEmployedType=='Trust'), '','none')}">
+                        <td>Net Profit Before Tax</td>
+                        <td>
+                            <h3>
+                                <apex:outputText value="{0, Number, Currency}">
+                                    <apex:param value="{!dto.fullDocumentationTotal}" />
+                                </apex:outputText>
+                            </h3>
+                        </td>
+                        <td>
+                            <h3>
+                                <apex:outputText value="{0, Number, Currency}" rendered="{!dto.trusteesNumber=='2'}">
+                                    <apex:param value="{!dto.fullDocumentationTotal2}" />
+                                </apex:outputText>
+                                <apex:outputText value="N/A" rendered="{!dto.trusteesNumber!='2'}"/>
+                            </h3>
+                        </td>
+                    </tr>
+                    <tr style="display: {!IF(dto.selfEmployedType=='Sole Trader', '','none')}">
+                        <td>Net Profit After Tax</td>
+                        <td>
+                            <h3>
+                                <apex:outputText value="{0, Number, Currency}">
+                                    <apex:param value="{!dto.fullDocTotalMonthly * 12}" />
+                                </apex:outputText>
+                            </h3>
+                        </td>
+                        <td>
+                            <h3>
+                                <apex:outputText value="{0, Number, Currency}" rendered="{!dto.trusteesNumber=='2'}">
+                                    <apex:param value="{!dto.fullDocTotalMonthly2 * 12}" />
+                                </apex:outputText>
+                            </h3>
+                            <apex:outputText value="N/A" rendered="{!dto.trusteesNumber!='2'}"/>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Monthly Income (after tax)</td>
+                        <td>
+                            <h3>
+                                <apex:outputText value="{0, Number, Currency}">
+                                    <apex:param value="{!dto.fullDocTotalMonthly}" />
+                                </apex:outputText>
+                            </h3>
+                        </td>
+                        <td>
+                            <h3>
+                                <apex:outputText value="{0, Number, Currency}" rendered="{!dto.trusteesNumber=='2'}">
+                                    <apex:param value="{!dto.fullDocTotalMonthly2}" />
+                                </apex:outputText>
+                            </h3>
+                            <apex:outputText value="N/A" rendered="{!dto.trusteesNumber!='2'}"/>
+                        </td>
+                    </tr>
+                </table>
+            </apex:outputPanel>
+            <apex:outputPanel layout="block" rendered="{!dto.selfEmployedType!='Trust'}">
+                <table width="100%">
+                    <tr style="display: {!IF(dto.selfEmployedType=='Company Pty Ltd', '','none')}">
+                        <td>Sales $</td>
+                        <td>
+                            <apex:outputText value="{0, Number, Currency}">
+                                <apex:param value="{!dto.sales}" />
+                            </apex:outputText>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td width="40%">Net Profit Before Tax</td>
+                        <td>
+                            <apex:outputText value="{0, Number, Currency}">
+                                <apex:param value="{!dto.fdNetProfit}" />
+                            </apex:outputText>
+                        </td>
+                    </tr>
+                    <tr style="display: {!IF(dto.selfEmployedType=='Company Pty Ltd', '','none')}">
+                        <td>(-30%)</td>
+                        <td>
+                            <apex:outputText value="{0, Number, Currency}">
+                                <apex:param value="{!dto.fdNetProfit * 0.3}" />
+                            </apex:outputText>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><apex:outputLabel value="Depreciation: " /></td>
+                        <td>
+                            <apex:outputText value="{0, Number, Currency}">
+                                <apex:param value="{!dto.fdDepreciation}" />
+                            </apex:outputText>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><apex:outputLabel value="Interest: " /></td>
+                        <td>
+                            <apex:outputText value="{0, Number, Currency}">
+                                <apex:param value="{!dto.fdInterest}" />
+                            </apex:outputText>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><apex:outputLabel value="Director's Salary: " /></td>
+                        <td>
+                            <apex:outputText value="{0, Number, Currency}">
+                                <apex:param value="{!dto.fdDirectorSalary}" />
+                            </apex:outputText>
+                        </td>
+                    </tr>
+                    <tr style="display: {!IF(dto.selfEmployedType=='Company Pty Ltd', '','none')}">
+                        <td>Net Profit Before Tax</td>
+                        <td>
+                            <h3>
+                                <apex:outputText value="{0, Number, Currency}">
+                                    <apex:param value="{!dto.fullDocumentationTotal}" />
+                                </apex:outputText>
+                            </h3>
+                        </td>
+                    </tr>
+                    <tr style="display: {!IF(dto.selfEmployedType=='Sole Trader', '','none')}">
+                        <td>Net Profit After Tax</td>
+                        <td>
+                            <h3>
+                                <apex:outputText value="{0, Number, Currency}">
+                                    <apex:param value="{!dto.fullDocTotalMonthly * 12}" />
+                                </apex:outputText>
+                            </h3>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Monthly Income (after tax)</td>
+                        <td>
+                            <h3>
+                                <apex:outputText value="{0, Number, Currency}">
+                                    <apex:param value="{!dto.fullDocTotalMonthly}" />
+                                </apex:outputText>
+                            </h3>
+                        </td>
+                    </tr>
+                </table>
+            </apex:outputPanel>
+        </apex:outputPanel>
+    </div>
+</apex:page>

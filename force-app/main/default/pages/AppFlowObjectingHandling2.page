@@ -1,0 +1,254 @@
+<apex:page showHeader="false" sidebar="false" docType="html-5.0" title="Objecting Handling" readOnly="true" setup="false" standardStylesheets="false">
+	<head>
+		<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"/>
+		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/css/bootstrap.min.css" integrity="sha384-PsH8R72JQ3SOdhVi3uxftmaW6Vc51MKb0q5P2rRUpPvrszuE4W1povHYgTpBfshb" crossorigin="anonymous"/>
+		<link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet"/>
+		<apex:stylesheet value="{! $Resource.AppFlowCSS }"/>
+	    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+    	<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.3/umd/popper.min.js" integrity="sha384-vFJXuSJphROIrBnz7yo7oB41mKfc8JzQZiCq4NCceLEaO4IHwicKwpJf9c9IpFgh" crossorigin="anonymous"></script>
+    	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/js/bootstrap.min.js" integrity="sha384-alpBpkh1PFOepccYVYDB4do5UnbKysX5WZXm3XxPqe5iKTfUKjNkCk9SaVuEZflJ" crossorigin="anonymous"></script>
+	    <script>
+	   		jQuery.noConflict();
+	   	</script>
+	</head>
+	<apex:outputPanel layout="block" styleClass="container-fluid">
+		<apex:outputPanel layout="block" styleClass="row rowHeader rowHeaderObjecting">
+			<apex:outputPanel layout="block" styleClass="col-sm stepTitle">
+		        Objecting Handling
+		    </apex:outputPanel>
+	    </apex:outputPanel>
+	    <apex:outputPanel layout="block" styleClass="row boxPanel2">
+			<apex:outputPanel layout="block" styleClass="col-sm">
+		        Be <strong>VERY</strong> surprised when a client says <strong>"NO"</strong>   -   Oh Ok, what is stopping you from proceeding?
+		        <br/><br/>
+		    </apex:outputPanel>
+	    </apex:outputPanel>
+		<apex:outputPanel layout="block" styleClass="row>">
+			<apex:outputPanel layout="block" styleClass="col-sm">
+				<div id="accordion" role="tablist" aria-multiselectable="true">
+				  <div class="card">
+				    <div class="card-header" role="tab" id="objecting1">
+				      <h5 class="mb-0">
+				        <a data-toggle="collapse" data-parent="#accordion" href="#collapseObj1" aria-expanded="true" aria-controls="collapseObj1">
+				          Just send information
+				        </a>
+				      </h5>
+				    </div>
+				    <div id="collapseObj1" class="collapse show" role="tabpanel" aria-labelledby="objecting1">
+				      <div class="card-block">
+				        #1 - I’d be happy to John. Quick questions though and please be honest with me: When do you think you’ll be serious about moving on something like this? <br/>
+						#2 - If you like what you see, when would you be ready to place and order? Or, sure, and after you review it, how soon are you looking to make a decision on it?  <br/>
+						#3 - Absolutely. By the way, what would you need to see to say yes to it?
+				      </div>
+				    </div>
+				  </div>
+				  <div class="card">
+				    <div class="card-header" role="tab" id="objecting2">
+				      <h5 class="mb-0">
+				        <a class="collapsed" data-toggle="collapse" data-parent="#accordion" href="#collapseObj2" aria-expanded="false" aria-controls="collapseObj2">
+				          Go ahead and send me your information
+				        </a>
+				      </h5>
+				    </div>
+				    <div id="collapseObj2" class="collapse" role="tabpanel" aria-labelledby="objecting2">
+				      <div class="card-block">
+				        #1 - Sure, and after you review it, how soon are you going to make a decision on it? <br/>
+						#2 - Sure, And what would you need to see to say yes to it?
+				      </div>
+				    </div>
+				  </div>
+
+				  <div class="card">
+				    <div class="card-header" role="tab" id="objecting3">
+				      <h5 class="mb-0">
+				        <a class="collapsed" data-toggle="collapse" data-parent="#accordion" href="#collapseObj3" aria-expanded="false" aria-controls="collapseObj3">
+				          Put that quote in writing and sent it to me
+				        </a>
+				      </h5>
+				    </div>
+				    <div id="collapseObj3" class="collapse" role="tabpanel" aria-labelledby="objecting3">
+				      <div class="card-block">
+				        #1 - I’d be happy to, and from what we’ve just discussed, does it sound like you’d go with it? <br/>
+						#2 - Absolutely. How does this compare with the other quotes you’ve received so far?  <br/>
+						#3 - Great, based on the quote I just gave you does this sound like it fits into your budget? <br/>
+						#4 - I’d be happy to, and after you get it, what happens next?
+				      </div>
+				    </div>
+				  </div>
+
+				  <div class="card">
+				    <div class="card-header" role="tab" id="objecting4">
+				      <h5 class="mb-0">
+				        <a class="collapsed" data-toggle="collapse" data-parent="#accordion" href="#collapseObj4" aria-expanded="false" aria-controls="collapseObj4">
+				          I need to think about it/need to wait until next week/month/I’ll get back to you
+				        </a>
+				      </h5>
+				    </div>
+				    <div id="collapseObj4" class="collapse" role="tabpanel" aria-labelledby="objecting4">
+				      <div class="card-block">
+				        #1 - John, what I’m hearing from you is essentially a ‘no” – and that’s alright. As a sales rep, I hear that all the time and it doesn’t bother me. It just means I haven’t yet explained the value proposition right. Tell me, what would it take to convince you that this would be a good idea to move forward with – and please be honest with me. <br/>
+						#2 - No problem John, When should I call you back on this? And what is going to happen between then and now that will convince you to move forward with this?
+				      </div>
+				    </div>
+				  </div>
+
+				  <div class="card">
+				    <div class="card-header" role="tab" id="objecting5">
+				      <h5 class="mb-0">
+				        <a class="collapsed" data-toggle="collapse" data-parent="#accordion" href="#collapseObj5" aria-expanded="false" aria-controls="collapseObj5">
+				          I need to show this or talk to my partner, wife etc?
+				        </a>
+				      </h5>
+				    </div>
+				    <div id="collapseObj5" class="collapse" role="tabpanel" aria-labelledby="objecting5">
+				      <div class="card-block">
+				        <p>That’s perfectly fine, John. I think you should show this to (whomever they claim they need to show this to). And let me ask you something – if after you show this to (whomever they claim they need to show this to).  And he/she says “It look good John, whatever you want to do, is this something that YOU would move forward with today?</p>
+					  	<p>[Now be aware that any answer other than ‘YES’ means that this objection is just a smokescreen and you haven’t uncovered the real objection, and your job now will be to keep qualifying to see what else is standing in the way. Questions like the following will help to bring other objections to light:] </p>
+					  	<p>What else might prevent you from moving forward with this?  Or  What do you think would hold him/her back from moving forward with this? 
+						Or  What other solutions do you think they are leaning toward? <br/>
+						[On the other hand, if your prospect says he would move forward with this, then you’ve got to confirm this and make him your ally.]</p>
+						<p>Great, well I’ll give you some time to speak with (whomever they claim they need to show this to), Can I schedule a follow up call tomorrow afternoon to discuss next steps?</p>
+				      </div>
+				    </div>
+				  </div>
+
+				  <div class="card">
+				    <div class="card-header" role="tab" id="objecting6">
+				      <h5 class="mb-0">
+				        <a class="collapsed" data-toggle="collapse" data-parent="#accordion" href="#collapseObj6" aria-expanded="false" aria-controls="collapseObj6">
+				          I can get a better deal elsewhere
+				        </a>
+				      </h5>
+				    </div>
+				    <div id="collapseObj6" class="collapse" role="tabpanel" aria-labelledby="objecting6">
+				      <div class="card-block">
+				        John, my customers tell me this all the time, and sometimes they genuinely can get a better deal, but a lot of times they cant. I’ll tell you what I’ll do. I’ll go over each item you’ve been quoted by this other company, in other words I will compare apples with apples, and if everything is equal, Ill see if I can do even better on that. If I can, you’ll get an even better deal and if I can’t, Ill tell you so. Either way, you’ll win. Now, do you have that other quote in front of you? Great, Go ahead and email it to me and I’ll to work for you. How does that sound?	
+				      </div>
+				    </div>
+				  </div>
+
+				  <div class="card">
+				    <div class="card-header" role="tab" id="objecting7">
+				      <h5 class="mb-0">
+				        <a class="collapsed" data-toggle="collapse" data-parent="#accordion" href="#collapseObj7" aria-expanded="false" aria-controls="collapseObj7">
+				          The price is too high
+				        </a>
+				      </h5>
+				    </div>
+				    <div id="collapseObj7" class="collapse" role="tabpanel" aria-labelledby="objecting7">
+				      <div class="card-block">
+				        <p>[Sample softening statements] I understand that or I hear exactly what you are saying</p>
+					  	<p>[Isolate the objection before answering it] I understand John, and let me ask you a question. Assuming the price on this car loan weren’t an issue, is this the solution you feel is right for you today? Or ‘Is this something you would go ahead and move forward with today?</p>
+					  	<p>[How easy is that. Any answer other than “YES” means that this is just a smokescreen and not the real objection. If that’s the case, then it’s up to you to do more probing here to find out exactly what is stopping them from moving forward].</p>
+					  	<p>[If, however, they say yes, price is the only thing holding them back, then you move into the following].</p>
+					  	<p>Ok great, John. Lets work together to get this working for you today then. First of all, where does our price need to be for you to move forward with us today?</p>
+					  	<p>[If your prospect gives you a price that you can reach, then before you just agree to terms , you must first get commitment for your prospect that this is something they are going to move forward with today – assuming you can meet those terms. If you can match that price they are willing to pay, say:]</p>
+					  	<p>Ok, now John, that price (and terms) are going to need some approval on my end and I’ll go get that right now, but before I do, let me make sure that if I can get you (review the details), then this is something you-re prepared to move forward with today, right? </p>
+					  	<p>[Only after they agree to the deal should you put them on hold or hang up and call back in 5 minutes and make the appropriate arrangements. After you’ve done that, come back on the line and say:]</p>
+					  	<p>Ok, that’s all done on this end, so congratulations. Here’s what we need to do now……then close the sale.</p>
+				      </div>
+				    </div>
+				  </div>
+
+				  <div class="card">
+				    <div class="card-header" role="tab" id="objecting8">
+				      <h5 class="mb-0">
+				        <a class="collapsed" data-toggle="collapse" data-parent="#accordion" href="#collapseObj8" aria-expanded="false" aria-controls="collapseObj8">
+				          If you are not able to close your customer even if you have matched the price or beaten the quote #1
+				        </a>
+				      </h5>
+				    </div>
+				    <div id="collapseObj8" class="collapse" role="tabpanel" aria-labelledby="objecting8">
+				      <div class="card-block">
+				        <p>[Yes, you will still have customers that are not prepared to commit, you need to now persuade them that you are the best person broker to organise their finance so use the following script]</p>
+					  	<p>Bill I get what’s your saying, I know you have a lot of options out there, it’s not the first time a customer has told me they want keep looking around in hope of a better deal. What we’ve found is that customers who tend to go out looking for a better deal will always end up coming back as this is what we specialise in.</p>
+					  	<p><strong>Away response</strong>, In the end this just takes up more time and quite often ends in frustration as your back where you’re started except 2 steps behind. So wouldn’t you prefer to save yourself from that outcome by getting pre approval right now?</p>
+					  	<p><strong>Towards response</strong>, personally I would prefer to more effectively make use of your time getting your application approved so you can enjoy driving around in your new car. If you’re as excited as I think you are about getting your new ……Make of vehicle…… I would love to help out by organising your pre approval.</p>
+					  	<p><strong>Last resort</strong>, The true difference between most lenders is minimal at best. Here at Savvy we prefer to be honest and upfront with our client from the beginning and if you do choose to get another quote, (which is fine) let us know so we can compare apples with apples. I’m more than certain you will find yourself better off with us every time. </p>
+					  	<p>Look at this point it makes sense to submit your pre approval so I can get to work on what’s Import to you which is making sure you actually get your new car, so what do you say we make this happen.</p>
+				      </div>
+				    </div>
+				  </div>
+
+				  <div class="card">
+				    <div class="card-header" role="tab" id="objecting9">
+				      <h5 class="mb-0">
+				        <a class="collapsed" data-toggle="collapse" data-parent="#accordion" href="#collapseObj9" aria-expanded="false" aria-controls="collapseObj9">
+				          What’s your commission? That’s too high.
+				        </a>
+				      </h5>
+				    </div>
+				    <div id="collapseObj9" class="collapse" role="tabpanel" aria-labelledby="objecting9">
+				      <div class="card-block">
+				        <P>The fee for our service is $770. John, the only brokers who cut their fees are the desperate ones that are struggling to win any business. I work 12 hours a day and my back-office staff work very hard also to deliver fast turnaround and a great overall experience. I don’t compromise on my service at all. </P>
+				  		<p>Even still, the fee we charge is modest for the work we do and its already the lowest fee charged in the industry. Please also note that the fee is included into the finance and the repayment I have already quoted for you. I hope you are ok with this and we can continue with finalising your finance.</p>
+				      </div>
+				    </div>
+				  </div>
+
+				  <div class="card">
+				    <div class="card-header" role="tab" id="objecting10">
+				      <h5 class="mb-0">
+				        <a class="collapsed" data-toggle="collapse" data-parent="#accordion" href="#collapseObj10" aria-expanded="false" aria-controls="collapseObj10">
+				          The interest rate is too high
+				        </a>
+				      </h5>
+				    </div>
+				    <div id="collapseObj10" class="collapse" role="tabpanel" aria-labelledby="objecting10">
+				      <div class="card-block">
+				        <p>[some customers may continue to state that the interest rate we have offered is too high even though we have offered our best rate, and the customer has not delivered us a written quote from another provider] </p>
+				  		<p>I can assure you that the interest rate being offered is the best on the market, based on your profile. As previously mentioned we are a comparison service. It’s our job and responsibility to maintain a diverse lender panel, this ranges from all the major banks, to other large financiers. We have integrated systems with all the major financiers and what we have offered is the absolute cheapest. I can guarantee that. </p>
+				  		<p>Our feeds are issued to us from the financiers in real time and there is no other rate on the market that is any better than this. </p>
+				  		<p>I would love to win your business, most of our business comes from repeat clientele, they continue to come back because we offer the best rate, upfront and every time.  </p>
+						<p>Let’s proceed with a pre-approval, what do you say?</p>
+				      </div>
+				    </div>
+				  </div>
+
+				  <div class="card">
+				    <div class="card-header" role="tab" id="objecting11">
+				      <h5 class="mb-0">
+				        <a class="collapsed" data-toggle="collapse" data-parent="#accordion" href="#collapseObj11" aria-expanded="false" aria-controls="collapseObj11">
+				          I would still like to look around?
+				        </a>
+				      </h5>
+				    </div>
+				    <div id="collapseObj11" class="collapse" role="tabpanel" aria-labelledby="objecting11">
+				      <div class="card-block">
+				        <p>#1 - John, what I’m hearing from you is essentially a ‘no” – and that’s alright. As a sales rep, I hear that all the time and it doesn’t bother me. It just means I haven’t yet explained the value proposition right. Tell me, what would it take to convince you that this would be a good idea to move forward with – and please be honest with me. </p>
+					  	<p>[Wait for response, customer may provide you with a response that allows you to handle the objection and move forward with it, if they are not receptive and want to continue to look around you really need to re-state our value proposition.]</p>
+					  	<p>Obviously, I understand and appreciate that people like to shop around, it’s natural for everyone to want to get the very best deal and most people on average will at least contact 3 or more providers before making a decision, however, this is exactly what you employ us to do for you. </p>
+					  	<p>Savvy, at its core, is a shopping service for its customers, it compares from every bank and lender in the market, the winning financiers comes down to which lender offers your profile the very best rates and terms.</p>
+					  	<p>In saying this I am not here to put any pressure on you, I suppose I just want to clarify what we are employed to do.</p>
+					  	<p> I want all of my customers to feel 100% comfortable in dealing with me before they make a commitment so happy to leave it with you for now and schedule a follow up call, let’s say tomorrow at XXXX.</p>
+					  	<p>If in the meantime you have any questions I am always available on direct line and on the mobile after hours. If you decide you would like to proceed I will send you our application pack via email so you have it on file. </p>
+					  	<p>I look forward to working with you</p>
+				      </div>
+				    </div>
+				  </div>
+
+				  <div class="card">
+				    <div class="card-header" role="tab" id="objecting12">
+				      <h5 class="mb-0">
+				        <a class="collapsed" data-toggle="collapse" data-parent="#accordion" href="#collapseObj12" aria-expanded="false" aria-controls="collapseObj12">
+				          Is that the cheapest you can offer me?
+				        </a>
+				      </h5>
+				    </div>
+				    <div id="collapseObj12" class="collapse" role="tabpanel" aria-labelledby="objecting12">
+				      <div class="card-block">
+				        <p>[some customers may continue to ask if what we have offered is the cheapest even though we have offered our best rate, and the customer has not delivered us a written quote from another provider] </p>
+				  		<p>I can assure you that what I have offered you is the best on the market, based on your profile. As previously mentioned we are a comparison service. It’s our job and responsibility to maintain a diverse lender panel, this ranges from all the major banks, to other large financiers. We have integrated systems with all the major financiers and what we have offered is the absolute cheapest. I can guarantee that. </p>
+				  		<p>Our feeds are issued to us from the financiers in real time and there is no other rate on the market that is any better than this.  </p>
+				  		<p>I would love to win your business, most of our business comes from repeat clientele, they continue to come back because we offer the best rate, upfront and every time.  </p>
+				  		<p>Let’s proceed with a pre-approval, what do you say?</p>
+				      </div>
+				    </div>
+				  </div>
+
+				  
+				</div>
+			</apex:outputPanel>
+		</apex:outputPanel>
+    </apex:outputPanel>
+</apex:page>

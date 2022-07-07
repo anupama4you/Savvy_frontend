@@ -1,0 +1,2189 @@
+<apex:page docType="html-5.0" sidebar="false" showHeader="false" standardController="Lead__c" extensions="AppFlowExtension" title="{!Lead__c.Name} - Flow" id="pgFlow" action="{!initFlowProcess}">
+	<head>
+		<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"/>
+		<!-- <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/css/bootstrap.min.css" integrity="sha384-PsH8R72JQ3SOdhVi3uxftmaW6Vc51MKb0q5P2rRUpPvrszuE4W1povHYgTpBfshb" crossorigin="anonymous"/> -->
+		<apex:stylesheet value="{!$Resource.SalesFlowBootstrap}"/>
+		<apex:includeScript value="/support/console/33.0/integration.js"/>
+		<!-- <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet"/> -->
+		<apex:stylesheet value="{!$Resource.SalesFlowFontAwesomeCSS}"/>
+	    <!-- <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css"/> -->
+	    <apex:stylesheet value="{!$Resource.SalesFlowJQueryUICSS}"/>
+		<apex:stylesheet value="{!$Resource.AppFlowCSS}"/>
+		<!-- <script src="https://code.jquery.com/jquery-1.12.4.js"></script> -->
+		<apex:includeScript value="{!$Resource.SalesFlowJQueryJS}"/>
+	    <!-- <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script> -->
+    	<!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.3/umd/popper.min.js" integrity="sha384-vFJXuSJphROIrBnz7yo7oB41mKfc8JzQZiCq4NCceLEaO4IHwicKwpJf9c9IpFgh" crossorigin="anonymous"></script> -->
+    	<!-- <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/js/bootstrap.min.js" integrity="sha384-alpBpkh1PFOepccYVYDB4do5UnbKysX5WZXm3XxPqe5iKTfUKjNkCk9SaVuEZflJ" crossorigin="anonymous"></script> -->
+    	<apex:includeScript value="{!$Resource.SalesFlowPopperJS}"/>
+    	<apex:includeScript value="{!$Resource.SalesFlowBootstrapJS}"/>
+    	
+    	<!-- <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script> -->
+    	<apex:includeScript value="{!$Resource.SalesFlowJQueryUIJS}"/>
+	    <script>
+	    	var fields = [
+				'input[id$="JQDP"'
+			];
+	   		jQuery.noConflict();
+	   		function loadJQuery() {
+	   			jQuery( function() {
+	   				var dateToday = new Date();
+					var yrRange =  (dateToday.getFullYear() - 50) + ":" + dateToday.getFullYear();
+					var i;
+					for (i = 0; i < fields.length; i++) { 
+					    jQuery(fields[i]).datepicker({
+					      changeMonth: true,
+					      changeYear: true,
+					      dateFormat: "dd/mm/yy",
+					      yearRange: yrRange
+					    });
+					}
+				});
+	   		}
+
+	   		function closeCurrentTab() {
+	            //First find the ID of the current primary tab to close it
+	            sforce.console.getEnclosingPrimaryTabId(closeSubtab);
+	        }
+	        
+	        var closeSubtab = function closeSubtabCallback(result) {
+	            //Now that we have the primary tab ID, we can close it
+	            var tabId = result.id;
+	            sforce.console.closeTab(tabId);
+	        };
+
+	        function closeWindow() {
+	        	//window.open('','_parent','');
+	        	//window.close();
+	        	//if (confirm("Close Window?")) {
+				 //    window.open(window.location,'_parent','');
+					// window.close();
+					//open(window.location, '_self').close();
+				//}
+				 var winMain = window.parent.opener;
+				 winMain.close();
+	        }
+
+	        function closeFlowPage() {
+	        	if (sforce.console.isInConsole()) {
+	        		closeCurrentTab();
+	        	} else {
+	        		closeWindow();
+	        	}
+	        }
+
+	   	</script>
+	</head>
+	<apex:variable value="{!Lead__c}" var="lead" />
+	<apex:form id="frmData" >
+		<apex:pageBlock id="mainPnl">
+			<script>
+				loadJQuery();
+			</script>
+			<apex:outputPanel layout="block" styleClass="container-fluid">
+				<!-- Header -->
+				<apex:outputPanel layout="block" styleClass="row rowHeader {!HeaderStyle}">
+					<apex:outputPanel layout="block" styleClass="col-sm stepTitle">
+						{!titleSection} [{!step}]
+					</apex:outputPanel>
+				</apex:outputPanel>
+				<apex:outputPanel layout="block" styleClass="row boxPanel">
+					<apex:outputPanel layout="block" styleClass="col-sm">
+						<!-- OPENING/POWER STATEMENT -->
+						<apex:outputPanel id="pnlOpening" rendered="{!step=='0'}" layout="block" styleClass="row">
+							<apex:outputPanel layout="block" styleClass="col-7">
+								<!-- <c:StaticText code="OPENING_POWST" attribute1="{!lead.Name}" /> -->
+								<p><h4>Outbound – Opening</h4></p>
+								<p>&nbsp;</p>
+								<p class="page0">Hi, am I speaking with <strong>{!lead.Name}</strong>,</p>
+								<p class="page0"><span class="customerText">Yes</span></p>
+								<p class="page0">
+									Great, my name is <strong><i>{!$User.FirstName} {!$User.LastName}</i></strong>, calling from Savvy, regarding the recent enquiry you made for a <strong>{!lead.Loan_Type__c}</strong>
+									<apex:outputPanel rendered="{!AND(NOT(ISBLANK(lead.Loan_For__c)),lead.Loan_Type__c!='Bad Credit Car Loan',lead.Loan_Type__c!='Car Loan')}"> 
+										for &nbsp; <strong><apex:outputField value="{!lead.Loan_For__c}"/></strong>?
+									</apex:outputPanel>
+								</p> 
+								<p class="page0"><span class="customerText">Yes</span>,</p>
+								<p class="page0">Ok, well we can definitely look into this for you.</p>
+								<p>&nbsp;</p>
+								<!--
+								<p><h4>Inbound – Opening</h4></p>
+								<p>&nbsp;</p>
+								<p class="page0">Good morning/Afternoon, Welcome to Savvy, you are speaking with <strong>{!$User.FirstName} {!$User.LastName}</strong>, How can I assist you today?</p>
+								<p class="page0"><span class="customerText">I am looking for {!lead.Loan_Type__c} finance</span></p>
+								<p class="page0">(Finance) Great, we can definitely assist. At what stage of the process are you at? Are you looking for pre-approval?</p>
+								<p><span class="customerText">Yes</span></p>
+								<p class="page0">(Finance) Ok - I need to ask you a few questions to pre-qualify you for the loan.</p>
+								<p class="page0"><span class="customerText">No - I just want to know what to know what rate you can offer</span></p>
+								<p class="page0">(Finance) Ok - I need to ask you a few questions to determine what rate I can do for you</p>
+								<p>&nbsp;</p>
+								-->
+								<p class="page0">To kick off the process, I will need to ask you some qualifying questions</p>
+								<p>&nbsp;</p>
+								<p class="page0"> <i>or</i>  </p>
+								<p>&nbsp;</p>
+								<p class="page0"><i>How can we help you today?</i></p>
+								<p>&nbsp;</p><p>&nbsp;</p>
+							</apex:outputPanel>
+							<apex:outputPanel layout="block" styleClass="col-5">
+								<c:LeadDetails lead="{!lead}" infoType="basic" mainDivStyleClass="alert alert-info"/>
+								<apex:outputPanel layout="block" styleClass="alert alert-primary" rendered="{!hasRelatedOpportunities}">
+									<h5>Related Records:</h5>
+									<p>&nbsp;</p>
+									<apex:pageBlockTable value="{!relatedOppsList}" var="item">
+										<apex:column headerValue="Name">
+											<strong><apex:outputLink value="/{!item.Id}" target="_blank">{!item.Name}</apex:outputLink></strong>
+										</apex:column>
+										<apex:column value="{!item.Status__c}"/>
+										<apex:column value="{!item.Date_Closed_or_Settled__c}"/>
+										<apex:column value="{!item.Reason_for_Closure__c}"/>
+										<apex:column value="{!item.Application__r.Status__c}" headerValue="Application Status" />
+									</apex:pageBlockTable>
+								</apex:outputPanel>
+								<div class="row">
+									<apex:outputPanel layout="block" styleClass="col-12">
+										<strong>Notes:</strong>
+										<apex:inputField value="{!lead.Notes__c}" styleClass="form-control" />
+									</apex:outputPanel>
+								</div>
+								<apex:outputPanel layout="block" styleClass="row" rendered="{!hasDiffrentOwner}">
+									<apex:outputPanel layout="block" styleClass="col-12">
+										<p>&nbsp;</p>
+										<p><h4>Existing ownership: {!leadOwner.Name}</h4></p>
+										<p>&nbsp;</p>
+										<div class="pnlButtons" align="left">
+											<apex:commandButton value="Notify" action="{!notifyOwnership}" status="Status1"  styleClass="btn btn-dark" oncomplete="closeFlowPage();"/>
+										</div>
+									</apex:outputPanel>
+								</apex:outputPanel>
+								<apex:outputPanel layout="block" styleClass="row" rendered="{!AND(NOT(hasDiffrentOwner),hasApplicationCompleted)}">
+									<apex:outputPanel layout="block" styleClass="col-12">
+										<p>&nbsp;</p>
+										<p><h4>Customer has Completed an Application</h4></p>
+										<p>&nbsp;</p>
+										<div class="pnlButtons" align="left">
+											<apex:commandButton value="Go to Sales Tool" action="{!goSalesTool}" status="Status1"  styleClass="btn btn-dark" oncomplete="closeFlowPage();"/>
+										</div>
+									</apex:outputPanel>
+								</apex:outputPanel>
+							</apex:outputPanel>
+						</apex:outputPanel>
+
+
+						<!-- QUESTIONING & QUALIFYING -->
+						<apex:outputPanel layout="block" id="pnlQuestioning" rendered="{!step=='QQ'}" styleClass="row">
+							<apex:outputPanel layout="block" styleClass="col-7">
+								<apex:pageBlockSection columns="1" id="pnlQQ1" rendered="{!!isPersonalLoan}">
+									<apex:outputText value="What type of <b>{!app.Type_of_Asset__c}</b> are you looking to purchase?" escape="false" />
+									<apex:pageBlockSectionItem >
+										<apex:outputLabel value="{!$ObjectType.Application__c.fields.Type_of_Asset__c.Label}" />
+										<apex:selectList value="{!app.Type_of_Asset__c}" multiselect="false" size="1" required="true" id="fldAsset">
+											<apex:selectOptions value="{!assetTypeOptions}" />
+											<apex:actionSupport event="onchange" reRender="pnlQQ1" focus="fldAsset"/>
+										</apex:selectList>
+									</apex:pageBlockSectionItem>
+									<apex:pageBlockSectionItem rendered="{!app.Type_of_Asset__c!='Personal'}">
+										<apex:outputLabel value="{!app.Type_of_Asset__c} Year" for="fldPrice" />
+										<!-- <apex:outputLabel value="{!$ObjectType.Application__c.fields.Vehicle_Year__c.Label}" /> -->
+										<apex:selectList value="{!app.Vehicle_Year__c}" multiselect="false" size="1">
+											<apex:selectOptions value="{!vehicleYearOptions}" />
+										</apex:selectList>
+									</apex:pageBlockSectionItem>
+									<apex:inputField value="{!app.Vehicle_Make__c}" label="{!app.Type_of_Asset__c} Make" rendered="{!app.Type_of_Asset__c!='Personal'}" />
+									<apex:inputField value="{!app.Vehicle_Model__c}" label="{!app.Type_of_Asset__c} Model" rendered="{!app.Type_of_Asset__c!='Personal'}" />
+									<apex:pageBlockSectionItem >
+										<apex:outputPanel id="pnlPrice">
+											<apex:outputLabel value="{!app.Type_of_Asset__c} Price" for="fldPrice" rendered="{!app.Type_of_Asset__c!='Personal'}" />
+											<apex:outputLabel value="{!app.Type_of_Asset__c} loan amount" for="fldPrice" rendered="{!app.Type_of_Asset__c=='Personal'}" />
+										</apex:outputPanel>
+										<apex:inputField value="{!app.Purchase_Price__c}" id="fldPrice" />
+									</apex:pageBlockSectionItem>
+									<!-- <apex:inputField value="{!lead.Purchase_Type__c}" label="Will you be buying private or dealer?" />
+									<apex:inputField value="{!lead.Has_Vehicle_Located__c}" label="Have you located the vehicle?" id="fldVehicleLocated">
+										<apex:actionSupport event="onchange" focus="fldVehicleLocated" reRender="pnlQQ1" status="loadingSts" />
+									</apex:inputField>
+									<apex:inputField value="{!lead.Deposit__c}" label="Have you put a deposit on the car? How much? (put 0 if not)" 
+									                 rendered="{!lead.Has_Vehicle_Located__c=='Y'}" id="fldDeposit"/> -->
+								</apex:pageBlockSection>
+								<apex:outputPanel layout="block" styleClass="alert alert-primary" rendered="{!!isPersonalLoan}">
+									<c:StaticText code="VD_INTRO"/>
+								</apex:outputPanel>
+								<apex:pageBlockSection columns="1" id="pnlQQ2"  rendered="{!!isPersonalLoan}">
+									<!-- <apex:inputField value="{!lead.When_Driving__c}" label="OK so that I can make sure I manage your expectation, When are you looking to be driving in your new vehicle?" /> -->
+									<!-- <apex:pageBlockSectionItem >
+										<apex:outputLabel value="What loan term are you looking for?" />
+										<apex:selectList value="{!app.Length_of_Term__c}" multiselect="false" size="1">
+											<apex:selectOptions value="{!longTermOptions}" />
+										</apex:selectList>
+									</apex:pageBlockSectionItem> -->
+									<!-- <apex:inputField value="{!app.Finance_Amount__c}" label="What’s the exact loan amount that you are looking for?" /> -->
+									<apex:inputField value="{!app.Preferred_Repayment__c}" label="What is your budget for repayments on the loan?" />
+									<apex:pageBlockSectionItem >
+										<apex:outputLabel value="Loan Payment Period" />
+										<apex:selectList value="{!app.Repayment_Regularity__c}" multiselect="false" size="1" required="true">
+											<apex:selectOption itemLabel="Monthly" itemValue="Month"/>
+											<apex:selectOption itemLabel="Fortnightly" itemValue="Fortnight"/>
+											<apex:selectOption itemLabel="Weekly" itemValue="Week"/>
+										</apex:selectList>
+									</apex:pageBlockSectionItem>
+									<apex:inputField value="{!lead.Has_Trade_In__c}" label="Will there be a trade in as part of this transaction?" id="fldHasTradeIn">
+										<apex:actionSupport event="onchange" focus="fldHasTradeIn" reRender="pnlQQ2" status="loadingSts" />
+									</apex:inputField>
+									<apex:inputField value="{!lead.Trade_In__c}" label="Trade In Value" 
+									                 rendered="{!lead.Has_Trade_In__c=='Y'}" id="fldTradeIn"/>
+									<apex:inputField value="{!lead.Payout_On__c}" label="Payout On Value" 
+									                 rendered="{!lead.Has_Trade_In__c=='Y'}" id="fldPayoutOn"/>
+									<!-- <apex:inputField value="{!lead.Vehicle_Usage__c}" label="So, you will you be using the vehicle for Personal or Business use?" id="fldVeUs">
+										<apex:actionSupport event="onchange" focus="fldVeUs" reRender="pnlQQ2" status="loadingSts" />
+									</apex:inputField> -->
+									<!-- <apex:inputField value="{!lead.Is_SelfEmpl_Business__c}" label="Are you a self-employed?"
+									                 rendered="{!lead.Vehicle_Usage__c == 'Business'}" id="fldIsSelfEmp" /> -->
+									<!-- <apex:inputField value="{!lead.Is_SelfEmpl_Business__c}" label="Are you an employee or self-employed?" id="fldIsSelfEmp" /> -->
+								</apex:pageBlockSection>
+								<apex:pageBlockSection columns="1" id="pnlQQ3">
+									<apex:pageBlockSectionItem >
+										<apex:outputLabel value="Are you an employee or self-employed?" />
+										<apex:outputPanel >
+											<apex:selectList id="sebQQ" value="{!lead.Is_SelfEmpl_Business__c}" multiselect="false" size="1">
+												<apex:selectOption itemLabel="--None--" itemValue=""/>
+												<apex:selectOption itemLabel="Employee" itemValue="N"/>
+												<apex:selectOption itemLabel="Self-employed" itemValue="Y"/>
+												<apex:actionSupport reRender="pnlQQ3" event="onchange" status="stsseQQ" focus="sebQQ"/>
+											</apex:selectList>&nbsp;
+											<apex:actionStatus startText="(Processing...)" id="stsseQQ"/>
+										</apex:outputPanel>
+									</apex:pageBlockSectionItem>
+									<apex:inputField value="{!lead.Vehicle_Usage__c}" label="So, you will you be using the vehicle for Personal or Business use?" rendered="{!lead.Is_SelfEmpl_Business__c=='Y'}" />
+									<apex:pageBlockSectionItem >
+										<apex:outputLabel value="Do you have any credit issues?" />
+										<apex:selectList value="{!lead.Has_Clean_Credit_History__c}" multiselect="false" size="1" required="true" id="cchis">
+											<apex:selectOption itemLabel="No" itemValue="Y"/>
+											<apex:selectOption itemLabel="Yes" itemValue="N"/>
+											<apex:actionSupport reRender="pnlQQ3" event="onchange" status="stsseQQ" focus="cchis"/>
+										</apex:selectList>
+									</apex:pageBlockSectionItem>
+									<!-- Lelo 	2019-01-18 -->
+									<apex:inputField value="{!lead.Has_Any_Application_Received__c}" label="Have you made any applications or received any quotes recently?" id="appquo">
+										<apex:actionSupport reRender="pnlQQ3" event="onchange" status="stsseQQ" focus="appquo"/>
+									</apex:inputField>
+									<apex:inputField value="{!lead.App_Received_Type__c}" label="Please specify:" 
+										rendered="{!AND(lead.Has_Any_Application_Received__c=='Y')}" id="appquoty">
+										<apex:actionSupport reRender="pnlQQ3" event="onchange" status="stsseQQ" focus="appquoty"/>
+									</apex:inputField>
+									<apex:inputField value="{!lead.App_Outcome__c}" label="What was the outcome?" 
+										rendered="{!AND(lead.Has_Any_Application_Received__c=='Y',lead.App_Received_Type__c=='Application')}"/>
+									<!-- <apex:inputField value="{!lead.Quote_What__c}" label="What were you quoted?" 
+										rendered="{!AND(lead.Has_Any_Application_Received__c=='Y',lead.App_Received_Type__c=='Quote')}"/> -->
+									<apex:inputField value="{!lead.Quote_Loan_Amount__c}" label="Loan Amount ($)" 
+										rendered="{!AND(lead.Has_Any_Application_Received__c=='Y',lead.App_Received_Type__c=='Quote')}"/>
+									<apex:inputField value="{!lead.Quote_Rate__c}" label="Interest rate (%)" 
+										rendered="{!AND(lead.Has_Any_Application_Received__c=='Y',lead.App_Received_Type__c=='Quote')}"/>
+									<apex:inputField value="{!lead.Quote_Term__c}" label="Term (months)" 
+										rendered="{!AND(lead.Has_Any_Application_Received__c=='Y',lead.App_Received_Type__c=='Quote')}"/>
+									<apex:inputField value="{!lead.Quote_Repayment__c}" label="Repayment ($)" 
+										rendered="{!AND(lead.Has_Any_Application_Received__c=='Y',lead.App_Received_Type__c=='Quote')}"/>
+									<apex:inputField value="{!lead.Quote_Frequency__c}" label="Repayment Frequency" 
+										rendered="{!AND(lead.Has_Any_Application_Received__c=='Y',lead.App_Received_Type__c=='Quote')}"/>
+									<apex:inputField value="{!lead.Quote_Balloon__c}" label="Balloon" 
+										rendered="{!AND(lead.Has_Any_Application_Received__c=='Y',lead.App_Received_Type__c=='Quote')}"/>
+									<apex:inputField value="{!lead.Quote_Fees__c}" label="Fees ($)" 
+										rendered="{!AND(lead.Has_Any_Application_Received__c=='Y',lead.App_Received_Type__c=='Quote')}"/>
+									<!-- End -->
+									<apex:pageBlockSectionItem rendered="{!AND(isPersonalLoan,lead.Is_SelfEmpl_Business__c=='Y')}">
+										<apex:outputLabel value="Have you got recent a completed Tax Return that show a profit of more than $40,000?" />
+										<apex:outputPanel >
+											<apex:selectList id="fldTaxRetQQ" value="{!lead.Has_Tax_Returns__c}" multiselect="false" size="1">
+												<apex:selectOption itemLabel="--None--" itemValue=""/>
+												<apex:selectOption itemLabel="Yes" itemValue="Y"/>
+												<apex:selectOption itemLabel="No" itemValue="N"/>
+												<apex:actionSupport event="onchange" reRender="pnlQQ3" focus="fldTaxRetQQ" status="ststaxrQQ"/>
+											</apex:selectList>&nbsp;
+											<apex:actionStatus startText="(Processing...)" id="ststaxrQQ"/>
+										</apex:outputPanel>
+									</apex:pageBlockSectionItem>
+									<apex:outputPanel layout="block" styleClass="alert alert-danger"
+									                  rendered="{!AND(isPersonalLoan,lead.Is_SelfEmpl_Business__c=='Y',lead.Has_Tax_Returns__c=='N')}">
+									    <p>
+									    	<strong>Unfortunately, we are not going to be able to assist you with your loan application.</strong>
+									    </p>
+									</apex:outputPanel>
+									<!-- <apex:inputField value="{!lead.Has_Clean_Credit_History__c}" label="Have you got a clean credit history? no defaults on your file?" /> -->
+								</apex:pageBlockSection>
+							</apex:outputPanel>
+							<apex:outputPanel layout="block" styleClass="col-5">
+								<c:LeadDetails lead="{!lead}" infoType="basic" mainDivStyleClass="alert alert-info"/>
+								<div class="alert alert-warning" role="alert">
+									<h5>RAPPORT-BUILDING QUESTIONS AROUND VEHICLE</h5>
+									<ul>
+										<li>Is there a particular reason why you are looking for this vehicle? </li>
+										<li>How much research have you completed? </li>
+										<li>Are you set on this make and model or are you open to look at other vehicles?</li>
+										<li>Is the car for family? For yourself? How will you be using it?</li>
+									</ul>
+								</div>
+								<div class="row">
+									<apex:outputPanel layout="block" styleClass="col-12" rendered="{!NOT(hasOpportunity)}">
+										<strong>Notes:</strong>
+										<apex:inputField value="{!lead.Notes__c}" styleClass="form-control" />
+									</apex:outputPanel>
+									<apex:outputPanel layout="block" styleClass="col-12" rendered="{!hasOpportunity}">
+										<strong>Notes:</strong>
+										<apex:inputField value="{!opp.Notes__c}" styleClass="form-control" />
+									</apex:outputPanel>
+								</div>
+							</apex:outputPanel>
+						</apex:outputPanel>
+						
+						<!-- PRIME -->
+						<apex:outputPanel id="pnlPrime" rendered="{!step=='PRI'}" layout="block" styleClass="row">
+							<apex:outputPanel layout="block" styleClass="col-7">
+								<apex:pageBlockSection columns="1" collapsible="false" id="pnlEmpl">
+									<apex:outputText value="I need to find out what your last 3 years’ worth of employment looks like:" />
+									<apex:outputText value="Current Employment" styleClass="sectionTitle" />
+									<apex:pageBlockSectionItem >
+										<apex:outputLabel value="What's your current working arrangement?" />
+										<apex:selectList value="{!app.Mode_of_Employment_1__c}" multiselect="false" size="1" required="true">
+											<apex:selectOptions value="{!employmentTypeOptions}" />
+										</apex:selectList>
+									</apex:pageBlockSectionItem>
+									<!-- <apex:inputField value="{!app.Current_Employer_Name_1__c}" label="What the name of the company you work for?" /> -->
+									<!-- <apex:inputField value="{!app.Current_Occupation_1__c}" label="And what’s your job title there?" /> -->
+									<apex:inputField value="{!lead.Has_Any_Leave_Entitlement__c}" label="Do you get holiday or sick leave? - (only ask this question if you feel they may be working casual on ABN, or contract)" />
+									<apex:outputText value="What is your approximate income?" />
+									<apex:inputField value="{!app.Net_Income_1__c}" label="Income After Tax" />
+									<apex:pageBlockSectionItem >
+										<apex:outputLabel value="Payment Frequency" />
+										<apex:selectList value="{!app.Payment_Frequency_1__c}" multiselect="false" size="1" required="true">
+											<apex:selectOptions value="{!paymentFrequencyOptions}" />
+										</apex:selectList>
+									</apex:pageBlockSectionItem>
+									<!-- <apex:inputText value="{!app.Date_Started_1__c}" id="fldEmpDateJQDP" label="How long have you been in your current job for? (Start time dd/mm/yyyy)" html-placeholder="DD/MM/YYYY" /> -->
+									<!-- <apex:pageBlockSectionItem >
+										<apex:outputLabel value="How long have you been in your current job for? (Start time)" />
+										<c:DateSelector value="{!app.Date_Started_1__c}" />
+									</apex:pageBlockSectionItem> -->
+									<apex:outputText value="How long have you been in current Job?" />
+									<apex:inputField value="{!app.Current_Employment_Years__c}" label="Years" />
+									<apex:inputField value="{!app.Current_Employment_Months__c}" label="Months" />
+								</apex:pageBlockSection>
+								<hr/>
+								<apex:pageBlockSection columns="1" collapsible="false">
+									<apex:outputText value="Previous Employment" styleClass="sectionTitle" />
+									<!-- <apex:inputField value="{!app.Previous_Employer_Name_1__c}" label="Who did you work for previously?" /> -->
+									<!-- <apex:outputText value="How long were you working in your previous position?"/> -->
+									<!-- <apex:inputText value="{!app.Start_Date_1__c}" id="fldPEmpDateStartJQDP" label="(Start time dd/mm/yyyy)" html-placeholder="DD/MM/YYYY" />
+									<apex:inputText value="{!app.Finish_Date_1__c}" id="fldPEmpDateFinishJQDP" label="(finish time dd/mm/yyyy)" html-placeholder="DD/MM/YYYY" /> -->
+									<apex:outputText value="So how long were you in your previous position?" />
+									<apex:inputField value="{!app.Previous_Employment_Years__c}" label="Years" />
+									<apex:inputField value="{!app.Previous_Employment_Months__c}" label="Months" />
+									<apex:pageBlockSectionItem >
+										<apex:outputLabel value="Employment status" />
+										<apex:selectList value="{!app.Previous_Mode_of_Employment_1__c}" multiselect="false" size="1" required="true">
+											<apex:selectOptions value="{!employmentTypeOptions}" />
+										</apex:selectList>
+									</apex:pageBlockSectionItem>
+									<!-- Additional employments -->
+									<apex:pageBlockSection columns="1" collapsible="false" id="pnlOthEmpl">
+										<script>
+											loadJQuery();
+										</script>
+										<apex:repeat value="{!emptList}" var="a">
+											<apex:outputText value="Previous Employment #{!a.viewIndex}" styleClass="sectionTitle" />
+											<apex:outputText value="So how long were you in your previous position?" />
+											<apex:inputField value="{!a.data.Employment_Years__c}" label="Years" />
+											<apex:inputField value="{!a.data.Employment_Months__c}" label="Months"/>
+											<apex:inputField value="{!a.data.Employment_Type__c}" required="false" />
+											<!-- <apex:inputField value="{!a.data.Employer_Name__c}" required="false" /> -->
+											<!-- <apex:inputField value="{!a.data.Start_Date__c}" required="false" showDatePicker="false" html-placeholder="DD/MM/YYYY" id="fldPrevEmpStartJQDP" styleClass="customDataInput" />
+											<apex:inputField value="{!a.data.Finish_Date__c}" required="false" showDatePicker="false" html-placeholder="DD/MM/YYYY" id="fldPrevEmpFinJQDP" styleClass="customDataInput" /> -->
+											
+											<apex:pageBlockSectionItem >
+												<apex:pageBlockSectionItem />
+												<apex:commandButton value="Remove" action="{!removeEmployment}" reRender="pnlOthEmpl, msg" status="Status1">
+													<apex:param name="incomeSelected" assignTo="{!employSelected}" value="{!a.idx}" />
+												</apex:commandButton>
+											</apex:pageBlockSectionItem>
+											<hr/>
+										</apex:repeat>
+										<apex:commandButton value="Add Employment" action="{!addEmployment}" status="Status1" reRender="pnlOthEmpl, msg" />
+									</apex:pageBlockSection>
+								</apex:pageBlockSection>
+								<hr/>
+								<!-- Marital status -->
+								<apex:outputPanel id="pnlMStatusPRI">
+									<apex:pageBlockSection columns="1" collapsible="false" id="pnlMStatusA">
+										<apex:outputText value="Marital Status" styleClass="sectionTitle" />
+										<apex:pageBlockSectionItem >
+											<apex:outputLabel value="In terms of Marital status are you?" />
+											<apex:selectList value="{!app.Marital_Status_1__c}" multiselect="false" size="1" id="fldMStaAppA">
+												<apex:selectOptions value="{!maritalStatusOptions}"  />
+												<apex:actionSupport event="onchange" focus="fldMStaAppA" reRender="pnlMStatusPRI" status="loadingSts" />
+											</apex:selectList>
+										</apex:pageBlockSectionItem>
+										<apex:pageBlockSectionItem >
+											<apex:outputLabel value="Have you got any dependents? How many?" />
+											<apex:selectList value="{!app.No_of_Dependants_1__c}" multiselect="false" size="1">
+												<apex:selectOption itemValue="0" itemLabel="0" />
+												<apex:selectOption itemValue="1" itemLabel="1" />
+												<apex:selectOption itemValue="2" itemLabel="2" />
+												<apex:selectOption itemValue="3" itemLabel="3" />
+												<apex:selectOption itemValue="4" itemLabel="4" />
+												<apex:selectOption itemValue="5" itemLabel="5" />
+												<apex:selectOption itemValue="6" itemLabel="6+" />
+											</apex:selectList>
+										</apex:pageBlockSectionItem>
+										<apex:pageBlockSectionItem >
+											<apex:outputLabel value="Is this a partnered application?" />
+											<apex:selectList value="{!app.No_of_People__c}" multiselect="false" size="1" id="fldPartAppA">
+												<apex:selectOption itemValue="1" itemLabel="No" />
+												<apex:selectOption itemValue="2" itemLabel="Yes" />
+												<apex:actionSupport event="onchange" focus="fldPartAppA" reRender="pnlMStatusPRI" status="loadingSts" />
+											</apex:selectList>
+										</apex:pageBlockSectionItem>
+
+									</apex:pageBlockSection>
+									<apex:pageBlockSection columns="1" collapsible="false" rendered="{!OR(app.No_of_People__c==2,app.Marital_Status_1__c=='Married',app.Marital_Status_1__c=='Defacto')}">
+										<apex:outputText value="Partner Details" styleClass="sectionTitle" />
+										<apex:pageBlockSectionItem >
+											<apex:outputLabel value="Employment status of your partner?" />
+											<apex:selectList value="{!app.Mode_of_Employment_2__c}" multiselect="false" size="1" required="true">
+												<apex:selectOptions value="{!partnerEmploymentTypeOptions}" />
+											</apex:selectList>
+										</apex:pageBlockSectionItem>
+										<apex:inputField value="{!app.Net_Income_2__c}" label="Roughly how much do they earn?" />
+										<apex:pageBlockSectionItem >
+											<apex:outputLabel value="Payment Frequency" />
+											<apex:selectList value="{!app.Payment_Frequency_2__c}" multiselect="false" size="1" required="true">
+												<apex:selectOptions value="{!paymentFrequencyOptions}" />
+											</apex:selectList>
+										</apex:pageBlockSectionItem>
+									</apex:pageBlockSection>
+									<apex:pageBlockSection columns="1" id="pnlPrmPersA" collapsible="false" rendered="{!isPersonalLoan}">
+										<apex:outputText value="Guarantor" styleClass="sectionTitle" />
+										<apex:inputField value="{!lead.Able_Provide_Guarantor__c}" label="If required are you able provide us with a Guarantor to help get your application approved?">
+											<apex:actionSupport event="onchange" reRender="pnlPrmPersA" />
+										</apex:inputField>
+										<apex:inputField value="{!lead.Guarantor_Property_Owner__c}" label="Does the guarantor own their own house?"
+										rendered="{!lead.Able_Provide_Guarantor__c=='Yes'}" />
+										<apex:inputField value="{!lead.Guarantor_Fulltime_Employed__c}" label="Is the guarantor full-time employed?"
+										rendered="{!lead.Able_Provide_Guarantor__c=='Yes'}" />
+									</apex:pageBlockSection>
+								</apex:outputPanel>
+								<hr/>
+								<!-- Centrelink - Other incomes -->
+								<apex:pageBlockSection columns="1" collapsible="false" id="pnlClink">
+									<apex:outputText value="Centrelink Benefits" styleClass="sectionTitle" />
+									<apex:outputText value="(Only ask if its likely that they are receiving centerlink due to low income, dependents etc)" />
+									<apex:inputField value="{!lead.Has_Centrelink_Benefits__c}" label="Do you receive any benefits from centrelink?" id="fldHasCLink">
+										<apex:actionSupport event="onchange" focus="fldHasCLink" reRender="pnlPrime" status="loadingSts" />
+									</apex:inputField>
+									<!-- <apex:inputField value="{!centrelinkIncome.data.Type__c}" label="What type of benefits do you receive?" 
+									                 rendered="{!lead.Has_Centrelink_Benefits__c=='Y'}" /> -->
+									<!-- <apex:pageBlockSectionItem rendered="{!lead.Has_Centrelink_Benefits__c=='Y'}">
+										<apex:outputLabel value="What type of benefits do you receive?" />
+										<apex:selectList value="{!centrelinkIncome.data.Type__c}" multiselect="false" size="1">
+											<apex:selectOptions value="{!centrelinkBenefitOptions}" />
+										</apex:selectList>
+									</apex:pageBlockSectionItem>
+									<apex:inputField value="{!centrelinkIncome.data.Income__c}" label="How much do you receive every month?" required="false"
+									                 rendered="{!lead.Has_Centrelink_Benefits__c=='Y'}" /> -->
+								</apex:pageBlockSection>
+								<apex:pageBlockSection columns="1" collapsible="false" id="pnlCenInc" rendered="{!lead.Has_Centrelink_Benefits__c=='Y'}">
+									<apex:repeat value="{!centrelinkIncomes}" var="a">
+										<apex:outputText value="Centrelink benefit #{!a.idx}" />
+										<apex:pageBlockSectionItem >
+											<apex:outputLabel value="What type of benefits do you receive?" />
+											<apex:selectList value="{!a.data.Type__c}" multiselect="false" size="1">
+												<apex:selectOptions value="{!centrelinkBenefitOptions}" />
+											</apex:selectList>
+										</apex:pageBlockSectionItem>
+										<apex:inputField value="{!a.data.Income__c}" label="How much do you receive" required="false" />
+										<apex:inputField value="{!a.data.Frequency__c}" required="false"/>
+										<apex:pageBlockSectionItem >
+											<apex:pageBlockSectionItem />
+											<apex:commandButton value="Remove" action="{!removeCentrelink}" reRender="pnlCenInc, msg" status="Status1">
+												<apex:param name="centrelinkSelected" assignTo="{!centrelinkSelected}" value="{!a.idx}" />
+											</apex:commandButton>
+										</apex:pageBlockSectionItem>
+									</apex:repeat>
+									<apex:commandButton value="Add Centrelink Benefit" action="{!addCentrelink}" status="Status1" reRender="pnlCenInc, msg" />
+								</apex:pageBlockSection>
+								<!-- End - Centrelink - Other incomes -->
+								<hr/>
+								<!-- <apex:pageBlockSection columns="1" collapsible="false" id="pnlOInc" rendered="{!!isPersonalLoan}"> -->
+								<apex:pageBlockSection columns="1" collapsible="false" id="pnlOInc" rendered="false">
+									<apex:outputText value="Other Income" styleClass="sectionTitle" />
+									<apex:pageBlockSectionItem >
+										<apex:outputLabel value="Any other income?" />
+										<apex:selectList value="{!app.Do_you_receive_other_income_1__c}" multiselect="false" size="1" id="fldOthInc">
+											<apex:actionSupport event="onchange" focus="fldOthInc" reRender="pnlPrime" status="loadingSts" />
+											<apex:selectOption itemValue="No" itemLabel="No" />
+											<apex:selectOption itemValue="Yes" itemLabel="Yes" />
+										</apex:selectList>
+									</apex:pageBlockSectionItem>
+								</apex:pageBlockSection>
+								<apex:pageBlockSection columns="1" collapsible="false" id="pnlOthInc" rendered="{!AND(app.Do_you_receive_other_income_1__c=='Yes',NOT(isPersonalLoan))}">
+									<apex:repeat value="{!incomes}" var="a">
+										<apex:outputText value="Other Income #{!a.idx}" />
+										<apex:pageBlockSectionItem >
+											<apex:outputLabel value="Income Type" />
+											<apex:selectList value="{!a.data.Type__c}" multiselect="false" size="1" id="fldinctype1">
+												<apex:actionSupport event="onchange" reRender="pnlOthInc" focus="fldinctype1"/>
+												<apex:selectOptions value="{!otherIncomeTypeOptions}" />
+											</apex:selectList>
+										</apex:pageBlockSectionItem>
+										<apex:inputField value="{!a.data.Income__c}" label="After Tax Income" required="false" />
+										<apex:inputField value="{!a.data.Frequency__c}" required="false"/>
+										<apex:pageBlockSectionItem >
+											<apex:pageBlockSectionItem />
+											<apex:commandButton value="Remove" action="{!removeIncome}" reRender="pnlPrime, msg" status="Status1">
+												<apex:param name="incomeSelected" assignTo="{!incomeSelected}" value="{!a.idx}" />
+											</apex:commandButton>
+										</apex:pageBlockSectionItem>
+									</apex:repeat>
+									<apex:commandButton value="Add Income" action="{!addIncome}" status="Status1" reRender="pnlPrime, msg" />
+								</apex:pageBlockSection>
+							</apex:outputPanel>
+							<apex:outputPanel layout="block" styleClass="col-5">
+								<c:LeadDetails lead="{!lead}" app="{!app}" mainDivStyleClass="alert alert-info"/>
+								<c:SalesRapportBuilding />
+								<div class="row">
+									<apex:outputPanel layout="block" styleClass="col-12" rendered="{!hasOpportunity}">
+										<strong>Notes:</strong>
+										<apex:inputField value="{!opp.Notes__c}" styleClass="form-control" />
+									</apex:outputPanel>
+								</div>
+							</apex:outputPanel>
+							<p>&nbsp;</p>
+						</apex:outputPanel>
+						
+						<!-- PRIME - RESIDENTIAL STATUS -->
+						<apex:outputPanel id="pnlPrimeRS" rendered="{!step=='PRRS'}" layout="block" styleClass="row">
+							<script>
+								loadJQuery();
+							</script>
+							<apex:outputPanel layout="block" styleClass="col-7">
+								<apex:pageBlockSection columns="1" collapsible="false" id="pnlCRS">
+									<apex:outputText value="Current Residential Status" styleClass="sectionTitle" />
+									<apex:outputText value="I now need 3 years-worth of residential address history?" />
+									<apex:pageBlockSectionItem >
+										<apex:outputLabel value="Residential Status" />
+										<apex:selectList value="{!app.Current_Residence_Status_1__c}" multiselect="false" size="1" id="fldResSta">
+											<apex:selectOptions value="{!residentialStatusOptions}"  />
+											<apex:actionSupport event="onchange" focus="fldResSta" reRender="mainPnl" status="loadingSts" />
+										</apex:selectList>
+									</apex:pageBlockSectionItem>
+									<!-- Renting -->
+									<apex:inputField value="{!app.Rent_per_month_1__c}" label="How much is your rent?" 
+									                 rendered="{!OR(app.Current_Residence_Status_1__c=='Renting(Agent)',app.Current_Residence_Status_1__c=='Renting(Private)',app.Current_Residence_Status_1__c=='Parents/Relative')}" />
+									<apex:inputField value="{!app.Board_per_Month_1__c}" label="How much is your rent?" 
+									                 rendered="{!app.Current_Residence_Status_1__c=='Boarding'}" />
+									<apex:inputField value="{!app.Residential_Payment_Frequency_1__c}" label="Payment frequency" 
+									                 rendered="{!AND(app.Current_Residence_Status_1__c!='Mortgage',app.Current_Residence_Status_1__c!='Own Outright')}" />
+									<!-- <apex:inputField value="{!lead.Is_On_Lease__c}" label="Are you on the lease?" 
+									                 rendered="{!OR(app.Current_Residence_Status_1__c=='Renting(Agent)',app.Current_Residence_Status_1__c=='Renting(Private)')}" /> -->
+									<!-- Mortgage -->
+									<apex:inputField value="{!mortgageProp.Payment__c}" label="how much is your repayment?" 
+									                 rendered="{!app.Current_Residence_Status_1__c=='Mortgage'}" required="false" />
+									<apex:inputField value="{!mortgageProp.Frequency__c}" label="Repayment frequency" 
+									                 rendered="{!app.Current_Residence_Status_1__c=='Mortgage'}" />
+									<apex:inputField value="{!mortgageProp.Amount_Owing__c}" label="What’s the outstanding loan amount?" 
+									                 rendered="{!app.Current_Residence_Status_1__c=='Mortgage'}" required="false" />
+									<apex:inputField value="{!mortgageProp.Lender__c}" label="Who is the Lender?" 
+									                 rendered="{!app.Current_Residence_Status_1__c=='Mortgage'}" />
+									<apex:inputField value="{!mortgageProp.Value__c}" required="false" label="What’s the house value?" 
+									                 rendered="{!OR(app.Current_Residence_Status_1__c=='Mortgage',app.Current_Residence_Status_1__c=='Own Outright')}" />
+									<!-- Common for Renting / Mortgage -->
+									<!-- <apex:inputText value="{!app.Date_Moved_in_1__c}" id="fldMoveInJQDP" label="What date did you move in? (dd/mm/yyyy)" 
+									                 html-placeholder="DD/MM/YYYY"  /> -->
+									<apex:outputText value="How long have you lived in your current residential address?" />
+									<apex:inputField value="{!app.Current_Residence_Years__c}" label="Years" />
+									<apex:inputField value="{!app.Current_Residence_Months__c}" label="Months" />
+								</apex:pageBlockSection>
+								<apex:pageBlockSection columns="1" collapsible="false" rendered="{!previousAddresses >= 1}">
+									<apex:outputText value="1) Previous Residential Status" styleClass="sectionTitle" />
+									<!-- <apex:outputText value="How long were you living in your previous address?" />
+									<apex:inputText value="{!app.Date_From_1__c}" id="fldPreMoveIn1JQDP" label="What date did you move in? (dd/mm/yyyy)" html-placeholder="DD/MM/YYYY" /> -->
+									<apex:outputText value="What was your living arrangements there? Were you?" />
+									<apex:pageBlockSectionItem >
+										<apex:outputLabel value="Residential Status" />
+										<apex:selectList value="{!app.Previous_Residence_Status_1__c}" multiselect="false" size="1">
+											<apex:selectOptions value="{!residentialStatusOptions}"  />
+										</apex:selectList>
+									</apex:pageBlockSectionItem>
+									<apex:outputText value="How long were you living in your previous address?" />
+									<apex:inputField value="{!app.Previous_Residence_Years__c}" label="Years" />
+									<apex:inputField value="{!app.Previous_Residence_Months__c}" label="Months" />
+								</apex:pageBlockSection>
+								<apex:pageBlockSection columns="1" collapsible="false" rendered="{!previousAddresses >= 2}">
+									<apex:outputText value="2) Previous Residential Status" styleClass="sectionTitle" />
+									<!-- <apex:outputText value="How long were you living in your previous address?" />
+									<apex:inputText value="{!app.Date_From_1b__c}" id="fldPreMoveIn2JQDP" label="What date did you move in? (dd/mm/yyyy)" html-placeholder="DD/MM/YYYY" /> -->
+									<apex:outputText value="What was your living arrangements there? Were you?" />
+									<apex:pageBlockSectionItem >
+										<apex:outputLabel value="Residential Status" />
+										<apex:selectList value="{!app.Previous_Residence_Status_1b__c}" multiselect="false" size="1">
+											<apex:selectOptions value="{!residentialStatusOptions}"  />
+										</apex:selectList>
+									</apex:pageBlockSectionItem>
+									<apex:outputText value="How long were you living in your previous address?" />
+									<apex:inputField value="{!app.Previous_Residence_Yearsb__c}" label="Years" />
+									<apex:inputField value="{!app.Previous_Residence_Monthsb__c}" label="Months" />
+								</apex:pageBlockSection>
+								<apex:pageBlockSection columns="1" collapsible="false" rendered="{!previousAddresses >= 3}">
+									<apex:outputText value="3) Previous Residential Status" styleClass="sectionTitle" />
+									<apex:outputText value="How long were you living in your previous address?" />
+									<!-- <apex:inputText value="{!app.Date_From_1c__c}" id="fldPreMoveIn3JQDP" label="What date did you move in? (dd/mm/yyyy)" html-placeholder="DD/MM/YYYY" />
+									<apex:outputText value="What was your living arrangements there? Were you?" /> -->
+									<apex:pageBlockSectionItem >
+										<apex:outputLabel value="Residential Status" />
+										<apex:selectList value="{!app.Previous_Residence_Status_1C__c}" multiselect="false" size="1">
+											<apex:selectOptions value="{!residentialStatusOptions}"  />
+										</apex:selectList>
+									</apex:pageBlockSectionItem>
+									<apex:outputText value="How long were you living in your previous address?" />
+									<apex:inputField value="{!app.Previous_Residence_Yearsc__c}" label="Years" />
+									<apex:inputField value="{!app.Previous_Residence_Monthsc__c}" label="Months" />
+								</apex:pageBlockSection>
+								<apex:pageBlockSection columns="1" collapsible="false" rendered="{!previousAddresses >= 4}">
+									<apex:outputText value="4) Previous Residential Status" styleClass="sectionTitle" />
+									<!-- <apex:outputText value="How long were you living in your previous address?" />
+									<apex:inputText value="{!app.Date_From_1d__c}" id="fldPreMoveIn4JQDP" label="What date did you move in? (dd/mm/yyyy)" html-placeholder="DD/MM/YYYY" /> -->
+									<apex:outputText value="What was your living arrangements there? Were you?" />
+									<apex:pageBlockSectionItem >
+										<apex:outputLabel value="Residential Status" />
+										<apex:selectList value="{!app.Previous_Residence_Status_1d__c}" multiselect="false" size="1">
+											<apex:selectOptions value="{!residentialStatusOptions}"  />
+										</apex:selectList>
+									</apex:pageBlockSectionItem>
+									<apex:outputText value="How long were you living in your previous address?" />
+									<apex:inputField value="{!app.Previous_Residence_Yearsd__c}" label="Years" />
+									<apex:inputField value="{!app.Previous_Residence_Monthsd__c}" label="Months" />
+								</apex:pageBlockSection>
+								<apex:pageBlockSection columns="1" collapsible="false" rendered="{!previousAddresses >= 5}">
+									<apex:outputText value="5) Previous Residential Status" styleClass="sectionTitle" />
+									<!-- <apex:outputText value="How long were you living in your previous address?" />
+									<apex:inputText value="{!app.Date_From_1e__c}" id="fldPreMoveIn5JQDP" label="What date did you move in? (dd/mm/yyyy)" html-placeholder="DD/MM/YYYY" /> -->
+									<apex:outputText value="What was your living arrangements there? Were you?" />
+									<apex:pageBlockSectionItem >
+										<apex:outputLabel value="Residential Status" />
+										<apex:selectList value="{!app.Previous_Residence_Status_1e__c}" multiselect="false" size="1">
+											<apex:selectOptions value="{!residentialStatusOptions}"  />
+										</apex:selectList>
+									</apex:pageBlockSectionItem>
+									<apex:outputText value="How long were you living in your previous address?" />
+									<apex:inputField value="{!app.Previous_Residence_Yearse__c}" label="Years" />
+									<apex:inputField value="{!app.Previous_Residence_Monthse__c}" label="Months" />
+								</apex:pageBlockSection>
+								<apex:pageBlockSection columns="1" collapsible="false" rendered="{!previousAddresses >= 1}">
+									<apex:pageBlockSectionItem >
+										<apex:outputLabel value="" />
+										<apex:commandButton value="Remove" action="{!removePreviousAddress}" reRender="pnlPrimeRS" status="Status1"/>	
+									</apex:pageBlockSectionItem>
+								</apex:pageBlockSection>
+								<apex:commandButton value="Add previous address" action="{!addPreviousAddress}" reRender="pnlPrimeRS, msg" status="Status1"/>
+								<p>&nbsp;</p>
+							</apex:outputPanel>
+							<apex:outputPanel layout="block" styleClass="col-5">
+								<c:LeadDetails lead="{!lead}" app="{!app}" mainDivStyleClass="alert alert-info"/>
+								<div class="alert alert-warning" role="alert">
+									<h5>RAPPORT-BUILDING QUESTIONS AROUND LOCALITY</h5>
+									<p>&nbsp;</p>
+									<p>
+										<ul>
+											<li>If you are well travelled and know where they live and local attractions talk about it.</li>
+											<li>Make mention of Sydney office and Adelaide office if they are local.</li>
+											<li>Ask them questions about where they live, find out more, good conversation starter...</li>
+											<li>Local sport teams etc.</li>
+										</ul>
+									</p>
+								</div>
+								<div class="row">
+									<apex:outputPanel layout="block" styleClass="col-12" rendered="{!hasOpportunity}">
+										<strong>Notes:</strong>
+										<apex:inputField value="{!opp.Notes__c}" styleClass="form-control" />
+									</apex:outputPanel>
+								</div>
+							</apex:outputPanel>
+							<p>&nbsp;</p>
+						</apex:outputPanel>
+
+						<!-- PRIME - PREVIOUS RESIDENTIAL STATUS -->
+						<!--
+						<apex:outputPanel id="pnlPrimePR" rendered="{!step=='PRPR'}" layout="block" styleClass="row">
+							<apex:outputPanel layout="block" styleClass="col-7">
+								<apex:pageBlockSection columns="1" collapsible="false">
+									<apex:outputText value="Previous Residential Status" styleClass="sectionTitle" />
+									<apex:outputText value="How long were you living in your previous address?" />
+									<apex:inputText value="{!app.Date_From_1__c}" id="fldPreMoveInJQDP" label="What date did you move in? (dd/mm/yyyy)" html-placeholder="DD/MM/YYYY" />
+									<apex:outputText value="What was your living arrangements there? Were you?" />
+									<apex:pageBlockSectionItem >
+										<apex:outputLabel value="Residential Status" />
+										<apex:selectList value="{!app.Previous_Residence_Status_1__c}" multiselect="false" size="1">
+											<apex:selectOptions value="{!residentialStatusOptions}"  />
+										</apex:selectList>
+									</apex:pageBlockSectionItem>
+								</apex:pageBlockSection>
+								<p>&nbsp;</p>
+							</apex:outputPanel>
+							<apex:outputPanel layout="block" styleClass="col-5">
+								<c:LeadDetails lead="{!lead}" app="{!app}" mainDivStyleClass="alert alert-info"/>
+								<div class="row">
+									<apex:outputPanel layout="block" styleClass="col-12" rendered="{!hasOpportunity}">
+										<strong>Notes:</strong>
+										<apex:inputField value="{!opp.Notes__c}" styleClass="form-control" />
+									</apex:outputPanel>
+								</div>
+							</apex:outputPanel>
+						</apex:outputPanel>
+						-->
+						<!-- PRIME - MARITAL STATUS -->
+						<apex:outputPanel id="pnlPrimeMR" rendered="{!step=='PRMR'}" layout="block" styleClass="row">
+							<apex:outputPanel layout="block" styleClass="col-7">
+								<apex:pageBlockSection columns="1" collapsible="false" id="pnlMStatus">
+									<apex:outputText value="Marital Status" styleClass="sectionTitle" />
+									<apex:pageBlockSectionItem >
+										<apex:outputLabel value="In terms of Marital status are you?" />
+										<apex:selectList value="{!app.Marital_Status_1__c}" multiselect="false" size="1" id="fldMStaApp">
+											<apex:selectOptions value="{!maritalStatusOptions}"  />
+											<apex:actionSupport event="onchange" focus="fldMStaApp" reRender="pnlPrimeMR" status="loadingSts" />
+										</apex:selectList>
+									</apex:pageBlockSectionItem>
+									<apex:pageBlockSectionItem >
+										<apex:outputLabel value="Have you got any dependents? How many?" />
+										<apex:selectList value="{!app.No_of_Dependants_1__c}" multiselect="false" size="1">
+											<apex:selectOption itemValue="0" itemLabel="0" />
+											<apex:selectOption itemValue="1" itemLabel="1" />
+											<apex:selectOption itemValue="2" itemLabel="2" />
+											<apex:selectOption itemValue="3" itemLabel="3" />
+											<apex:selectOption itemValue="4" itemLabel="4" />
+											<apex:selectOption itemValue="5" itemLabel="5" />
+											<apex:selectOption itemValue="6" itemLabel="6+" />
+										</apex:selectList>
+									</apex:pageBlockSectionItem>
+									<apex:pageBlockSectionItem >
+										<apex:outputLabel value="Is this a partnered application?" />
+										<apex:selectList value="{!app.No_of_People__c}" multiselect="false" size="1" id="fldPartApp">
+											<apex:selectOption itemValue="1" itemLabel="No" />
+											<apex:selectOption itemValue="2" itemLabel="Yes" />
+											<apex:actionSupport event="onchange" focus="fldPartApp" reRender="pnlPrimeMR" status="loadingSts" />
+										</apex:selectList>
+									</apex:pageBlockSectionItem>
+
+								</apex:pageBlockSection>
+								<apex:pageBlockSection columns="1" collapsible="false" rendered="{!OR(app.No_of_People__c==2,app.Marital_Status_1__c=='Married',app.Marital_Status_1__c=='Defacto')}">
+									<apex:outputText value="Partner Details" styleClass="sectionTitle" />
+									<apex:pageBlockSectionItem >
+										<apex:outputLabel value="Employment status of your partner?" />
+										<apex:selectList value="{!app.Mode_of_Employment_2__c}" multiselect="false" size="1" required="true">
+											<apex:selectOptions value="{!partnerEmploymentTypeOptions}" />
+										</apex:selectList>
+									</apex:pageBlockSectionItem>
+									<apex:inputField value="{!app.Net_Income_2__c}" label="Roughly how much do they earn?" />
+									<apex:pageBlockSectionItem >
+										<apex:outputLabel value="Payment Frequency" />
+										<apex:selectList value="{!app.Payment_Frequency_2__c}" multiselect="false" size="1" required="true">
+											<apex:selectOptions value="{!paymentFrequencyOptions}" />
+										</apex:selectList>
+									</apex:pageBlockSectionItem>
+								</apex:pageBlockSection>
+								<apex:pageBlockSection columns="1" id="pnlPrmPers" collapsible="false" rendered="{!isPersonalLoan}">
+									<apex:outputText value="Guarantor" styleClass="sectionTitle" />
+									<apex:inputField value="{!lead.Able_Provide_Guarantor__c}" label="If required are you able provide us with a Guarantor to help get your application approved?">
+										<apex:actionSupport event="onchange" reRender="pnlPrmPers" />
+									</apex:inputField>
+									<apex:inputField value="{!lead.Guarantor_Property_Owner__c}" label="Does the guarantor own their own house?"
+									rendered="{!lead.Able_Provide_Guarantor__c=='Yes'}" />
+									<apex:inputField value="{!lead.Guarantor_Fulltime_Employed__c}" label="Is the guarantor full-time employed?"
+									rendered="{!lead.Able_Provide_Guarantor__c=='Yes'}" />
+								</apex:pageBlockSection>
+								<!-- <apex:pageBlockSection columns="1" collapsible="false">
+									<apex:outputText value="Loan or Credit Commitments" styleClass="sectionTitle" />
+									<apex:pageBlockSectionItem >
+										<apex:outputLabel value="Do you have any Personal or Financial Loans currently outstanding?" />
+										<apex:selectList value="{!app.Do_you_have_any_loans_outstanding__c}" multiselect="false" size="1">
+											<apex:selectOption itemValue="No" itemLabel="No" />
+											<apex:selectOption itemValue="Yes" itemLabel="Yes" />
+										</apex:selectList>
+									</apex:pageBlockSectionItem>
+									<apex:pageBlockSectionItem >
+										<apex:outputLabel value="Have you got any credit cards?" />
+										<apex:selectList value="{!app.Do_you_have_any_credit_cards__c}" multiselect="false" size="1">
+											<apex:selectOption itemValue="No" itemLabel="No" />
+											<apex:selectOption itemValue="Yes" itemLabel="Yes" />
+										</apex:selectList>
+									</apex:pageBlockSectionItem>
+								</apex:pageBlockSection> -->
+							</apex:outputPanel>
+							<apex:outputPanel layout="block" styleClass="col-5">
+								<c:LeadDetails lead="{!lead}" app="{!app}" mainDivStyleClass="alert alert-info"/>
+								<div class="alert alert-warning" role="alert">
+									<h5>GENERAL RAPPORT-BUILDING QUESTIONS</h5>
+									<p>&nbsp;</p>
+									<p>
+										<ul>
+											<li>What do you and the family do for fun?</li>
+											<li>Personal interests - Family, partner, interest, hobbies.</li>
+											<li>Where did you vacation? </li>
+										</ul>
+									</p>
+								</div>
+								<div class="row">
+									<apex:outputPanel layout="block" styleClass="col-12" rendered="{!hasOpportunity}">
+										<strong>Notes:</strong>
+										<apex:inputField value="{!opp.Notes__c}" styleClass="form-control" />
+									</apex:outputPanel>
+								</div>
+							</apex:outputPanel>
+							<p>&nbsp;</p>
+						</apex:outputPanel>
+
+						<!-- PRIME - Loans and Credits -->
+						<apex:outputPanel id="pnlPrimeLoans" rendered="{!step=='PRLO'}" layout="block" styleClass="row">
+							<apex:outputPanel layout="block" styleClass="col-7">
+								<apex:pageBlockSection columns="1" collapsible="false">
+									<apex:outputText value="Loan or Credit Commitments" styleClass="sectionTitle" />
+									<apex:pageBlockSectionItem >
+										<apex:outputLabel value="Do you have any Personal or Financial Loans currently outstanding?" />
+										<apex:selectList value="{!app.Do_you_have_any_loans_outstanding__c}" multiselect="false" size="1">
+											<apex:selectOption itemValue="No" itemLabel="No" />
+											<apex:selectOption itemValue="Yes" itemLabel="Yes" />
+											<apex:actionSupport event="onchange" action="{!checkLoanCommitments}" reRender="pnlPrimeLoans" status="Status1" />
+										</apex:selectList>
+									</apex:pageBlockSectionItem>
+									<apex:pageBlockSectionItem >
+										<apex:outputLabel value="Have you got any credit cards?" />
+										<apex:selectList value="{!haveCreditCards}" multiselect="false" size="1">
+											<apex:selectOption itemValue="No" itemLabel="No" />
+											<apex:selectOption itemValue="Yes" itemLabel="Yes" />
+											<apex:actionSupport event="onchange" action="{!checkCreditCards}" reRender="pnlPrimeLoans" status="Status1" />
+										</apex:selectList>
+									</apex:pageBlockSectionItem>
+								</apex:pageBlockSection>
+								<apex:pageBlockSection columns="1" collapsible="false" rendered="{!app.Do_you_have_any_loans_outstanding__c=='Yes'}" id="pnlSecLoans">
+									<apex:outputText value="Loan Commitments" styleClass="sectionTitle" />
+									<apex:repeat value="{!loans}" var="a">
+										<apex:outputText value="Loan #{!a.idx}" />
+										<!-- <apex:inputField value="{!a.data.Type__c}" required="false" rendered="{!NOT(AND(app.Application_Type__c=='Personal',app.Current_Residence_Status_1__c=='Mortgage',a.idx==1))}" /> -->
+										<apex:selectList value="{!a.data.Type__c}" multiselect="false" size="1" required="false" id="fldLoanType">
+											<apex:selectOptions value="{!loanTypeOptions}"/>
+											<apex:actionSupport event="onchange" reRender="pnlSecLoans" focus="fldLoanType"/>
+										</apex:selectList>
+										<!-- <apex:outputField value="{!a.data.Type__c}" rendered="{!AND(app.Application_Type__c=='Personal',app.Current_Residence_Status_1__c=='Mortgage',a.idx==1)}" /> -->
+										<apex:inputField value="{!a.data.Lender__c}" />
+										<apex:inputField value="{!a.data.Amount_Owing__c}" required="false" />
+										<apex:inputField value="{!a.data.Payment__c}" required="false" />
+										<apex:inputField value="{!a.data.Frequency__c}" required="false" />
+										<!-- <apex:inputField value="{!a.data.Paid_On_Time__c}" id="fldPaidOnTime" rendered="{!a.data.Type__c != 'Car Loan'}" /> -->
+										<apex:inputField value="{!a.data.Good_Conduct__c}" id="fldGoodcond"/>
+										<apex:pageBlockSectionItem >
+											<apex:pageBlockSectionItem />
+											<apex:commandButton value="Remove" action="{!removeLoan}" reRender="pnlPrimeLoans, msg" status="Status1">
+												<apex:param name="loanSelected" assignTo="{!loanSelected}" value="{!a.idx}" />
+											</apex:commandButton>
+										</apex:pageBlockSectionItem>
+									</apex:repeat>
+									<apex:commandButton value="Add Loan" action="{!addLoan}" status="Status1" reRender="pnlSecLoans, msg" />
+									<!-- <apex:pageMessages id="msgLoans" /> -->
+								</apex:pageBlockSection>
+								<apex:pageBlockSection columns="1" collapsible="false" rendered="{!haveCreditCards=='Yes'}" id="pnlSecCredit">
+									<apex:outputText value="Credit Card Details" styleClass="sectionTitle" />
+									<apex:repeat value="{!creditCards}" var="a">
+										<apex:outputText value="Credit Card #{!a.idx}" />
+										<apex:inputField value="{!a.data.Issuer__c}" required="false" />
+										<apex:inputField value="{!a.data.Limit__c}" required="false" />
+										<apex:inputField value="{!a.data.Amount_Owing__c}" required="false" />
+										<apex:pageBlockSectionItem >
+											<apex:pageBlockSectionItem />
+											<apex:commandButton value="Remove" action="{!removeCreditCard}" reRender="pnlPrimeLoans, msg" status="Status1">
+												<apex:param name="cardSelected" assignTo="{!cardSelected}" value="{!a.idx}" />
+											</apex:commandButton>
+										</apex:pageBlockSectionItem>
+									</apex:repeat>
+									<apex:commandButton value="Add Credit Card" action="{!addCreditCard}" status="Status1" reRender="pnlSecCredit, msg" />
+									<!-- <apex:pageMessages id="msgCred" /> -->
+								</apex:pageBlockSection>
+								<!-- Expense Questions -->
+								<apex:pageBlockSection columns="1" collapsible="false" rendered="false">
+									<apex:outputText value="Expense Questions" styleClass="sectionTitle" />
+									<apex:inputField value="{!app.Basic_Living_Expenses_Per_Month__c}" required="false" label="What are your basic living expenses per month? This would include food, clothes, entertainment?" />
+									<apex:inputField value="{!app.Mobile_Phone_Internet_Pay_TV_per_Month__c}" label="How much do you spend on Mobile Phone, Internet, Pay TV per Month?" />
+									<apex:inputField value="{!app.Travel_Transport_Expenses_per_Month__c}" label="How much do you spend on Fuel, Travel, Transport expenses per Month?" />
+									<apex:inputField value="{!app.Childcare_Child_Maintenance_Per_Month__c}" label="(If Dependents Exist) How much do you spend on Childcare per month?" />
+									<apex:inputField value="{!app.Insurance_Expenses_per_Month__c}" label="How much do you spend on insurance per month, this could include car insurance, health insurance, life insurance and the like?" />
+									<!-- <apex:outputLabel value="Do you have any other recurring expenses per month?" rendered="{!NOT(isPersonalLoan)}"/>
+									<apex:inputField value="{!app.Other_Expenses_per_Month__c}" label="Amount" rendered="{!NOT(isPersonalLoan)}" />
+									<apex:inputField value="{!app.Income_Type_Expenses__c}" label="Type" rendered="{!NOT(isPersonalLoan)}" /> -->
+								</apex:pageBlockSection>
+								<!-- Protection Questions -->
+								<!-- <apex:pageBlockSection columns="1" collapsible="false" rendered="{!NOT(isPersonalLoan)}"> -->
+								<apex:pageBlockSection columns="1" collapsible="false" rendered="false">
+									<apex:outputText value="Protection Questions" styleClass="sectionTitle" />
+									<apex:outputText value="With your loan approval the lender will make provision for the inclusion of loan protection options. These options don’t add significant cost but protect you against unforseen circumstances."/>
+									<apex:inputField value="{!lead.Losing_Job_Protection__c}" label="If you were to have an injury or illness or become involuntarily unemployed, would you like your repayments to be covered?" />
+									<apex:inputField value="{!lead.Written_Off_Protection__c}" label="If your car was written off would you like to be protected against any shortfall difference between the comprehensive insurance payout and your loan balance?" />
+									<apex:inputField value="{!lead.Mechanical_Breakdown_Protection__c}" label="If your car required repairs due to mechanical or electronic component failure would you like the cost of parts and labour to be covered without having to pay any excess?" />
+									<!-- <apex:inputField value="{!lead.Has_Credit_Enquiries__c}" label=" Have you had more than 3 credit enquiries in 6 months?" /> -->
+								</apex:pageBlockSection>
+							</apex:outputPanel>
+							<apex:outputPanel layout="block" styleClass="col-5">
+								<c:LeadDetails lead="{!lead}" app="{!app}" mainDivStyleClass="alert alert-info"/>
+								<div class="alert alert-warning" role="alert">
+									<h5>GENERAL RAPPORT-BUILDING QUESTIONS</h5>
+									<p>&nbsp;</p>
+									<p>
+										<ul>
+											<li>What are the amounts owing?</li>
+											<li>Who are they with? (lender name)</li>
+											<li>Have you always paid your repayments on time?</li>
+											<li>Good Conduct?</li>
+											<li>Have you got a car loan?</li>
+											<li>Have you had a car loan in the past, If yes, was the conduct good?</li>
+											<li>Have you got any payday loans outstanding? If yes, is there good conduct?</li>
+										</ul>
+									</p>
+								</div>
+								<div class="row">
+									<apex:outputPanel layout="block" styleClass="col-12" rendered="{!hasOpportunity}">
+										<strong>Notes:</strong>
+										<apex:inputField value="{!opp.Notes__c}" styleClass="form-control" />
+									</apex:outputPanel>
+								</div>
+							</apex:outputPanel>
+							<p>&nbsp;</p>
+						</apex:outputPanel>
+
+						<!-- PRIME - Personal Selfemployed -->
+						<apex:outputPanel id="pnlPerself" rendered="{!step=='PRSE'}" layout="block" styleClass="row">
+							<apex:outputPanel layout="block" styleClass="col-7">
+								<apex:pageBlockSection columns="1" collapsible="false">
+									<apex:inputField value="{!app.Nature_of_Business__c}" label="What is the nature of your business?" />
+									<apex:pageBlockSectionItem >
+										<apex:outputLabel value="What Business structure are your operating with?" />
+										<apex:selectList value="{!app.Business_Structure__c}" multiselect="false" size="1">
+											<apex:selectOptions value="{!businessStOptions}" />
+										</apex:selectList>
+									</apex:pageBlockSectionItem>
+									<apex:inputField value="{!lead.Is_Registered_For_GST__c}" label="Are you registered for GST?"/>
+									<apex:inputField value="{!lead.Time_In_Business__c}" label="How long have you been in business for?" id="fldTimeBusPS">
+										<apex:actionSupport event="onchange" focus="fldTimeBusPS" reRender="pnlPerself" status="loadingSts" />
+									</apex:inputField>
+									<apex:inputField value="{!app.Estimated_profit_per_annum__c}" label="What is your estimated annual net profit for the business?"/>
+									<apex:inputField value="{!lead.Vehicle_Objectives__c}" label="How long do you think you will keep the vehicle for?" />
+									<apex:inputField value="{!lead.Has_Tax_Returns__c}" label="Have you completed your last year’s Tax Returns?" id="fldTaxRetPS"/>
+									<!-- <apex:inputField value="{!lead.Has_Tax_Returns__c}" label="Have you completed your last year’s Tax Returns?" id="fldTaxRetPS">
+										<apex:actionSupport event="onchange" reRender="pnlPerself" focus="fldTaxRetPS" status="loadingSts" />
+									</apex:inputField> -->
+									<!-- <apex:inputField value="{!app.Estimated_profit_per_annum__c}" label="How much profit did your business show?" rendered="{!lead.Has_Tax_Returns__c=='Y'}" /> -->
+									<apex:inputField value="{!lead.Has_Payed_Wage__c}" label="Do you pay yourself a wage?" id="fldWagePS">
+										<apex:actionSupport event="onchange" reRender="pnlPerself" focus="fldWagePS" status="loadingSts" />
+									</apex:inputField>
+									<apex:inputField value="{!app.Net_Income_1__c}" label="How much wage?" rendered="{!lead.Has_Payed_Wage__c=='Y'}" />
+									<apex:pageBlockSectionItem rendered="{!lead.Has_Payed_Wage__c=='Y'}">
+										<apex:outputLabel value="Payment Frequency" />
+										<apex:selectList value="{!app.Payment_Frequency_1__c}" multiselect="false" size="1">
+											<apex:selectOptions value="{!paymentFrequencyOptions}" />
+										</apex:selectList>
+									</apex:pageBlockSectionItem>
+								</apex:pageBlockSection>
+								<apex:pageBlockSection columns="1" collapsible="false" rendered="{!AND(NOT(ISNULL(lead.Time_In_Business__c)),NOT(hasBusinessMoreThan2Years))}">
+									<apex:outputText value="Previous Employment" styleClass="sectionTitle" />
+									<apex:outputPanel >
+										<div class="alert alert-warning" role="alert">
+											<strong><u>Note</u></strong><br/>
+											Previous Employment is important if the business has only been running for a short period of time and is outside of standard lending guidelines. If the previous employment was in the same industry as the applicant’s business this will assist in getting your application approved.
+										</div>
+									</apex:outputPanel>
+									<apex:inputField value="{!lead.Time_In_Prev_Position__c}" label="How long were you working in your previous position?" />
+									<apex:pageBlockSectionItem >
+										<apex:outputLabel value="What was your employment status?" />
+										<apex:selectList value="{!app.Previous_Mode_of_Employment_1__c}" multiselect="false" size="1" required="true">
+											<apex:selectOptions value="{!employmentTypeOptions}" />
+										</apex:selectList>
+									</apex:pageBlockSectionItem>
+									<apex:inputField value="{!app.Previous_Occupation_1__c}" label="What was your occupation?" />
+								</apex:pageBlockSection>
+								<!-- CENTRELINK -->
+								<hr/>
+								<apex:pageBlockSection columns="1" collapsible="false" id="pnlClinkSE">
+									<apex:outputText value="Centrelink Benefits" styleClass="sectionTitle" />
+									<apex:inputField value="{!lead.Has_Centrelink_Benefits__c}" label="Do you receive any benefits from centrelink?" id="fldHasCLinkSE">
+										<apex:actionSupport event="onchange" focus="fldHasCLinkSE" reRender="pnlPerself" status="loadingSts" />
+									</apex:inputField>
+								</apex:pageBlockSection>
+								<!-- Centrelink - Other incomes -->
+								<apex:pageBlockSection columns="1" collapsible="false" id="pnlCenIncSE" rendered="{!lead.Has_Centrelink_Benefits__c=='Y'}">
+									<apex:repeat value="{!centrelinkIncomes}" var="a">
+										<apex:outputText value="Centrelink benefit #{!a.idx}" />
+										<apex:pageBlockSectionItem >
+											<apex:outputLabel value="What type of benefits do you receive?" />
+											<apex:selectList value="{!a.data.Type__c}" multiselect="false" size="1">
+												<apex:selectOptions value="{!centrelinkBenefitOptions}" />
+											</apex:selectList>
+										</apex:pageBlockSectionItem>
+										<apex:inputField value="{!a.data.Income__c}" label="How much do you receive" required="false" />
+										<apex:inputField value="{!a.data.Frequency__c}" required="false"/>
+										<apex:pageBlockSectionItem >
+											<apex:pageBlockSectionItem />
+											<apex:commandButton value="Remove" action="{!removeCentrelink}" reRender="pnlCenIncSE, msg" status="Status1">
+												<apex:param name="centrelinkSelected" assignTo="{!centrelinkSelected}" value="{!a.idx}" />
+											</apex:commandButton>
+										</apex:pageBlockSectionItem>
+									</apex:repeat>
+									<apex:commandButton value="Add Centrelink Benefit" action="{!addCentrelink}" status="Status1" reRender="pnlCenIncSE, msg" />
+								</apex:pageBlockSection>
+								<!-- End - Centrelink - Other incomes -->
+								<hr/>
+								<!-- <apex:pageBlockSection columns="1" collapsible="false" id="pnlOIncSE" rendered="{!!isPersonalLoan}"> -->
+								<apex:pageBlockSection columns="1" collapsible="false" id="pnlOIncSE" rendered="false">
+									<apex:outputText value="Other Income" styleClass="sectionTitle" />
+									<apex:pageBlockSectionItem >
+										<apex:outputLabel value="Any other income?" />
+										<apex:selectList value="{!app.Do_you_receive_other_income_1__c}" multiselect="false" size="1" id="fldOthIncSE">
+											<apex:actionSupport event="onchange" focus="fldOthIncSE" reRender="pnlPerself" status="loadingSts" />
+											<apex:selectOption itemValue="No" itemLabel="No" />
+											<apex:selectOption itemValue="Yes" itemLabel="Yes" />
+										</apex:selectList>
+									</apex:pageBlockSectionItem>
+								</apex:pageBlockSection>
+								<apex:pageBlockSection columns="1" collapsible="false" id="pnlOthIncSE" rendered="{!AND(app.Do_you_receive_other_income_1__c=='Yes',NOT(isPersonalLoan))}">
+									<apex:repeat value="{!incomes}" var="a">
+										<apex:outputText value="Other Income #{!a.idx}" />
+										<apex:pageBlockSectionItem >
+											<apex:outputLabel value="Income Type" />
+											<apex:selectList value="{!a.data.Type__c}" multiselect="false" size="1" id="fldinctype2">
+												<apex:actionSupport event="onchange" reRender="pnlOthIncSE" focus="fldinctype2"/>
+												<apex:selectOptions value="{!otherIncomeTypeOptions}" />
+											</apex:selectList>
+										</apex:pageBlockSectionItem>
+										<apex:inputField value="{!a.data.Income__c}" label="After Tax Income" required="false" />
+										<apex:inputField value="{!a.data.Frequency__c}" required="false" />
+										<apex:pageBlockSectionItem >
+											<apex:pageBlockSectionItem />
+											<apex:commandButton value="Remove" action="{!removeIncome}" reRender="pnlPerself, msg" status="Status1">
+												<apex:param name="incomeSelected" assignTo="{!incomeSelected}" value="{!a.idx}" />
+											</apex:commandButton>
+										</apex:pageBlockSectionItem>
+									</apex:repeat>
+									<apex:commandButton value="Add Income" action="{!addIncome}" status="Status1" reRender="pnlPerself, msg" />
+								</apex:pageBlockSection>
+							</apex:outputPanel>
+							<apex:outputPanel layout="block" styleClass="col-5">
+								<c:LeadDetails lead="{!lead}" app="{!app}" mainDivStyleClass="alert alert-info"/>
+								<div class="alert alert-warning" role="alert">
+									<h5>RAPPORT-BUILDING QUESTIONS AROUND BUSINESS CUSTOMERS</h5>
+									<p>&nbsp;
+										<ul>
+											<li>So, tell me how has business been this year? Better than last?</li>
+											<li>What’s your plan for next 12 months of trading, any big deals/contracts coming through?</li>
+											<li>How did you end up in this line of work?</li>
+											<li>What kind of products do you sell, is it easy to bring in business?</li>
+										</ul>
+									</p>
+									<p>
+										Business owners love to talk about their business, they spend so much time and sacrifice so much to be in business and hence love talking about their company, what they are doing today and what they are looking to achieve in the future. Use that! 
+									</p>
+								</div>
+								<div class="row">
+									<apex:outputPanel layout="block" styleClass="col-12" rendered="{!hasOpportunity}">
+										<strong>Notes:</strong>
+										<apex:inputField value="{!opp.Notes__c}" styleClass="form-control" />
+									</apex:outputPanel>
+								</div>
+							</apex:outputPanel>
+							<p>&nbsp;</p>
+						</apex:outputPanel>
+
+
+						<!-- COMMERCIAL -->
+						<apex:outputPanel id="pnlBusiness" rendered="{!step=='COM'}" layout="block" styleClass="row">
+							<apex:outputPanel layout="block" styleClass="col-7">
+								<apex:outputPanel id="pnlCommBadC" rendered="{!lead.Application_Type__c=='Bad Credit Business'}">
+									<!-- <hr/>
+									<c:StaticText code="BADCREINFO"/>
+									<hr/> -->
+									<apex:pageBlockSection columns="1" collapsible="false">
+										<!-- <apex:outputText value="You mentioned that you don’t have a good credit file, can you please elaborate?" />
+										<apex:inputField value="{!lead.Bad_Credit_Notes__c}" label="Note" /> -->
+										<apex:inputField value="{!lead.Has_Defaults_File__c}" label="Have you got defaults?" id="fldHasDefCO">
+											<apex:actionSupport event="onchange" reRender="pnlCommBadC" focus="fldHasDefCO" status="loadingSts"/>
+										</apex:inputField>
+									</apex:pageBlockSection>
+									<apex:pageBlockSection columns="1" collapsible="false" rendered="{!lead.Has_Defaults_File__c=='Yes'}" id="secDefCO">
+										<script>
+											loadJQuery();
+										</script>
+										<apex:outputText value="Default List" styleClass="sectionTitle" />
+										<apex:repeat value="{!defaultList}" var="a">
+											<apex:outputText value="Default #{!a.idx}" />
+											<apex:inputField value="{!a.data.Lender__c}" label="Who are they with?" required="false" />
+											<apex:inputField value="{!a.data.Total_Amount__c}" required="false" />
+											<apex:inputField value="{!a.data.Listed_Date__c}" label="When were they listed?" required="false" showDatePicker="false" html-placeholder="DD/MM/YYYY" id="fldDefComJQDP" styleClass="customDataInput" />
+											<!--  <apex:input label="When were they listed?" value="{!a.listedDate}" type="auto" required="false"/> -->
+											<apex:inputField value="{!a.data.Is_Paid__c}" label="Are they paid?" required="false" />
+											<apex:pageBlockSectionItem >
+												<apex:pageBlockSectionItem />
+												<apex:commandButton value="Remove" action="{!removeDefault}" reRender="secDefCO" status="Status1">
+													<apex:param name="defaultSelected" assignTo="{!defaultSelected}" value="{!a.idx}" />
+												</apex:commandButton>
+											</apex:pageBlockSectionItem>
+										</apex:repeat>
+										<apex:commandButton value="Add Default" action="{!addDefault}" status="Status1" reRender="secDefCO, msg" />
+										<hr/>
+									</apex:pageBlockSection>
+									
+									<apex:pageBlockSection columns="1" collapsible="false" id="secBcr2CO">
+										<apex:inputField value="{!lead.Has_Been_Bankrupt__c}" label="Have you ever been bankrupt?" id="fldHasBankCO">
+											<apex:actionSupport event="onchange" reRender="secBcr2CO" focus="fldHasBankCO" status="loadingSts" />
+										</apex:inputField>
+										<apex:inputField value="{!lead.When_Bankrupt_Discharged__c}" label="When were you discharged?" rendered="{!lead.Has_Been_Bankrupt__c=='Y'}" />
+									</apex:pageBlockSection>
+								</apex:outputPanel>
+								<hr/>
+								<apex:pageBlockSection columns="1" collapsible="false">
+									<apex:inputField value="{!app.Nature_of_Business__c}" label="What is the nature of your business?" />
+									<apex:pageBlockSectionItem >
+										<apex:outputLabel value="What Business structure are your operating with?" />
+										<apex:selectList value="{!app.Business_Structure__c}" multiselect="false" size="1">
+											<apex:selectOptions value="{!businessStOptions}" />
+										</apex:selectList>
+									</apex:pageBlockSectionItem>
+									<apex:inputField value="{!lead.Is_Registered_For_GST__c}" label="Are you registered for GST?" id="fldRegGST">
+										<apex:actionSupport event="onchange" focus="fldRegGST" reRender="pnlBusiness" status="loadingSts" />
+									</apex:inputField>
+									<apex:inputField value="{!lead.Time_Registered_GST__c}" label="How long have you been registered for GST?"
+										rendered="{!lead.Is_Registered_For_GST__c=='Y'}" id="fldTimeGST" />
+									<apex:inputField value="{!lead.Time_In_Business__c}" label="How long have you been in business for?" id="fldTimeBus">
+										<apex:actionSupport event="onchange" focus="fldTimeBus" reRender="pnlBusiness" status="loadingSts" />
+									</apex:inputField>
+									<!-- <apex:inputField value="{!app.Net_Income_1__c}" label="What are the current monthly cashflows of the business?" /> -->
+									<!-- <apex:inputField value="{!lead.Vehicle_Objectives__c}" label="What is your objectives long term objectives for this vehicle?" /> -->
+									<!-- <apex:inputField value="{!lead.Upgrade_Long_Term__c}" label="Are you looking to upgrade regularly or keep this vehicle long term?" /> -->
+									<!-- <apex:pageBlockSectionItem >
+										<apex:outputLabel value="Are you asset backed?" />
+										<apex:selectList value="{!app.Do_you_own_a_property__c}" multiselect="false" size="1">
+											<apex:selectOption itemValue="No" itemLabel="No" />
+											<apex:selectOption itemValue="Yes" itemLabel="Yes" />
+										</apex:selectList>
+									</apex:pageBlockSectionItem> -->
+									<apex:inputField value="{!lead.Will_Putting_Deposit__c}" label="Will you be putting forward a deposit as part of the transaction?" />
+									<apex:inputField value="{!lead.Has_Tax_Returns__c}" label="Have you completed your last year’s Tax Returns?" id="fldTaxRet">
+										<apex:actionSupport event="onchange" reRender="pnlBusiness" focus="fldTaxRet" status="loadingSts" />
+									</apex:inputField>
+									<apex:pageBlockSectionItem rendered="{!lead.Has_Tax_Returns__c=='N'}">
+										<apex:outputPanel layout="block" styleClass="alert alert-warning">
+											<strong>Note:</strong> Due to customer’s recent tax returns being incomplete this application will need to be submitted as Low-Doc
+										</apex:outputPanel>
+									</apex:pageBlockSectionItem>
+									<apex:inputField value="{!app.Estimated_profit_per_annum__c}" label="How much profit did the company make?" rendered="{!lead.Has_Tax_Returns__c=='Y'}" />
+									<apex:pageBlockSectionItem rendered="{!lead.Has_Tax_Returns__c=='Y'}">
+										<apex:outputPanel layout="block" styleClass="alert alert-warning">
+											<strong>Note:</strong> If the profit is less than approximately <strong>70,000</strong> its best to proceed the application under a low-doc basis.
+										</apex:outputPanel>
+									</apex:pageBlockSectionItem>
+									<!-- <apex:pageBlockSectionItem >
+										<apex:outputLabel value="Any other Investments/Assets? (Property/Shares/land)?" />
+										<apex:selectList value="{!lead.Has_Any_Asset__c}" multiselect="false" size="1">
+											<apex:selectOption itemValue="N" itemLabel="No" />
+											<apex:selectOption itemValue="Y" itemLabel="Yes" />
+										</apex:selectList>
+									</apex:pageBlockSectionItem> -->
+									<!-- <apex:pageBlockSectionItem >
+										<apex:outputLabel value="Do you have any Personal or Financial Loans currently outstanding?" />
+										<apex:selectList value="{!app.Do_you_have_any_loans_outstanding__c}" multiselect="false" size="1">
+											<apex:selectOption itemValue="No" itemLabel="No" />
+											<apex:selectOption itemValue="Yes" itemLabel="Yes" />
+										</apex:selectList>
+									</apex:pageBlockSectionItem>
+									<apex:pageBlockSectionItem >
+										<apex:outputLabel value="Have you got any credit cards?" />
+										<apex:selectList value="{!app.Do_you_have_any_credit_cards__c}" multiselect="false" size="1">
+											<apex:selectOption itemValue="No" itemLabel="No" />
+											<apex:selectOption itemValue="Yes" itemLabel="Yes" />
+										</apex:selectList>
+									</apex:pageBlockSectionItem> -->
+								</apex:pageBlockSection>
+								<apex:pageBlockSection columns="1" collapsible="false" rendered="{!AND(NOT(ISNULL(lead.Time_In_Business__c)),NOT(hasBusinessMoreThan2Years))}">
+									<apex:outputText value="Previous Employment" styleClass="sectionTitle" />
+									<apex:outputPanel >
+										<div class="alert alert-warning" role="alert">
+											<strong><u>Note</u></strong><br/>
+											Previous Employment is important if the business has only been running for a short period of time and is outside of standard lending guidelines. If the previous employment was in the same industry as the applicant’s business this will assist in getting your application approved.
+										</div>
+									</apex:outputPanel>
+									<apex:inputField value="{!lead.Time_In_Prev_Position__c}" label="How long were you working in your previous position?" />
+									<apex:pageBlockSectionItem >
+										<apex:outputLabel value="What was your employment status?" />
+										<apex:selectList value="{!app.Previous_Mode_of_Employment_1__c}" multiselect="false" size="1" required="true">
+											<apex:selectOptions value="{!employmentTypeOptions}" />
+										</apex:selectList>
+									</apex:pageBlockSectionItem>
+									<apex:inputField value="{!app.Previous_Occupation_1__c}" label="What was your occupation?" />
+								</apex:pageBlockSection>
+								<!-- Residential Status [PRRS] -->
+								<!-- <hr/>
+								<c:ResidentialStatusSalesFlow app="{!app}" mortgageProp="{!mortgageProp}"/> -->
+								<!-- end Residential Status [PRRS] -->
+							</apex:outputPanel>
+							<apex:outputPanel layout="block" styleClass="col-5">
+								<c:LeadDetails lead="{!lead}" app="{!app}" mainDivStyleClass="alert alert-info"/>
+								<div class="alert alert-warning" role="alert">
+									<h5>RAPPORT-BUILDING QUESTIONS AROUND BUSINESS CUSTOMERS</h5>
+									<p>&nbsp;
+										<ul>
+											<li>So, tell me how has business been this year? Better than last?</li>
+											<li>What’s your plan for next 12 months of trading, any big deals/contracts coming through?</li>
+											<li>How did you end up in this line of work?</li>
+											<li>What kind of products do you sell, is it easy to bring in business?</li>
+										</ul>
+									</p>
+									<!-- <p>
+										Business owners love to talk about their business, they spend so much time and sacrifice so much to be in business and hence love talking about their company, what they are doing today and what they are looking to achieve in the future. Use that! 
+									</p> -->
+								</div>
+								<p>&nbsp;</p>
+								<!-- <apex:outputPanel rendered="{!lead.Has_Tax_Returns__c=='N'}"> -->
+									<div class="alert alert-warning" role="alert">
+										<!-- <p>If No, you will need to discuss a Low-Doc option with your customer…….and if/or the income is very low and will not service the new loan facility</p>
+										<hr/> -->
+										<p>
+											<b><u>NOTE – Assess if the application is going to be a Low-Doc or Full Doc Application</u></b><br/>
+											You need to identify if you will need to offer a low-doc solution or a full-doc solution.  Most Business Customers that come through Savvy are usually Low-Doc, which means they have either not completed their last year’s tax returns or their tax returns do not show the true amount that they have currently earned YTD. You will find that customers may have completed their LAST YEARS tax return but the income stated is not enough to SERVICE the new Loan Facility. In this instance proceed to discuss a Low-Doc option with them. There are lots of options for them, some that come with a prime interest rate if the customer is asset backed or has a 20% deposit. There are other options for other scenarios also.
+
+										</p>
+									</div>
+								<!-- </apex:outputPanel> -->
+								<div class="row">
+									<apex:outputPanel layout="block" styleClass="col-12" rendered="{!hasOpportunity}">
+										<strong>Notes:</strong>
+										<apex:inputField value="{!opp.Notes__c}" styleClass="form-control" />
+									</apex:outputPanel>
+								</div>
+							</apex:outputPanel>
+							<p>&nbsp;</p>
+						</apex:outputPanel>
+
+						<!-- COMMERCIAL - OTHER ASSETS -->
+						<apex:outputPanel id="pnlOtherAssets" rendered="{!step=='COOA'}" layout="block" styleClass="row">
+							<apex:outputPanel layout="block" styleClass="col-7">
+								<apex:pageBlockSection columns="1" collapsible="false">
+									<apex:pageBlockSectionItem >
+										<apex:outputLabel value="Any other Investments/Assets? (Property/Shares/Land)?" />
+										<apex:selectList value="{!lead.Has_Any_Asset__c}" multiselect="false" size="1">
+											<apex:selectOption itemValue="N" itemLabel="No" />
+											<apex:selectOption itemValue="Y" itemLabel="Yes" />
+											<apex:actionSupport event="onchange" action="{!onchangeOtherAsset}" reRender="pnlOtherAssets, msg" status="Status1" />
+										</apex:selectList>
+									</apex:pageBlockSectionItem>
+								</apex:pageBlockSection>
+								<apex:outputPanel layout="block" id="pnlOADetails" rendered="{!lead.Has_Any_Asset__c=='Y'}">
+									<apex:repeat value="{!otherAssetList}" var="a">
+										<apex:pageBlockSection columns="1" collapsible="false">
+											<apex:outputText value="Other Asset #{!a.idx}"/>
+											<apex:inputField value="{!a.data['Description__c']}" required="false" label="Asset Detail" html-maxlength="255" html-placeholder="Property/Shares/Land" />
+											<apex:inputField value="{!a.data['Value__c']}" required="false" label="Value" html-placeholder="$" />
+											<apex:pageBlockSectionItem >
+												<apex:pageBlockSectionItem />
+												<apex:commandButton value="Remove" action="{!removeOtherAsset}" reRender="pnlOtherAssets" status="Status1">
+	                                                <apex:param name="otherAssetIndex" assignTo="{!otherAssetIndex}" value="{!a.idx}" />
+	                                            </apex:commandButton>
+	                                        </apex:pageBlockSectionItem>
+										</apex:pageBlockSection>
+									</apex:repeat>
+									<apex:commandButton value="Add Other Asset" action="{!addOtherAsset}" status="Status1" reRender="pnlOADetails, msg" />
+								</apex:outputPanel>
+								<hr/>
+								<!-- <apex:pageBlockSection columns="1" collapsible="false">
+									<apex:pageBlockSectionItem >
+										<apex:outputLabel value="Do you have any Personal or Financial Loans currently outstanding?" />
+										<apex:selectList value="{!app.Do_you_have_any_loans_outstanding__c}" multiselect="false" size="1">
+											<apex:selectOption itemValue="No" itemLabel="No" />
+											<apex:selectOption itemValue="Yes" itemLabel="Yes" />
+										</apex:selectList>
+									</apex:pageBlockSectionItem>
+									<apex:pageBlockSectionItem >
+										<apex:outputLabel value="Have you got any credit cards?" />
+										<apex:selectList value="{!app.Do_you_have_any_credit_cards__c}" multiselect="false" size="1">
+											<apex:selectOption itemValue="No" itemLabel="No" />
+											<apex:selectOption itemValue="Yes" itemLabel="Yes" />
+										</apex:selectList>
+									</apex:pageBlockSectionItem>
+								</apex:pageBlockSection> -->
+							</apex:outputPanel>
+							<apex:outputPanel layout="block" styleClass="col-5">
+								<c:LeadDetails lead="{!lead}" app="{!app}" mainDivStyleClass="alert alert-info"/>
+								<div class="row">
+									<apex:outputPanel layout="block" styleClass="col-12" rendered="{!hasOpportunity}">
+										<strong>Notes:</strong>
+										<apex:inputField value="{!opp.Notes__c}" styleClass="form-control" />
+									</apex:outputPanel>
+								</div>
+							</apex:outputPanel>
+							<p>&nbsp;</p>
+						</apex:outputPanel>
+
+						<!-- COMMERCIAL - INFO -->
+						<apex:outputPanel id="pnlComInf" rendered="{!step=='COIN'}" layout="blocl" styleClass="row">
+							<apex:outputPanel layout="block" styleClass="col-7">
+								<p>
+									Ok So, if you are using the vehicle for business use, the most common product our commercial 
+									customers use is a Chattel Mortgage.
+								</p>
+								<hr/>
+								<apex:outputPanel rendered="{!NOT(hasBadCredit)}">
+									<strong><u>If Low Doc say, if not move straight to Benefits script below</u></strong><br/>
+								</apex:outputPanel>
+								Based on your situation with your financial’s, we will need to set up your loan facility under a low-doc arrangement. Under a low doc you will not be required to send through your financial’s instead we will be looking to get you approved based on the age of your ABN, and overall profile.
+								<hr/>
+								<p><span class="highlight1">So, do you understand about claiming GST on the vehicle price - 
+									Depreciation &amp; GST etc?</span></p>
+								<p>&nbsp;</p>
+								<p><span class="highlight3">If no…you say</span></p>
+								<p>
+									If you are purchasing an asset for business use and you finance through a chattel mortgage, 
+									there are a number of tax benefits associated with purchasing a car for business use and 
+									financing as a chattel mortgage.
+								</p>
+								<p>&nbsp;</p>
+								<p>
+									I am not providing tax advice, just informing you of what other customers have advised 
+									their tax benefits are:
+								</p>
+								<p>&nbsp;</p>
+								<ul>
+									<ol>1.	If you are registered for GST and buying from a GST registered entity 
+											(e.g. a dealer or GST registered business owner) you can claim the GST on the 
+											purchase back with your next BAS).  You can claim the GST to the percentage of 
+											your business use i.e. 100% business use = 100% of the GST</ol>
+									<ol>2.	Depreciation on the vehicle.  The ATO depreciation rate is 22.5% so on this 
+											(value of Mr Customers Car) you may be able to claim $(Value of Mr Customers 
+											car x 22.5%) as a deduction.</ol>
+									<ol>3.	This financial year if you are buying an asset of $30,000 or less you may be 
+											able to claim the entire asset as a tax deduction.</ol>
+									<ol>4.	You can also claim the interest on the chattel mortgage as a tax deduction</ol>
+									<ol>5.	All the running costs of the car can be claimed (to percentage of business use)</ol>
+									<ol>6.	Loan fees may also be able to be claimed</ol>
+								</ul>
+								<apex:outputPanel rendered="{!NOT(hasBadCredit)}">
+									<p><span class="highlight1">So, are you looking for a residual on this loan facility? </span> 
+										<span class="highlight3">If Yes, How much are you looking for as a percentage or dollar figure?</span>
+										&nbsp;
+										<apex:inputField value="{!lead.Residual__c}" label=" " />
+									</p>
+									<p>&nbsp;</p>
+									<p>
+										<span class="highlight2">
+											If the customer doesn’t seem to understand what you are talking about you need to ask……Do 
+											you know what a residual payment is?
+										</span>
+									</p>
+									<p>&nbsp;</p>
+									<p><span class="highlight3">If no… you say</span></p>
+									<p>A residual or balloon payment is a lump sum which is payable at the end of the loan term.  There are 
+									generally set residuals for all lenders – some have a little flexibility some don't.</p>
+									<p>&nbsp;</p>
+									<p>Residuals are used to reduce the repayment of a debt.  Very common in commercial credit but also 
+									sometimes used for consumer loans.</p>
+									<p>&nbsp;</p>
+									<p>Residuals are generally calculated based on the price of the car after any deposit.  For example, 
+									on a 5-year term, $60,000 car with a $10,000 deposit residual is $50,000 x 30% = $15,000</p>
+									<p>&nbsp;</p>
+									<p>Generally, you will get the following residual percentage:</p>
+									<p>&nbsp;</p>
+									<p>
+										&nbsp;&nbsp;&nbsp;On 5 years &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;	30% - 35%<br/><br/>
+										&nbsp;&nbsp;&nbsp;On 4 years &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;	35% - 45%<br/><br/>
+										&nbsp;&nbsp;&nbsp;On 3 years &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;	45% - 50%<br/><br/>
+										&nbsp;&nbsp;&nbsp;On 2 years &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;	50% - 55%<br/>
+									</p>
+									<p>&nbsp;</p>
+									<p><u>Additional Features of a Residual are:</u></p>
+									<p>&nbsp;</p>
+										<ul>
+											<li>Instead of the loan reducing to a zero balance, it reduces to the amount of the residual</li>
+											<li>Very important for business customers as cashflow is generally the most important thing, apart from reducing the repayment its also a also a great option if you have no plans to keep the car after the loan expires</li>
+											<li>You can refinance the residual amount at the end of loan term</li>
+											<!-- <li>Any profit that you make once you sell the car at the end of the loan term incurs no capital gains tax.</li> -->
+										</ul>
+									
+									<p>Do you have any questions regarding any features and benefits that we just went through? &nbsp;&nbsp;&nbsp;
+										<apex:inputField value="{!lead.Has_Residual_Questions__c}" label=" " /></p>
+								</apex:outputPanel>
+								<p>&nbsp;</p>
+								<p>&nbsp;</p>
+							</apex:outputPanel>
+							<apex:outputPanel layout="block" styleClass="col-5">
+								<c:LeadDetails lead="{!lead}" app="{!app}" mainDivStyleClass="alert alert-info"/>
+								<div class="row">
+									<apex:outputPanel layout="block" styleClass="col-12" rendered="{!hasOpportunity}">
+										<strong>Notes:</strong>
+										<apex:inputField value="{!opp.Notes__c}" styleClass="form-control" />
+									</apex:outputPanel>
+								</div>
+							</apex:outputPanel>
+						</apex:outputPanel>
+
+						<!-- BAD CREDIT -->
+						<apex:outputPanel id="pnlBadCredit" rendered="{!step=='BCR'}" layout="block" styleClass="row">
+							<apex:outputPanel layout="block" styleClass="col-7">
+								<!-- <apex:outputPanel layout="block" rendered="{!!isPersonalLoan}">
+									<hr/>
+									<c:StaticText code="BADCREINFO"  />
+									<hr/>
+								</apex:outputPanel> -->
+								<apex:pageBlockSection columns="1" collapsible="false">
+									<apex:outputText value="You mentioned that you don’t have a good credit file, can you please elaborate?" />
+									<!-- <apex:inputField value="{!lead.Bad_Credit_Notes__c}" label="Note" /> -->
+									<apex:inputField value="{!lead.Has_Defaults_File__c}" label="Have you got defaults?" id="fldHasDef">
+										<apex:actionSupport event="onchange" reRender="pnlBadCredit" focus="fldHasDef" status="loadingSts" />
+									</apex:inputField>
+								</apex:pageBlockSection>
+								<apex:pageBlockSection columns="1" collapsible="false" rendered="{!lead.Has_Defaults_File__c=='Yes'}" id="secDef">
+									<script>
+										loadJQuery();
+									</script>
+									<apex:outputText value="Default List" styleClass="sectionTitle" />
+									<apex:repeat value="{!defaultList}" var="a">
+										<apex:outputText value="Default #{!a.idx}" />
+										<apex:inputField value="{!a.data.Lender__c}" label="Who are they with?" required="false" />
+										<apex:inputField value="{!a.data.Total_Amount__c}" required="false" />
+										<apex:inputField value="{!a.data.Listed_Date__c}" label="When were they listed?" required="false" showDatePicker="false" html-placeholder="DD/MM/YYYY" id="fldDefBcrJQDP" styleClass="customDataInput" />
+										<apex:inputField value="{!a.data.Is_Paid__c}" label="Are they paid?" required="false" />
+										<apex:pageBlockSectionItem >
+											<apex:pageBlockSectionItem />
+											<apex:commandButton value="Remove" action="{!removeDefault}" reRender="secDef" status="Status1">
+												<apex:param name="defaultSelected" assignTo="{!defaultSelected}" value="{!a.idx}" />
+											</apex:commandButton>
+										</apex:pageBlockSectionItem>
+									</apex:repeat>
+									<apex:commandButton value="Add Default" action="{!addDefault}" status="Status1" reRender="secDef, msg" />
+									<hr/>
+								</apex:pageBlockSection>
+								
+								<apex:pageBlockSection columns="1" collapsible="false" id="secBcr2">
+									<script>
+										loadJQuery();
+									</script>
+									<apex:inputField value="{!lead.Has_Been_Bankrupt__c}" label="Have you ever been bankrupt?" id="fldHasBank">
+										<apex:actionSupport event="onchange" reRender="secBcr2" focus="fldHasBank" status="loadingSts" />
+									</apex:inputField>
+									<apex:inputField value="{!lead.When_Bankrupt_Discharged__c}" label="When were you discharged?" rendered="{!lead.Has_Been_Bankrupt__c=='Y'}" showDatePicker="false" html-placeholder="DD/MM/YYYY" id="fldBankruptJQDP" styleClass="customDataInput" />
+								</apex:pageBlockSection>
+								<!-- Current Employment -->
+								<apex:pageBlockSection columns="1" collapsible="false">
+									<apex:outputText value="I need to find out what your last 3 years’ worth of employment looks like:" />
+									<apex:outputText value="Current Employment" styleClass="sectionTitle" />
+									<apex:pageBlockSectionItem >
+										<apex:outputLabel value="What's your current working arrangement?" />
+										<apex:selectList value="{!app.Mode_of_Employment_1__c}" multiselect="false" size="1" required="true">
+											<apex:selectOptions value="{!employmentTypeOptions}" />
+										</apex:selectList>
+									</apex:pageBlockSectionItem>
+									<!-- <apex:inputField value="{!app.Current_Employer_Name_1__c}" label="What the name of the company you work for?" />
+									<apex:inputField value="{!app.Current_Occupation_1__c}" label="And what’s your job title there?" /> -->
+									<apex:inputField value="{!lead.Has_Any_Leave_Entitlement__c}" label="Do you get holiday or sick leave? - (only ask this question if you feel they may be working casual on ABN, or contract)" />
+									<apex:outputText value="What is your approximate income?" />
+									<apex:inputField value="{!app.Net_Income_1__c}" label="	Income After Tax" />
+									<apex:pageBlockSectionItem >
+										<apex:outputLabel value="Payment Frequency" />
+										<apex:selectList value="{!app.Payment_Frequency_1__c}" multiselect="false" size="1" required="true">
+											<apex:selectOptions value="{!paymentFrequencyOptions}" />
+										</apex:selectList>
+									</apex:pageBlockSectionItem>
+									<!-- <apex:inputText value="{!app.Date_Started_1__c}" id="fldEmpDate2JQDP" label="How long have you been in your current job for? (Start time dd/mm/yyyy)" html-placeholder="DD/MM/YYYY" /> -->
+									<apex:outputText value="How long have you been in current Job?" />
+									<apex:inputField value="{!app.Current_Employment_Years__c}" label="Years" />
+									<apex:inputField value="{!app.Current_Employment_Months__c}" label="Months" />
+								</apex:pageBlockSection>
+								<!-- Previous Employment -->
+								<apex:pageBlockSection columns="1" collapsible="false">
+									<apex:outputText value="Previous Employment" styleClass="sectionTitle" />
+									<!-- <apex:inputField value="{!app.Previous_Employer_Name_1__c}" label="Who did you work for previously?" /> -->
+									<!-- <apex:inputField value="{!app.Previous_Occupation_1__c}" label="And what’s was your job title there?" /> -->
+									<apex:outputText value="So how long were you in your previous position?" />
+									<apex:inputField value="{!app.Previous_Employment_Years__c}" label="Years" />
+									<apex:inputField value="{!app.Previous_Employment_Months__c}" label="Months" />
+									<apex:pageBlockSectionItem >
+										<apex:outputLabel value="Employment status" />
+										<apex:selectList value="{!app.Previous_Mode_of_Employment_1__c}" multiselect="false" size="1" required="true">
+											<apex:selectOptions value="{!employmentTypeOptions}" />
+										</apex:selectList>
+									</apex:pageBlockSectionItem>
+									<!-- <apex:inputText value="{!app.Start_Date_1__c}" id="fldPEmpDateStart2JQDP" label="How long were you working in your previous position? (Start time dd/mm/yyyy)" html-placeholder="DD/MM/YYYY" />
+									<apex:inputText value="{!app.Finish_Date_1__c}" id="fldPEmpDateFinish2JQDP" label="(finish time dd/mm/yyyy)" html-placeholder="DD/MM/YYYY" /> -->
+								</apex:pageBlockSection>
+								<!-- Additional employments -->
+								<apex:pageBlockSection columns="1" collapsible="false" id="pnlOthEmplBC">
+									<script>
+										loadJQuery();
+									</script>
+									<apex:repeat value="{!emptList}" var="a">
+										<apex:outputText value="Previous Employment #{!a.viewIndex}" styleClass="sectionTitle" />
+										<apex:outputText value="So how long were you in your previous position?" />
+										<apex:inputField value="{!a.data.Employment_Years__c}" label="Years" />
+										<apex:inputField value="{!a.data.Employment_Months__c}" label="Months"/>
+										<apex:inputField value="{!a.data.Employment_Type__c}" required="false" />
+										<!-- <apex:inputField value="{!a.data.Employer_Name__c}" required="false" /> -->
+										<!-- <apex:inputField value="{!a.data.Start_Date__c}" required="false" showDatePicker="false" html-placeholder="DD/MM/YYYY" id="fldPrevEmpStartBcJQDP" styleClass="customDataInput" />
+										<apex:inputField value="{!a.data.Finish_Date__c}" required="false" showDatePicker="false" html-placeholder="DD/MM/YYYY" id="fldPrevEmpFinBcJQDP" styleClass="customDataInput" /> -->
+										<apex:pageBlockSectionItem >
+											<apex:pageBlockSectionItem />
+											<apex:commandButton value="Remove" action="{!removeEmployment}" reRender="pnlOthEmplBC, msg" status="Status1">
+												<apex:param name="incomeSelected" assignTo="{!employSelected}" value="{!a.idx}" />
+											</apex:commandButton>
+										</apex:pageBlockSectionItem>
+										<hr/>
+									</apex:repeat>
+									<apex:commandButton value="Add Employment" action="{!addEmployment}" status="Status1" reRender="pnlOthEmplBC, msg" />
+								</apex:pageBlockSection>
+								<hr/>
+								<!-- Marital status -->
+								<apex:outputPanel id="pnlMStatusBCR">
+									<apex:pageBlockSection columns="1" collapsible="false" id="pnlMStatusB">
+										<apex:outputText value="Marital Status" styleClass="sectionTitle" />
+										<apex:pageBlockSectionItem >
+											<apex:outputLabel value="In terms of Marital status are you?" />
+											<apex:selectList value="{!app.Marital_Status_1__c}" multiselect="false" size="1" id="fldMStaAppB">
+												<apex:selectOptions value="{!maritalStatusOptions}"  />
+												<apex:actionSupport event="onchange" focus="fldMStaAppB" reRender="pnlMStatusBCR" status="loadingSts" />
+											</apex:selectList>
+										</apex:pageBlockSectionItem>
+										<apex:pageBlockSectionItem >
+											<apex:outputLabel value="Have you got any dependents? How many?" />
+											<apex:selectList value="{!app.No_of_Dependants_1__c}" multiselect="false" size="1">
+												<apex:selectOption itemValue="0" itemLabel="0" />
+												<apex:selectOption itemValue="1" itemLabel="1" />
+												<apex:selectOption itemValue="2" itemLabel="2" />
+												<apex:selectOption itemValue="3" itemLabel="3" />
+												<apex:selectOption itemValue="4" itemLabel="4" />
+												<apex:selectOption itemValue="5" itemLabel="5" />
+												<apex:selectOption itemValue="6" itemLabel="6+" />
+											</apex:selectList>
+										</apex:pageBlockSectionItem>
+										<apex:pageBlockSectionItem >
+											<apex:outputLabel value="Is this a partnered application?" />
+											<apex:selectList value="{!app.No_of_People__c}" multiselect="false" size="1" id="fldPartAppB">
+												<apex:selectOption itemValue="1" itemLabel="No" />
+												<apex:selectOption itemValue="2" itemLabel="Yes" />
+												<apex:actionSupport event="onchange" focus="fldPartAppB" reRender="pnlMStatusBCR" status="loadingSts" />
+											</apex:selectList>
+										</apex:pageBlockSectionItem>
+
+									</apex:pageBlockSection>
+									<apex:pageBlockSection columns="1" collapsible="false" rendered="{!OR(app.No_of_People__c==2,app.Marital_Status_1__c=='Married',app.Marital_Status_1__c=='Defacto')}">
+										<apex:outputText value="Partner Details" styleClass="sectionTitle" />
+										<apex:pageBlockSectionItem >
+											<apex:outputLabel value="Employment status of your partner?" />
+											<apex:selectList value="{!app.Mode_of_Employment_2__c}" multiselect="false" size="1" required="true">
+												<apex:selectOptions value="{!partnerEmploymentTypeOptions}" />
+											</apex:selectList>
+										</apex:pageBlockSectionItem>
+										<apex:inputField value="{!app.Net_Income_2__c}" label="Roughly how much do they earn?" />
+										<apex:pageBlockSectionItem >
+											<apex:outputLabel value="Payment Frequency" />
+											<apex:selectList value="{!app.Payment_Frequency_2__c}" multiselect="false" size="1" required="true">
+												<apex:selectOptions value="{!paymentFrequencyOptions}" />
+											</apex:selectList>
+										</apex:pageBlockSectionItem>
+									</apex:pageBlockSection>
+									<apex:pageBlockSection columns="1" id="pnlPrmPersB" collapsible="false" rendered="{!isPersonalLoan}">
+										<apex:outputText value="Guarantor" styleClass="sectionTitle" />
+										<apex:inputField value="{!lead.Able_Provide_Guarantor__c}" label="If required are you able provide us with a Guarantor to help get your application approved?">
+											<apex:actionSupport event="onchange" reRender="pnlPrmPersB" />
+										</apex:inputField>
+										<apex:inputField value="{!lead.Guarantor_Property_Owner__c}" label="Does the guarantor own their own house?"
+										rendered="{!lead.Able_Provide_Guarantor__c=='Yes'}" />
+										<apex:inputField value="{!lead.Guarantor_Fulltime_Employed__c}" label="Is the guarantor full-time employed?"
+										rendered="{!lead.Able_Provide_Guarantor__c=='Yes'}" />
+									</apex:pageBlockSection>
+								</apex:outputPanel>
+								<!-- CENTRELINK -->
+								<hr/>
+								<apex:pageBlockSection columns="1" collapsible="false" id="pnlClinkBC">
+									<apex:outputText value="Centrelink Benefits" styleClass="sectionTitle" />
+									<apex:outputText value="(Only ask if its likely that they are receiving centerlink due to low income, dependents etc)" />
+									<apex:inputField value="{!lead.Has_Centrelink_Benefits__c}" label="Do you receive any benefits from centrelink?" id="fldHasCLinkBC">
+										<apex:actionSupport event="onchange" focus="fldHasCLinkBC" reRender="pnlBadCredit" status="loadingSts" />
+									</apex:inputField>
+								</apex:pageBlockSection>
+								<!-- Centrelink - Other incomes -->
+								<apex:pageBlockSection columns="1" collapsible="false" id="pnlCenIncBCR" rendered="{!lead.Has_Centrelink_Benefits__c=='Y'}">
+									<apex:repeat value="{!centrelinkIncomes}" var="a">
+										<apex:outputText value="Centrelink benefit #{!a.idx}" />
+										<apex:pageBlockSectionItem >
+											<apex:outputLabel value="What type of benefits do you receive?" />
+											<apex:selectList value="{!a.data.Type__c}" multiselect="false" size="1">
+												<apex:selectOptions value="{!centrelinkBenefitOptions}" />
+											</apex:selectList>
+										</apex:pageBlockSectionItem>
+										<apex:inputField value="{!a.data.Income__c}" label="How much do you receive" required="false" />
+										<apex:inputField value="{!a.data.Frequency__c}" required="false"/>
+										<apex:pageBlockSectionItem >
+											<apex:pageBlockSectionItem />
+											<apex:commandButton value="Remove" action="{!removeCentrelink}" reRender="pnlCenIncBCR, msg" status="Status1">
+												<apex:param name="centrelinkSelected" assignTo="{!centrelinkSelected}" value="{!a.idx}" />
+											</apex:commandButton>
+										</apex:pageBlockSectionItem>
+									</apex:repeat>
+									<apex:commandButton value="Add Centrelink Benefit" action="{!addCentrelink}" status="Status1" reRender="pnlCenIncBCR, msg" />
+								</apex:pageBlockSection>
+								<!-- End - Centrelink - Other incomes -->
+								<hr/>
+								<!-- <apex:pageBlockSection columns="1" collapsible="false" id="pnlOIncBC" rendered="{!!isPersonalLoan}"> -->
+								<apex:pageBlockSection columns="1" collapsible="false" id="pnlOIncBC" rendered="false">
+									<apex:outputText value="Other Income" styleClass="sectionTitle" />
+									<apex:pageBlockSectionItem >
+										<apex:outputLabel value="Any other income?" />
+										<apex:selectList value="{!app.Do_you_receive_other_income_1__c}" multiselect="false" size="1" id="fldOthIncBC">
+											<apex:actionSupport event="onchange" focus="fldOthIncBC" reRender="pnlBadCredit" status="loadingSts" />
+											<apex:selectOption itemValue="No" itemLabel="No" />
+											<apex:selectOption itemValue="Yes" itemLabel="Yes" />
+										</apex:selectList>
+									</apex:pageBlockSectionItem>
+								</apex:pageBlockSection>
+								<apex:pageBlockSection columns="1" collapsible="false" id="pnlOthIncBC" rendered="{!AND(app.Do_you_receive_other_income_1__c=='Yes',NOT(isPersonalLoan))}">
+									<apex:repeat value="{!incomes}" var="a">
+										<apex:outputText value="Other Income #{!a.idx}" />
+										<apex:pageBlockSectionItem >
+											<apex:outputLabel value="Income Type" />
+											<apex:selectList value="{!a.data.Type__c}" multiselect="false" size="1" id="fldinctype3">
+												<apex:actionSupport event="onchange" reRender="pnlOthIncBC" focus="fldinctype3"/>
+												<apex:selectOptions value="{!otherIncomeTypeOptions}" />
+											</apex:selectList>
+										</apex:pageBlockSectionItem>
+										<apex:inputField value="{!a.data.Income__c}" label="After Tax Income" required="false" />
+										<apex:inputField value="{!a.data.Frequency__c}" required="false"/>
+										<apex:pageBlockSectionItem >
+											<apex:pageBlockSectionItem />
+											<apex:commandButton value="Remove" action="{!removeIncome}" reRender="pnlBadCredit, msg" status="Status1">
+												<apex:param name="incomeSelected" assignTo="{!incomeSelected}" value="{!a.idx}" />
+											</apex:commandButton>
+										</apex:pageBlockSectionItem>
+									</apex:repeat>
+									<apex:commandButton value="Add Income" action="{!addIncome}" status="Status1" reRender="pnlBadCredit, msg" />
+								</apex:pageBlockSection>
+								<apex:pageBlockSection columns="1" collapsible="false">
+									<apex:outputText value="Bank Statements" styleClass="sectionTitle" />
+									<apex:inputField value="{!lead.Is_Regularly_Overdrawn__c}" label="What’s your bank statement conduct like...... Do you regularly go into debit, overdrawn with dishonor fees?" />
+								</apex:pageBlockSection>
+								<p>&nbsp;</p>
+							</apex:outputPanel>
+							<apex:outputPanel layout="block" styleClass="col-5">
+								<c:LeadDetails lead="{!lead}" app="{!app}" mainDivStyleClass="alert alert-info"/>
+								<c:SalesRapportBuilding />
+								<div class="row">
+									<apex:outputPanel layout="block" styleClass="col-12" rendered="{!hasOpportunity}">
+										<strong>Notes:</strong>
+										<apex:inputField value="{!opp.Notes__c}" styleClass="form-control" />
+									</apex:outputPanel>
+								</div>
+							</apex:outputPanel>
+						</apex:outputPanel>
+
+						<!-- Presenting And Closing -->
+						<apex:outputPanel id="pnlPresent" rendered="{!AND(step=='PRES',NOT(hasBadCredit))}" styleClass="closing-panel">
+							<!-- <h5>Presenting And Closing</h5> -->
+							<apex:outputPanel layout="block" styleClass="row">
+								<apex:outputPanel layout="block" styleClass="col-7">
+									<div class="alert alert-dark" role="alert">
+										<p>Ok thank you for all this information and being patient with me. We most definitely can look into an approval for you, would you like me to proceed with a Pre-Approval?</p>
+										<!-- <apex:outputPanel rendered="{!AND(app.Application_Type__c=='Business',isLowDoc)}"> -->
+										<!-- <apex:outputPanel rendered="{!app.Application_Type__c=='Business'}">
+											<p>
+												<strong>If customer is Low-Doc you say</strong><br/>
+												Ok, so based on your situation with your financials, we will need to set up your loan facility under a low-doc arrangement. Under a low doc you will not need to send through your financials instead you will just need to declare an estimate of your last year’s turnover. Would you like me to proceed with pre-approval?
+											</p>
+											<p>&nbsp;</p>
+											<p>
+												<strong>If customer is Full-doc you say</strong><br/>
+												Ok, great, so the next step is to complete the application, we can do this over the phone which will take an extra 10 minutes, or I can send you everything via email so that you can complete the process online…How would you like to proceed?
+											</p>
+										</apex:outputPanel> -->
+										<p>&nbsp;</p><p>&nbsp;</p>
+										<p>
+											<span class="highlight3">NO - I would like a quote</span> &nbsp;&nbsp;&nbsp;
+											<apex:commandButton action="{!goComparisonEngine}" value="Go to Compare" reRender="msg" status="Status1" styleClass="btn btn-dark" />
+										</p>
+										<p>&nbsp;</p><p>&nbsp;</p>
+										<p>
+											<span class="highlight3">YES, I would like to proceed with an approval</span>
+										</p>
+										<P>
+											Ok, great, so the next step is to complete the application, we can do this over the phone which will take an extra 10 minutes, or I can send you everything via email so that you can complete the process online…How would you like to proceed?
+										</P>
+									</div>
+									<div class="alert alert-dark" role="alert">
+										<p><span class="highlight1">Online</span></p>
+										<p>&nbsp;</p>
+										<p>
+											Ok, no worries, I’ll send through everything now, in the application pack is a link to our online application form, from here you will be able to complete your application and submit all supporting documentation that we require to get you pre-approved.
+										</p>
+										<p>&nbsp;</p>
+										<p>
+											You will then receive a second email which contains our e-consent document which you can complete on your computer or smart phone.
+										</p>
+										<p>
+											Once I receive all of this information I can then submit for a pre-approval. Generally, if I get all this information together I should be able to come back to you within approximately 24 hours.
+										</p>
+										<p>&nbsp;</p>
+										<p>Thank you for your time and I look forward to working on your approval &nbsp;&nbsp;&nbsp;
+											<apex:commandButton action="{!goSendEmail}" value="Send Email" reRender="msg" status="Status1" styleClass="btn btn-dark" />
+										</p>
+									</div>
+									<div class="alert alert-info" role="alert">
+										<p>&nbsp;</p>
+										<p><span class="highlight2">Over the phone</span>&nbsp;&nbsp;&nbsp;
+											<apex:commandButton action="{!goSalesTool}" value="Go to Sales Tool" reRender="msg" status="Status1" styleClass="btn btn-dark" /></p>
+										<p>&nbsp;</p>
+										<p>
+											OK, after we complete the application, I will then be sending you 2 emails. The first one is our e-consent which you must sign giving us consent to proceed with your application and the second contains a list of required supporting documents that we must gather such as your pay slips, driver’s license and 3 months-worth of your bank statements.
+										</p>
+										<p>&nbsp;</p>
+									</div>
+								</apex:outputPanel>
+								<apex:outputPanel layout="block" styleClass="col-5">
+									<c:LeadDetails lead="{!lead}" app="{!app}" mainDivStyleClass="alert alert-info"/>
+									<div class="row">
+									<!-- <apex:outputPanel layout="block" styleClass="col-12" rendered="{!hasOpportunity}">
+										<strong>Notes:</strong>
+										<apex:inputField value="{!opp.Notes__c}" styleClass="form-control" />
+									</apex:outputPanel> -->
+								</div>
+								</apex:outputPanel>
+							</apex:outputPanel>
+							<!-- <p>&nbsp;</p><p>&nbsp;</p><p>&nbsp;</p> -->
+						</apex:outputPanel>
+						<!-- Bad Credit Personal: Presenting And Closing -->
+						<apex:outputPanel id="pnlBCPersonalPresent" rendered="{!AND(step=='PRES',hasBadCredit,app.Application_Type__c=='Personal')}" styleClass="closing-panel">
+							<apex:outputPanel layout="block" styleClass="row">
+								<apex:outputPanel layout="block" styleClass="col-7">
+									<apex:outputPanel layout="block" styleClass="row">
+										<apex:outputPanel layout="block" styleClass="col">
+											Thank you for answering all my questions, your situation is challenging but we have several options that we can explore through our panel of lenders to look at getting you approved. Your profile has a lot of positives to it and we specialise in this type of finance.
+										</apex:outputPanel>
+									</apex:outputPanel>
+									<p>&nbsp;</p>
+									<apex:outputPanel layout="block" styleClass="row">
+										<apex:outputPanel layout="block" styleClass="col">
+											The next step is to now complete the application, we can do this over the phone which will take an extra 10 minutes, or I can send you everything via email so that you can complete the process online…How would you like to proceed?
+											<p>&nbsp;</p>
+										</apex:outputPanel>
+									</apex:outputPanel>
+									<p>&nbsp;</p>
+									<div class="alert alert-dark" role="alert">
+										<p><span class="highlight1">Online</span></p>
+										<p>&nbsp;</p>
+										<p>
+											Ok, no worries, I’ll send through everything now, in the application pack is a link to our online application form, from here you will be able to complete your application and submit all supporting documentation that we require to get you pre-approved such as payslips, driver’s license etc and bank statements.
+										</p>
+										<p>&nbsp;</p>
+										<p>
+											You will then receive a second email which contains our e-consent document which you can complete on your computer or smart phone.
+										</p>
+										<p>&nbsp;</p>
+										<p>
+											Once I receive all of this information I can then submit for a pre-approval. Generally, if I get all this information together I should be able to come back to you within approximately 24 hours.
+										</p>
+										<p>&nbsp;</p>
+										<p>Thank you for your time and I look forward to working on your approval &nbsp;&nbsp;&nbsp;
+											<apex:commandButton action="{!goSendEmail}" value="Send Email" reRender="msg" status="Status1" styleClass="btn btn-dark" />
+										</p>
+									</div>
+									<div class="alert alert-info" role="alert">
+										<p><span class="highlight1">Over the phone</span>&nbsp;&nbsp;&nbsp;  <apex:commandButton action="{!goSalesTool}" value="Go to Sales Tool" reRender="msg" status="Status1" styleClass="btn btn-dark" /></p>
+										<p>&nbsp;</p>
+										<p>
+											OK, after we complete the application, I will then be sending you 2 emails. The first one is our e-consent which you must sign giving us consent to proceed with your application and the second contains a list of required supporting documents that we must gather such as your pay slips, driver’s license and 3 months-worth of your bank statements.
+										</p>
+									</div>
+
+									<!-- <apex:outputPanel layout="block" styleClass="row">
+										<apex:outputPanel layout="block" styleClass="col">
+											Once I have all this information I will then work towards getting your application approved and getting you into your new vehicle as soon as we possibly can. Once I receive all the information we will look to have you approved within a few hours.
+										</apex:outputPanel>
+									</apex:outputPanel>
+									<p>&nbsp;</p>
+									<apex:outputPanel layout="block" styleClass="row">
+										<apex:outputPanel layout="block" styleClass="col">
+											<apex:commandButton value="Send Email" action="{!goSendEmail}" reRender="msg" status="Status1" styleClass="btn btn-dark" />
+										</apex:outputPanel>
+									</apex:outputPanel>
+									<p>&nbsp;</p>
+									<apex:outputPanel layout="block" styleClass="row">
+										<apex:outputPanel layout="block" styleClass="col">
+											<div class="alert alert-dark" role="alert">
+												NOTE: If a customer is happy to proceed with the following move forward explaining the application process. They may however ask you about rate and fees and your response should be the following………
+											</div>
+										</apex:outputPanel>
+									</apex:outputPanel>
+									<p>&nbsp;</p>
+									<apex:outputPanel layout="block" styleClass="row">
+										<apex:outputPanel layout="block" styleClass="col">
+											Unfortunately, because you have had issues with your credit file there is no set rate that I can tell you at this point. Once I have submitted your application to a lender and they have assessed the risk, they then will provide us with an interest rate and repayment. At this point I can outline the rate and repayments.
+										</apex:outputPanel>
+									</apex:outputPanel> -->
+									<p>&nbsp;</p>
+									<p>&nbsp;</p>
+									<p>&nbsp;</p>
+								</apex:outputPanel>
+								<apex:outputPanel layout="block" styleClass="col-5">
+									<c:LeadDetails lead="{!lead}" app="{!app}" mainDivStyleClass="alert alert-info"/>
+									<div class="row">
+									<!-- <apex:outputPanel layout="block" styleClass="col-12" rendered="{!hasOpportunity}">
+										<strong>Notes:</strong>
+										<apex:inputField value="{!opp.Notes__c}" styleClass="form-control" />
+									</apex:outputPanel> -->
+								</div>
+								</apex:outputPanel>
+							</apex:outputPanel>
+						</apex:outputPanel>
+						<!-- Bad Credit Business: Presenting And Closing -->
+						<apex:outputPanel id="pnlBCBusPresent" rendered="{!AND(step=='PRES',hasBadCredit,app.Application_Type__c=='Business')}" styleClass="closing-panel">
+							<apex:outputPanel layout="block" styleClass="row">
+								<apex:outputPanel layout="block" styleClass="col-7">
+									<apex:outputPanel layout="block" styleClass="row">
+										<apex:outputPanel layout="block" styleClass="col">
+											Thank you for answering all my questions, your situation is a bit challenging, but we have 
+											several options that we can explore through our panel of lenders to look at getting you approved. 
+											Your profile has a lot of positives to it and we specialise in getting business customers that 
+											have a had a few issues in the past get approved. Would you like to proceed with a pre-approval?
+										</apex:outputPanel>
+									</apex:outputPanel>
+									<p>&nbsp;</p>
+									<div class="alert alert-dark" role="alert">
+										<p><span class="highlight1">Yes</span></p>
+										<p>&nbsp;</p>
+										<p>
+											OK Great, the next step is to now complete the application, I will be sending you an with an 
+											application pack. In there you will find a link to our online application form, from here you 
+											will be able to complete your application and submit all supporting documentation that we require 
+											to get you pre-approved. With a business loan we will just require 6 months worth of your business 
+											bank statements for now.
+										</p>
+										<p>&nbsp;</p>
+										<p>
+											You will then receive a second email which contains our e-consent document which you can complete 
+											on your computer or smart phone.<br/>
+											Once I receive all of this information I can then submit for a pre-approval. Generally, if I get 
+											all this information together I should be able to come back to you within approximately 24 hours.												
+										</p>
+										<p>&nbsp;</p>
+										<p>&nbsp;</p>
+										<p>Thank you for your time and I look forward to working on your approval &nbsp;&nbsp;&nbsp;
+											<apex:commandButton action="{!goSendEmail}" value="Send Email" reRender="msg" status="Status1" styleClass="btn btn-dark" />
+										</p>
+									</div>
+									<!-- <div class="alert alert-info" role="alert">
+										<p><span class="highlight1">Over the phone</span>&nbsp;&nbsp;&nbsp;  <apex:commandButton action="{!goSalesTool}" value="Go to Sales Tool" reRender="msg" status="Status1" styleClass="btn btn-dark" /></p>
+										<p>&nbsp;</p>
+										<p>
+											OK, after we complete the application, I will then be sending you 2 emails. The first one is our e-consent which you must sign giving us consent to proceed with your application and the second contains a list of required supporting documents that we must gather such as your pay slips, driver’s license and 3 months-worth of your bank statements.
+										</p>
+									</div> -->
+
+									<!-- <apex:outputPanel layout="block" styleClass="row">
+										<apex:outputPanel layout="block" styleClass="col">
+											Once I have all this information I will then work towards getting your application approved and getting you into your new vehicle as soon as we possibly can. Once I receive all the information we will look to have you approved within a few hours.
+										</apex:outputPanel>
+									</apex:outputPanel>
+									<p>&nbsp;</p>
+									<apex:outputPanel layout="block" styleClass="row">
+										<apex:outputPanel layout="block" styleClass="col">
+											<apex:commandButton value="Send Email" action="{!goSendEmail}" reRender="msg" status="Status1" styleClass="btn btn-dark" />
+										</apex:outputPanel>
+									</apex:outputPanel>
+									<p>&nbsp;</p>
+									<apex:outputPanel layout="block" styleClass="row">
+										<apex:outputPanel layout="block" styleClass="col">
+											<div class="alert alert-dark" role="alert">
+												NOTE: If a customer is happy to proceed with the following move forward explaining the application process. They may however ask you about rate and fees and your response should be the following………
+											</div>
+										</apex:outputPanel>
+									</apex:outputPanel>
+									<p>&nbsp;</p>
+									<apex:outputPanel layout="block" styleClass="row">
+										<apex:outputPanel layout="block" styleClass="col">
+											Unfortunately, because you have had issues with your credit file there is no set rate that I can tell you at this point. Once I have submitted your application to a lender and they have assessed the risk, they then will provide us with an interest rate and repayment. At this point I can outline the rate and repayments.
+										</apex:outputPanel>
+									</apex:outputPanel> -->
+									<p>&nbsp;</p>
+									<p>&nbsp;</p>
+									<p>&nbsp;</p>
+								</apex:outputPanel>
+								<apex:outputPanel layout="block" styleClass="col-5">
+									<c:LeadDetails lead="{!lead}" app="{!app}" mainDivStyleClass="alert alert-info"/>
+									<div class="row">
+									<!-- <apex:outputPanel layout="block" styleClass="col-12" rendered="{!hasOpportunity}">
+										<strong>Notes:</strong>
+										<apex:inputField value="{!opp.Notes__c}" styleClass="form-control" />
+									</apex:outputPanel> -->
+								</div>
+								</apex:outputPanel>
+							</apex:outputPanel>
+						</apex:outputPanel>
+						<!-- DIFFERENT OWNERSHIP -->
+						<apex:outputPanel id="pnlOwnership" rendered="{!step=='OWNE'}" layout="block" styleClass="row">
+							<apex:outputPanel layout="block" styleClass="col-7">
+								<!-- <c:StaticText code="OPENING_POWST" attribute1="{!lead.Name}" /> -->
+								<p>
+									The account associate with this lead has a different ownership.
+								</p>
+								<p>&nbsp;</p>
+								<p>Account: &nbsp; <apex:outputField value="{!lead.Account__c}"/></p>
+								<p>Current owner: &nbsp; <strong><apex:outputField value="{!leadAccount.OwnerId}"/></strong></p>
+								<p>&nbsp;</p><p>&nbsp;</p>
+							</apex:outputPanel>
+							<apex:outputPanel layout="block" styleClass="col-5">
+								<div class="alert alert-warning" role="alert">
+									<h5>LEAD ENQUIRY FORM INFORMATION</h5>
+									<p>&nbsp;</p>
+									<p>Loan Type: {!lead.Loan_Type__c}<br/>
+									   Loan Amount – <apex:outputField value="{!lead.Finance_Amount__c}"/><br/>
+									   {!lead.Employment_Status__c}<br/>
+									   {!lead.Vehicle_Make__c}, {!lead.Vehicle_Model__c}, {!lead.Vehicle_Year__c}<br/>
+									</p>
+									<p>&nbsp;</p>
+								</div>
+							</apex:outputPanel>
+						</apex:outputPanel>
+					</apex:outputPanel>
+
+				</apex:outputPanel>
+				<div class="row" align="center">
+					<div class="col pnlButtons" align="left">
+						<!-- <apex:commandButton value="Go to Opportunity" action="{!goOpportunity}" status="Status1"  styleClass="btn btn-dark" rendered="{!AND(NOT(hasDiffrentOwner),hasOpportunity,step!='QQ')}"/> -->
+						<apex:commandButton value="Voicemail / Busy / No Answer" action="{!closeFlow}" status="Status1"  styleClass="btn btn-dark" 
+							rendered="{!AND(NOT(hasDiffrentOwner),step=='0')}" oncomplete="closeFlowPage();"/>
+						<apex:commandButton value="Go to Opportunity" action="{!goOpportunity}" status="Status1"  styleClass="btn btn-dark" rendered="{!AND(NOT(hasDiffrentOwner),hasOpportunity)}"/>
+						<apex:commandButton value="Close Opportunity" rendered="{!AND(NOT(hasDiffrentOwner),hasOpportunity)}" reRender="mainPnl" status="Status1" styleClass="btn btn-dark">
+							<apex:param name="closingOppParam" assignTo="{!displayClosingOpp}" value="true" />
+						</apex:commandButton>
+						<!--
+						<apex:commandButton value="Close Lead" rendered="{!AND(NOT(displayClosingLead),NOT(hasDiffrentOwner),NOT(hasOpportunity),NOT(displayOpenColsedLead))}" reRender="mainPnl" status="Status1" styleClass="btn btn-dark">
+							<apex:param name="closingLeadParam" assignTo="{!displayClosingLead}" value="true" />
+						</apex:commandButton>
+						-->
+						<!-- Closing Lead -->
+						<!--
+						<apex:pageBlockSection columns="1" collapsible="false" rendered="{!displayClosingLead}">
+							<apex:outputText value="Lead Closure" styleClass="sectionTitle" />
+							<apex:inputField value="{!lead.Reason_for_closure__c}"/>
+							<apex:pageBlockSectionItem >
+								<apex:pageBlockSectionItem />
+								<apex:outputPanel >
+									<apex:commandButton value="Accept" action="{!closeLead}" reRender="mainPnl" status="Status1"  styleClass="btn btn-dark"/>
+									<apex:commandButton value="Cancel" reRender="mainPnl" status="Status1"  styleClass="btn btn-dark">
+										<apex:param name="canClosingLeadParam" assignTo="{!displayClosingLead}" value="false" />
+										<apex:param name="canClosingLeadParam2" assignTo="{!lead.Reason_for_closure__c}" value="" />
+									</apex:commandButton>
+								</apex:outputPanel>
+							</apex:pageBlockSectionItem>
+						</apex:pageBlockSection>
+						-->
+						<!-- Closing Opportunity -->
+						<apex:pageBlockSection columns="1" collapsible="false" rendered="{!displayClosingOpp}">
+							<apex:outputText value="Opportunity Closure" styleClass="sectionTitle" />
+							<apex:inputField value="{!opp.Reason_for_Closure__c}"/>
+							<apex:pageBlockSectionItem >
+								<apex:pageBlockSectionItem />
+								<apex:outputPanel >
+									<apex:commandButton value="Accept" action="{!closeOpportunity}" reRender="mainPnl" status="Status1"  styleClass="btn btn-dark"/>
+									<apex:commandButton value="Cancel" reRender="mainPnl" status="Status1"  styleClass="btn btn-dark">
+										<apex:param name="canClosingOppParam" assignTo="{!displayClosingOpp}" value="false" />
+										<apex:param name="canClosingOppParam2" assignTo="{!opp.Reason_for_Closure__c}" value="" />
+									</apex:commandButton>
+								</apex:outputPanel>
+							</apex:pageBlockSectionItem>
+						</apex:pageBlockSection>
+					</div>
+					<apex:outputPanel layout="block" styleClass="pnlButtons col-6">
+						<apex:commandButton value="Back" action="{!back}" rendered="{!AND(hasBackRendered,NOT(hasDiffrentOwner))}" reRender="mainPnl" status="Status1"  styleClass="btn btn-dark"/>
+						<apex:commandButton value="Save" action="{!saveData}" rendered="{!AND(hasSaveRendered,NOT(hasDiffrentOwner))}" reRender="mainPnl" status="Status1" styleClass="btn btn-dark"/>
+						<apex:commandButton value="Save & Next" action="{!next}" rendered="{!AND(hasSaveNextRendered,NOT(hasDiffrentOwner))}" reRender="mainPnl" status="Status1" styleClass="btn btn-dark" />
+						<apex:commandButton value="Next" action="{!next}" rendered="{!AND(step=='0',NOT(hasDiffrentOwner),NOT(displayOpenColsedLead))}" reRender="mainPnl" status="Status1" styleClass="btn btn-dark" />
+						<apex:commandButton value="Open Closed Lead" action="{!openClosedLead}" rendered="{!AND(step=='0',NOT(hasDiffrentOwner),displayOpenColsedLead)}" reRender="mainPnl" status="Status1" styleClass="btn btn-dark" />
+						<apex:commandButton value="Finish" action="{!finish}" rendered="{!AND(hasFinishRendered,NOT(hasDiffrentOwner))}" reRender="mainPnl" status="Status1" styleClass="btn btn-dark" />
+						<p>&nbsp;</p>
+						<!-- <p>Date: <input type="text" id="fldDatepicker"/></p> -->
+					</apex:outputPanel>
+					<div class="col">
+						<apex:pageMessages id="msg" />
+						<apex:outputPanel id="statuses">
+				            <apex:actionStatus id="Status1">
+				            	<apex:facet name="start">
+				            		<!-- ... Processing ... -->
+				            		<div class="alert alert-secondary" role="alert">
+									  ... Processing ...
+									</div>
+				            	</apex:facet>
+				        	</apex:actionStatus>
+				            <apex:actionStatus id="loadingSts" startText="... Loading ..." />
+				        </apex:outputPanel>
+					</div>
+				</div>
+				<apex:outputPanel layout="block" styleClass="row rowHelp" rendered="false">
+					<apex:outputPanel layout="block" styleClass="col-sm">
+						Help and Resources
+					</apex:outputPanel>
+				</apex:outputPanel>
+				<!-- <apex:outputPanel layout="block" styleClass="row contentHelp" rendered="false">
+					<apex:outputPanel layout="block" styleClass="col-sm">
+						<c:StaticInfo useTabs="true" />
+						<br/>
+					</apex:outputPanel>
+				</apex:outputPanel> -->
+			</apex:outputPanel>
+		</apex:pageBlock>
+	</apex:form>
+	<apex:outputPanel rendered="false">
+		<!-- Lead -->
+		<apex:outputField value="{!lead.Application__c}" />
+		<apex:outputField value="{!lead.Account__c}" />
+		<apex:outputField value="{!lead.First_Name__c}" />
+		<apex:outputField value="{!lead.Last_Name__c}" />
+		<apex:outputField value="{!lead.Mobile_Number__c}" />
+		<apex:outputField value="{!lead.Email_Address__c}" />
+		<apex:outputField value="{!lead.Application_Type__c}" />
+		<apex:outputField value="{!lead.Home_Phone__c}" />
+		<apex:outputField value="{!lead.Work_Phone__c}" />
+		<apex:outputField value="{!lead.Residual__c}"/>
+		<apex:outputField value="{!lead.Account__r.OwnerId}" />
+		<apex:outputField value="{!lead.Status__c}"/>
+		<apex:outputField value="{!lead.OwnerId}"/>
+		<apex:outputField value="{!lead.Street_Address__c}"/>
+		<apex:outputField value="{!lead.Suburb__c}"/>
+		<apex:outputField value="{!lead.State__c}"/>
+		<apex:outputField value="{!lead.Postcode__c}"/>
+		<apex:outputField value="{!lead.Home_Phone__c}"/>
+		<apex:outputField value="{!lead.Work_Phone__c}"/>
+		<apex:outputField value="{!lead.Mobile_Number__c}"/>
+		<apex:outputField value="{!lead.Email_Address__c}"/>
+		<!-- Application -->
+		<apex:outputField value="{!lead.Application__r.Finish_Date_1__c }" />
+		<apex:outputField value="{!lead.Application__r.Purchase_Price__c }" />
+		<apex:outputField value="{!lead.Application__r.Do_you_receive_other_income_1__c }" />
+		<apex:outputField value="{!lead.Application__r.Do_you_own_a_property__c }" />
+		<apex:outputField value="{!lead.Application__r.Estimated_profit_per_annum__c}" />
+		<apex:outputField value="{!lead.Application__r.Previous_Occupation_1__c}" />
+		<apex:outputField value="{!lead.Application__r.Business_Structure__c}" />
+		<apex:outputField value="{!lead.Application__r.Nature_of_Business__c}" />
+		<apex:outputField value="{!lead.Application__r.Do_you_have_any_loans_outstanding__c}" />
+		<apex:outputField value="{!lead.Application__r.No_of_Dependants_1__c}" />
+		<apex:outputField value="{!lead.Application__r.Mode_of_Employment_2__c}" />
+		<apex:outputField value="{!lead.Application__r.Net_Income_2__c}" />
+		<apex:outputField value="{!lead.Application__r.Payment_Frequency_2__c}" />
+		<apex:outputField value="{!lead.Application__r.Application_Type__c }" />
+		<apex:outputField value="{!lead.Application__r.No_of_People__c}" />
+		<apex:outputField value="{!lead.Application__r.Marital_Status_1__c}" />
+		<apex:outputField value="{!lead.Application__r.Previous_Residence_Status_1__c}" />
+		<apex:outputField value="{!lead.Application__r.Date_From_1__c}" />
+		<apex:outputField value="{!lead.Application__r.Previous_Residence_Status_1b__c}" />
+		<apex:outputField value="{!lead.Application__r.Date_From_1b__c}" />
+		<apex:outputField value="{!lead.Application__r.Previous_Residence_Status_1C__c}" />
+		<apex:outputField value="{!lead.Application__r.Date_From_1c__c}" />
+		<apex:outputField value="{!lead.Application__r.Previous_Residence_Status_1d__c}" />
+		<apex:outputField value="{!lead.Application__r.Date_From_1d__c}" />
+		<apex:outputField value="{!lead.Application__r.Previous_Residence_Status_1e__c}" />
+		<apex:outputField value="{!lead.Application__r.Date_From_1e__c}" />
+		<apex:outputField value="{!lead.Application__r.Residential_Payment_Frequency_1__c}" />
+		<apex:outputField value="{!lead.Application__r.Date_Moved_in_1__c}" />
+		<apex:outputField value="{!lead.Application__r.Rent_per_month_1__c}" />
+		<apex:outputField value="{!lead.Application__r.Board_per_Month_1__c}" />
+		<apex:outputField value="{!lead.Application__r.Type_of_Asset__c}" />
+		<apex:outputField value="{!lead.Application__r.Vehicle_Year__c}" />
+		<apex:outputField value="{!lead.Application__r.Vehicle_Make__c}" />
+		<apex:outputField value="{!lead.Application__r.Vehicle_Model__c}" />
+		<apex:outputField value="{!lead.Application__r.Length_of_Term__c}" />
+		<apex:outputField value="{!lead.Application__r.Finance_Amount__c}" />
+		<apex:outputField value="{!lead.Application__r.Preferred_Repayment__c}" />
+		<apex:outputField value="{!lead.Application__r.Mode_of_Employment_1__c}" />
+		<apex:outputField value="{!lead.Application__r.Current_Employer_Name_1__c}" />
+		<apex:outputField value="{!lead.Application__r.Net_Income_1__c}" />
+		<apex:outputField value="{!lead.Application__r.Payment_Frequency_1__c}" />
+		<apex:outputField value="{!lead.Application__r.Date_Started_1__c}" />
+		<!-- <apex:outputField value="{!lead.Application__r.Previous_Employer_Name_1__c}" /> -->
+		<apex:outputField value="{!lead.Application__r.Start_Date_1__c}" />
+		<apex:outputField value="{!lead.Application__r.Previous_Mode_of_Employment_1__c}" />
+		<apex:outputField value="{!lead.Application__r.Current_Residence_Status_1__c}" />
+		<apex:outputField value="{!lead.Application__r.Repayment_Regularity__c}" />
+		<apex:outputField value="{!lead.Application__r.Current_Occupation_1__c}" />
+		<apex:outputField value="{!lead.Application__r.Current_Employment_Years__c}" />
+		<apex:outputField value="{!lead.Application__r.Current_Employment_Months__c}" />
+		<apex:outputField value="{!lead.Application__r.Previous_Occupation_1__c}" />
+		<apex:outputField value="{!lead.Application__r.Previous_Employment_Years__c}" />
+		<apex:outputField value="{!lead.Application__r.Previous_Employment_Months__c}" />
+		<apex:outputField value="{!lead.Application__r.Current_Residence_Years__c}" />
+		<apex:outputField value="{!lead.Application__r.Current_Residence_Months__c}" />
+		<apex:outputField value="{!lead.Application__r.Previous_Residence_Years__c}" />
+		<apex:outputField value="{!lead.Application__r.Previous_Residence_Yearsb__c}" />
+		<apex:outputField value="{!lead.Application__r.Previous_Residence_Yearsc__c}" />
+		<apex:outputField value="{!lead.Application__r.Previous_Residence_Yearsd__c}" />
+		<apex:outputField value="{!lead.Application__r.Previous_Residence_Yearse__c}" />
+		<apex:outputField value="{!lead.Application__r.Previous_Residence_Months__c}" />
+		<apex:outputField value="{!lead.Application__r.Previous_Residence_Monthsb__c}" />
+		<apex:outputField value="{!lead.Application__r.Previous_Residence_Monthsc__c}" />
+		<apex:outputField value="{!lead.Application__r.Previous_Residence_Monthsd__c}" />
+		<apex:outputField value="{!lead.Application__r.Previous_Residence_Monthse__c}" />
+		<apex:outputField value="{!lead.Application__r.Current_Work_State_1__c}" />
+		<apex:outputField value="{!lead.Application__r.Driver_Licence_State_Issue_1__c}" />
+		<apex:outputField value="{!lead.Application__r.State__c}" />
+		<apex:outputField value="{!lead.Application__r.Current_Work_Postcode_1__c}" />
+		<apex:outputField value="{!lead.Application__r.Postcode__c}" />
+		<apex:outputField value="{!lead.Application__r.Status__c}" />
+
+		<!-- Loan #1 -->
+		<!-- <apex:outputField value="{!lead.Application__r.Loan_Type_1__c}" />
+		<apex:outputField value="{!lead.Application__r.Other_Loans_Lender_1__c}" />
+		<apex:outputField value="{!lead.Application__r.Loans_Amount_Owing_1__c}" />
+		<apex:outputField value="{!lead.Application__r.Loans_Monthly_Payments_1__c}" />
+		<apex:outputField value="{!lead.Application__r.Loan_Frequency_1__c}" />
+		<apex:outputField value="{!lead.Application__r.Loan_Repaid_1__c}" /> -->
+		<!-- Loan #2 -->
+		<!-- <apex:outputField value="{!lead.Application__r.Loan_Type_2__c}" />
+		<apex:outputField value="{!lead.Application__r.Other_Loans_Lender_2__c}" />
+		<apex:outputField value="{!lead.Application__r.Loans_Amount_Owing_2__c}" />
+		<apex:outputField value="{!lead.Application__r.Loans_Monthly_Payments_2__c}" />
+		<apex:outputField value="{!lead.Application__r.Loan_Frequency_2__c}" />
+		<apex:outputField value="{!lead.Application__r.Loan_Repaid_2__c}" /> -->
+		<!-- Loan #3 -->
+		<!-- <apex:outputField value="{!lead.Application__r.Loan_Type_3__c}" />
+		<apex:outputField value="{!lead.Application__r.Other_Loans_Lender_3__c}" />
+		<apex:outputField value="{!lead.Application__r.Loans_Amount_Owing_3__c}" />
+		<apex:outputField value="{!lead.Application__r.Loans_Monthly_Payments_3__c}" />
+		<apex:outputField value="{!lead.Application__r.Loan_Frequency_3__c}" />
+		<apex:outputField value="{!lead.Application__r.Loan_Repaid_3__c}" /> -->
+		<!-- Loan #4 -->
+		<!-- <apex:outputField value="{!lead.Application__r.Loan_Type_4__c}" />
+		<apex:outputField value="{!lead.Application__r.Other_Loans_Lender_4__c}" />
+		<apex:outputField value="{!lead.Application__r.Loans_Amount_Owing_4__c}" />
+		<apex:outputField value="{!lead.Application__r.Loans_Monthly_Payments_4__c}" />
+		<apex:outputField value="{!lead.Application__r.Loan_Frequency_4__c}" />
+		<apex:outputField value="{!lead.Application__r.Loan_Repaid_4__c}" /> -->
+		<!-- Loan #5 -->
+		<!-- <apex:outputField value="{!lead.Application__r.Loan_Type_5__c}" />
+		<apex:outputField value="{!lead.Application__r.Other_Loans_Lender_5__c}" />
+		<apex:outputField value="{!lead.Application__r.Loans_Amount_Owing_5__c}" />
+		<apex:outputField value="{!lead.Application__r.Loans_Monthly_Payments_5__c}" />
+		<apex:outputField value="{!lead.Application__r.Loan_Frequency_5__c}" />
+		<apex:outputField value="{!lead.Application__r.Loan_Repaid_5__c}" /> -->
+		<!-- Loan #6 -->
+		<!-- <apex:outputField value="{!lead.Application__r.Loan_Type_6__c}" />
+		<apex:outputField value="{!lead.Application__r.Other_Loans_Lender_6__c}" />
+		<apex:outputField value="{!lead.Application__r.Loans_Amount_Owing_6__c}" />
+		<apex:outputField value="{!lead.Application__r.Loans_Monthly_Payments_6__c}" />
+		<apex:outputField value="{!lead.Application__r.Loan_Frequency_6__c}" />
+		<apex:outputField value="{!lead.Application__r.Loan_Repaid_6__c}" /> -->
+		<!-- Expenses -->
+		<apex:outputField value="{!lead.Application__r.Basic_Living_Expenses_Per_Month__c}" />
+		<apex:outputField value="{!lead.Application__r.Mobile_Phone_Internet_Pay_TV_per_Month__c}" />
+		<apex:outputField value="{!lead.Application__r.Travel_Transport_Expenses_per_Month__c}" />
+		<apex:outputField value="{!lead.Application__r.Childcare_Child_Maintenance_Per_Month__c}" />
+		<apex:outputField value="{!lead.Application__r.Insurance_Expenses_per_Month__c}" />
+		<apex:outputField value="{!lead.Application__r.Other_Expenses_per_Month__c}" />
+		<apex:outputField value="{!lead.Application__r.Income_Type_Expenses__c}" />
+		<apex:outputField value="{!lead.Application__r.OwnerId}" />
+		<apex:outputField value="{!lead.Credit_History__c}" />
+		<apex:outputField value="{!lead.Reason_for_closure__c}" />
+		<apex:outputField value="{!lead.CC_Lead_ID__c}" />
+		<apex:outputField value="{!lead.CC_Completed_Date__c}" />
+	</apex:outputPanel>
+</apex:page>

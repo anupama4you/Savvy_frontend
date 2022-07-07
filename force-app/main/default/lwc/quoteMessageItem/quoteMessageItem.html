@@ -1,0 +1,34 @@
+<template>
+    <article class="slds-card slds-p-right_medium slds-p-left_medium">
+        <div class="slds-grid slds-gutters">
+            <ul class="message-list slds-show_inline-block slds-col slds-size_1-of-1">
+                <template for:each={messages} for:item="it">
+                    <li key={it.field} class={borderStyle}>
+                        <header class="slds-media slds-media_center slds-has-flexi-truncate">
+                            <div class="slds-media__figure">
+                                <lightning-icon class="slds-m-right_x-small" icon-name={iconName}
+                                    alternative-text={title} title={title} variant={variant} size="x-small">
+                                </lightning-icon>
+                            </div>
+                            <div class="slds-media__body">
+                                <h2 class="slds-text-body_regular">
+                                    <span class={textStyle}>{it.message}</span>
+                                </h2>
+                            </div>
+                            <div class="slds-clearfix">
+                                <div class="slds-float_right">
+                                    <lightning-button-icon name={it.field} icon-name="utility:close" variant="bare"
+                                        alternative-text="Close" class="slds-m-left_xx-small" title="close"
+                                        onclick={handleAlertClose}>
+                                    </lightning-button-icon>
+                                </div>
+                            </div>
+                        </header>
+
+                    </li>
+                </template>
+            </ul>
+        </div>
+    </article>
+
+</template>

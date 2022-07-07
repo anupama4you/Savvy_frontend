@@ -1,0 +1,44 @@
+<apex:page showHeader="false" sidebar="false" standardStylesheets="false">
+	<strong>Minimum Loan size</strong>
+	$2,000 - $35,000
+
+	<hr/><strong>Purchase Type </strong>
+	Dealer or Private sales.  
+
+	<hr/><strong>Employment Type </strong>
+	• 2 years of employment history required. 
+	• Minimum 3 months employment for all Full Time, Part Time and Casual employees. 
+	More than 3 months consecutive unemployment within 12 months not accepted. 
+	Recruitment Agency: Must be registered with recruitment agency for 3 months. 
+	Sub-Contractors: Must have ABN for at least 6 months. 6 months banks statements required. 
+	Self-Employed: Minimum 12 months. 6 months banks statements required. 
+	Income must be verified - Tax Returns and invoices may be requested for subcontractors and self-employed applicants.
+
+	<hr/><strong>Credit History </strong>
+	Accept adverse credit.
+
+	<hr/><strong>Financed Assets </strong>
+	Cars, bikes, boats, caravans, watercraft, trucks, grey imports ok, repairable write offs ok.
+
+	<hr/><strong>Loan Terms </strong>
+	3 years (cars to 2008). 
+	4 years (cars from 2009).
+
+	<hr/><strong>Term End  </strong>
+	No age restrictions although maximum 250,000kms for petrol cars.
+
+	<hr/><strong>LTV Ratios </strong>
+	Will lend up to 150% RRP or Retail (km adjusted).
+
+
+	<hr/><strong>Why? &amp; When? </strong>
+	Bad credit.  Deals where they don’t fit with Liberty or Finance 1. 
+	Do small personal loans as well secured by car. 
+	Short term employment. 
+	Standard rate of 28%.
+
+	
+
+	<hr/><strong>Early repayment fees</strong>
+
+</apex:page>

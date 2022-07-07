@@ -1,0 +1,139 @@
+<apex:page controller="LeadAccountLookupController" tabStyle="Lead__c" showHeader="false" sidebar="false" standardStylesheets="true">    
+    <apex:includescript value="{!$Resource.jQuery}" /> 
+    <script>    
+        var activeElm;        
+    
+        if (navigator.appName != 'Microsoft Internet Explorer')
+        {
+            $(window).blur(function() {
+               window.close();
+            });
+        }
+        else
+        {           
+            activeElm = document.activeElement;
+                     
+            $(document).focusout(function() {        
+                if (activeElm != document.activeElement)
+                {
+                    activeElm = document.activeElement;
+                }
+                else
+                {
+                   window.close(); 
+                }
+            });              
+        }      
+        
+        function checkEnter(e) 
+        {
+            if (e.which == 13 || e.keyCode == 13) 
+            {
+                go.click();
+                return false;
+            }
+            return true;
+        }                   
+                              
+    </script>         
+    <apex:outputPanel id="scr">
+        <script>
+            function accountSaved()
+            {
+                if ('{!NewAccount.Id}' != '')
+                {
+                    top.window.opener.lookupPick('pg:frm','pg:frm:pb:pbsInfo:acc_lkid','pg:frm:pb:pbsInfo:acc','','{!NewAccount.Id}','{!NewAccount.Name}','',''); 
+                    window.close();
+                }
+            }        
+        </script>
+    </apex:outputPanel>
+    <body class="hasMotif lookupTab  LookupSearchFrame  brandNoBgrImg" >
+    <apex:form id="theForm">
+        <div class="lookup">
+            <div class="bPageTitle">
+                <div class="ptBody secondaryPalette">
+                    <div class="content">
+                        <img src="/s.gif" alt="" class="pageTitleIcon" title="" />
+                        <h1>Lookup</h1>
+                    </div>
+                </div>
+            </div>
+            <div class="pBody">
+                <label for="lksrch">Search</label>
+                <apex:actionRegion >
+                    <apex:inputText value="{!SearchTerm}" size="20" onkeypress="return checkEnter(event)" />               
+                    <apex:commandButton value=" Go! " action="{!SearchGo}" reRender="main" id="go" />
+                </apex:actionRegion>
+                <script>var go = document.getElementById('{!$Component.go}');</script>
+                <apex:commandButton value=" New " action="{!ClickNew}" rerender="main" />                
+                <div class="bDescription">You can use "*" as a wildcard next to other characters to improve your search results.</div>
+            </div>
+        </div>  
+        <br />         
+        <br />
+        <apex:outputPanel id="main"> 
+               
+            <apex:outputPanel rendered="{!Mode = 'Search'}">
+                <div class="srch">Search Results</div>
+                <apex:pageBlock mode="edit">                                            
+                    <apex:pageBlockTable value="{!SearchResults}" var="s" title="Search Results">                    
+                        <apex:column headerValue="Account Name">
+                            <a href="#" class="dataCell " onclick="top.window.opener.lookupPick('pg:frm','pg:frm:pb:pbsInfo:acc_lkid','pg:frm:pb:pbsInfo:acc','','{!s.Id}','{!s.Name}','',''); window.close();">{!s.Name}</a>
+                        </apex:column>                        
+                        <apex:column value="{!s.PersonMobilePhone}" />
+                        <apex:column value="{!s.PersonEmail}" />
+                        <apex:column value="{!s.Postcode__c}" />
+                        <apex:column headerValue="Account Owner" value="{!s.Owner.Name}"/>                    
+                    </apex:pageBlockTable>
+                    <apex:outputPanel rendered="{!SearchResults.size = 0}">                        
+                        <table class="list">                    
+                            <td class="noRows" colspan="5">
+                                No records found due to one of the following:
+                                <ul>
+                                    <li>There are no records of this type</li>
+                                    <li>You don'<!--'-->t have permission to see any of the records</li>
+                                    <li>Records do not fit the filter criteria set by your administrator</li>
+                                </ul>
+                            </td>                   
+                        </table>
+                    </apex:outputPanel>                                            
+                </apex:pageBlock>
+            </apex:outputPanel>
+            
+            <apex:outputPanel rendered="{!Mode = 'New'}">
+                <apex:pageMessages id="msg" />
+                <apex:pageBlock mode="edit" title="New Person Account">
+                    <apex:pageBlockButtons location="bottom">
+                        <apex:commandButton value="Save" action="{!SaveAccount}" reRender="scr,msg" oncomplete="accountSaved();" />
+                    </apex:pageBlockButtons>
+                    <apex:pageBlockSection columns="1">
+                        <apex:pageBlockSectionItem >
+                            <apex:outputLabel value="First Name" />
+                            <apex:inputText value="{!FirstName}" required="true" />
+                        </apex:pageBlockSectionItem>
+                        <apex:pageBlockSectionItem >
+                            <apex:outputLabel value="Last Name" />
+                            <apex:outputPanel layout="block" styleClass="requiredInput" >
+                                <apex:outputPanel layout="block" styleClass="requiredBlock" />                        
+                                <apex:inputText value="{!LastName}" required="true" />
+                            </apex:outputPanel>
+                        </apex:pageBlockSectionItem>
+                        <apex:inputField value="{!NewAccount.PersonBirthDate }"  />
+                        <apex:inputField value="{!NewAccount.PersonHomePhone }"  />
+                        <apex:inputField value="{!NewAccount.PersonMobilePhone }"  required="true" />
+                        <apex:inputField value="{!NewAccount.PersonOtherPhone }" />
+                        <apex:inputField value="{!NewAccount.PersonEmail }"  required="true" />
+                        <apex:inputField value="{!NewAccount.Unit_House_Number__c}" />
+                        <apex:inputField value="{!NewAccount.Street_Address__c}" />
+                        <apex:inputField value="{!NewAccount.Street_Type__c}" />
+                        <apex:inputField value="{!NewAccount.Suburb__c}" />
+                        <apex:inputField value="{!NewAccount.State__c}" />
+                        <apex:inputField value="{!NewAccount.Postcode__c}" />                                                
+                    </apex:pageBlockSection>
+                </apex:pageBlock>                    
+            </apex:outputPanel>
+        </apex:outputPanel>
+    </apex:form>
+    </body>
+</apex:page>

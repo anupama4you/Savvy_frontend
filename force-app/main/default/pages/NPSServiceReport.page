@@ -1,0 +1,173 @@
+<apex:page docType="html-5.0" controller="NPSConsultantReportController"
+           showHeader="false"
+           sidebar="false"
+           standardStylesheets="true"
+           cache="true"
+           title="Consultant Report"
+           id="ConsultantRptAdmin">
+    <head>
+        <apex:includescript value="//code.jquery.com/jquery-1.11.1.min.js" />
+        <apex:includescript value="//cdn.datatables.net/1.10.4/js/jquery.dataTables.min.js" />
+        <apex:stylesheet value="//cdn.datatables.net/1.10.4/css/jquery.dataTables.css" />
+        <script>
+            window.j$ = jQuery.noConflict();
+            refreshTable();
+
+            function refreshTable(){
+                j$( function () {
+                    j$('[id$="npstable"]').DataTable({
+                        searching: false,
+                        paging: false
+                    });
+                });
+            }
+
+        </script>
+ 	</head>
+    <apex:stylesheet value="{!$Resource.NPSSquareCSS}"/>    
+    <apex:form id="formData"> 
+    <br/>
+        &nbsp;&nbsp;&nbsp;&nbsp;<apex:outputLabel style="font-size:1.5em;font-weight:normal;" value="NPS Service Performance Report - Date range: {!param.DateBegin} To {!param.DateToday}" />
+    <br/><br/> 
+    <apex:actionFunction action="{!executeReport}" name="executeReport" reRender="formData" status="stCr" oncomplete="refreshTable();"/>
+    <apex:pageBlock >
+                <!-- Parameters -->
+                <apex:outputPanel >
+                    <table>
+                        <tr>
+                            <td><apex:outputLabel value="Custom Range" /></td>
+                            <td>
+                                <apex:selectList id="rangedate" value="{!rangedate}" multiselect="false" size="1" onchange="executeReport()">
+                                    <apex:selectOptions value="{!items}"/> 
+                                </apex:selectList>
+                            </td>
+                            <td>
+                                <apex:outputLabel value=""/>
+                            </td>
+                            <td>
+                                <apex:outputPanel id="Panl" rendered="{!rangedate=='2'}">
+                                    <table>
+                                        <tr>
+                                            <td>Start:</td>
+                                            <td><apex:input type="date" value="{!datbeg}"/></td>
+                                            <td>to</td>
+                                            <td><apex:input type="date" value="{!datend}"/></td>
+                                            <td><apex:commandButton action="{!executeReport}" value="Run Report" /></td>
+                                        </tr>
+                                    </table>
+                                </apex:outputPanel>
+                            </td>
+                        </tr>
+
+                    </table>
+                </apex:outputPanel>
+                <apex:actionStatus id="stCr" startText="(processing...)" />   
+    </apex:pageBlock>
+    
+    <apex:outputPanel id="thePanel" layout="block">
+        <div>
+            <div class="square border">
+                <div class="content center">   
+                    <div class="numbers">       
+                       {!total.fback}
+                    </div>                  
+                    <div class="text">              
+                       FeedBack
+                    </div>
+                </div>
+            </div> 
+            <div class="square border">
+                <div class="content center">   
+                    <div class="numbers">       
+                       <apex:outputText value="{0, number,##0}" >
+                            <apex:param value="{!total.tpnps}"/>
+                        </apex:outputText>
+                    </div>                  
+                    <div class="text">              
+                       NPS Score
+                    </div>
+                </div>
+            </div> 
+        	<div class="square border">
+                <div class="content center">   
+                    <div class="numbers">       
+                       <apex:outputText value="{0, number,##0}%" >
+                            <apex:param value="{!total.tppromoter}"/>
+                        </apex:outputText>
+                    </div>                   
+                    <div class="text">              
+                       Promoters
+                    </div>
+                </div>
+            </div>
+            <div class="square border">
+                <div class="content center">   
+                    <div class="numbers">       
+                       <apex:outputText value="{0, number,##0}%" >
+                            <apex:param value="{!total.tppasive}"/>
+                        </apex:outputText>
+                    </div>                   
+                    <div class="text">              
+                       Passives
+                    </div>
+                </div>
+            </div> 
+			<div class="square border">
+                <div class="content center">   
+                    <div class="numbers">       
+                       <apex:outputText value="{0, number,##0}%" >
+                            <apex:param value="{!total.tpdetractor}"/>
+                        </apex:outputText>
+                    </div>                   
+                    <div class="text">              
+                       Detractors
+                    </div>
+                </div>
+            </div> 
+        </div>
+    </apex:outputPanel>
+    
+     <body>
+            <table id="npstable" class="display"  >
+            <thead>
+                <tr>
+                    <th>Service</th>
+                    <th>Feedback Received</th>
+                    <th>NPS Received</th>
+                    <th>NPS Score</th>
+                    <th>Promoters</th>
+                    <th>Passives</th>
+                    <th>Detractors</th>
+                </tr>
+            </thead>
+            <tbody>
+                <apex:repeat value="{!resultReportService}" var="a">
+                    <tr>
+                        <td>{!a.loan_Type}</td>                        
+                        <td class="center">{!a.fback}</td>                        
+                        <td class="center">100%</td>
+                        <td class="center">{!a.pnps}</td>
+                        <td class="center">{!a.ppromoter}%</td>
+                        <td class="center">{!a.ppasive}%</td>
+                        <td class="center">{!a.pdetractor}%</td>
+                    </tr>
+                </apex:repeat>
+                </tbody>
+                <tfoot>
+                <tr class="pbSubheader brandTertiaryBgr first tertiaryPalette">
+                    <th class="totalRow">Total</th>
+                    <th class="totalRow numbers2">{!total.fback}</th>
+                    <th class="totalRow numbers2">{!total.fback}</th>
+                    <th class="totalRow numbers2">{!total.tpnps}</th>
+                    <th class="totalRow numbers2">{!total.tppromoter}%</th>
+                    <th class="totalRow numbers2">{!total.tppasive}%</th>
+                    <th class="totalRow numbers2">{!total.tpdetractor}%</th>
+                </tr>
+            </tfoot>
+        </table>
+        </body>
+        <div align="center" >
+            <apex:image value="{!$Resource.NPS_Feefo}" width="50%" height="50%" />
+        </div>
+    </apex:form>
+</apex:page>

@@ -1,0 +1,248 @@
+<apex:page standardController="Custom_Opportunity__c" extensions="VedaEnquiryExtension" docType="html-5.0" action="{!validateVedaForm}" lightningStylesheets="{!isBrokerPartnerUser}">
+    <apex:variable value="{!Custom_Opportunity__c}" var="o" />
+  <!-- Partner Portal Styles -->
+  <apex:outputPanel rendered="{!isBrokerPartnerUser}">
+    <apex:slds />
+    <style type="text/css">
+      html .brandQuaternaryBgr,
+      .titleDiv {
+        background: #ffffff !important;
+      }
+  
+      .bPageBlock {
+        border: 1px solid white !important;
+      }
+    </style>
+    <apex:includeScript value="/soap/ajax/36.0/connection.js" />
+  </apex:outputPanel>
+  <style type="text/css">
+    .calculateButtons {
+      padding: 6px 7px !important;
+      color: #fff !important;
+      font-size: 11px !important;
+      outline: none !important;
+      background: rgb(0, 0, 0) !important;
+      /* Old browsers */
+    }
+  
+    .calculateButtons:hover {
+      background: rgb(14, 14, 14) !important;
+      /* Old browsers */
+    }
+  </style>
+    <apex:form id="frmData">
+        <apex:pageMessages escape="false" /> 
+        <apex:actionFunction action="{!submitEnquiry}" name="submitEnquiry_JS" status="Status1" oncomplete="VedaClick_JS();" reRender="frmData" />
+        <apex:actionFunction action="{!VedaClick}" name="VedaClick_JS" status="Status2" reRender="frmData"/>                
+        <apex:pageBlock >
+            <apex:pageBlockButtons >
+                <apex:commandButton action="{!cancel}" value="Cancel" styleClass="calculateButtons" />
+                <input name="DoAction" class="btn calculateButtons" type="button" value="Submit" onclick="submitEnquiry_JS();return false;"/>
+                &nbsp;&nbsp;&nbsp;
+                <!-- <apex:commandButton action="{!downloadFile}" value="Download File" status="Status2" reRender="frmData" />
+                &nbsp;&nbsp;&nbsp; -->
+                <apex:actionStatus id="Status2" startText="... Updating records ..." />
+                <apex:actionStatus id="Status1" startText="... Connecting service ..." />
+            </apex:pageBlockButtons>
+            <apex:pageBlockSection title="Client Details" columns="2"  collapsible="false">
+                <apex:pageBlockSectionItem >
+                    <apex:outputLabel value="Total Enquiries Completed" for="clientRef"/>
+                    <apex:outputText value="{!currentTally}" />
+                </apex:pageBlockSectionItem>
+                <apex:pageBlockSectionItem >
+                    <apex:outputLabel value="Permission Type" for="ptc"/>
+                    <apex:selectList value="{!selectedPermissionType}" multiselect="false" size="1" id="ptc">
+                        <apex:selectOptions value="{!ptcOptions}"/>
+                    </apex:selectList>
+                </apex:pageBlockSectionItem>
+                <apex:pageBlockSectionItem >
+                  <apex:outputLabel value="Client Reference" for="clientRef" />
+                  <apex:inputText styleClass="{!IF(isBrokerPartnerUser,'slds-input','')}" value="{!clientRef}" id="clientRef" disabled="true" />
+                </apex:pageBlockSectionItem>
+                <apex:pageBlockSectionItem >
+                    <apex:outputLabel value="Product Data Level" for="pdl"/>
+                    <apex:selectList value="{!selectedProductDataLevel}" multiselect="false" size="1" id="pdl">
+                        <apex:selectOptions value="{!pdlOptions}"/>
+                    </apex:selectList>
+                </apex:pageBlockSectionItem>
+                <apex:pageBlockSectionItem >
+                    <apex:outputLabel value="Title" for="titleStr"/>
+                    <apex:selectList value="{!titleStr}" multiselect="false" size="1" id="titleStr">
+                        <apex:selectOptions value="{!titleOptions}"/>
+                    </apex:selectList>
+                </apex:pageBlockSectionItem>
+                <apex:pageBlockSectionItem />
+                <apex:pageBlockSectionItem >
+                    <apex:outputLabel value="First Name" for="fname"/>
+                    <apex:inputText styleClass="{!IF(isBrokerPartnerUser,'slds-input','')}" value="{!fname}" id="fname" />
+                </apex:pageBlockSectionItem>
+                <apex:pageBlockSectionItem >
+                    <apex:outputLabel value="Middle Name" for="oname"/>
+                    <apex:inputText styleClass="{!IF(isBrokerPartnerUser,'slds-input','')}" value="{!oname}" id="oname" />
+                </apex:pageBlockSectionItem>
+                <apex:pageBlockSectionItem >
+                    <apex:outputLabel value="Last Name" for="lname"/>
+                    <apex:inputText styleClass="{!IF(isBrokerPartnerUser,'slds-input','')}" value="{!lname}" id="lname" />
+                </apex:pageBlockSectionItem>
+                <apex:pageBlockSectionItem >
+                    <apex:outputLabel value="Driver's License Number" for="dLicense"/>
+                    <apex:inputText styleClass="{!IF(isBrokerPartnerUser,'slds-input','')}" value="{!dLicense}" id="dLicense" />
+                </apex:pageBlockSectionItem>
+                <apex:pageBlockSectionItem >
+                    <apex:outputLabel value="Date of Birth" for="dob"/>
+                    <apex:input type="date" value="{!dateOfBirth}" id="dob" />
+                </apex:pageBlockSectionItem>
+                <apex:pageBlockSectionItem >
+                    <apex:outputLabel value="Gender" for="genderCode"/>
+                    <apex:selectList value="{!genderCode}" multiselect="false" size="1" id="genderCode">
+                        <apex:selectOptions value="{!genderOptions}"/>
+                    </apex:selectList>
+                </apex:pageBlockSectionItem>
+            </apex:pageBlockSection>
+            <apex:pageBlockSection title="Current or Last Known Residential Address" columns="2" collapsible="false">
+                <apex:pageBlockSectionItem >
+                    <apex:outputLabel value="Unit Number" for="cUnitNum" />
+                    <apex:inputText styleClass="{!IF(isBrokerPartnerUser,'slds-input','')}" value="{!cUnitNum}" id="cUnitNum" />
+                </apex:pageBlockSectionItem>
+                <apex:pageBlockSectionItem >
+                    <apex:outputLabel value="Street Number" for="cStreetNum" />
+                    <apex:inputText styleClass="{!IF(isBrokerPartnerUser,'slds-input','')}" value="{!cStreetNum}" id="cStreetNum" />
+                </apex:pageBlockSectionItem>
+                <apex:pageBlockSectionItem >
+                    <apex:outputLabel value="Street Name" for="cStreetName" />
+                    <apex:inputText styleClass="{!IF(isBrokerPartnerUser,'slds-input','')}" value="{!cStreetName}" id="cStreetName" />
+                </apex:pageBlockSectionItem>
+                <apex:pageBlockSectionItem >
+                    <apex:outputLabel value="Street Type" for="cStreetType" />
+                    <apex:selectList value="{!cStreetType}" multiselect="false" size="1" id="cStreetType">
+                        <apex:selectOptions value="{!stOptions}"/>
+                    </apex:selectList>
+                </apex:pageBlockSectionItem>
+                <apex:pageBlockSectionItem >
+                    <apex:outputLabel value="Suburb" for="cSuburb" />
+                    <apex:inputText styleClass="{!IF(isBrokerPartnerUser,'slds-input','')}" value="{!cSuburb}" id="cSuburb" />
+                </apex:pageBlockSectionItem>
+                <apex:pageBlockSectionItem >
+                    <apex:outputLabel value="State" for="cState" />
+                    <apex:selectList value="{!cState}" multiselect="false" size="1" id="cState">
+                        <apex:selectOptions value="{!stateOptions}"/>
+                    </apex:selectList>
+                </apex:pageBlockSectionItem>
+                <apex:pageBlockSectionItem >
+                    <apex:outputLabel value="Post Code" for="cPostCode" />
+                    <apex:inputText styleClass="{!IF(isBrokerPartnerUser,'slds-input','')}" value="{!cPostCode}" id="cPostCode" />
+                </apex:pageBlockSectionItem>
+                <apex:pageBlockSectionItem >
+                    <apex:outputLabel value="Country" for="cCountryCode" />
+                    <apex:selectList value="{!cCountryCode}" multiselect="false" size="1" id="cCountryCode">
+                        <apex:selectOptions value="{!countryOptions}"/>
+                    </apex:selectList>
+                </apex:pageBlockSectionItem>
+            </apex:pageBlockSection>
+            <apex:pageBlockSection title="Previous Residential Address" columns="2" collapsible="false">
+                <apex:pageBlockSectionItem >
+                    <apex:outputLabel value="Unit Number" for="pUnitNum" />
+                    <apex:inputText styleClass="{!IF(isBrokerPartnerUser,'slds-input','')}" value="{!pUnitNum}" id="pUnitNum" />
+                </apex:pageBlockSectionItem>
+                <apex:pageBlockSectionItem >
+                    <apex:outputLabel value="Street Number" for="pStreetNum" />
+                    <apex:inputText styleClass="{!IF(isBrokerPartnerUser,'slds-input','')}" value="{!pStreetNum}" id="pStreetNum" />
+                </apex:pageBlockSectionItem>
+                <apex:pageBlockSectionItem >
+                    <apex:outputLabel value="Street Name" for="pStreetName" />
+                    <apex:inputText styleClass="{!IF(isBrokerPartnerUser,'slds-input','')}" value="{!pStreetName}" id="pStreetName" />
+                </apex:pageBlockSectionItem>
+                <apex:pageBlockSectionItem >
+                    <apex:outputLabel value="Street Type" for="pStreetType" />
+                    <apex:selectList value="{!pStreetType}" multiselect="false" size="1" id="pStreetType">
+                        <apex:selectOptions value="{!stOptions}"/>
+                    </apex:selectList>
+                </apex:pageBlockSectionItem>
+                <apex:pageBlockSectionItem >
+                    <apex:outputLabel value="Suburb" for="pSuburb" />
+                    <apex:inputText styleClass="{!IF(isBrokerPartnerUser,'slds-input','')}" value="{!pSuburb}" id="pSuburb" />
+                </apex:pageBlockSectionItem>
+                <apex:pageBlockSectionItem >
+                    <apex:outputLabel value="State" for="pState" />
+                    <apex:selectList value="{!pState}" multiselect="false" size="1" id="pState">
+                        <apex:selectOptions value="{!stateOptions}"/>
+                    </apex:selectList>
+                </apex:pageBlockSectionItem>
+                <apex:pageBlockSectionItem >
+                    <apex:outputLabel value="Post Code" for="pPostCode" />
+                    <apex:inputText styleClass="{!IF(isBrokerPartnerUser,'slds-input','')}" value="{!pPostCode}" id="pPostCode" />
+                </apex:pageBlockSectionItem>
+                <apex:pageBlockSectionItem >
+                    <apex:outputLabel value="Country" for="pCountryCode" />
+                    <apex:selectList value="{!pCountryCode}" multiselect="false" size="1" id="pCountryCode">
+                        <apex:selectOptions value="{!countryOptions}"/>
+                    </apex:selectList>
+                </apex:pageBlockSectionItem>
+            </apex:pageBlockSection>
+            <apex:pageBlockSection title="Employment" columns="2" collapsible="false">
+                <apex:pageBlockSectionItem >
+                    <apex:outputLabel value="Current Employer Name" for="cEmployer" />
+                    <apex:inputText styleClass="{!IF(isBrokerPartnerUser,'slds-input','')}" value="{!cEmployer}" id="cEmployer" />
+                </apex:pageBlockSectionItem>
+            </apex:pageBlockSection>
+            <apex:pageBlockSection title="Enquiry" columns="2"  collapsible="false">
+                <apex:pageBlockSectionItem >
+                    <apex:outputLabel value="Account Type" for="atCode" />
+                    <apex:selectList value="{!atCode}" multiselect="false" size="1" id="atCode">
+                        <apex:selectOptions value="{!atOptions}"/>
+                    </apex:selectList>
+                </apex:pageBlockSectionItem>
+                <apex:pageBlockSectionItem >
+                    <apex:outputLabel value="Select Currency" for="currencyCode" />
+                    <apex:selectList value="{!currencyCode}" multiselect="false" size="1" id="currencyCode">
+                        <apex:selectOptions value="{!currencyOptions}"/>
+                    </apex:selectList>
+                </apex:pageBlockSectionItem>
+                <apex:pageBlockSectionItem >
+                  <apex:outputLabel value="Is Credit Review" for="isCR" />
+                  <apex:inputCheckbox value="{!isCR}" id="isCR" />
+                </apex:pageBlockSectionItem>
+                <apex:pageBlockSectionItem >
+                    <apex:outputLabel value="Enquiry Amount" for="enquiryAmt" />
+                    <apex:inputText styleClass="{!IF(isBrokerPartnerUser,'slds-input','')}" value="{!enquiryAmt}" id="enquiryAmt" />
+                </apex:pageBlockSectionItem>
+                <apex:pageBlockSectionItem >
+                    <apex:outputLabel value="Relationship" for="relationshipCode" />
+                    <apex:selectList value="{!relationshipCode}" multiselect="false" size="1" id="relationshipCode">
+                        <apex:selectOptions value="{!relationshipOptions}"/>
+                    </apex:selectList>
+                </apex:pageBlockSectionItem>
+                <apex:pageBlockSectionItem >
+                    <apex:outputLabel value="Enquiry Client Reference" for="enquiryCR" />
+                    <apex:inputText styleClass="{!IF(isBrokerPartnerUser,'slds-input','')}" value="{!enquiryCR}" id="enquiryCR" />
+                </apex:pageBlockSectionItem>
+                <!-- <apex:pageBlockSectionItem >
+                    <apex:outputLabel value="Enquiry ID" for="enquiryID" />
+                    <apex:inputText styleClass="{!IF(isBrokerPartnerUser,'slds-input','')}" value="{!enquiryID}" id="enquiryID" />
+                </apex:pageBlockSectionItem> -->
+            </apex:pageBlockSection>
+            <apex:outputPanel layout="block" rendered="{!displayServiceInfo}">
+              <apex:pageBlockSection title="Service Result #1" columns="2" collapsible="false">
+                <apex:pageBlockSectionItem >
+                  <apex:outputLabel value="Request 1" />
+                  <apex:inputTextarea value="{!sfReq1}" cols="70" rows="20"/>
+                </apex:pageBlockSectionItem>
+                <apex:pageBlockSectionItem >
+                  <apex:outputLabel value="Response 1" />
+                  <apex:inputTextarea value="{!eqRes1}" cols="70" rows="20" />
+                </apex:pageBlockSectionItem>
+              </apex:pageBlockSection>
+              <apex:pageBlockSection title="Service Result #2" columns="2" collapsible="false">
+                <apex:pageBlockSectionItem >
+                  <apex:outputLabel value="Request 2" />
+                  <apex:inputTextarea value="{!sfReq2}" cols="70" rows="20" />
+                </apex:pageBlockSectionItem>
+                <apex:pageBlockSectionItem >
+                  <apex:outputLabel value="Response 2" />
+                  <apex:inputTextarea value="{!eqRes2}" cols="70" rows="20"/>
+                </apex:pageBlockSectionItem>
+              </apex:pageBlockSection>
+            </apex:outputPanel>
+        </apex:pageBlock>
+    </apex:form>
+</apex:page>

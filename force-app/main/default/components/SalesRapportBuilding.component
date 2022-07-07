@@ -1,0 +1,22 @@
+<apex:component >
+	<div class="alert alert-warning" role="alert">
+		<h5>RAPPORT-BUILDING QUESTIONS AROUND CAREER &amp; JOB</h5>
+		<p>&nbsp;
+			<ul>
+				<li>So, what do you do for a living?</li>
+				<li>Do enjoy your work?</li>
+				<li>How did you get into this field?</li>
+				<li>What is your long-term goals career wise?</li>
+			</ul>
+		</p>
+		<h5>RAPPORT-BUILDING QUESTIONS: MARITAL STATUS</h5>
+		<p>&nbsp;</p>
+		<p>
+			<ul>
+				<li>What do you and the family do for fun?</li>
+				<li>Personal interests - Family, partner, interest, hobbies.</li>
+				<li>Where did you vacation? </li>
+			</ul>
+		</p>
+	</div>
+</apex:component>

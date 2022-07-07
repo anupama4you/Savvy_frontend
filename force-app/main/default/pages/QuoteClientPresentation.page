@@ -1,0 +1,2557 @@
+<apex:page docType="html-5.0" showHeader="false" sidebar="false" controller="QuoteClientPresentationExtension" title="Savvy - Tailored protection package">
+    <head>
+        <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet"/>
+        <apex:stylesheet value="{! $Resource.ClientPresentationCSS }"/>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" ></script>
+        <script>
+        jQuery.noConflict();
+        jQuery(function() {
+            jQuery(".video").click(function () {
+                var theModal = jQuery(this).data("target"),
+                    videoSRC = jQuery(this).attr("data-video"),
+                    videoSRCauto = 'https://www.youtube.com/embed/' + videoSRC + "?modestbranding=1&rel=0&controls=0&showinfo=0&html5=1&autoplay=1";
+                jQuery(theModal + ' iframe').attr('src', videoSRCauto);
+                jQuery(theModal + ' button.close').click(function () {
+                    jQuery(theModal + ' iframe').attr('src', videoSRC);
+                });
+            });
+        });
+        
+        // jQuery('.video').on('hidden.bs.modal', function (e) {
+        //  alert('Player closed');
+        //  jQuery('.video').find('iframe').attr('src', '');
+        //  });
+        </script>
+        
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        
+        <link href="https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.3.3/assets/owl.carousel.min.css" rel="stylesheet"/>
+        <link href="https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.3.3/assets/owl.theme.default.css" rel="stylesheet"/>
+        <script src="https://code.jquery.com/jquery-3.3.1.min.js" type="text/javascript"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.3.3/owl.carousel.min.js"></script>
+        
+        <script>
+        
+        var owl_is_loaded = false
+        var owl;
+        
+        function go_up() {
+            jQuery('html, body').animate({scrollTop: 0}, 500, 'swing');
+        }
+        
+        var init_owl = function(owl, w) {
+            jQuery('.owl-carousel').on('initialized.owl.carousel', function(event) {
+                owl_is_loaded = true;
+            });
+            
+            owl.owlCarousel({
+                items:4,
+                margin:0,
+                nav:false,
+                dots: false,
+                mouseDrag: false,
+                touchDrag: false,
+                responsive: {
+                    0: {
+                        items: 1,
+                        mouseDrag: false,
+                        touchDrag: true,
+                        nav:true,
+                    },
+                    1024: {
+                        items: 4,
+                    }
+                }
+            });
+            
+            owl.on('changed.owl.carousel', function(event) {
+                var owl_data = owl.data('owlCarousel');
+                
+                var w = window.innerWidth;
+                var owl_index = event.item.index;
+                
+                if(w < 768) {
+                    var h = jQuery('.owl-item').eq(owl_index).height();
+                    
+                    if(owl_index > 0) {
+                        h += 50;
+                    }
+                    else {
+                        h += 40;
+                    }
+                    
+                    owl.css('height', h + "px");
+                }
+                else {
+                    owl.removeAttr('style');
+                }
+            });
+            
+            if(w > 767) {
+                owl.owlCarousel('destroy');
+                owl.addClass('owl-loaded');
+                owl_is_loaded = false;
+            }
+        }
+        
+        jQuery.noConflict();
+        jQuery(function() {
+            
+            var w = window.innerWidth;
+            
+            owl = jQuery('.owl-carousel');
+            
+            init_owl(owl, w);
+            
+        });
+        
+        function reloadOwl() {
+            
+            var w = window.innerWidth;
+            
+            owl = jQuery('.owl-carousel');
+            go_up();
+            if(jQuery('.message.warningM3').is(":visible")) {
+                init_owl(owl, w);
+            }
+        }
+        
+        function reloadOwlOnBack() {
+            
+            go_up();
+            
+            var w = window.innerWidth;
+            
+            owl = jQuery('.owl-carousel');
+            
+            init_owl(owl, w);
+        }
+        
+        jQuery(window).resize(function() {
+            
+            var w = window.innerWidth;
+            console.log('w: ' + w);
+            console.log('owl_is_loaded: ' + owl_is_loaded);
+            
+            if(w >= 768) {
+                if(owl_is_loaded) {
+                    owl.owlCarousel('destroy');
+                    owl.addClass('owl-loaded');
+                    owl_is_loaded = false;
+                }
+            }
+            else {
+                owl = jQuery('.owl-carousel');
+                if(!owl_is_loaded) {
+                    init_owl(owl, w);
+                }
+                
+                owl.on('resized.owl.carousel', function(event) {
+                    var h = jQuery('.owl-item.active').height() + 50;
+                    
+                    console.log('h: ' + h);
+                    
+                    jQuery('.owl-carousel').css('height', h + "px");
+                });
+            }
+        });
+        
+        </script>
+        
+    </head>
+    <!-- <apex:includeScript value="{!URLFOR($Resource.jquery)}"/>
+<link href="{!URLFOR($Resource.Bootstrap, 'bootstrap-3.3.7-dist/css/bootstrap.min.css')}" rel="stylesheet" media="screen"/>
+<apex:includeScript value="{!URLFOR($Resource.Bootstrap, 'bootstrap-3.3.7-dist/js/bootstrap.min.js')}"/> -->
+    <apex:form id="frmData">
+        <apex:actionFunction action="{!confirmFullyInsProductChoice}" name="confirmFullyInsProductChoice" reRender="frmData"/>
+        <apex:actionFunction action="{!confirmStandardInsProductChoice}" name="confirmStandardInsProductChoice" reRender="frmData"/>
+        <apex:actionFunction action="{!confirmBasicInsProductChoice}" name="confirmBasicInsProductChoice" reRender="frmData"/>
+        <apex:actionFunction action="{!confirmSingleInsProductChoice}" name="confirmSingleInsProductChoice" reRender="frmData"/>
+        <!-- Re-quote -->
+        <apex:actionFunction action="{!confirmAdditionalInformation}" name="confirmAdditionalInformation" reRender="msgAddInfo" status="stProcessing" oncomplete="reProcessQuote();"/>
+        <apex:actionFunction action="{!reProcessQuote}" name="reProcessQuote" reRender="frmData" status="stProcessing" />
+        <apex:actionFunction action="{!reProcessQuote2}" name="reProcessQuote2"/>
+        <!-- End Re-Quote -->
+        <div class="container">
+             <!-- appId: {!appId}<br/>
+             iPageLoaded: {!isPageLoaded}<br/>
+             displayPackageOptions: {!displayPackageOptions}<br/>
+             errorMessage: {!errorMessage}<br/>
+            <br/> -->
+            <!-- HEADING START -->
+            <apex:outputPanel layout="block" styleClass="" rendered="{!AND(isPageLoaded,displayPackageOptions)}">
+                <!-- ::before -->
+                <div class="col-md-12">
+                    <div class="pricing-heading clearfix">
+                        <!-- ::before -->
+                        <p>&nbsp;</p>
+                        <div class="toplogo">
+                            <apex:image url="{!$Resource.SavvyLogo2017}"/>
+                        </div>
+                        <apex:outputPanel rendered="{!NOT(isPublicMode)}">
+                            <h2>*** PREVIEW ***</h2>
+                            <br/>
+                        </apex:outputPanel>
+                        <h1>Your tailored protection package options</h1> 
+                        <br/><br/>
+                        <p>
+                            Please see your protection package options. All payments include your finance repayments. 
+                            Within this presentation you will find attached Explainer 
+                            Videos and information required to understand all Features &amp; Benefits.<br/>
+                            You can select from one of our tailor-made packages, <strong>Fully Protected, Standard, 
+                            Basic</strong> or <strong>Customise</strong> your own.
+                        </p>
+                        <!-- ::after -->
+                    </div>
+                    <apex:pageMessages id="pageMessage" />
+                </div>
+                <!-- ::after -->
+            </apex:outputPanel>
+            <apex:outputPanel layout="block" styleClass="" rendered="{!AND(isPageLoaded,displayPackageOptions)}">
+                <div class="owl-carousel owl-theme">
+                    <!-- Fully Protected -->
+                    <div><apex:outputPanel id="pnlFull" styleClass="pricing-block-grid" layout="block" rendered="{!hasFullyResult}">
+                        ::before
+                        <apex:outputPanel layout="block" styleClass="pricing-block green grey clearfix">
+                            <br/><br/>
+                            <!-- <apex:outputPanel layout="block" styleClass="customer-choice" rendered="{!hasFullyProtectedSelected}">
+<div class="tag-wrapper">
+<div class="tag">
+<span class="fa fa-medkit"></span>
+</div>
+</div>
+</apex:outputPanel> -->
+                            <h3>Fully Protected</h3><br/>
+                            <div class="currency">
+                                <span class="sign">$</span>
+                                <span class="cost"><apex:outputText value="{!fullyWeeklyPayment}" /></span>
+                                <span class="week">/week</span>
+                                <br/>Total loan repayment
+                            </div>
+                            <apex:outputPanel rendered="{!NOT(isTaiRequired)}">
+                                <div class="heading">
+                                    <p class="month">Shortfall Protection</p>
+                                    <a href="#" class="videolink video" data-toggle="modal" data-video="Du6WGF2uEXQ" data-target="#vdPlayer"><span class="fa fa-play-circle-o"></span> <strong>WATCH</strong></a>
+                                    <!-- <a href="{!$Resource.InsuProdDocGAP}" target="_blank" class="videolink">
+<span class="fa fa-file-pdf-o"></span>
+</a> -->
+                                </div>
+                                <apex:outputPanel rendered="{!isGAPClassic1}">
+                                    <ul>
+                                        <li class="check"><i class="fa fa-check-circle"></i>Pays out the difference between loan payout amount and insurance payout at a total loss, up to $30,000.</li>
+                                        <li class="check"><i class="fa fa-check-circle"></i>Provides cover for out of pocket expenses up to $10,000.</li>
+                                        <!-- <li class="check"><i class="fa fa-check-circle"></i>GAP 1 - $30,000 cover for GAP + Additional benefits (out of pocket expenses) of $10,000</li> -->
+                                    </ul>
+                                </apex:outputPanel>
+                                <apex:outputPanel rendered="{!isGAPClassic2}">
+                                    <ul>
+                                        <li class="check"><i class="fa fa-check-circle"></i>Pays out the difference between loan payout amount and insurance payout at a total loss, up to $15,000.</li>
+                                        <li class="check"><i class="fa fa-check-circle"></i>Provides cover for out of pocket expenses up to $4,000.</li>
+                                        <!-- <li class="check"><i class="fa fa-check-circle"></i>GAP 2 - $15,000 cover for GAP + Additional benefits (out of pocket expenses) of $4,000</li> -->
+                                    </ul>
+                                </apex:outputPanel>
+                                <apex:outputPanel rendered="{!isGAPClassic3}">
+                                    <ul>
+                                        <li class="check"><i class="fa fa-check-circle"></i>Pays out the difference between loan payout amount and insurance payout at a total loss, up to $10,000.</li>
+                                        <li class="check"><i class="fa fa-check-circle"></i>Provides cover for out of pocket expenses up to $2,000.</li>
+                                        <!-- <li class="check"><i class="fa fa-check-circle"></i>GAP 3 - $10,000 cover for GAP + Additional benefits (out of pocket expenses) of $2,000</li> -->
+                                    </ul>
+                                </apex:outputPanel>
+                                <apex:outputPanel rendered="{!isGAPClassic4}">
+                                    <ul>
+                                        <li class="check"><i class="fa fa-check-circle"></i>Pays out the difference between loan payout amount and insurance payout at a total loss, up to $7,500.</li>
+                                        <li class="check"><i class="fa fa-check-circle"></i>Provides cover for out of pocket expenses up to $2,000.</li>
+                                        <!-- <li class="check"><i class="fa fa-check-circle"></i>GAP 4 - $10,000 cover for GAP + Additional benefits (out of pocket expenses) of $1,000</li> -->
+                                    </ul>
+                                </apex:outputPanel>
+                                <!-- Libertty VEI -->
+                                <apex:outputPanel rendered="{!isGAPLiberty}">
+                                    <ul>
+                                        <li class="check"><i class="fa fa-check-circle"></i>Pays out the difference between loan payout amount and insurance payout at a total loss, up to {!libertyPayoutTotal}.</li>
+                                        <li class="check"><i class="fa fa-check-circle"></i>Provides cover for out of pocket expenses up to {!libertyPocketExpenses}.</li>
+                                    </ul>
+                                </apex:outputPanel>
+                                <apex:outputPanel layout="block" styleClass="extraText" rendered="{!NOT(isGAPLiberty)}">
+                                  <a href="#" data-toggle="modal" data-target="#pnlGAPEx1">Info</a> 
+                                  <a href="#" data-toggle="modal" data-target="#pnlGAPEx2">Example</a>
+                                </apex:outputPanel>
+                                <apex:outputPanel layout="block" styleClass="extraText" rendered="{!isGAPLiberty}">
+                                  <a href="#" data-toggle="modal" data-target="#pnlLibVEIEx1">Info</a>
+                                  <a href="#" data-toggle="modal" data-target="#pnlLibVEIEx2">Example</a>
+                                </apex:outputPanel>
+                            </apex:outputPanel>
+                            <apex:outputPanel rendered="{!isTaiRequired}">
+                                <div class="heading">
+                                    <p class="month">Return to Invoice</p>
+                                    <a href="#" class="videolink video" data-toggle="modal" data-video="V3y3GtZD9tk" data-target="#vdPlayer"><span class="fa fa-play-circle-o"></span> <strong>WATCH</strong></a>
+                                </div>
+                                <apex:outputPanel rendered="{!isTaiCover1}">
+                                    <ul>
+                                        <li class="check"><i class="fa fa-check-circle"></i>Pays out the difference between the Total Loss Payout made by Your Comprehensive Vehicle Insurer and the Purchase Invoice Price of Your Vehicle up to $15,000</li>
+                                    </ul>
+                                </apex:outputPanel>
+                                <apex:outputPanel rendered="{!isTaiCover2}">
+                                    <ul>
+                                        <li class="check"><i class="fa fa-check-circle"></i>Pays out the difference between the Total Loss Payout made by Your Comprehensive Vehicle Insurer and the Purchase Invoice Price of Your Vehicle up to $10,000.</li>
+                                    </ul>
+                                </apex:outputPanel>
+                                <apex:outputPanel rendered="{!isTaiCover3}">
+                                    <ul>
+                                        <li class="check"><i class="fa fa-check-circle"></i>Pays out the difference between the Total Loss Payout made by Your Comprehensive Vehicle Insurer and the Purchase Invoice Price of Your Vehicle up to $7,000.</li>
+                                    </ul>
+                                </apex:outputPanel>
+                                <div class="extraText">
+                                    <a href="#" data-toggle="modal" data-target="#pnlTaiEx1">Example 1</a> <a href="#" data-toggle="modal" data-target="#pnlTaiEx2">Example 2</a>
+                                </div>
+                            </apex:outputPanel>
+                            <apex:outputPanel rendered="{!hasWarrantyInsProduct}">
+                                <div class="heading">
+                                    <p class="month">Warranty</p>
+                                    <a href="#" class="videolink video" data-toggle="modal" data-video="o0P8uHN7GGk" data-target="#vdPlayer"><span class="fa fa-play-circle-o"></span> <strong>WATCH</strong></a>
+                                </div>
+                                <ul>
+                                    <li class="check"><i class="fa fa-check-circle"></i>Provides cover against the sudden and unforeseen failure of all mechanical or electrical components of the car.</li>
+                                </ul>
+                                <div class="extraText">
+                                    <a href="#" data-toggle="modal" data-target="#pnlWARR">Additional Benefits</a>
+                                </div>
+                            </apex:outputPanel>
+                            <apex:outputPanel rendered="{!isNWCRequired}">
+                                <apex:outputPanel layout="block" rendered="{!isWarrantySafeguard}" styleClass="heading">
+                                    <p class="month">Warranty</p>
+                                    <a href="{!$Resource.InsuProdDocNWC}" class="videolink" target="_blank" ><span class="fa fa-file"></span></a>
+                                </apex:outputPanel>
+                                <apex:outputPanel layout="block" rendered="{!isWarrantyIntegrity}" styleClass="heading">
+                                    <p class="month">Warranty</p>
+                                    <a href="{!$Resource.InsuProdDocINTEGRITY}" class="videolink" target="_blank" ><span class="fa fa-file"></span></a>
+                                </apex:outputPanel>
+                                <ul>
+                                    <li class="check"><i class="fa fa-check-circle"></i>Provides cover against the sudden and unforeseen failure of all mechanical or electrical components of the car.</li>
+                                </ul>
+                                <div class="extraText">
+                                    <a href="#" data-toggle="modal" data-target="#pnlNwc">Additional Benefits</a>
+                                </div>
+                            </apex:outputPanel>
+                            <apex:outputPanel rendered="{!!IsCCIRequired}">
+                                <div class="heading">
+                                    <p class="month">Loan Termination</p>
+                                    <a href="#" class="videolink video" data-toggle="modal" data-video="HPlIfLO_eTM" data-target="#vdPlayer"><span class="fa fa-play-circle-o"></span> <strong>WATCH</strong></a>
+                                    <!-- <a href="{!$Resource.InsuProdDocLTI}" target="_blank" class="videolink">
+<span class="fa fa-file-pdf-o"></span>
+</a> -->
+                                </div>
+                                <div>
+                                    <ul>
+                                        <li class="check"><i class="fa fa-check-circle"></i>Covers you in the event of disability or involuntary unemployment. </li>
+                                        <li class="check"><i class="fa fa-check-circle"></i>You can choose to receive a monthly payment benefit or hand and/or handback.</li>
+                                    </ul>
+                                </div>
+                                <!--
+<apex:outputPanel rendered="{!isLTIPlatinum1}">
+<ul>
+<li class="check"><i class="fa fa-check-circle"></i>Covers up to $15,000 and 12 months repayments.</li>
+<li class="check"><i class="fa fa-check-circle"></i>Some of the events covered are accidental death, Illness, involuntary unemployment, injury and divorce.</li>
+</ul>
+</apex:outputPanel>
+<apex:outputPanel rendered="{!isLTIPlatinum2}">
+<ul>
+<li class="check"><i class="fa fa-check-circle"></i>Covers up to $15,000 and 6 months repayments.</li>
+<li class="check"><i class="fa fa-check-circle"></i>Some of the events covered are Illness, involuntary unemployment, injury and divorce.</li>
+</ul>
+</apex:outputPanel>
+<apex:outputPanel rendered="{!isLTIPlatinum3}">
+<ul>
+<li class="check"><i class="fa fa-check-circle"></i>Covers up to $15,000 and 3 months repayments.</li>
+<li class="check"><i class="fa fa-check-circle"></i>Some of the events covered are Illness, involuntary unemployment, injury and divorce.</li>
+</ul>
+</apex:outputPanel>
+<apex:outputPanel rendered="{!isLTIGold2}">
+<ul>
+<li class="check"><i class="fa fa-check-circle"></i>Covers up to $10,000 and 3 months repayments.</li>
+<li class="check"><i class="fa fa-check-circle"></i>Some of the events covered are Illness, involuntary unemployment, injury and divorce.</li>
+</ul>
+</apex:outputPanel>
+<apex:outputPanel rendered="{!isLTISilver1}">
+<ul>
+<li class="check"><i class="fa fa-check-circle"></i>Covers up to $7,500 and 3 months repayments.</li>
+<li class="check"><i class="fa fa-check-circle"></i>Some of the events covered are Illness, involuntary unemployment, injury and divorce.</li>
+</ul>
+</apex:outputPanel>
+<apex:outputPanel rendered="{!isLTICover1}">
+<ul>
+<li class="check"><i class="fa fa-check-circle"></i>Covers up to $30,000 and 12 months repayments.</li>
+<li class="check"><i class="fa fa-check-circle"></i>Some of the events covered are Illness, involuntary unemployment, injury and divorce.</li>
+</ul>
+</apex:outputPanel>
+<apex:outputPanel rendered="{!isLTICover2}">
+<ul>
+<li class="check"><i class="fa fa-check-circle"></i>Covers up to $20,000 and 9 months repayments.</li>
+<li class="check"><i class="fa fa-check-circle"></i>Some of the events covered are Illness, involuntary unemployment, injury and divorce.</li>
+</ul>
+</apex:outputPanel>
+<apex:outputPanel rendered="{!isLTICover3}">
+<ul>
+<li class="check"><i class="fa fa-check-circle"></i>Covers up to $10,000 and 3 months repayments.</li>
+<li class="check"><i class="fa fa-check-circle"></i>Some of the events covered are Illness, involuntary unemployment, injury and divorce.</li>
+</ul>
+</apex:outputPanel>
+-->
+                                <div class="extraText">
+                                    <a href="#" data-toggle="modal" data-target="#pnlLTIEx1">Info</a> <a href="#" data-toggle="modal" data-target="#pnlLTIEx2">Examples</a>
+                                </div>
+                            </apex:outputPanel>
+                            <apex:outputPanel rendered="{!IsCCIRequired}">
+                                <div class="heading">
+                                    <p class="month">Repayment Cover &nbsp;&nbsp;<a href="#" class="videolink video" data-toggle="modal" data-video="jmaR_7ESpdk" data-target="#vdPlayer"><span class="fa fa-play-circle-o"></span> <strong>WATCH</strong></a></p>
+                                </div>
+                                <apex:outputPanel >
+                                    <ul>
+                                        <li class="check"><i class="fa fa-check-circle"></i>Covers your loan repayments up to $2,500 per month if you suffer a disability or involuntary unemployment.</li>
+                                    </ul>
+                                </apex:outputPanel>
+                                <div class="extraText">
+                                    <a href="#" data-toggle="modal" data-target="#pnlLPIEx1">Info</a> <a href="#" data-toggle="modal" data-target="#pnlLPIEx2">Examples</a>
+                                </div>
+                            </apex:outputPanel>
+                            <div class="pricing-btn clearfix">
+                                <!-- <a class="btn">Confirm choice</a> -->
+                                <!-- <a href="#" data-toggle="modal" data-target="#pnlFullyConfirm" class="btn">Confirm choice</a> -->
+                                <apex:commandLink value="Confirm choice" action="{!confirmFullyInsProductChoice}" 
+                                                  reRender="frmData" styleClass="btn" oncomplete="go_up();" />
+                                <!-- <apex:commandLink value="Cancel choice" action="{!cancelFullyInsProductChoice}" 
+rendered="{!hasFullyProtectedSelected}" reRender="frmData" styleClass="btn" /> -->
+                            </div>
+                        </apex:outputPanel>
+                        ::after
+                        </apex:outputPanel> </div>
+                    
+                    <!-- Standard -->
+                    <div><apex:outputPanel id="pnlStandard" styleClass="pricing-block-grid standard-pricing" layout="block" rendered="{!hasStandardResult}">
+                        ::before
+                        <apex:outputPanel layout="block" styleClass="pricing-block green grey clearfix">
+                            <br/><br/>
+                            <div class="popular-label">
+                                <div class="tag-wrapper">
+                                    <div class="tag">
+                                        <span class="tag-text">Most Popular</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- <apex:outputPanel layout="block" styleClass="customer-choice" rendered="{!hasStandardSelected}">
+<div class="tag-wrapper">
+<div class="tag">
+<span class="fa fa-medkit"></span>
+</div>
+</div>
+</apex:outputPanel> -->
+                            <h3>Standard</h3><br/>
+                            <div class="currency">
+                                <span class="sign">$</span>
+                                <span class="cost"><apex:outputText value="{!standardWeeklyPayment}" /></span>
+                                <span class="week">/week</span>
+                                <br/>Total loan repayment
+                            </div>
+                            <apex:outputPanel rendered="{!NOT(isTaiRequired)}">
+                                <div class="heading">
+                                    <p class="month">Shortfall Protection</p>
+                                    <a href="#" class="videolink video" data-toggle="modal" data-video="Du6WGF2uEXQ" data-target="#vdPlayer"><span class="fa fa-play-circle-o"></span> <strong>WATCH</strong></a>
+                                    <!-- <a href="{!$Resource.InsuProdDocGAP}" target="_blank" class="videolink">
+<span class="fa fa-file-pdf-o"></span>
+</a> -->
+                                </div>
+                                <apex:outputPanel rendered="{!isGAPClassic1}">
+                                    <ul>
+                                        <li class="check"><i class="fa fa-check-circle"></i>Pays out the difference between loan payout amount and insurance payout at a total loss, up to $30,000.</li>
+                                        <li class="check"><i class="fa fa-check-circle"></i>Provides cover for out of pocket expenses up to $10,000.</li>
+                                        <!-- <li class="check"><i class="fa fa-check-circle"></i>GAP 1 - $30,000 cover for GAP + Additional benefits (out of pocket expenses) of $10,000</li> -->
+                                    </ul>
+                                </apex:outputPanel>
+                                <apex:outputPanel rendered="{!isGAPClassic2}">
+                                    <ul>
+                                        <li class="check"><i class="fa fa-check-circle"></i>Pays out the difference between loan payout amount and insurance payout at a total loss, up to $15,000.</li>
+                                        <li class="check"><i class="fa fa-check-circle"></i>Provides cover for out of pocket expenses up to $4,000.</li>
+                                        <!-- <li class="check"><i class="fa fa-check-circle"></i>GAP 2 - $15,000 cover for GAP + Additional benefits (out of pocket expenses) of $4,000</li> -->
+                                    </ul>
+                                </apex:outputPanel>
+                                <apex:outputPanel rendered="{!isGAPClassic3}">
+                                    <ul>
+                                        <li class="check"><i class="fa fa-check-circle"></i>Pays out the difference between loan payout amount and insurance payout at a total loss, up to $10,000.</li>
+                                        <li class="check"><i class="fa fa-check-circle"></i>Provides cover for out of pocket expenses up to $2,000.</li>
+                                        <!-- <li class="check"><i class="fa fa-check-circle"></i>GAP 3 - $10,000 cover for GAP + Additional benefits (out of pocket expenses) of $2,000</li> -->
+                                    </ul>
+                                </apex:outputPanel>
+                                <apex:outputPanel rendered="{!isGAPClassic4}">
+                                    <ul>
+                                        <li class="check"><i class="fa fa-check-circle"></i>Pays out the difference between loan payout amount and insurance payout at a total loss, up to $7,500.</li>
+                                        <li class="check"><i class="fa fa-check-circle"></i>Provides cover for out of pocket expenses up to $2,000.</li>
+                                        <!-- <li class="check"><i class="fa fa-check-circle"></i>GAP 4 - $10,000 cover for GAP + Additional benefits (out of pocket expenses) of $1,000</li> -->
+                                    </ul>
+                                </apex:outputPanel>
+                                <!-- Libertty VEI -->
+                                <apex:outputPanel rendered="{!isGAPLiberty}">
+                                    <ul>
+                                        <li class="check"><i class="fa fa-check-circle"></i>Pays out the difference between loan payout amount and insurance payout at a total loss, up to {!libertyPayoutTotal}.</li>
+                                        <li class="check"><i class="fa fa-check-circle"></i>Provides cover for out of pocket expenses up to {!libertyPocketExpenses}.</li>
+                                    </ul>
+                                </apex:outputPanel>
+                                <div class="extraText">
+                                    <a href="#" data-toggle="modal" data-target="#pnlGAPEx1">Info</a> <a href="#" data-toggle="modal" data-target="#pnlGAPEx2">Example</a>
+                                </div>
+                            </apex:outputPanel>
+                            <apex:outputPanel rendered="{!isTaiRequired}">
+                                <div class="heading">
+                                    <p class="month">Return to Invoice</p>
+                                    <a href="#" class="videolink video" data-toggle="modal" data-video="V3y3GtZD9tk" data-target="#vdPlayer"><span class="fa fa-play-circle-o"></span> <strong>WATCH</strong></a>
+                                    <!-- <a href="{!$Resource.InsuProdDocGAP}" target="_blank" class="videolink">
+<span class="fa fa-file-pdf-o"></span>
+</a> -->
+                                </div>
+                                <apex:outputPanel rendered="{!isTaiCover1}">
+                                    <ul>
+                                        <li class="check"><i class="fa fa-check-circle"></i>Pays out the difference between the Total Loss Payout made by Your Comprehensive Vehicle Insurer and the Purchase Invoice Price of Your Vehicle up to $15,000</li>
+                                    </ul>
+                                </apex:outputPanel>
+                                <apex:outputPanel rendered="{!isTaiCover2}">
+                                    <ul>
+                                        <li class="check"><i class="fa fa-check-circle"></i>Pays out the difference between the Total Loss Payout made by Your Comprehensive Vehicle Insurer and the Purchase Invoice Price of Your Vehicle up to $10,000.</li>
+                                    </ul>
+                                </apex:outputPanel>
+                                <apex:outputPanel rendered="{!isTaiCover3}">
+                                    <ul>
+                                        <li class="check"><i class="fa fa-check-circle"></i>Pays out the difference between the Total Loss Payout made by Your Comprehensive Vehicle Insurer and the Purchase Invoice Price of Your Vehicle up to $7,000.</li>
+                                    </ul>
+                                </apex:outputPanel>
+                                <div class="extraText">
+                                    <a href="#" data-toggle="modal" data-target="#pnlTaiEx1">Example 1</a> <a href="#" data-toggle="modal" data-target="#pnlTaiEx2">Example 2</a>
+                                </div>
+                            </apex:outputPanel>
+                            <apex:outputPanel rendered="{!hasWarrantyInsProduct}">
+                                <div class="heading">
+                                    <p class="month">Warranty</p>
+                                    <a href="#" class="videolink video" data-toggle="modal" data-video="o0P8uHN7GGk" data-target="#vdPlayer"><span class="fa fa-play-circle-o"></span> <strong>WATCH</strong></a>
+                                </div>
+                                <ul>
+                                    <li class="check"><i class="fa fa-check-circle"></i>Provides cover against the sudden and unforeseen failure of all mechanical or electrical components of the car.</li>
+                                </ul>
+                                <div class="extraText">
+                                    <a href="#" data-toggle="modal" data-target="#pnlWARR">Additional Benefits</a>
+                                </div>
+                            </apex:outputPanel>
+                            <apex:outputPanel rendered="{!isNWCRequired}">
+                                <apex:outputPanel layout="block" rendered="{!isWarrantySafeguard}" styleClass="heading">
+                                    <p class="month">Warranty</p>
+                                    <a href="{!$Resource.InsuProdDocNWC}" class="videolink" target="_blank" ><span class="fa fa-file"></span></a>
+                                </apex:outputPanel>
+                                <apex:outputPanel layout="block" rendered="{!isWarrantyIntegrity}" styleClass="heading">
+                                    <p class="month">Warranty</p>
+                                    <a href="{!$Resource.InsuProdDocINTEGRITY}" class="videolink" target="_blank" ><span class="fa fa-file"></span></a>
+                                </apex:outputPanel>
+                                <ul>
+                                    <li class="check"><i class="fa fa-check-circle"></i>Provides cover against the sudden and unforeseen failure of all mechanical or electrical components of the car.</li>
+                                </ul>
+                                <div class="extraText">
+                                    <a href="#" data-toggle="modal" data-target="#pnlNwc">Additional Benefits</a>
+                                </div>
+                            </apex:outputPanel>
+                            <div class="pricing-btn clearfix">
+                                <!-- <a href="#" data-toggle="modal" data-target="#pnlStandardConfirm" class="btn">Confirm choice</a> -->
+                                <apex:commandLink value="Confirm choice" action="{!confirmStandardInsProductChoice}" 
+                                                  reRender="frmData" styleClass="btn" oncomplete="reProcessQuote2();go_up();" />
+                                <!-- <apex:commandLink value="Cancel choice" action="{!cancelStandardInsProductChoice}" 
+rendered="{!hasStandardSelected}" reRender="frmData" styleClass="btn" /> -->
+                            </div>
+                        </apex:outputPanel>
+                        ::after
+                        </apex:outputPanel> </div>
+                    
+                    <!-- Basic -->
+                    <div><apex:outputPanel id="pnlBasic" styleClass="pricing-block-grid" layout="block" rendered="{!hasBasicResult}">
+                        ::before
+                        <apex:outputPanel layout="block" styleClass="pricing-block green grey clearfix">
+                            <br/><br/>
+                            <!-- <apex:outputPanel layout="block" styleClass="customer-choice" rendered="{!hasBasicSelected}">
+<div class="tag-wrapper">
+<div class="tag">
+<span class="fa fa-medkit"></span>
+</div>
+</div>
+</apex:outputPanel> -->
+                            <h3>Basic</h3><br/>
+                            <div class="currency">
+                                <span class="sign">$</span>
+                                <span class="cost"><apex:outputText value="{!basicWeeklyPayment}" /></span>
+                                <span class="week">/week</span>
+                                <br/>Total loan repayment
+                            </div>
+                            <apex:outputPanel rendered="{!NOT(isTaiRequired)}">
+                                <div class="heading">
+                                    <p class="month">Shortfall Protection</p>
+                                    <a href="#" class="videolink video" data-toggle="modal" data-video="Du6WGF2uEXQ" data-target="#vdPlayer"><span class="fa fa-play-circle-o"></span> <strong>WATCH</strong></a>
+                                    <!-- <a href="{!$Resource.InsuProdDocGAP}" target="_blank" class="videolink">
+<span class="fa fa-file-pdf-o"></span>
+</a> -->
+                                </div>
+                                <apex:outputPanel rendered="{!isGAPClassic1}">
+                                    <ul>
+                                        <li class="check"><i class="fa fa-check-circle"></i>Pays out the difference between loan payout amount and insurance payout at a total loss, up to $30,000.</li>
+                                        <li class="check"><i class="fa fa-check-circle"></i>Provides cover for out of pocket expenses up to $10,000.</li>
+                                        <!-- <li class="check"><i class="fa fa-check-circle"></i>GAP 1 - $30,000 cover for GAP + Additional benefits (out of pocket expenses) of $10,000</li> -->
+                                    </ul>
+                                </apex:outputPanel>
+                                <apex:outputPanel rendered="{!isGAPClassic2}">
+                                    <ul>
+                                        <li class="check"><i class="fa fa-check-circle"></i>Pays out the difference between loan payout amount and insurance payout at a total loss, up to $15,000.</li>
+                                        <li class="check"><i class="fa fa-check-circle"></i>Provides cover for out of pocket expenses up to $4,000.</li>
+                                        <!-- <li class="check"><i class="fa fa-check-circle"></i>GAP 2 - $15,000 cover for GAP + Additional benefits (out of pocket expenses) of $4,000</li> -->
+                                    </ul>
+                                </apex:outputPanel>
+                                <apex:outputPanel rendered="{!isGAPClassic3}">
+                                    <ul>
+                                        <li class="check"><i class="fa fa-check-circle"></i>Pays out the difference between loan payout amount and insurance payout at a total loss, up to $10,000.</li>
+                                        <li class="check"><i class="fa fa-check-circle"></i>Provides cover for out of pocket expenses up to $2,000.</li>
+                                        <!-- <li class="check"><i class="fa fa-check-circle"></i>GAP 3 - $10,000 cover for GAP + Additional benefits (out of pocket expenses) of $2,000</li> -->
+                                    </ul>
+                                </apex:outputPanel>
+                                <apex:outputPanel rendered="{!isGAPClassic4}">
+                                    <ul>
+                                        <li class="check"><i class="fa fa-check-circle"></i>Pays out the difference between loan payout amount and insurance payout at a total loss, up to $7,500.</li>
+                                        <li class="check"><i class="fa fa-check-circle"></i>Provides cover for out of pocket expenses up to $2,000.</li>
+                                        <!-- <li class="check"><i class="fa fa-check-circle"></i>GAP 4 - $10,000 cover for GAP + Additional benefits (out of pocket expenses) of $1,000</li> -->
+                                    </ul>
+                                </apex:outputPanel>
+                                <!-- Libertty VEI -->
+                                <apex:outputPanel rendered="{!isGAPLiberty}">
+                                    <ul>
+                                        <li class="check"><i class="fa fa-check-circle"></i>Pays out the difference between loan payout amount and insurance payout at a total loss, up to {!libertyPayoutTotal}.</li>
+                                        <li class="check"><i class="fa fa-check-circle"></i>Provides cover for out of pocket expenses up to {!libertyPocketExpenses}.</li>
+                                    </ul>
+                                </apex:outputPanel>
+                                <div class="extraText">
+                                    <a href="#" data-toggle="modal" data-target="#pnlGAPEx1">Info</a> <a href="#" data-toggle="modal" data-target="#pnlGAPEx2">Example</a>
+                                </div>
+                            </apex:outputPanel>
+                            <apex:outputPanel rendered="{!isTaiRequired}">
+                                <div class="heading">
+                                    <p class="month">Return to Invoice</p>
+                                    <a href="#" class="videolink video" data-toggle="modal" data-video="V3y3GtZD9tk" data-target="#vdPlayer"><span class="fa fa-play-circle-o"></span> <strong>WATCH</strong></a>
+                                    <!-- <a href="{!$Resource.InsuProdDocGAP}" target="_blank" class="videolink">
+<span class="fa fa-file-pdf-o"></span>
+</a> -->
+                                </div>
+                                <apex:outputPanel rendered="{!isTaiCover1}">
+                                    <ul>
+                                        <li class="check"><i class="fa fa-check-circle"></i>Pays out the difference between the Total Loss Payout made by Your Comprehensive Vehicle Insurer and the Purchase Invoice Price of Your Vehicle up to $15,000</li>
+                                    </ul>
+                                </apex:outputPanel>
+                                <apex:outputPanel rendered="{!isTaiCover2}">
+                                    <ul>
+                                        <li class="check"><i class="fa fa-check-circle"></i>Pays out the difference between the Total Loss Payout made by Your Comprehensive Vehicle Insurer and the Purchase Invoice Price of Your Vehicle up to $10,000.</li>
+                                    </ul>
+                                </apex:outputPanel>
+                                <apex:outputPanel rendered="{!isTaiCover3}">
+                                    <ul>
+                                        <li class="check"><i class="fa fa-check-circle"></i>Pays out the difference between the Total Loss Payout made by Your Comprehensive Vehicle Insurer and the Purchase Invoice Price of Your Vehicle up to $7,000.</li>
+                                    </ul>
+                                </apex:outputPanel>
+                                <div class="extraText">
+                                    <a href="#" data-toggle="modal" data-target="#pnlTaiEx1">Example 1</a> <a href="#" data-toggle="modal" data-target="#pnlTaiEx2">Example 2</a>
+                                </div>
+                            </apex:outputPanel>
+                            <div class="pricing-btn clearfix">
+                                <!-- <a href="#" data-toggle="modal" data-target="#pnlBasicConfirm" class="btn">Confirm choice</a> -->
+                                <apex:commandLink value="Confirm choice" action="{!confirmBasicInsProductChoice}" 
+                                                  reRender="frmData" styleClass="btn" oncomplete="go_up()" />
+                                <!-- <apex:commandLink value="Cancel choice" action="{!cancelBasicInsProductChoice}" 
+rendered="{!hasBasicSelected}" reRender="frmData" styleClass="btn"/> -->
+                            </div>
+                        </apex:outputPanel>
+                        ::after
+                        </apex:outputPanel> </div>
+                    
+                    <!-- Single -->
+                    <div><apex:outputPanel id="pnlSingle" styleClass="pricing-block-grid" layout="block">
+                        ::before
+                        <script>
+        jQuery.noConflict();
+        jQuery(function() {
+            jQuery(".video").click(function () {
+                var theModal = jQuery(this).data("target"),
+                    videoSRC = jQuery(this).attr("data-video"),
+                    videoSRCauto = 'https://www.youtube.com/embed/' + videoSRC + "?modestbranding=1&rel=0&controls=0&showinfo=0&html5=1&autoplay=1";
+                jQuery(theModal + ' iframe').attr('src', videoSRCauto);
+                jQuery(theModal + ' button.close').click(function () {
+                    jQuery(theModal + ' iframe').attr('src', videoSRC);
+                });
+            });
+        });
+        
+        // jQuery('.video').on('hidden.bs.modal', function (e) {
+        //  alert('Player closed');
+        //  jQuery('.video').find('iframe').attr('src', '');
+        //  });
+        </script>
+                        <apex:outputPanel layout="block" styleClass="pricing-block green grey clearfix">
+                            <br/><br/>
+                            <!-- <apex:outputPanel layout="block" styleClass="customer-choice" rendered="{!hasCustomSelected}">
+<div class="tag-wrapper">
+<div class="tag">
+<span class="fa fa-medkit"></span>
+</div>
+</div>
+</apex:outputPanel> -->
+                            <h3>Custom</h3><br/>
+                            <div class="currency">
+                                <span class="sign">$</span>
+                                <span class="cost"><apex:outputText value="{!customResultWeeklyPayment}" /></span>
+                                <span class="week">/week</span>
+                                <br/>Total loan repayment
+                            </div>
+                            <div class="heading">
+                                <p class="month">Make Your Own</p>
+                            </div>
+                            <br/>
+                            <apex:outputPanel layout="block">
+                                <apex:outputPanel layout="block">
+                                    <div class="single-heading">
+                                        <table border="0" width="95%">
+                                            <tr>
+                                                <td align="left" width="90%">No Insurances</td>
+                                                <td align="right" width="10%">
+                                                    <apex:commandLink action="{!confirmUnprotectedProductChoice}" styleClass="actionlink" target="_blank" 
+                                                                      rendered="{!!hasUnprotectedCSelected}" reRender="pnlSingle"><span class="fa fa-square-o"></span></apex:commandLink>
+                                                    <apex:commandLink action="{!cancelUnprotectedProductChoice}" styleClass="actionlink" target="_blank"
+                                                                      rendered="{!hasUnprotectedCSelected}" reRender="pnlSingle"><span class="fa fa-check-square"></span></apex:commandLink>
+                                                </td>
+                                            </tr>
+                                        </table>
+                                    </div>
+                                </apex:outputPanel>
+                                <br/>
+                                <apex:outputPanel rendered="{!AND(NOT(isTaiRequired),displayGAPCustom)}" layout="block">
+                                    <div class="single-heading">
+                                        <table border="0" width="95%">
+                                            <tr>
+                                                <td align="left" width="75%">Shortfall Protection</td>
+                                                <td width="15%"><a href="#" class="videolink video" data-toggle="modal" data-video="Du6WGF2uEXQ" data-target="#vdPlayer"><span class="fa fa-play-circle-o"></span></a></td>
+                                                <td align="right" width="10%">
+                                                    <apex:commandLink action="{!confirmGAPInsProductChoice}" styleClass="actionlink" target="_blank" 
+                                                                      rendered="{!!hasGAPSelected}" reRender="pnlSingle"><span class="fa fa-square-o"></span></apex:commandLink>
+                                                    <apex:commandLink action="{!cancelGAPInsProductChoice}" styleClass="actionlink" target="_blank"
+                                                                      rendered="{!hasGAPSelected}" reRender="pnlSingle"><span class="fa fa-check-square"></span></apex:commandLink>
+                                                </td>
+                                            </tr>
+                                        </table>
+                                    </div>
+                                </apex:outputPanel>
+                                <apex:outputPanel rendered="{!isTaiRequired}" layout="block">
+                                    <div class="single-heading">
+                                        <table border="0" width="95%">
+                                            <tr>
+                                                <td align="left" width="75%">Return to Invoice</td>
+                                                <td width="15%"><a href="#" class="videolink video" data-toggle="modal" data-video="V3y3GtZD9tk" data-target="#vdPlayer"><span class="fa fa-play-circle-o"></span></a></td>
+                                                <td align="right" width="10%">
+                                                    <apex:commandLink action="{!confirmTAIInsProductChoice}" styleClass="actionlink" target="_blank" 
+                                                                      rendered="{!!hasTAISelected}" reRender="pnlSingle"><span class="fa fa-square-o"></span></apex:commandLink>
+                                                    <apex:commandLink action="{!cancelTAIInsProductChoice}" styleClass="actionlink" target="_blank"
+                                                                      rendered="{!hasTAISelected}" reRender="pnlSingle"><span class="fa fa-check-square"></span></apex:commandLink>
+                                                </td>
+                                            </tr>
+                                        </table>
+                                    </div>
+                                </apex:outputPanel>
+                                <br/>
+                            </apex:outputPanel>
+                            <apex:outputPanel layout="block" rendered="{!AND(hasWarrantyInsProduct,NOT(isNWCRequired))}">
+                                <apex:outputPanel layout="block">
+                                    <div class="single-heading">
+                                        <table border="0" width="95%">
+                                            <tr>
+                                                <td align="left" width="75%">Warranty</td>
+                                                <td width="15%"><a href="#" class="videolink video" data-toggle="modal" data-video="o0P8uHN7GGk" data-target="#vdPlayer"><span class="fa fa-play-circle-o"></span></a></td>
+                                                <td align="right" width="10%">
+                                                    <apex:commandLink action="{!confirmWARRInsProductChoice}" styleClass="actionlink" target="_blank" 
+                                                                      rendered="{!!hasWARRSelected}" reRender="pnlSingle"><span class="fa fa-square-o"></span></apex:commandLink>
+                                                    <apex:commandLink action="{!cancelWARRInsProductChoice}" styleClass="actionlink" target="_blank"
+                                                                      rendered="{!hasWARRSelected}" reRender="pnlSingle"><span class="fa fa-check-square"></span></apex:commandLink>
+                                                </td>
+                                            </tr>
+                                        </table>
+                                        <!-- <p>Warranty</p>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<apex:commandLink action="{!confirmWARRInsProductChoice}" styleClass="actionlink" target="_blank" 
+rendered="{!!hasWARRSelected}" reRender="pnlSingle"><span class="fa fa-square-o"></span></apex:commandLink>
+<apex:commandLink action="{!cancelWARRInsProductChoice}" styleClass="actionlink" target="_blank"
+rendered="{!hasWARRSelected}" reRender="pnlSingle"><span class="fa fa-check-square"></span></apex:commandLink> -->
+                                    </div>
+                                </apex:outputPanel>
+                                <br/>
+                            </apex:outputPanel>
+                            <apex:outputPanel rendered="{!AND(HasNwcInsProduct,isNWCRequired)}">
+                                <apex:outputPanel layout="block">
+                                    <div class="single-heading">
+                                        <table border="0" width="95%">
+                                            <tr>
+                                                <td align="left" width="75%">Warranty</td>
+                                                <td width="15%"><apex:outputPanel rendered="{!isWarrantySafeguard}">
+                                                    <a href="{!$Resource.InsuProdDocNWC}" class="videolink" target="_blank" ><span class="fa fa-file"></span></a>
+                                                    </apex:outputPanel>
+                                                    <apex:outputPanel rendered="{!isWarrantyIntegrity}">
+                                                        <a href="{!$Resource.InsuProdDocINTEGRITY}" class="videolink" target="_blank" ><span class="fa fa-file"></span></a>
+                                                    </apex:outputPanel></td>
+                                                <td align="right" width="10%">
+                                                    <apex:commandLink action="{!confirmNWCInsProductChoice}" styleClass="actionlink" target="_blank" 
+                                                                      rendered="{!!hasNWCSelected}" reRender="pnlSingle"><span class="fa fa-square-o"></span></apex:commandLink>
+                                                    <apex:commandLink action="{!cancelNWCInsProductChoice}" styleClass="actionlink" target="_blank"
+                                                                      rendered="{!hasNWCSelected}" reRender="pnlSingle"><span class="fa fa-check-square"></span></apex:commandLink>
+                                                </td>
+                                            </tr>
+                                        </table>
+                                    </div>
+                                </apex:outputPanel>
+                                <br/>
+                            </apex:outputPanel>
+                            <apex:outputPanel layout="block" rendered="{!hasLtiInsProduct}">
+                                <apex:outputPanel layout="block">
+                                    <div class="single-heading">
+                                        <table border="0" width="95%">
+                                            <tr>
+                                                <td align="left" width="75%">Loan Termination</td>
+                                                <td width="15%"><a href="#" class="videolink video" data-toggle="modal" data-video="HPlIfLO_eTM" data-target="#vdPlayer"><span class="fa fa-play-circle-o"></span></a></td>
+                                                <td align="right" width="10%">
+                                                    <apex:commandLink action="{!confirmLTIInsProductChoice}" styleClass="actionlink" target="_blank" 
+                                                                      rendered="{!!hasLTISelected}" reRender="pnlSingle"><span class="fa fa-square-o"></span></apex:commandLink>
+                                                    <apex:commandLink action="{!cancelLTIInsProductChoice}" styleClass="actionlink" target="_blank"
+                                                                      rendered="{!hasLTISelected}" reRender="pnlSingle"><span class="fa fa-check-square"></span></apex:commandLink>
+                                                </td>
+                                            </tr>
+                                        </table>
+                                    </div>
+                                </apex:outputPanel>
+                                <br/>
+                            </apex:outputPanel>
+                            <apex:outputPanel layout="block" rendered="{!AND(NOT(hasLtiInsProduct),IsCCIRequired)}">
+                                <apex:outputPanel layout="block">
+                                    <div class="single-heading">
+                                        <table border="0" width="95%">
+                                            <tr>
+                                                <td align="left" width="75%">Repayment Cover</td>
+                                                <td width="15%"><a href="#" class="videolink video" data-toggle="modal" data-video="jmaR_7ESpdk" data-target="#vdPlayer"><span class="fa fa-play-circle-o"></span></a></td>
+                                                <td align="right" width="10%">
+                                                    <apex:commandLink action="{!confirmCCIInsProductChoice}" styleClass="actionlink" target="_blank" 
+                                                                      rendered="{!!hasCCISelected}" reRender="pnlSingle"><span class="fa fa-square-o"></span></apex:commandLink>
+                                                    <apex:commandLink action="{!cancelCCIInsProductChoice}" styleClass="actionlink" target="_blank"
+                                                                      rendered="{!hasCCISelected}" reRender="pnlSingle"><span class="fa fa-check-square"></span></apex:commandLink>
+                                                </td>
+                                            </tr>
+                                        </table>
+                                    </div>
+                                </apex:outputPanel>
+                                <br/>
+                            </apex:outputPanel>
+                            <div class="pricing-btn clearfix">
+                                <!-- <a href="#" data-toggle="modal" data-target="#pnlSingleConfirm" class="btn">Confirm choice</a> -->
+                                <apex:commandLink value="Confirm choice" action="{!confirmSingleInsProductChoice}" 
+                                                  reRender="frmData" styleClass="btn" oncomplete="reProcessQuote2();reloadOwl();" />
+                                <!-- <apex:commandLink value="Cancel choice" action="{!cancelSingleInsProductChoice}" 
+rendered="{!hasCustomSelected}" reRender="frmData" styleClass="btn"/> -->
+                            </div>
+                        </apex:outputPanel>
+                        <!-- <apex:outputPanel layout="block" rendered="{!hasMvInsProduct}">
+<apex:outputPanel layout="block" styleClass="pricing-block green grey clearfix">
+<div class="heading">
+<p class="month">Motor Equity Insurance</p>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<apex:commandLink action="{!confirmMVInsProductChoice}" styleClass="actionlink" target="_blank" 
+rendered="{!!hasMVSelected}" reRender="frmData"><span class="fa fa-square-o"></span></apex:commandLink>
+<apex:commandLink action="{!cancelMVInsProductChoice}" styleClass="actionlink" target="_blank"
+rendered="{!hasMVSelected}" reRender="frmData"><span class="fa fa-check-square"></span></apex:commandLink>
+</div>
+</apex:outputPanel>
+<br/>
+</apex:outputPanel> -->
+                        <!-- <apex:outputPanel layout="block" rendered="{!hasTaiInsProduct}">
+<div class="heading">
+<p class="month">RTI</p>
+<a href="https://youtu.be/Du6WGF2uEXQ" target="_blank" class="videolink">            
+<span class="fa fa-play-circle-o"></span>
+</a>
+</div>
+<ul>
+<li class="check"><i class="fa fa-check-circle"></i>Pays out the difference between loan payout amount and insurance payout at a total loss, up to $10,000  </li>
+</ul>
+<div class="pricing-btn clearfix">
+<apex:commandButton value="Confirm choice" action="{!confirmTAIInsProductChoice}" 
+rendered="{!!hasTAISelected}" reRender="frmData" />
+<apex:commandButton value="Cancel choice" action="{!cancelTAIInsProductChoice}" 
+rendered="{!hasTAISelected}" reRender="frmData" />
+</div>
+</apex:outputPanel>
+
+<apex:outputPanel layout="block" rendered="{!hasNwcInsProduct}">
+<div class="heading">
+<p class="month">Warranty</p>
+<a href="https://youtu.be/Du6WGF2uEXQ" target="_blank" class="videolink">            
+<span class="fa fa-play-circle-o"></span>
+</a>
+</div>
+<ul>
+<li class="check"><i class="fa fa-check-circle"></i>Pays out the difference between loan payout amount and insurance payout at a total loss, up to $10,000  </li>
+</ul>
+<div class="pricing-btn clearfix">
+<apex:commandButton value="Confirm choice" action="{!confirmNWCInsProductChoice}" 
+rendered="{!!hasNWCSelected}" reRender="frmData" />
+<apex:commandButton value="Cancel choice" action="{!cancelNWCInsProductChoice}" 
+rendered="{!hasNWCSelected}" reRender="frmData" />
+</div>
+</apex:outputPanel> -->
+                        <!--  </apex:outputPanel>
+::after -->
+                        </apex:outputPanel></div>
+                </div>
+            </apex:outputPanel>
+            <apex:outputPanel layout="block" styleClass="row" rendered="{!AND(isPageLoaded,displayProductsConfirmation)}">
+                <div class="col-md-12">
+                    <div class="pricing-heading clearfix">
+                        <!-- ::before -->
+                        <p>&nbsp;</p>
+                        <div class="toplogo">
+                            <apex:image url="{!$Resource.SavvyLogo2017}"/>
+                        </div>
+                        <apex:outputPanel rendered="{!NOT(isPublicMode)}">
+                            <h2>*** PREVIEW ***</h2>
+                            <br/>
+                        </apex:outputPanel>
+                        <h1>Your tailored protection package options</h1> 
+                        <br/><br/>
+                        <p><h3>Thank you for confirming the purchase of your protection package. </h3></p>
+                    <p><h3>We will now move to the next step of finalising your contract.</h3></p>
+                <!-- ::after -->
+            </div>
+            <apex:outputPanel rendered="{!failedQuotation}">
+                <apex:pageMessages id="msgFinal"/>
+            </apex:outputPanel>
+            <hr/>
+        </div>
+    </apex:outputPanel>
+    <apex:outputPanel layout="block" styleClass="" rendered="{!AND(isPageLoaded,displayDeclaration)}">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="pricing-heading clearfix">
+                    <!-- ::before -->
+                    <p>&nbsp;</p>
+                    <div class="toplogo">
+                        <apex:image url="{!$Resource.SavvyLogo2017}"/>
+                    </div>
+                    <apex:outputPanel rendered="{!NOT(isPublicMode)}">
+                        <h2>*** PREVIEW ***</h2>
+                        <br/>
+                    </apex:outputPanel>
+                    <h1>Insurance declaration</h1> 
+                    <br/><br/>              
+                </div>
+                <apex:pageMessages id="pageMessageDecla" />
+            </div>
+        </div>
+        <hr/>
+        <!-- GAP / RTI -->
+        <apex:outputPanel rendered="{!displayGAPRTIDeclaration}" layout="block">
+            <div class="declaration">
+                <div class="col-md-12">
+                    <p>             
+                        You have chosen to not to purchase <strong>GAP COVER</strong> or <strong>TOTAL ASSIST INSURANCE</strong>. I/ We understand that if I / we do not purchase <strong><i>Motor Equity Insurance/Total Assist Insurance</i></strong> that, in the event of a "Total Loss" of the motor vehicle (eg: Theft / Fire / Accident), any financial shortfall from the Motor Comprehensive Insurance payout/Original Purchase Price will be met by me / us.
+                    </p>
+                    <p><strong>I / We acknowledge that I / we have been offered Motor Equity Insurance/Total Assist and I / we confirm that:</strong></p>
+                </div>
+            </div>
+            <div class="declaration">
+                <div class="col-md-12">
+                    <apex:commandButton value="Decline to purchase" action="{!declineGapPurchase}" reRender="frmData" styleClass="btn {!IF(hasGapRtiProductDeclined,'disclaimer-buttons','disclaimer-buttons-disabled')}"/>
+                    &nbsp;
+                    <apex:commandButton value="Would like to go back to review my options" action="{!goProductOptions}" reRender="frmData" 
+                                        styleClass="btn disclaimer-buttons-disabled" oncomplete="reloadOwlOnBack()" />
+                    
+                </div>
+            </div>
+            <hr/>
+        </apex:outputPanel>
+        <!-- LTI -->
+        <apex:outputPanel rendered="{!displayLTIDeclaration}" layout="block">
+            <div class="declaration">
+                <div class="col-md-12">
+                    <p><br/>
+                        You have chosen to not to purchase <strong><apex:outputText value="LOAN TERMINATION INSURANCE" rendered="{!NOT(IsCCIRequired)}"/><apex:outputText value="Repayment Cover (LOAN PROTECTION)" rendered="{!IsCCIRequired}"/></strong>. I / We understand that if I / we do not purchase <strong><i><apex:outputText value="Loan termination insurance" rendered="{!NOT(IsCCIRequired)}"/><apex:outputText value="Repayment Cover (Loan Protection)" rendered="{!IsCCIRequired}"/></i></strong> and I / we have a life event which prevents me/us from working/driving, I / we are responsible for continuing to make the Loan repayments. In addition, if this option is not selected there is no option to hand back the vehicle without further obligation under the loan contract.
+                    </p>
+                    <p><strong>I / We acknowledge that I / we have been offered <span><apex:outputText value="Repayment Cover (Loan Protection)" rendered="{!NOT(IsCCIRequired)}"/><apex:outputText value="Repayment Cover (Loan Protection)" rendered="{!IsCCIRequired}"/></span> and I / we confirm that:</strong></p>
+                </div>
+            </div>
+            <div class="declaration">
+                <div class="col-md-12">
+                    <apex:commandButton value="Decline to purchase" action="{!declineLtiPurchase}" reRender="frmData" styleClass="btn {!IF(hasLtiProductDeclined,'disclaimer-buttons','disclaimer-buttons-disabled')}"/>
+                    &nbsp;
+                    <apex:commandButton value="Would like to go back to review my options" action="{!goProductOptions}" reRender="frmData" 
+                                        styleClass="btn disclaimer-buttons-disabled" oncomplete="reloadOwlOnBack()" />
+                    
+                </div>
+            </div>
+            <hr/>
+        </apex:outputPanel>
+        <!-- Warranty -->
+        <apex:outputPanel rendered="{!displayWarrantyDeclaration}" layout="block">
+            <div class="declaration">
+                <div class="col-md-12">
+                    <p><br/>
+                        You have chosen to not to purchase <strong>EXTENDED WARRANTY</strong> I / We understand that if I / we do not purchase <strong><i>Extended Warranty</i></strong> that, should the vehicle require repairs for damage / failure outside any statutory and / or manufacturer’s warranty period, these costs will be borne by me / us.
+                    </p>
+                    <p><strong>I / We acknowledge that I / we have been offered Extended Warranty and I / we confirm that:</strong></p>
+                </div>
+            </div>
+            <div class="declaration">
+                <div class="col-md-12">
+                    <apex:commandButton value="Decline to purchase" action="{!declineWarrantyPurchase}" reRender="frmData" styleClass="btn {!IF(hasWarrantyProductDeclined,'disclaimer-buttons','disclaimer-buttons-disabled')}"/>
+                    &nbsp;
+                    <apex:commandButton value="Would like to go back to review my options" action="{!goProductOptions}" reRender="frmData" 
+                                        styleClass="btn disclaimer-buttons-disabled" oncomplete="reloadOwlOnBack()" />
+                    
+                </div>
+            </div>
+            <hr/>
+        </apex:outputPanel>
+    </apex:outputPanel>
+    <apex:outputPanel layout="block" styleClass="row" rendered="{!AND(isPageLoaded,displayFullComprehensive)}">
+        <div class="">
+            <div class="col-md-12">
+                <div class="pricing-heading clearfix">
+                    <!-- ::before -->
+                    <p>&nbsp;</p>
+                    <div class="toplogo">
+                        <apex:image url="{!$Resource.SavvyLogo2017}"/>
+                    </div>
+                    <apex:outputPanel rendered="{!NOT(isPublicMode)}">
+                        <h2>*** PREVIEW ***</h2>
+                        <br/>
+                    </apex:outputPanel>
+                    <h1>Full-Comprehensive</h1> 
+                    <br/><br/>
+                    <p class="declaration text-left">
+                        Full-Comprehensive covers you in the event of your car being damaged, written off or stolen. This is a compulsory insurance to finalise your loan settlement.
+                    </p>      
+                    <p>&nbsp;</p>
+                </div>
+                <apex:pageMessages id="pageMessageFullC" />
+            </div>
+        </div>
+        <div class="declaration">
+            <div class="col-md-7">
+                <p>
+                    <strong><i>Additional Features and Benefits:</i></strong>
+                </p>
+                <p class="fc-features">
+                    <span class="fa fa-check-circle"></span> Accident, fire, flood/storm/hail, stolen car and malicious acts<br/>
+                    <span class="fa fa-check-circle"></span> Emergency travel or accommodation $500<br/>
+                    <span class="fa fa-check-circle"></span> Hire car following theft ($500 max benefit)<br/>
+                    <!-- <span class="fa fa-check-circle"></span> NCB protection (if selected)<br/> -->
+                    <span class="fa fa-check-circle"></span> Personal Property ($500 for damage)<br/>
+                    <span class="fa fa-check-circle"></span> Trailer/Caravan ($1000 loss or damage)<br/>
+                    <span class="fa fa-check-circle"></span> Windscreen cover ($600)<br/>
+                    <span class="fa fa-check-circle"></span> New for old up to 24 months (max 70,000 kms)<br/>
+                    <span class="fa fa-check-circle"></span> Towing (reasonable costs)<br/>
+                    <span class="fa fa-check-circle"></span> Essential repairs (up to $300)<br/>
+                    <span class="fa fa-check-circle"></span> Keys and locks ($750)<br/>
+                    <span class="fa fa-check-circle"></span> $20M legal liability cover<br/>
+                </p>  
+                <p>&nbsp;</p>
+            </div>
+            <apex:outputPanel id="sunCorp" rendered="{!!isMVSuncorp}">
+                <div class="col-md-5">
+                    <div class="">
+                        <div class="col-md-6">
+                            <strong>Select Your Standard Excess</strong>
+                        </div>
+                        <div class="col-md-6">
+                            <apex:selectList value="{!standardExcessSelected}" required="false" size="1" multiselect="false" styleClass="sf-form-control">
+                                <apex:selectOptions value="{!excessOptions}" />
+                            </apex:selectList>
+                        </div>
+                    </div>
+                    <div class="">
+                        <div class="col-md-6">
+                            <strong>Your Amount Covered</strong><br/>
+                        </div>
+                        <div class="col-md-6">
+                            <apex:input value="{!mvAmountCovered}" type="number" styleClass="sf-form-control"/>
+                            <small>(Between ${!minAmountCovered} and ${!maxAmountCovered})</small>
+                            <p>&nbsp;</p>
+                        </div>
+                    </div>
+                    <div class="">
+                        <div class="col-md-12">               
+                            <strong>Additional Options</strong>
+                            <p>&nbsp;</p>
+                        </div>
+                    </div>
+                    <!-- 
+<div class="row">
+<div class="col-md-6">NCB Protection</div>
+<div class="col-md-6">
+<apex:selectList value="{!mvNCBProtection}" required="false" size="1" multiselect="false" styleClass="sf-form-control">
+<apex:selectOption itemValue="false" itemLabel="No"/>
+<apex:selectOption itemValue="true" itemLabel="Yes"/>
+</apex:selectList>
+</div>
+</div> 
+-->
+                    <div class="">
+                        <div class="col-md-6">Windscreen Protection</div>
+                        <div class="col-md-6">
+                            <apex:selectList value="{!mvWindscreenProtection}" required="false" size="1" multiselect="false" styleClass="sf-form-control">
+                                <apex:selectOption itemValue="false" itemLabel="No"/>
+                                <apex:selectOption itemValue="true" itemLabel="Yes"/>
+                            </apex:selectList>
+                        </div>
+                    </div>
+                    <div class="">
+                        <div class="col-md-6">
+                            <apex:actionStatus id="stsApply" startText="... Calculating ..." />
+                        </div>
+                        <div class="col-md-6">
+                            <apex:commandButton value="Apply" action="{!applyMV}" status="stsApply" reRender="frmData" styleClass="btn disclaimer-buttons btn-block"/>
+                        </div>
+                    </div>
+                    <div class="">
+                        <div class="fc col-md-12">
+                            <apex:pageMessages id="msgApply"/>
+                        </div>
+                    </div>
+                </div>
+            </apex:outputPanel>
+        </div>
+        <div class="col-sm-12 declaration">
+            <div class="col-md-12">
+                <p class="text-left margin-top-10 mobile">
+                    Your total weekly cost for this full-comprehensive policy is <span class="comp-week">$<apex:outputText value="{!mnWeeklyAmount}"/></span>. This insurance covers you for the next 12 months and we will organize this policy to start on the day of settlement. 
+                </p>
+                <br/>
+                <p lass="text-left">Would you like to proceed with this policy?</p>
+            </div>
+        </div>
+        <div class="col-sm-12 declaration">
+            <div class="col-sm-12">
+                <div class="row text-left">
+                    <div class="col-md-12">
+                        <apex:commandButton value="Yes" action="{!acceptFullComprehensive}" reRender="frmData" 
+                                            styleClass="btn {!IF(!fullCompYes,'disclaimer-buttons-disabled','disclaimer-buttons')}"/>
+                        &nbsp;
+                        <apex:commandButton value="No" action="{!declineFullComprehensive}" reRender="frmData" 
+                                            styleClass="btn disclaimer-buttons-disabled" />
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Additional questions -->
+        <apex:outputPanel layout="block" styleClass="col-sm-12 declaration" rendered="{!fullCompYes}" id="pnlAddQuestions">
+            <div class="col-md-12">
+                <p>&nbsp;</p>
+                <p>During the period of ownership, will the vehicle be used for any of the following activities?</p>
+                <p class="fc-features">
+                    <span class="fa fa-arrow-circle-o-right"></span> Hire or rental<br/>
+                    <span class="fa fa-arrow-circle-o-right"></span> Paid driving / riding lessons<br/>
+                    <span class="fa fa-arrow-circle-o-right"></span> Delivery or courier use<br/>
+                    <span class="fa fa-arrow-circle-o-right"></span> Security patrols<br/>
+                    <span class="fa fa-arrow-circle-o-right"></span> Under an Operating lease<br/>
+                    <span class="fa fa-arrow-circle-o-right"></span> A business pool vehicle<br/>
+                    <span class="fa fa-arrow-circle-o-right"></span> Racing, pace making, reliability trials, rallies, or any experiments or demonstrations in connection with the motor trade.<br/>
+                </p>
+                
+                <div class="row text-left">
+                    <div class="col-md-12">
+                        <apex:commandButton value="Yes" action="{!acceptMVVehicleUsage}" reRender="frmData" 
+                                            styleClass="btn {!IF(MVVehicleUsageBtnYes,'disclaimer-buttons','disclaimer-buttons-disabled')}"/>
+                        &nbsp;
+                        <apex:commandButton value="No" action="{!declineMVVehicleUsage}" reRender="frmData" 
+                                            styleClass="btn {!IF(MVVehicleUsageBtnNo,'disclaimer-buttons','disclaimer-buttons-disabled')}" />
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-12">
+                        <p>&nbsp;</p>
+                        <p>Is the vehicle fitted with any Modifications or Accessories that do not comply with the standards for registration and Australian design rules?</p>
+                    </div>
+                </div>
+                <div class="row text-left">
+                    <div class="col-md-12">
+                        <apex:commandButton value="Yes" action="{!acceptMVVehicleModified}" reRender="frmData" 
+                                            styleClass="btn {!IF(MVVehicleModifiedBtnYes,'disclaimer-buttons','disclaimer-buttons-disabled')}"/>
+                        &nbsp;
+                        <apex:commandButton value="No" action="{!declineMVVehicleModified}" reRender="frmData" 
+                                            styleClass="btn {!IF(MVVehicleModifiedBtnNo,'disclaimer-buttons','disclaimer-buttons-disabled')}" />
+                    </div>
+                </div>
+            </div>
+        </apex:outputPanel>
+        <hr/>
+    </apex:outputPanel>
+    <!-- LTI - Health Information -->
+    <apex:outputPanel id="pnlAddInfo" layout="block" styleClass="row" rendered="{!AND(isPageLoaded,displayHealthInfo)}">
+        <div class="col-md-12">
+            <div class="">
+                <div class="col-md-12">
+                    <div class="pricing-heading clearfix">
+                        <!-- ::before -->
+                        <p>&nbsp;</p>
+                        <div class="toplogo">
+                            <apex:image url="{!$Resource.SavvyLogo2017}"/>
+                        </div>
+                        <apex:outputPanel rendered="{!NOT(isPublicMode)}">
+                            <h2>*** PREVIEW ***</h2>
+                            <br/>
+                        </apex:outputPanel>
+                    </div>
+                    <apex:pageMessages id="pageMessageAddInfo" />
+                </div>
+            </div>
+            <!-- <apex:outputPanel id="pnlLTIAddInfo" layout="block" styleClass="row declaration" rendered="{!LTIAccepted}"> -->
+            <apex:outputPanel id="pnlLTIAddInfo" layout="block" styleClass="row declaration" rendered="{!hasAcceptedHealthProd}">
+                <div class="">
+                    <div class="col-md-12">
+                        <div class="pricing-heading clearfix">
+                            <!-- <h1>Loan Termination Insurance - health information</h1>  -->
+                            <h1>Health Information</h1> 
+                            <p>&nbsp;</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="row declaration">
+                    <div class="col-md-6 col-md-offset-2">
+                        <p>I understand that any pre-existing medical condition I am aware of today may be excluded from being covered under any eligible products</p>
+                    </div>
+                    <div class="col-md-4 text-right">
+                        <p>
+                            <apex:commandButton value="Yes" reRender="pnlLTIAddInfo, msgAddInfo" 
+                                                styleClass="btn {!IF(acknowledgmentOfExclusion=='Y','disclaimer-buttons','disclaimer-buttons-disabled')}">
+                                <apex:param assignTo="{!acknowledgmentOfExclusion}" value="Y"/>
+                            </apex:commandButton>
+                            &nbsp;
+                            <apex:commandButton value="No" reRender="pnlLTIAddInfo, msgAddInfo" 
+                                                styleClass="btn {!IF(acknowledgmentOfExclusion=='N','disclaimer-buttons','disclaimer-buttons-disabled')}">
+                                <apex:param assignTo="{!acknowledgmentOfExclusion}" value="N"/>
+                            </apex:commandButton>
+                        </p>
+                        <p>&nbsp;</p>
+                    </div>
+                </div>
+                <!-- <div class="row declaration">
+<div class="col-md-6 col-md-offset-2">
+<p>2) Has you long term medical condition?</p>
+</div>
+<div class="col-md-4 text-right">
+<p>
+<apex:commandButton value="Yes" reRender="pnlLTIAddInfo, msgAddInfo" 
+styleClass="btn {!IF(hasLongTermMedicalCondition=='Y','disclaimer-buttons','disclaimer-buttons-disabled')}">
+<apex:param assignTo="{!hasLongTermMedicalCondition}" value="Y"/>
+</apex:commandButton>
+&nbsp;
+<apex:commandButton value="No" reRender="pnlLTIAddInfo, msgAddInfo" 
+styleClass="btn {!IF(hasLongTermMedicalCondition=='N','disclaimer-buttons','disclaimer-buttons-disabled')}">
+<apex:param assignTo="{!hasLongTermMedicalCondition}" value="N"/>
+</apex:commandButton>
+</p>
+<p>&nbsp;</p>
+</div>
+</div>
+<div class="row declaration">
+<div class="col-md-6 col-md-offset-2">
+<p>3) Are you taking regular medication?</p>
+</div>
+<div class="col-md-4 text-right">
+<p>
+<apex:commandButton value="Yes" reRender="pnlLTIAddInfo, msgAddInfo" 
+styleClass="btn {!IF(isTakingRegularMedication=='Y','disclaimer-buttons','disclaimer-buttons-disabled')}">
+<apex:param assignTo="{!isTakingRegularMedication}" value="Y"/>
+</apex:commandButton>
+&nbsp;
+<apex:commandButton value="No" reRender="pnlLTIAddInfo, msgAddInfo" 
+styleClass="btn {!IF(isTakingRegularMedication=='N','disclaimer-buttons','disclaimer-buttons-disabled')}">
+<apex:param assignTo="{!isTakingRegularMedication}" value="N"/>
+</apex:commandButton>
+</p>
+<p>&nbsp;</p>
+</div>
+</div>
+<div class="row declaration">
+<div class="col-md-6 col-md-offset-2">
+<p>4) Are you under current medical treatment?</p>
+</div>
+<div class="col-md-4 text-right">
+<p>
+<apex:commandButton value="Yes" reRender="pnlLTIAddInfo, msgAddInfo" 
+styleClass="btn {!IF(isUnderMedicalTreatment=='Y','disclaimer-buttons','disclaimer-buttons-disabled')}">
+<apex:param assignTo="{!isUnderMedicalTreatment}" value="Y"/>
+</apex:commandButton>
+&nbsp;
+<apex:commandButton value="No" reRender="pnlLTIAddInfo, msgAddInfo" 
+styleClass="btn {!IF(isUnderMedicalTreatment=='N','disclaimer-buttons','disclaimer-buttons-disabled')}">
+<apex:param assignTo="{!isUnderMedicalTreatment}" value="N"/>
+</apex:commandButton>
+</p>
+<p>&nbsp;</p>
+</div>
+</div> -->
+                
+                <!-- <div class="row declaration">
+<div class="col-md-8">
+<p>Do you have any condition caused directly or indirectly by illness or injury that you had symptoms of, or was the subject of, a medical consultation in the past 12 months?</p>
+</div>
+<div class="col-md-4 text-right">
+<p>
+<apex:commandButton value="Yes" action="{!selectQuestion1Yes}" reRender="pnlLTIAddInfo, msgAddInfo" 
+styleClass="btn {!IF(question1YesSelected,'disclaimer-buttons','disclaimer-buttons-disabled')}"/>
+&nbsp;
+<apex:commandButton value="No" action="{!selectQuestion1No}" reRender="pnlLTIAddInfo, msgAddInfo" 
+styleClass="btn {!IF(question1NoSelected,'disclaimer-buttons','disclaimer-buttons-disabled')}"/>
+</p>
+<p>&nbsp;</p>
+</div>
+</div>
+<div class="row declaration">
+<div class="col-md-8">
+<p>Are you presently suffering from any illness, or injury, or condition?</p>
+</div>
+<div class="col-md-4 text-right">
+<p>
+<apex:commandButton value="Yes" action="{!selectQuestion2Yes}" reRender="pnlLTIAddInfo, msgAddInfo" 
+styleClass="btn {!IF(question2YesSelected,'disclaimer-buttons','disclaimer-buttons-disabled')}"/>
+&nbsp;
+<apex:commandButton value="No" action="{!selectQuestion2No}" reRender="pnlLTIAddInfo, msgAddInfo" 
+styleClass="btn {!IF(question2NoSelected,'disclaimer-buttons','disclaimer-buttons-disabled')}"/>
+</p>
+<p>&nbsp;</p>
+</div>
+</div> -->
+                
+                <apex:outputPanel layout="block" styleClass="row declaration" 
+                                  rendered="{!acknowledgmentOfExclusion=='N'}">
+                    <div class="col-md-2 col-md-offset-2">
+                        Please Give Full Details, if question is No
+                    </div>
+                    <div class="col-md-5">
+                        <apex:inputTextarea value="{!ltiQuestionDetails}" rows="2" styleClass="form-control" html-maxlength="255" />
+                        <p>&nbsp;</p>
+                    </div>
+                </apex:outputPanel>
+                <hr/>
+            </apex:outputPanel>
+            <!-- Full - Comprehensive - Additional Information -->
+            <apex:outputPanel id="pnlMVAddInfo" layout="block" styleClass="row declaration" rendered="{!MVAccepted}">
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="pricing-heading clearfix">
+                            <h1>Full-comprehensive - additional information</h1> 
+                            <p>&nbsp;</p>
+                        </div>
+                    </div>
+                </div>
+                <apex:outputPanel id="pnlMVOffence" layout="block" styleClass="row declaration">
+                    <div class="col-md-2"><h3>Motoring Offenses</h3></div>
+                    <div class="col-md-6">
+                        <p>
+                            In the last 5 years have you or anyone who is likely to drive the car had their driving licence refused, suspended, cancelled or endorsed (including any Good Behaviour Period)?
+                        </p>
+                    </div>
+                    <div class="col-md-4 text-right">
+                        <p>
+                            <apex:commandButton value="Yes" action="{!selectMVOffenceYes}" reRender="pnlMVAddInfo, msgAddInfo" 
+                                                styleClass="btn {!IF(offenceAnswer=='Y','disclaimer-buttons', 'disclaimer-buttons-disabled')}"/>
+                            &nbsp;
+                            <apex:commandButton value="No" action="{!selectMVOffenceNo}" reRender="pnlMVAddInfo, msgAddInfo" 
+                                                styleClass="btn {!IF(offenceAnswer=='N','disclaimer-buttons','disclaimer-buttons-disabled')}"/>
+                        </p>
+                    </div>
+                </apex:outputPanel>
+                <apex:outputPanel id="pnlMVOffenceDetails" layout="block" styleClass="row declaration" rendered="{!offenceAnswer=='Y'}">
+                    <div class="col-md-2">
+                        <br/>
+                        <apex:commandButton value="Add" action="{!addMVOffence}" reRender="pnlMVOffenceDetails" styleClass="btn action-buttons"/>
+                    </div>
+                    <div class="col-md-10">
+                        <apex:repeat value="{!offenceList}" var="a">
+                            <hr/>
+                            <div class="row">
+                                <div class="col-md-2">Driver</div>
+                                <div class="col-md-2">
+                                    <apex:selectList value="{!a.driverId}" required="false" size="1" multiselect="false" styleClass="form-control">
+                                        <apex:selectOptions value="{!driverOptions}" />
+                                    </apex:selectList>
+                                </div>
+                                <div class="col-md-2">Date Of Offence</div>
+                                <div class="col-md-5">
+                                    <apex:selectList value="{!a.day}" required="false" size="1" multiselect="false" styleClass="sf-form-control-nf">
+                                        <apex:selectOptions value="{!dayOptions}" />
+                                    </apex:selectList>
+                                    <apex:selectList value="{!a.month}" required="false" size="1" multiselect="false" styleClass="sf-form-control-nf">
+                                        <apex:selectOption itemValue="1" itemLabel="January" />
+                                        <apex:selectOption itemValue="2" itemLabel="February" />
+                                        <apex:selectOption itemValue="3" itemLabel="March" />
+                                        <apex:selectOption itemValue="4" itemLabel="April" />
+                                        <apex:selectOption itemValue="5" itemLabel="May" />
+                                        <apex:selectOption itemValue="6" itemLabel="June" />
+                                        <apex:selectOption itemValue="7" itemLabel="July" />
+                                        <apex:selectOption itemValue="8" itemLabel="August" />
+                                        <apex:selectOption itemValue="9" itemLabel="September" />
+                                        <apex:selectOption itemValue="10" itemLabel="October" />
+                                        <apex:selectOption itemValue="11" itemLabel="November" />
+                                        <apex:selectOption itemValue="12" itemLabel="December" />
+                                    </apex:selectList>
+                                    <apex:selectList value="{!a.year}" required="false" size="1" multiselect="false" styleClass="sf-form-control-nf">
+                                        <apex:selectOptions value="{!yearOptions}" />
+                                    </apex:selectList>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-2">Number Of Demerit Points</div>
+                                <div class="col-md-2">
+                                    <apex:inputText value="{!a.points}" styleClass="form-control"/>
+                                </div>
+                                <div class="col-md-2">Details Of Offence</div>
+                                <div class="col-md-5">
+                                    <apex:inputTextarea value="{!a.details}" rows="2" styleClass="form-control" html-maxlength="255" />
+                                </div>
+                                <div class="col-md-1 text-right">
+                                    <apex:commandButton value="Remove" action="{!remMVOffence}" reRender="pnlMVOffenceDetails" styleClass="btn action-buttons">
+                                        <apex:param name="remOffAnnotation" assignTo="{!remAnnotation}" value="{!a.order}" />
+                                    </apex:commandButton>
+                                </div>
+                            </div>
+                        </apex:repeat>
+                    </div>
+                </apex:outputPanel>
+                <hr/>
+                <apex:outputPanel id="pnlMVLic" layout="block" styleClass="row declaration">
+                    <div class="col-md-2"><h3>Licence Refused / Suspended / Cancelled / Endorsed</h3></div>
+                    <div class="col-md-6">
+                        <p>
+                            In the last 5 years have you or anyone who is likely to drive the car had their driving licence refused, suspended, cancelled or endorsed (including any Good Behaviour Period)?
+                        </p>
+                    </div>
+                    <div class="col-md-4 text-right">
+                        <p>
+                            <apex:commandButton value="Yes" action="{!selectMVLicenceYes}" reRender="pnlMVAddInfo, msgAddInfo" 
+                                                styleClass="btn {!IF(licenceAnswer=='Y','disclaimer-buttons', 'disclaimer-buttons-disabled')}"/>
+                            &nbsp;
+                            <apex:commandButton value="No" action="{!selectMVLicenceNo}" reRender="pnlMVAddInfo, msgAddInfo" 
+                                                styleClass="btn {!IF(licenceAnswer=='N','disclaimer-buttons', 'disclaimer-buttons-disabled')}"/>
+                            
+                            <!-- <apex:commandButton value="Yes" action="{!selectMVLicenceYes}" reRender="pnlMVAddInfo" styleClass="btn disclaimer-buttons-disabled" rendered="{!OR(ISBLANK(licenceAnswer),NOT(licenceAnswer=='Y'))}" />
+<apex:commandButton value="Yes" action="{!selectMVLicenceYes}" styleClass="btn disclaimer-buttons" rendered="{!licenceAnswer=='Y'}" disabled="true"/>
+<apex:commandButton value="No" action="{!selectMVLicenceNo}" reRender="pnlMVAddInfo" styleClass="btn disclaimer-buttons-disabled" rendered="{!OR(ISBLANK(licenceAnswer),NOT(licenceAnswer=='N'))}" />
+<apex:commandButton value="No" action="{!selectMVLicenceNo}" styleClass="btn disclaimer-buttons" rendered="{!licenceAnswer=='N'}"  disabled="true"/> -->
+                        </p>
+                    </div>
+                </apex:outputPanel>
+                <apex:outputPanel id="pnlMVLicDetails" layout="block" styleClass="row declaration" rendered="{!licenceAnswer=='Y'}">
+                    <div class="col-md-2">
+                        <br/>
+                        <apex:commandButton value="Add" action="{!addMVLicence}" reRender="pnlMVLicDetails" styleClass="btn action-buttons"/>
+                    </div>
+                    <div class="col-md-10">
+                        <apex:repeat value="{!licencetList}" var="a">
+                            <hr/>
+                            <div class="row">
+                                <div class="col-md-2">Driver</div>
+                                <div class="col-md-2">
+                                    <apex:selectList value="{!a.driverId}" required="false" size="1" multiselect="false" styleClass="form-control">
+                                        <apex:selectOptions value="{!driverOptions}" />
+                                    </apex:selectList>
+                                </div>
+                                <div class="col-md-2">Date Driving Licence Refused</div>
+                                <div class="col-md-5">
+                                    <apex:selectList value="{!a.day}" required="false" size="1" multiselect="false" styleClass="sf-form-control-nf">
+                                        <apex:selectOptions value="{!dayOptions}" />
+                                    </apex:selectList>
+                                    <apex:selectList value="{!a.month}" required="false" size="1" multiselect="false" styleClass="sf-form-control-nf">
+                                        <apex:selectOption itemValue="1" itemLabel="January" />
+                                        <apex:selectOption itemValue="2" itemLabel="February" />
+                                        <apex:selectOption itemValue="3" itemLabel="March" />
+                                        <apex:selectOption itemValue="4" itemLabel="April" />
+                                        <apex:selectOption itemValue="5" itemLabel="May" />
+                                        <apex:selectOption itemValue="6" itemLabel="June" />
+                                        <apex:selectOption itemValue="7" itemLabel="July" />
+                                        <apex:selectOption itemValue="8" itemLabel="August" />
+                                        <apex:selectOption itemValue="9" itemLabel="September" />
+                                        <apex:selectOption itemValue="10" itemLabel="October" />
+                                        <apex:selectOption itemValue="11" itemLabel="November" />
+                                        <apex:selectOption itemValue="12" itemLabel="December" />
+                                    </apex:selectList>
+                                    <apex:selectList value="{!a.year}" required="false" size="1" multiselect="false" styleClass="sf-form-control-nf">
+                                        <apex:selectOptions value="{!yearOptions}" />
+                                    </apex:selectList>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-2">Period Of Suspension (Months)</div>
+                                <div class="col-md-2">
+                                    <apex:inputText value="{!a.points}" styleClass="form-control"/>
+                                </div>
+                                <div class="col-md-2">Details Of Licence Refusal</div>
+                                <div class="col-md-5">
+                                    <apex:inputTextarea value="{!a.details}" rows="2" styleClass="form-control" html-maxlength="255" />
+                                </div>
+                                <div class="col-md-1 text-right">
+                                    <apex:commandButton value="Remove" action="{!remMVLicence}" reRender="pnlMVLicDetails" styleClass="btn action-buttons">
+                                        <apex:param name="remLicAnnotation" assignTo="{!remAnnotation}" value="{!a.order}" />
+                                    </apex:commandButton>
+                                </div>
+                            </div>
+                        </apex:repeat>
+                    </div>
+                </apex:outputPanel>
+                <hr/>
+                <apex:outputPanel id="pnlMVAccident" layout="block" styleClass="row declaration">
+                    <div class="col-md-2"><h3>Accident / Claim History</h3></div>
+                    <div class="col-md-6">
+                        <p>
+                            In the last 5 years have you or anyone who is likely to drive the car had an At fault accident with a motor vehicle or had a motor vehicle stolen, damaged (including hail) or destroyed by fire where recovery of costs was not made by your insurer?
+                        </p>
+                    </div>
+                    <div class="col-md-4 text-right">
+                        <p>
+                            <apex:commandButton value="Yes" action="{!selectMVAccidentYes}" reRender="pnlMVAddInfo, msgAddInfo" 
+                                                styleClass="btn {!IF(accidentAnswer=='Y','disclaimer-buttons', 'disclaimer-buttons-disabled')}"/>
+                            &nbsp;
+                            <apex:commandButton value="No" action="{!selectMVAccidentNo}" reRender="pnlMVAddInfo, msgAddInfo" 
+                                                styleClass="btn {!IF(accidentAnswer=='N','disclaimer-buttons', 'disclaimer-buttons-disabled')}"/>
+                            
+                            <!-- <apex:commandButton value="Yes" action="{!selectMVAccidentYes}" reRender="pnlMVAddInfo" styleClass="btn disclaimer-buttons-disabled" rendered="{!OR(ISBLANK(accidentAnswer),NOT(accidentAnswer=='Y'))}" />
+<apex:commandButton value="Yes" action="{!selectMVAccidentYes}" styleClass="btn disclaimer-buttons" rendered="{!accidentAnswer=='Y'}" disabled="true"/>
+<apex:commandButton value="No" action="{!selectMVAccidentNo}" reRender="pnlMVAddInfo" styleClass="btn disclaimer-buttons-disabled" rendered="{!OR(ISBLANK(accidentAnswer),NOT(accidentAnswer=='N'))}" />
+<apex:commandButton value="No" action="{!selectMVAccidentNo}" styleClass="btn disclaimer-buttons" rendered="{!accidentAnswer=='N'}"  disabled="true"/> -->
+                        </p>
+                    </div>
+                </apex:outputPanel>
+                <apex:outputPanel id="pnlMVAccDetails" layout="block" styleClass="row declaration" rendered="{!accidentAnswer=='Y'}">
+                    <div class="col-md-2">
+                        <br/>
+                        <apex:commandButton value="Add" action="{!addMVAccident}" reRender="pnlMVAccDetails" styleClass="btn action-buttons"/>
+                    </div>
+                    <div class="col-md-10">
+                        <apex:repeat value="{!accidentList}" var="a">
+                            <hr/>
+                            <div class="row">
+                                <div class="col-md-2">Driver</div>
+                                <div class="col-md-2">
+                                    <apex:selectList value="{!a.driverId}" required="false" size="1" multiselect="false" styleClass="form-control">
+                                        <apex:selectOptions value="{!driverOptions}" />
+                                    </apex:selectList>
+                                </div>
+                                <div class="col-md-2">Date Driving Licence Refused</div>
+                                <div class="col-md-5">
+                                    <apex:selectList value="{!a.day}" required="false" size="1" multiselect="false" styleClass="sf-form-control-nf">
+                                        <apex:selectOptions value="{!dayOptions}" />
+                                    </apex:selectList>
+                                    <apex:selectList value="{!a.month}" required="false" size="1" multiselect="false" styleClass="sf-form-control-nf">
+                                        <apex:selectOption itemValue="1" itemLabel="January" />
+                                        <apex:selectOption itemValue="2" itemLabel="February" />
+                                        <apex:selectOption itemValue="3" itemLabel="March" />
+                                        <apex:selectOption itemValue="4" itemLabel="April" />
+                                        <apex:selectOption itemValue="5" itemLabel="May" />
+                                        <apex:selectOption itemValue="6" itemLabel="June" />
+                                        <apex:selectOption itemValue="7" itemLabel="July" />
+                                        <apex:selectOption itemValue="8" itemLabel="August" />
+                                        <apex:selectOption itemValue="9" itemLabel="September" />
+                                        <apex:selectOption itemValue="10" itemLabel="October" />
+                                        <apex:selectOption itemValue="11" itemLabel="November" />
+                                        <apex:selectOption itemValue="12" itemLabel="December" />
+                                    </apex:selectList>
+                                    <apex:selectList value="{!a.year}" required="false" size="1" multiselect="false" styleClass="sf-form-control-nf">
+                                        <apex:selectOptions value="{!yearOptions}" />
+                                    </apex:selectList>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-2">Amount Of Loss $</div>
+                                <div class="col-md-2">
+                                    <apex:inputText value="{!a.amount}" styleClass="form-control"/>
+                                </div>
+                                <div class="col-md-2">Details Of Accident</div>
+                                <div class="col-md-5">
+                                    <apex:inputTextarea value="{!a.details}" rows="2" styleClass="form-control" html-maxlength="255" />
+                                </div>
+                                <div class="col-md-1"></div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-2">Name Of Insurer At Accident</div>
+                                <div class="col-md-4">
+                                    <apex:inputText value="{!a.insurer}" styleClass="form-control"/>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-2">Was This Driver At Fault</div>
+                                <div class="col-md-2">
+                                    <apex:selectList value="{!a.driverFault}" size="1" styleClass="sf-form-control">
+                                        <apex:selectOption itemLabel="No" itemValue="Y"/>
+                                        <apex:selectOption itemLabel="Yes" itemValue="N"/>
+                                    </apex:selectList>
+                                </div>
+                                <div class="col-md-2">Was The Vehicle Stolen, Damaged (Inc Hail) Or Destroyed By Fire</div>
+                                <div class="col-md-5">
+                                    <apex:selectList value="{!a.vehicleAffected}" size="1" styleClass="sf-form-control">
+                                        <apex:selectOption itemLabel="No" itemValue="Y"/>
+                                        <apex:selectOption itemLabel="Yes" itemValue="N"/>
+                                    </apex:selectList>
+                                </div>
+                                <div class="col-md-1 text-right">
+                                    <apex:commandButton value="Remove" action="{!remMVAccident}" reRender="pnlMVAccDetails" styleClass="btn action-buttons">
+                                        <apex:param name="remAccAnnotation" assignTo="{!remAnnotation}" value="{!a.order}" />
+                                    </apex:commandButton>
+                                </div>
+                            </div>
+                        </apex:repeat>
+                    </div>
+                </apex:outputPanel>
+                <hr/>
+                <apex:outputPanel id="pnlMVOther1" layout="block" styleClass="row declaration">
+                    <div class="col-md-2"><h3>Other Information</h3></div>
+                    <div class="col-md-6">
+                        <p>
+                            In the last five years have you or anyone who is likely to drive the car ever been charged or convicted of a criminal offence, including drug and alcohol related offences?
+                        </p>
+                    </div>
+                    <div class="col-md-4 text-right">
+                        <p>
+                            <apex:commandButton value="Yes" action="{!selectMVOther1Yes}" reRender="pnlMVAddInfo, msgAddInfo" 
+                                                styleClass="btn {!IF(otherInfoAnswer1=='Y', 'disclaimer-buttons', 'disclaimer-buttons-disabled')}"/>
+                            &nbsp;
+                            <apex:commandButton value="No" action="{!selectMVOther1No}" reRender="pnlMVAddInfo, msgAddInfo" 
+                                                styleClass="btn {!IF(otherInfoAnswer1=='N', 'disclaimer-buttons', 'disclaimer-buttons-disabled')}"/>
+                        </p>
+                    </div>
+                </apex:outputPanel>
+                <apex:outputPanel layout="block" styleClass="row declaration" rendered="{!otherInfoAnswer1=='Y'}">
+                    <div class="col-md-2"></div>
+                    <div class="col-md-4">Details on criminal offence (include driver, date, and description)</div>
+                    <div class="col-md-6">
+                        <apex:inputTextarea value="{!otherInfoDetail1}" rows="2" styleClass="form-control" html-maxlength="1000" />
+                        <p>&nbsp;</p>
+                    </div>
+                </apex:outputPanel>
+                <apex:outputPanel id="pnlMVOther2" layout="block" styleClass="row declaration">
+                    <div class="col-md-2"><h3>&nbsp;</h3></div>
+                    <div class="col-md-6">
+                        <p>
+                            In the last five years have you or anyone who is likely to drive the car ever had an insurance policy refused, denied or cancelled or special conditions applied, endorsed or excess imposed by an insurer?
+                        </p>
+                    </div>
+                    <div class="col-md-4 text-right">
+                        <p>
+                            <apex:commandButton value="Yes" action="{!selectMVOther2Yes}" reRender="pnlMVAddInfo, msgAddInfo" 
+                                                styleClass="btn {!IF(otherInfoAnswer2=='Y', 'disclaimer-buttons', 'disclaimer-buttons-disabled')}"/>
+                            &nbsp;
+                            <apex:commandButton value="No" action="{!selectMVOther2No}" reRender="pnlMVAddInfo, msgAddInfo" 
+                                                styleClass="btn {!IF(otherInfoAnswer2=='N', 'disclaimer-buttons', 'disclaimer-buttons-disabled')}"/>
+                        </p>
+                    </div>
+                </apex:outputPanel>
+                <apex:outputPanel layout="block" styleClass="row declaration" rendered="{!otherInfoAnswer2=='Y'}">
+                    <div class="col-md-2"></div>
+                    <div class="col-md-4">Details on insurance policy refused (include driver, date, and description)</div>
+                    <div class="col-md-6">
+                        <apex:inputTextarea value="{!otherInfoDetail2}" rows="2" styleClass="form-control" html-maxlength="1000" />
+                    </div>
+                </apex:outputPanel>
+                <hr/>
+            </apex:outputPanel>   
+            
+            <div class="text-center">
+                <p>&nbsp;<apex:actionStatus id="stProcessing" startText="(processing...)" /></p>
+                <!-- <apex:commandButton value="Confirm Information" action="{!confirmAdditionalInformation}" reRender="frmData, msgAddInfo" styleClass="btn disclaimer-buttons"/>   -->
+                <input name="DoAction" type="button" value="Confirm Information" class="btn disclaimer-buttons"
+                       onclick="confirmAdditionalInformation();return false;"/> 
+                <p>&nbsp;</p>
+                <div class="text-left">
+                    <apex:pageMessages id="msgAddInfo" />
+                </div>
+            </div>
+            <!-- New Quote Confirmation  -->
+            <apex:outputPanel layout="block" styleClass="" rendered="{!hasFullCompConfirmVariation}">
+                <div class="text-center">
+                    <div class="col-md-4"></div>
+                    <div class="col-md-4">
+                        <strong>Full-comprehensive price variation:</strong>
+                    </div>
+                    <div class="col-md-4"></div>
+                </div>
+                <br/>
+                <div class="">
+                    <div class="col-md-5"></div>
+                    <div class="col-md-2">New weekly payment</div>
+                    <div class="col-md-2"><strong>${!newWeeklyMV}</strong></div>
+                    <div class="col-md-3"></div>
+                </div>
+                <div class="">
+                    <div class="col-md-4"></div>
+                    <div class="col-md-2">Current weekly payment</div>
+                    <div class="col-md-2"><i>${!currentWeeklyMV}</i></div>
+                    <div class="col-md-4"></div>
+                </div>
+                <br/>
+                <div class="text-center">
+                    <div class="col-md-4"></div>
+                    <div class="col-md-4">
+                        Would you like to proceed with this policy?
+                        <br/><br/>
+                        <apex:commandButton value="Yes" action="{!acceptFullComprehensive}" reRender="frmData" styleClass="btn disclaimer-buttons"/>
+                        &nbsp;
+                        <apex:commandButton value="No" action="{!declineFullComprehensive}" reRender="frmData" styleClass="btn disclaimer-buttons" />
+                    </div>
+                    <div class="col-md-4"></div>
+                </div>
+                <p>&nbsp;</p>
+            </apex:outputPanel>
+            <!-- End -->
+        </div>
+    </apex:outputPanel>
+</div>
+<footer>
+    <div class="container">
+        <div class="">
+            <div class="col-md-12 disclaimer">
+                <p>&nbsp;</p>
+                <p>
+                    <strong>Quantum Savvy Pty Ltd, is recognized by the Australian Securities and Investments Commission (ASIC) as an Authorised Representative of both Eric Insurance Ltd ABN 18 009 129 793 AFSL 2387279, Suncorp Metway Insurance Pty Ltd ABN 80 000 886 680 AFSL 229869, Davantage Group Pty Ltd ABN 35 161 967 166 AFSL 438157 &amp; LFI Group Pty Ltd ABN 31 138 903 581 AFSL 413 613.</strong>
+                </p>
+                <p>
+                    This information may be regarded as general advice. That is, your personal objectives, needs or financial situations were not taken into account when preparing this information. Accordingly, you should consider the appropriateness of any general advice we have given you, having regard to your own objectives, financial situation and needs before acting on it.
+                </p>
+            </div>
+        </div>
+        <p class="copyright">© Quantum Savvy Pty Ltd / ABN 12 134 138 686 / ACL 414426 / Savvy is a trade mark of Quantum Savvy Pty Ltd.</p>
+    </div>
+</footer>
+<div class="modal fade" id="vdPlayer" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <!-- <div class="modal-header">
+<h4 class="modal-title" id="label">Shortfall Protection</h4>
+</div> -->
+            <div class="modal-body">
+                <!-- <iframe width="560" height="315" src="https://www.youtube.com/embed/Du6WGF2uEXQ" frameborder="0" allowfullscreen="true"></iframe> -->
+                <iframe width="100%" height="350" src="" frameborder="0" allowfullscreen="true"></iframe>
+            </div>
+            <div class="modal-footer">
+                <!-- <a class="btn btn-default close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">Close 1</span></a> -->
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- GAP - Example 1 -->
+<div class="modal fade" id="pnlGAPEx1" tabindex="-1" role="dialog" aria-labelledby="pnlGAPEx1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="label">Shortfall Protection</h4>
+            </div>
+            <div class="modal-body">
+                <strong>SHORTFALL BENEFIT</strong>
+                <p>
+                    If your Vehicle is declared a Total Loss by your Comprehensive Vehicle Insurer then, 
+                    following the Total Loss Payout being made to your Financier by your Comprehensive 
+                    Vehicle Insurer, we will in the event that there is a Shortfall or debt remaining under 
+                    your Finance Contract, pay the Financier the amount of the Shortfall up to the maximum 
+                    Shortfall benefit payable.
+                </p>
+                <strong>EARLY PAYOUT OF YOUR FINANCE CONTRACT</strong>
+                <p>
+                    If you have paid out the Finance Contract prior to its scheduled completion date, your 
+                    insurance cover will continue for the remaining Period of Insurance and you will still 
+                    be eligible to claim for private expenses. 
+                </p>
+                <strong>PRIVATE EXPENSES BENEFIT</strong>
+                <p>
+                    In the event of a Total Loss settlement by your Comprehensive Vehicle Insurer, you can 
+                    lodge a claim for private expenses directly incurred as a result of the Total Loss. The 
+                    maximum amount we will pay in relation to private expenses will depend on the level of 
+                    cover you have selected and whether or not a Shortfall exists.
+                </p>
+                <p>Examples of private expenses you can claim include:</p>
+                <table width="100%">
+                    <tr>
+                        <td width="50%" valign="top">
+                            <strong>Incidental Expenses</strong>
+                            <ul>
+                                <li>Travel Accommodation</li>
+                                <li>Taxis</li>
+                                <li>Car hire</li>
+                                <li>Meals</li>
+                                <li>Phone calls</li>
+                            </ul>
+                        </td>
+                        <td width="50%">
+                            <strong>Personal Items</strong>
+                            <ul>
+                                <li>CDs and DVDs</li>
+                                <li>Laptops/Tablets</li>
+                                <li>Phones</li>
+                                <li>Sunglasses</li>
+                                <li>Baby seats</li>
+                                <li>Clothing</li>
+                                <li>Golf clubs</li>
+                                <li>Luggage/Handbags</li>
+                                <li>Tennis/squash racquets</li>
+                                <li>Handheld Navigation</li>
+                                <li>Devices</li>
+                                <li>Fishing gear</li>
+                                <li>Umbrellas</li>
+                                <li>Ski gear</li>
+                                <li>Toys</li>
+                                <li>Portable DVD Player</li>
+                                <li>Surfing equipment</li>
+                            </ul>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- GAP - Example 2 -->
+<div class="modal fade" id="pnlGAPEx2" tabindex="-1" role="dialog" aria-labelledby="pnlGAPEx2" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="label">Shortfall Protection</h4>
+                <h5 class="modal-title" id="label"> - Example</h5>
+            </div>
+            <div class="modal-body">
+                <h4>CLAIM EXAMPLE 1</h4>
+                <p>
+                    You have an accident and the Vehicle is assessed as a Total Loss by your Comprehensive 
+                    Vehicle Insurer at $22,500. The balance owing under your Finance Contract as at the date 
+                    of the Total Loss is $27,500. This leaves a Shortfall under the Finance Contract as at the 
+                    date of the Total Loss of $5,000. Upon acceptance of your claim, we will pay 
+                    <strong>$5,000</strong> to your Financier.
+                </p>
+                <table cellspacing="2">
+                    <tr>
+                        <td>Balance owing to Financier</td><td>&nbsp;</td>
+                        <td>$27,500</td>
+                    </tr>
+                    <tr>
+                        <td>Total Loss</td><td>&nbsp;</td>
+                        <td>$22,500</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Shortfall</strong></td><td>&nbsp;</td>
+                        <td><strong>$5,000</strong></td>
+                    </tr>
+                </table>
+                <hr/>
+                <h4>CLAIM EXAMPLE 2</h4>
+                <p>
+                    Your Vehicle catches fire and your Comprehensive Vehicle Insurer assesses your Vehicle as a Total Loss 
+                    at $17,900. The balance owing under your Finance Contract as at the date of the Total Loss is $16,500. 
+                    As the Total Loss Payout is more than the balance owed to the Financier, there is no Shortfall.
+                </p>
+                <table cellspacing="2">
+                    <tr>
+                        <td>Balance owing to Financier</td><td>&nbsp;</td>
+                        <td>$16,500</td>
+                    </tr>
+                    <tr>
+                        <td>Total Loss</td><td>&nbsp;</td>
+                        <td>$17,900</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Shortfall</strong></td><td>&nbsp;</td>
+                        <td><strong>$NIL</strong></td>
+                    </tr>
+                </table><br/>
+                <p>
+                    However, as you are entitled to claim for private expenses incurred as a result of the Total Loss, you 
+                    submit receipts for travel, meals and accommodation costs amounting to $1,205. Upon acceptance of your 
+                    claim, we will pay <string>$1,205</string> to you. 
+                </p>
+                <hr/>
+                <h4>CLAIM EXAMPLE 3</h4>
+                <p>
+                    Your Vehicle has been stolen and your Comprehensive Vehicle Insurer settles your claim as a Total Loss. 
+                    As you have paid out your Finance Contract early there is no Shortfall, however you incurred private 
+                    expenses as a direct result of the Total Loss. During the time you were without your Vehicle you needed 
+                    to hire a car and several items in your Vehicle were damaged, including a laptop and luggage. You submit 
+                    receipts for these expenses amounting to $1,750. Upon acceptance of your claim, we will 
+                    pay <strong>$1,750</strong> to you.
+                </p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Liberty VEI - Example 1 -->
+<div class="modal fade" id="pnlLibVEIEx1" tabindex="-1" role="dialog" aria-labelledby="pnlLibVEIEx1" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title" id="label">Shortfall Protection</h4>
+      </div>
+      <div class="modal-body">
+        <strong>What is LFI Vehicle Equity Insurance?</strong>
+        <p>LFI Vehicle Equity Insurance is designed to help you pay off your Loan and meet other costs associated with the Total Loss
+        (writeoff) of your Vehicle.</p>
+        <p>
+           Vehicle Equity Insurance pays the following benefits in the following circumstances:
+        </p>
+        <strong>Shortfall Benefit:</strong>
+        <p>
+           If your vehicle is a Total Loss and you receive a Comprehensive Insurance Payout that is less than the amount owing on your
+          Loan, we will pay the Shortfall to your Lender (up to your Maximum Shortfall Benefit); and
+        </p>
+        <strong>Replacement Benefit:</strong>
+        <p>
+           If your Vehicle is a Total Loss and your Comprehensive Insurer pays your claim or replaces your Vehicle, we will pay you
+          a lump sum Replacement Benefit to help meet expenses associated with the replacement of your Vehicle. We will not require
+          proof of these expenses.
+        </p>
+        <p>Vehicle Equity Insurance only pays benefits if your Comprehensive Insurer declares your Vehicle a Total Loss. If your Comprehensive
+        Insurer replaces your Vehicle during the Period of Cover, your Vehicle Equity Insurance continues in relation to the replacement
+        Vehicle until the end of the Period of Cover.</p>
+        <p>We will pay a maximum of two Replacement Benefits and only one Shortfall Benefit. If you wish to cancel your Comprehensive
+        Insurance, you should also cancel your Vehicle Equity Protection and obtain a refund of unused premium</p>
+        <p>These benefits are subject to other limits and exclusions which are explained under Policy exclusions on page 4 and When
+        am I covered? on page 7 of the Vehicle Equity Insurance PDS.</p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- Liberty VEI - Example 2 -->
+<div class="modal fade" id="pnlLibVEIEx2" tabindex="-1" role="dialog" aria-labelledby="pnlLibVEIEx2" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title" id="label">Shortfall Protection</h4>
+        <h5 class="modal-title" id="label"> - Example</h5>
+      </div>
+      <div class="modal-body">
+        <h4>Example – Total loss payout</h4>
+        <p>
+           During the Period of Cover, your Vehicle is declared a Total Loss by your Comprehensive Insurer and your Loan payout is
+          $30,000 but your Comprehensive Insurer only pays your Vehicle’s market value which is $20,000. This leaves you with a $10,000
+          shortfall on your Loan. If you chose Cover level 2, with a Maximum Shortfall Benefit of <strong>$15,000</strong>, we would pay the Shortfall
+          of $10,000 to your Lender, covering the shortfall. In addition, you will receive a Replacement Benefit of <strong>$4,000</strong> toward your
+          out of pocket expenses, with no proof required. Your Policy and the Period of Cover end after payment of these benefits.
+        </p>
+        <hr/>
+        <h4>Example – Replacement vehicle declared a Total Loss</h4>
+        <p>
+          During the Period of Cover your Vehicle is declared a Total Loss by your Comprehensive Insurer, which provides you with
+          a replacement vehicle. If you chose Cover level 2, you will receive a Replacement Benefit of <strong>$4,000</strong> toward your out of pocket
+          expenses, with no proof required. Your Policy continues in relation to your replacement vehicle. If your replacement vehicle
+          is declared a Total Loss during the Period of Cover, we will pay any Shortfall to your Lender (up to <strong>$15,000</strong> with Cover level
+          2) and a further Replacement Benefit. Your Policy and the Period of Cover end after payment of these benefits.
+        </p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- TAI - Example 1 -->
+<div class="modal fade" id="pnlTaiEx1" tabindex="-1" role="dialog" aria-labelledby="pnlGAPEx1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="label">Return to Invoice</h4>
+                <h5 class="modal-title" id="label"> - Example 1</h5>
+            </div>
+            <div class="modal-body">
+                <p>
+                    If Your Vehicle Purchase Invoice Price was $32,000, Your Return To Invoice Policy had a Sum Insured of $10,000 and Your Vehicle was written off and the motor comprehensive insurance payout figure was $25,500, then in this example, the Return to Invoice Policy would pay You a Claimable Amount of $6,500.
+                </p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- TAI - Example 2 -->
+<div class="modal fade" id="pnlTaiEx2" tabindex="-1" role="dialog" aria-labelledby="pnlGAPEx2" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="label">Return to Invoice</h4>
+                <h5 class="modal-title" id="label"> - Example 2</h5>
+            </div>
+            <div class="modal-body">
+                <p>
+                    Using Example1, the Financier has an outstanding balance of $7,000 after taking into account the Total Loss Payout. We would pay the Financier the Claimable Amount of $6,500 and You would be required to pay the Financier the balance still owed on the vehicle, in this case being $500.
+                </p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- LTI - Example 1 -->
+<div class="modal fade" id="pnlLTIEx1" tabindex="-1" role="dialog" aria-labelledby="pnlLTIEx1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="label">Loan Termination Insurance</h4>
+            </div>
+            <div class="modal-body">
+                <p>
+                    If, during the Period of Insurance, and subject to the terms and conditions of our agreement 
+                    with you, you are unable to perform your Employment for a period of greater than 30 days 
+                    because you experience one of the following events:
+                    <ul>
+                        <li>Disability as certified by a Medical Practitioner; or</li>
+                        <li>Involuntary Unemployment as a result of you being made redundant, retrenched, or your employer ceases to operate;</li>
+                	</ul>
+                	then you may choose to:
+                    <ul>
+                        <li>Receive a Monthly Payment Option Benefit; and/or</li>
+                        <li>Handback your Vehicle to a Dealer.</li>
+                    </ul>
+            	</p>
+            	<strong>MONTHLY PAYMENT OPTION BENEFIT</strong>
+                <p>
+                    You may choose to use the Monthly Payment Option Benefit as an alternative to Handback 
+                    of the Vehicle to contribute towards your Monthly Repayments under your Finance Contract, 
+                    allowing you to retain your Vehicle. 
+                </p>
+                <p>The Monthly Payment Option Benefit can be used to cover up to a maximum of 6 Monthly 
+                    Repayments (Cover limited by the level of cover selected) during the Period of Insurance, 
+                    subject to your ongoing Disability or Involuntary Unemployment.
+                </p>
+                <p>All payments made under the Monthly Payment Option Benefit will be made in accordance 
+                    with your documentation provided and may include part payments in circumstances such as 
+                    partial return to work. Where this applies, we will pay 1/30th of your Monthly Repayment 
+                    for every day you are unable to perform your Employment.
+                </p>
+                <p>Following any use of the Monthly Payment Option Benefit you may choose to Handback the 
+                    Vehicle should you remain unable to perform your Employment in accordance with the terms 
+                    of this insurance cover.
+                </p>
+                <strong>VEHICLE HANDBACK</strong>
+                <p>Where you choose to Handback your Vehicle to a Dealer and experience a Shortfall as a 
+                    result of the Handback, then we will pay the Shortfall to the Financier.
+                </p>
+                <p>The Financier must agree to facilitate clear title in respect of the Vehicle before any 
+                    claim payment for Handback under this Insurance cover is made.
+                </p>
+                <p>Any benefits payable under this insurance cover will be made directly to the Financier.</p>
+        	</div>
+            <div class="modal-footer">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            </div>
+    	</div>
+	</div>
+</div>
+<!-- LTI - Example 2 -->
+<div class="modal fade" id="pnlLTIEx2" tabindex="-1" role="dialog" aria-labelledby="pnlLTIEx2" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="label">Loan Termination Insurance</h4>
+                <h5 class="modal-title" id="label"> - Examples</h5>
+            </div>
+            <div class="modal-body">
+                <h4>CLAIM EXAMPLE 1</h4>
+                <p>
+                    You have Level 1 Cover and you suffer from a Disability during the Period of Insurance.
+                </p>
+                <p>
+                    You have been advised that you will be unable to work for approximately 365 days. You 
+                    can elect to Handback the Vehicle after you have been Disabled for 30 days or you can 
+                    elect to claim for payment under the Monthly Payment Option Benefit for the period you 
+                    are Disabled in excess of 30 days, up to a maximum of 6 Monthly Repayments or $30,000, 
+                    whichever is the lesser.
+                </p>
+                <p>
+                    You decide to use the Monthly Payment Option Benefit. Each Monthly Repayment is $1,000. 
+                    Eric pays to the Financier $3,000 as a lump sum payment covering 3 Monthly Repayments as 
+                    per the certification provided. After the 3 month period covered by this payment has 
+                    elapsed you continue to remain unable to work. At this point instead of continuing with 
+                    the Monthly Payment Option Benefit, you elect to Handback your Vehicle to the Dealer.
+                </p>
+                <p>
+                    The value of the Vehicle as reasonably determined by us is $22,000* and the Payout Figure 
+                    is $35,000 (as at the completion of the period covered by the latest Monthly Payment 
+                    Option Benefit payment). You have a Shortfall of $13,000.
+                </p>
+                <p>
+                    We will pay the Financier $13,000 being the lesser of the Shortfall and Level 1 Cover of $30,000.
+                </p>
+                <p>
+                    <i>*Vehicle value is determined in accordance with the trade value of the current edition of the 
+                        Glass’s AutoEdge, for a Vehicle which is the equivalent age, make, condition and model as your Vehicle.</i>
+                </p>
+                <hr/>
+                <h4>CLAIM EXAMPLE 2</h4>
+                <p>
+                    You have Level 3 Cover and six months after buying the Vehicle you have a fall, and your Medical 
+                    Practitioner advises that you will be unable to perform your Employment for an undetermined period.
+                </p>
+                <p>
+                    You decide to use the Monthly Payment Option Benefit to continue to pay your Monthly Repayments 
+                    of $709.52 under the Finance Contract whilst unable to perform your Employment.
+                </p>
+                <p>
+                    After your 6th Monthly Repayment, your Medical Practitioner advises you that you will not be able 
+                    to return to work for a further 6 months. You decide to Handback your Vehicle to a Dealer, who 
+                    appraises the Vehicle and buys it for $33,100. We determine the Vehicle value to be $34,300 based 
+                    upon Glass’s AutoEdge. The Payout Figure to the Financier is $38,916.20, leaving a Shortfall of 
+                    $4,616.20 (the difference between the Payout Figure and the greater of Glass’s AutoEdge value and 
+                    the price paid by the Dealer).
+                </p>
+                <p>
+                    We pay the Shortfall to the Financier, leaving an outstanding balance on your Finance Contract of 
+                    $1,200 (the difference between what the Dealer has paid for the Vehicle and the Glass’s AutoEdge value).
+                </p>
+                <p>Monthly Repayments (x6) $ 4,257.12</p>
+                <table>
+                    <tr>
+                        <td>Payout Figure</td>
+                        <td>&nbsp;</td>
+                        <td>$38,916.20</td>
+                    </tr>
+                    <tr>
+                        <td>Value of the Vehicle</td>
+                        <td>&nbsp;</td>
+                        <td>$33,100.00* (paid to Financier) </td>
+                    </tr>
+                    <tr>
+                        <td>Balance owed to Financier</td>
+                        <td>&nbsp;</td>
+                        <td>$5,816.20</td>
+                    </tr>
+                    <tr>
+                        <td>Shortfall</td>
+                        <td>&nbsp;</td>
+                        <td>$4,616.20 (paid by us to Financier)</td>
+                    </tr>
+                    <tr>
+                        <td>Balance owing on loan</td>
+                        <td>&nbsp;</td>
+                        <td>$1,200.00 (you pay Financier) </td>
+                    </tr>
+                    <tr>
+                        <td>Total claim payments</td>
+                        <td>&nbsp;</td>
+                        <td> $ 8,873.32 (paid by us to Financier) (being the 6 Monthly Repayments plus the Shortfall)</td>
+                    </tr>
+                </table>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- LPI - Example 1 -->
+<div class="modal fade" id="pnlLPIEx1" tabindex="-1" role="dialog" aria-labelledby="pnlLPIEx1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="label">Repayment Cover (Loan Protection)</h4>
+            </div>
+            <div class="modal-body">
+                <p>
+                    You can choose from the following options:
+                    <ul>
+                        <li>Disability Cover only; or</li>
+                        <li>Disability and Involuntary Unemployment Cover.</li>
+                </ul>
+            </p>
+            <table>
+                <tr>
+                    <th width="37%">Type of Cover</th>
+                    <th width="30%">Maximum monthly benefit</th>
+                    <th width="3%">&nbsp;</th>
+                    <th width="30%">Maximum benefit all claims</th>
+                </tr>
+                <tr>
+                    <td>Disability</td>
+                    <td align="center">Up to $2,500</td>
+                    <th>&nbsp;&nbsp;</th>
+                    <td align="center">Unlimited</td>
+                </tr>
+                <tr>
+                    <td>Involuntary Unemployment</td>
+                    <td align="center">Up to $2,500</td>
+                    <td>&nbsp;&nbsp;</td>
+                    <td align="center">$10,000</td>
+                </tr>
+            </table><br/>
+            <p>
+                If you choose to purchase this insurance, the cover option(s) applicable to you will be 
+                shown on the Policy Schedule.
+            </p>
+            <hr/>
+            <h4>DISABILITY COVER</h4>
+            <p>
+                If you suffer a Disability as certified by a Medical Practitioner during the Period of 
+                Insurance and as a result, you are unable to perform your Employment for a period of greater 
+                than 21 days, we will pay 1/30th of your Monthly Repayment for each day you are Disabled 
+                (excluding the Excess Period), up to the maximum benefit limit. For example, if your Monthly 
+                Repayment is $600, the benefit you receive is $20 per day. 
+            </p>
+            <p>Subject to the terms and conditions of your insurance cover, an unlimited number of claims may be made.</p>
+            <p>A 21 day Excess Period applies to this cover.</p>
+            <apex:outputPanel layout="block" rendered="{!quoting.Insurance_AIC_Type__c!='Disability'}">
+                <hr/>
+                <h4>INVOLUNTARY UNEMPLOYMENT COVER (if chosen)</h4>
+                <p>In addition to Disability cover, your insurance will provide you with the following benefit.</p>
+                <p>If you become Involuntarily Unemployed during the Period of Insurance and you are unable to perform 
+                    your Employment for a period of greater than 21 days, we will pay 1/30th of your Monthly Repayment 
+                    for every day you are Unemployed (excluding the Excess Period), up to the benefit limit. For example, 
+                    if your Monthly Repayment is $750, the benefit you receive is $25 per day.
+                </p>
+                <p>The benefits paid will be limited to a maximum period of 150 days in respect of any one claim 
+                    during any one continuous period of Involuntary Unemployment.
+                </p>
+                <p>Subject to the terms and conditions of your insurance cover, an unlimited number of claims may 
+                    be made up to the maximum benefit limits.</p>
+                <p>A 21 day Excess Period applies to this cover.</p>
+                <p>All benefits provided under the insurance cover:</p>
+                <ul>
+                    <li>Are not affected by payments you may receive under Worker’s Compensation or Social Security; and</li>
+                    <li>Will be paid directly to the Financier named in the Policy Schedule.</li>
+                </ul>
+            </apex:outputPanel>
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        </div>
+    </div>
+</div>
+</div>
+<!-- LPI - Example 2 -->
+<div class="modal fade" id="pnlLPIEx2" tabindex="-1" role="dialog" aria-labelledby="pnlLPIEx2" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="label">Repayment Cover (Loan Protection)</h4>
+            </div>
+            <div class="modal-body">
+                <h4>CLAIM EXAMPLE 1</h4>
+                <p>
+                    You become Involuntary Unemployed during the Period of Insurance and remain unemployed for a 
+                    period of 40 days. On submission and acceptance of your claim we pay 1/30th of your Monthly 
+                    Repayment for each day you are Involuntarily Unemployed excluding the first 21 days (Excess Period).
+                </p>
+                <p>
+                    Monthly Repayment $725.00<br/>
+                    Daily amount @ 1/30th $24.17<br/>
+                    Total days 19 (40 – 21)<br/>
+                    Claim amount paid $459.23 ($24.17 x 19)
+                </p>
+                <hr/>
+                <h4>CLAIM EXAMPLE 2</h4>
+                <p>
+                    You suffer a Disability and your Medical Practitioner advises that you are unable to work for a 
+                    period of 240 days. On submission and acceptance of your claim we pay 1/30th of your Monthly 
+                    Repayment for each day you are Disabled excluding the first 21 days (Excess Period).
+                </p>
+                <p>
+                    Monthly Repayment $725.00<br/>
+                    Daily amount @ 1/30th $24.17<br/>
+                    Total days 219 (240 – 21)<br/>
+                    Claim amount paid $5,293.23 ($24.17 x 219)
+                </p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Warranty - Additional Benefits -->
+<div class="modal fade" id="pnlWARR" tabindex="-1" role="dialog" aria-labelledby="pnlWARR" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="label">Warranty</h4>
+                <h5 class="modal-title" id="label"> - Additional Benefits</h5>
+            </div>
+            <div class="modal-body fixGridDiv">
+                <p>
+                    Warranty covers the major components of your car – both electrical and mechanical.  From engine and transmission to electronics such as LED screens, on-board computers etc which can be very costly to fix.
+                </p>
+                <p>
+                    The warranty you are considering is often called an exclusion warranty as its easier to explain what it doesn’t cover.
+                </p>
+                <p>
+                    The components not covered include:
+                </p>
+                <p>
+                    Paint, Panels, trim, exhaust and wheels.  It also doesn’t cover wear and tear items (no warranty will ever cover these items)
+                </p>
+                <p>
+                    There is a 90 day wait period before you can make your first claim.  After that you don’t have to wait and you can make unlimited claims during the term of the warranty up to the market value of the car.
+                </p>
+                <p>
+                    So in the event of mechanical or electrical/electronic breakdown, once approved by the insurer, your car will be fixed without having to pay any excess.
+                </p>
+                <p>
+                    The policy comes with additional benefits which include:
+                    <ul>
+                        <li><strong>Unlimited claims:</strong> up to the purchase price of your car</li>
+                        <li><strong>Choice</strong> of warranty for 1,2,3,4 or 5 years</li>
+                        <li><strong>No excess on claims:</strong> parts and labour are fully covered</li>
+                        <li><strong>Cover for over 4,000 car components</strong></li>
+                        <li><strong>Accommodation:</strong> up to a maximum $300 per day and you are > 100kms from your home address</li>
+                        <li><strong>Car Rental:</strong> up to $50 per day and subject to an overall maximum of $300 per accepted claim</li>
+                        <li><strong>Locksmith Service:</strong> up to $100 for the services of a professional locksmith - $300 per claim</li>
+                        <li><strong>Towing:</strong> up to $100 for any one claim, and subject to a Policy limit of $300</li>
+                        <li><strong>Total Loss Expenses:</strong> costs incurred as a result of total loss eg travelling costs, meals etc</li>
+                        <li><strong>Can transfer warranty</strong> to a new owner</li>
+                </ul>
+            </p>
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        </div>
+    </div>
+</div>
+</div>
+<!-- Warranty - Additional Benefits -->
+<div class="modal fade" id="pnlNwc" tabindex="-1" role="dialog" aria-labelledby="pnlNwc" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="label">
+                    <apex:outputText value="Safeguard" rendered="{!isWarrantySafeguard}"/>
+                    <apex:outputText value="Integrity" rendered="{!isWarrantyIntegrity}"/>
+                    Warranty
+                </h4>
+                <h5 class="modal-title" id="label"> - Additional Benefits</h5>
+            </div>
+            <apex:outputPanel layout="block" styleClass="modal-body" rendered="{!isWarrantySafeguard}">
+                <p>
+                    Warranty covers the major components of your car – both electrical and mechanical. Here is a list of all covered components:
+                </p>
+                <table width="100%">
+                    <tr>
+                        <td width="50%">
+                            Engine<br/>
+                            Transmission<br/>
+                            Differential<br/>
+                            Turbo charger/supercharger<br/>
+                            Cooling system<br/>
+                            Braking system<br/>
+                            Electrical System<br/>
+                            Steering system<br/>
+                            Fuel pump &amp; Fuel injection systems<br/>
+                        </td>
+                        <td width="50%">
+                            Air Conditioning<br/>
+                            Drive Shaft, CV Joints and Universals<br/>
+                            ABS Braking System<br/>
+                            Electronic Ignition System<br/>
+                            Electronic Transmission Components<br/>
+                            Cylinder Heads<br/>
+                            Radiator<br/>
+                            Power Window Motor and Switches<br/>
+                            Clutch<br/>
+                        </td>
+                    </tr>
+                </table>
+                <br/>
+                <p>
+                    So in the event of mechanical or electrical/electronic breakdown, once approved by the warranty company, your car will be fixed without having to pay any excess up to the claim limit as described in the policy.
+                </p>
+                <p>
+                    The policy comes with additional features and benefits which include:
+                    <strong>
+                        <ul>
+                            <li>Parts and labour coverage for electrical and mechanical failure</li>
+                            <li>Unlimited claims</li>
+                            <li>Accommodation and car hire in the event of a claim</li>
+                            <li>Fully transferable</li>
+                            <li>Locksmith service</li>
+                            <li>Towing</li>
+                            <li>Australia wide repair network</li>
+                            <li>90 day wait period following vehicle purchase</li>
+                            <li>Servicing every 6 months or 10,000kms (whichever comes first)</li>
+                        </ul>
+                    </strong>
+                </p>
+            </apex:outputPanel>
+            <apex:outputPanel layout="block" styleClass="modal-body" rendered="{!isWarrantyIntegrity}">
+                <p>
+                    Warranty covers the major components of your car – both electrical and mechanical. Here is a list of all covered components:
+                </p>
+                <table width="100%">
+                    <tr>
+                        <td width="50%">
+                            Engine<br/>
+                            Gearbox/Transmission<br/>
+                            Differential<br/>
+                            Turbo/Super Charger<br/>
+                            Cylinder Head &amp; Gasket<br/>
+                            Steering<br/>
+                            Fuel System<br/>
+                            Computers<br/>
+                            Transmission Computer<br/>
+                        </td>
+                        <td width="50%">
+                            Air Conditioning<br/>
+                            Drive Shaft and Universals<br/>
+                            Brakes &amp; ABS Braking System<br/>
+                            Ignition System<br/>
+                            Electrical<br/>
+                            Cylinder Heads<br/>
+                            Radiator<br/>
+                            Power Windows<br/>
+                            Suspension<br/>
+                            Clutch<br/>
+                        </td>
+                    </tr>
+                </table>
+                <br/>
+                <p>
+                    So in the event of mechanical or electrical/electronic breakdown, once approved by the warranty company, your car will be fixed without having to pay any excess up to the claim limit as described in the policy.
+                </p>
+                <p>
+                    The policy comes with additional features and benefits which include:
+                    <strong>
+                        <ul>
+                            <li>Parts and labour coverage for electrical and mechanical failure</li>
+                            <li>Unlimited claims</li>
+                            <li>Accommodation and car hire in the event of a claim</li>
+                            <li>Fully transferable</li>
+                            <li>Australia wide repair network</li>
+                            <li>Warranty starts from the day you pick up your car or when the current warranty ends</li>
+                            <!-- <li>Servicing every 6 months or 10,000kms (whichever comes first)</li> -->
+                        </ul>
+                    </strong>
+                </p>
+            </apex:outputPanel>
+            <div class="modal-footer">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Confirm Fully -->
+<div class="modal fade" id="pnlFullyConfirm" tabindex="-1" role="dialog" aria-labelledby="pnlFullyConfirm" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="label">Fully Protected</h4>
+                <h5 class="modal-title" id="label"> - Confirmation</h5>
+            </div>
+            <div class="modal-body">
+                <p>
+                    Do you confirm <strong>Fully Protected</strong> choice?
+                </p>
+            </div>
+            <div class="modal-footer">
+                <div>
+                    <button type="button" class="btn btn-default" data-dismiss="modal" onclick="confirmFullyInsProductChoice();return false;">
+                        Confirm
+                    </button>
+                    <button type="button" class="btn btn-default" data-dismiss="modal">
+                        Cancelar
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Standard Fully -->
+<div class="modal fade" id="pnlStandardConfirm" tabindex="-1" role="dialog" aria-labelledby="pnlFullyConfirm" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="label">Standard</h4>
+                <h5 class="modal-title" id="label"> - Confirmation</h5>
+            </div>
+            <div class="modal-body">
+                <p>
+                    Do you confirm <strong>Standard</strong> choice?
+                </p>
+            </div>
+            <div class="modal-footer">
+                <div>
+                    <button type="button" class="btn btn-default" data-dismiss="modal" onclick="confirmStandardInsProductChoice();return false;">
+                        Confirm
+                    </button>
+                    <button type="button" class="btn btn-default" data-dismiss="modal">
+                        Cancelar
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Basic Fully -->
+<div class="modal fade" id="pnlBasicConfirm" tabindex="-1" role="dialog" aria-labelledby="pnlFullyConfirm" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="label">Basic</h4>
+                <h5 class="modal-title" id="label"> - Confirmation</h5>
+            </div>
+            <div class="modal-body">
+                <p>
+                    Do you confirm <strong>Basic</strong> choice?
+                </p>
+            </div>
+            <div class="modal-footer">
+                <div>
+                    <button type="button" class="btn btn-default" data-dismiss="modal" onclick="confirmBasicInsProductChoice();return false;">
+                        Confirm
+                    </button>
+                    <button type="button" class="btn btn-default" data-dismiss="modal">
+                        Cancelar
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Single Fully -->
+<div class="modal fade" id="pnlSingleConfirm" tabindex="-1" role="dialog" aria-labelledby="pnlFullyConfirm" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="label">Single</h4>
+                <h5 class="modal-title" id="label"> - Confirmation</h5>
+            </div>
+            <div class="modal-body">
+                <p>
+                    Do you confirm <strong>Single</strong> choice?
+                </p>
+            </div>
+            <div class="modal-footer">
+                <div>
+                    <button type="button" class="btn btn-default" data-dismiss="modal" onclick="confirmSingleInsProductChoice();return false;">
+                        Confirm
+                    </button>
+                    <button type="button" class="btn btn-default" data-dismiss="modal">
+                        Cancelar
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</apex:form>
+</apex:page>

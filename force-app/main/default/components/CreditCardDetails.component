@@ -1,0 +1,44 @@
+<apex:component >
+    <apex:attribute name="lenderCode" type="String" description="Lender" required="false"/>    
+    <apex:attribute name="creditCards" type="Application_Credit_Card__c[]" description="Credit Cards list"/>
+    <apex:variable var="total" value="{!0.00}"/>
+	<table width="100%" border="1">
+        <tr><td colspan="5" class="tableCaption"><strong>Credit Cards</strong></td></tr>
+        <tr>
+            <td class="cellHeading">Provider</td>
+            <td class="cellHeading">Limit</td>
+            <td class="cellHeading">
+                <apex:outputText value="Monthly Payment (3%)" rendered="{!NOT(OR(lenderCode='LIB', lenderCode='PEP', lenderCode='LAP', lenderCode='MAC', lenderCode='Latitude'))}"/>
+                <apex:outputText value="Monthly Payment (3.8%)" rendered="{!OR(lenderCode='LIB', lenderCode='PEP', lenderCode='MAC')}"/>
+                <apex:outputText value="Monthly Payment (4.2%)" rendered="{!OR(lenderCode='LAP', lenderCode='Latitude')}"/>
+            </td>
+        </tr>
+        <apex:repeat value="{!creditCards}" var="a">
+            <apex:variable var="total" value="{!total + a.Limit__c}" rendered="{!NOT(a.Is_Payout__c)}"/>
+            <tr>
+                <td><apex:outputField value="{!a.Issuer__c}"/></td>
+                <td><apex:outputField value="{!a.Limit__c}"/></td>
+                <td>
+                    <c:CreditCards lenderCode="{!lenderCode}" isPayout="{!a.Is_Payout__c}" limit="{!a.Limit__c}"/>        
+                </td>
+            </tr>
+        </apex:repeat>
+        <tr>
+            <td>&nbsp;</td>
+            <td><apex:outputText value="TOTAL"/></td>
+            <td>
+                <strong>
+                    <apex:outputText value="{0, Number, Currency}" rendered="{!NOT(OR(lenderCode='LIB', lenderCode='PEP', lenderCode='LAP', lenderCode='MAC', lenderCode='Latitude'))}">
+                        <apex:param value="{!total*0.03}" />
+                    </apex:outputText>
+                    <apex:outputText value="{0, Number, Currency}" rendered="{!OR(lenderCode='LIB', lenderCode='PEP', lenderCode='MAC')}">
+                        <apex:param value="{!total*0.038}" />
+                    </apex:outputText>
+                    <apex:outputText value="{0, Number, Currency}" rendered="{!OR(lenderCode='LAP',lenderCode='Latitude')}">
+                        <apex:param value="{!total*0.042}" />
+                    </apex:outputText>
+                </strong>
+            </td>
+        </tr>
+    </table>
+</apex:component>

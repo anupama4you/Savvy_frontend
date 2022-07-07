@@ -1,0 +1,478 @@
+<apex:page docType="html-5.0" standardController="Custom_Opportunity__c" extensions="ProspaCalculatorExtension" sidebar="false" showHeader="true" id="YamaMotorcCalc">
+    <apex:variable value="{!Custom_Opportunity__c}" var="o" />
+    <!-- Partner Portal Styles -->
+    <apex:outputPanel rendered="{!isBrokerPartnerUser}">
+      <style type="text/css">
+        html .brandQuaternaryBgr,
+        .titleDiv {
+          background: #ffffff !important;
+        }
+    
+        .bPageBlock {
+          border: 1px solid white !important;
+        }
+      </style>
+    </apex:outputPanel>
+    <apex:stylesheet value="{! $Resource.QuotingCalculatorCSS }"/>
+    <style type="text/css">
+        .titleDiv {
+        width: 100%;
+        height: 43px;
+        font-size: 1.0rem;
+        }
+        .logo {
+        float: right;
+        width: 60%;
+        }
+        .calculatorInput {
+        padding-bottom: 20px;
+        background: #f8f8f8;
+        border: 1px solid #ddd;
+        }
+        .divTitle {
+        background-color: #ddd;
+        padding-top: 2px;
+        padding-bottom: 2px;
+        padding-left: 20px;
+        text-transform: uppercase;
+        border: 1px solid #ddd;
+        }
+        #leftTables {
+        display: inline-block;
+        float: left;
+        width: 28%;
+        padding-left: 20px;
+        }
+        #rightTables {
+        display: inline-block;
+        width: 70%;
+        }
+        #vehicleTab {
+        border: 1px solid #ddd;
+        border-bottom: transparent;
+        display: inline-block;
+        background-color: #fff;
+        position: relative;
+        padding: 6px;
+        top: 17px;
+        }
+        #vehicleDetails {
+        width: 95%;
+        background: white;
+        border: 1px solid #ddd;
+        margin-top: 15px;
+        padding: 2px;
+        padding-left: 20px;
+        padding-top: 10px;
+        padding-bottom: 10px;
+        }
+        #insuranceTab {
+        border: 1px solid #ddd;
+        border-bottom: transparent;
+        display: inline-block;
+        background-color: #fff;
+        position: relative;
+        padding: 6px;
+        top: 17px;
+        }
+        #insuranceProduct {
+        width: 95%;
+        background: white;
+        border: 1px solid #ddd;
+        margin-top: 15px;
+        padding: 2px;
+        padding-left: 20px;
+        padding-top: 0px;
+        padding-bottom: 10px;
+        }
+        #financeTab {
+        border: 1px solid #ddd;
+        border-bottom: transparent;
+        display: inline-block;
+        background-color: #fff;
+        position:relative;
+        padding: 6px;
+        top: 17px;
+        }
+        #financeDetails {
+        width: 95%;
+        background: white;
+        border: 1px solid #ddd;
+        margin-top: 15px;
+        padding: 2px;
+        padding-left: 20px;
+        padding-top: 10px;
+        padding-bottom: 10px;
+        }
+        #commissionPanel {
+        background: #f8f8f8;
+        border: 1px solid #ddd;
+        }
+        #commissionTab {
+        border: 1px solid #ddd;
+        border-bottom: transparent;
+        display: inline-block;
+        background-color: #fff;
+        position: relative;
+        padding: 6px;
+        top: 17px;
+        margin-left: 20px;
+        }
+        #commission {
+        width: 96%;
+        background: white;
+        border: 1px solid #ddd;
+        margin-top: 15px;
+        padding: 2px;
+        padding-left: 20px;
+        padding-top: 20px;
+        padding-bottom: 20px;
+        margin-left: 20px;
+        margin-bottom: 20px;
+        }
+        #repaymentPanel {
+        background: #f8f8f8;
+        border: 1px solid #ddd;
+        }
+        #repaymentTab {
+        border: 1px solid #ddd;
+        border-bottom: transparent;
+        display: inline-block;
+        background-color: #fff;
+        position: relative;
+        padding: 6px;
+        top: 17px;
+        margin-left: 20px;
+        }
+        #repayment {
+        width: 96%;
+        background: white;
+        border: 1px solid #ddd;
+        margin-top: 15px;
+        padding: 2px;
+        padding-left: 20px;
+        padding-top: 20px;
+        padding-bottom: 20px;
+        margin-left: 20px;
+        margin-bottom: 20px;
+        }
+        .inTableTitle {
+        font-weight: bold;
+        padding-top: 10px;
+        padding-bottom: 10px;
+        }
+        .calcInput {
+        border: 1px solid #e0e0e0;
+        padding: 0.15em;
+        min-width: 173px;
+        }
+        .selectList {
+        border: 1px solid #e0e0e0;
+        padding: 0.15em;
+        width:182px;
+        }
+        .defaultInsurance {
+        text-align: center;
+        width: 25%;
+        }
+        .vehicleColumn {
+        width: 25%;
+        }
+        .insuranceColumn {
+        width: 25%;
+        }
+        .financeColumn {
+        width: 50%;
+        }
+        .commissionLabel {
+        width: 8%;
+        font-weight: bold;
+        }
+        .commissionCotent {
+        width: 17%;
+        font-weight: bold;
+        }
+        .repayColumn {
+        width: 12.5%;
+        font-weight: bold;
+        }
+        .calcLabel {
+        font-weight: 500;
+        }
+        .baseRateColumn {
+        padding: 0.3rem;
+        }
+        .monthlyFeeLabel {
+        width: 5%;
+        font-weight: bold;
+        }
+        .monthlyFeeContent {
+        width: 20%;
+        font-weight: bold;
+        }
+        .referenceTable {
+        
+        }
+        .referenceTitle {
+        padding: 10px;
+        }
+        .tableDetails {
+        width: 95%;
+        background: white;
+        border: 1px solid #ddd;
+        margin-top: 15px;
+        padding: 2px;
+        padding-left: 20px;
+        padding-top: 10px;
+        padding-bottom: 10px;
+        }
+        .titleTableTab {
+        border: 1px solid #ddd;
+        border-bottom: transparent;
+        display: inline-block;
+        background-color: #fff;
+        position: relative;
+        padding: 6px;
+        top: 17px;
+        }
+        .resultValue {
+        font-weight: bold;
+        }
+        .buttonPanel {
+        float: right;
+        text-align: right;
+        }
+        
+        /*Created By: Phil Fang | Date: March 6, 2017 | Description: Styling for ERIC API integration*/
+        .acceptQuoteButtons {
+        padding: 6px 7px !important;
+        color: #fff !important;
+        font-size: 11px !important;
+        outline: none !important;
+        
+        background: rgb(125,126,125) !important; 
+        background: -moz-linear-gradient(top,  rgba(125,126,125,1) 0%, rgba(14,14,14,1) 100%) !important;
+        
+        background: -webkit-linear-gradient(top,  rgba(0,77,0,1) 0%,rgba(0,102,0,1) 100%) !important;
+        
+        /*original*/
+        /*background: -webkit-linear-gradient(top,  rgba(51,126,88,1) 0%,rgba(44,112,66,1) 100%) !important;*/
+        
+        /*background: -webkit-linear-gradient(top,  rgba(62,151,106,1) 0%,rgba(51,125,88,1) 100%) !important;*/
+        
+        margin: 0px !important;
+        }
+        
+        .acceptQuoteButtonsClicked {
+        padding: 6px 7px !important;
+        color: #fff !important;
+        font-size: 11px !important;
+        outline: none !important;
+        
+        background: rgb(125,126,125) !important; 
+        background: -moz-linear-gradient(top,  rgba(125,126,125,1) 0%, rgba(14,14,14,1) 100%) !important;
+        
+        background: -webkit-linear-gradient(top,  rgba(0,153,0,1) 0%,rgba(0,179,0,1) 100%) !important;
+        
+        /*background: -webkit-linear-gradient(top,  rgba(62,151,106,1) 0%,rgba(51,125,88,1) 100%) !important;*/
+        
+        margin: 0px !important;
+        }
+        
+        .decQuoteButtons {
+        padding: 6px 7px !important;
+        color: #fff !important;
+        font-size: 11px !important;
+        outline: none !important;
+        
+        background: rgb(125,126,125) !important;
+        background: -moz-linear-gradient(top,  rgba(125,126,125,1) 0%, rgba(14,14,14,1) 100%) !important; 
+        
+        background: -webkit-linear-gradient(top,  rgba(168,0,0,1) 0%, rgba(219,0,0,1) 100%) !important; Chrome10-25,Safari5.1-6
+        
+        /*background: -webkit-linear-gradient(top,  rgba(235,74,93,1) 0%, rgba(203,57,74,1) 100%) !important; Chrome10-25,Safari5.1-6*/
+        
+        /*background: linear-gradient(to bottom,  rgba(125,126,125,1) 0%,rgba(14,14,14,1) 100%) !important;  */
+        /* filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#7d7e7d', endColorstr='#0e0e0e',GradientType=0 ) !important;  */
+        
+        margin: 0px !important;
+        }
+        
+        .decQuoteButtonsClicked {
+        padding: 6px 7px !important;
+        color: #fff !important;
+        font-size: 11px !important;
+        outline: none !important;
+        
+        background: rgb(125,126,125) !important;
+        background: -moz-linear-gradient(top,  rgba(125,126,125,1) 0%, rgba(14,14,14,1) 100%) !important; 
+        
+        background: -webkit-linear-gradient(top,  rgba(245,0,0,1) 0%, rgba(255,66,66,1) 100%) !important; Chrome10-25,Safari5.1-6
+        
+        /*background: -webkit-linear-gradient(top,  rgba(235,74,93,1) 0%, rgba(203,57,74,1) 100%) !important; Chrome10-25,Safari5.1-6*/
+        
+        /*background: linear-gradient(to bottom,  rgba(125,126,125,1) 0%,rgba(14,14,14,1) 100%) !important;  */
+        /* filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#7d7e7d', endColorstr='#0e0e0e',GradientType=0 ) !important;  */
+        
+        margin: 0px !important;
+        }
+        
+        .buyPolicyButtons {
+        padding: 6px 7px !important;
+        color: #fff !important;
+        font-size: 14px !important;
+        outline: none !important;
+        
+        background: rgb(125,126,125) !important;
+        background: -moz-linear-gradient(top,  rgba(125,126,125,1) 0%, rgba(14,14,14,1) 100%) !important; 
+        
+        background: -webkit-linear-gradient(top,  rgba(0,0,0,1) 0%, rgba(191,191,191,1) 100%) !important; Chrome10-25,Safari5.1-6
+        
+        
+        /*color test 2 okay*/
+        /*background: -webkit-linear-gradient(top,  rgba(66,161,255,1) 0%, rgba(117,186,255,1) 100%) !important; Chrome10-25,Safari5.1-6*/
+        
+        /*original*/
+        /*background: -webkit-linear-gradient(top,  rgba(125,126,125,1) 0%,rgba(14,14,14,1) 100%) !important;*/
+        background: linear-gradient(to bottom,  rgba(125,126,125,1) 0%,rgba(14,14,14,1) 100%) !important; 
+        filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#7d7e7d', endColorstr='#0e0e0e',GradientType=0 ) !important; 
+        
+        float: right;
+        margin-top: 10px !important;
+        margin-right: 48px !important;
+        height:45px;
+        width: 150px;
+        
+        }
+        .main-content {
+          margin-left: auto;
+          width: 86%;
+        }
+    </style>
+    
+    <c:sidebarV2 oppId="{!o.Id}" appId="{!o.Application__c}" showLenders="true" rendered="{!NOT(isBrokerPartnerUser)}" />
+    <div id="mainContent" class="{!IF(NOT(isBrokerPartnerUser),'main-content','')}">
+        <apex:form id="EsandaConsumerForm">
+            <apex:pageMessages id="pageMessage" />
+            <div class="titleDiv">
+                <h1>Prospa for {!Custom_Opportunity__c.Name}</h1>
+                <div class="buttonPanel">
+                    <table>
+                        <tr>
+                            <td>
+                                <apex:actionStatus startText="(Saving...)" id="stsSend1" />
+                                <apex:actionStatus startText="(Procsesing...)" id="stsProc2" />&nbsp;&nbsp;&nbsp;
+                                <apex:commandButton styleClass="calculateButtons" value="Save" action="{!save}" status="stsProc2"/>
+                            </td>
+                            <td>
+                                <apex:image url="{!$Resource.ProspaLogo}" height="40" />
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+            <div class="calculatorInput"  >
+                <div class="divTitle">
+                    <h3>Input</h3>
+                </div>
+                <div id="leftTables">
+                    <div id="financeTab"><h3>Finance Commissions</h3></div>
+                    <table id="financeDetails">
+                        <tr>
+                            <td class="financeColumn">
+                                <apex:outputLabel styleClass="calcLabel" value="NAF" for="clientRate" />
+                            </td>
+                            <td class="financeColumn">
+                                <apex:input type="number" html-step="0.01" label="NAF" value="{!naf}" html-placeholder="$" id="naf" styleClass="calcInput">
+                                    <apex:actionSupport event="onkeyup" reRender="exclusive"/>
+                                    <apex:actionSupport event="onblur" reRender="exclusive"/>
+                                </apex:input>     
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="financeColumn">
+                                <apex:outputLabel styleClass="calcLabel" value="Commission (GST Inc)" for="clientRate" />
+                            </td>
+                            <td class="financeColumn">
+                                <apex:input type="number" html-step="0.01" label="Commission (GST Inc)" value="{!brokerageInc}" html-placeholder="$" id="BrokerageGSTInc" styleClass="calcInput">
+                                    <apex:actionSupport event="onkeyup" reRender="exclusive"/>
+                                    <apex:actionSupport event="onblur" reRender="exclusive"/>
+                                </apex:input>     
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="financeColumn">
+                                <apex:outputLabel styleClass="calcLabel" value="Commission (GST Exc)" for="exclusive" />
+                            </td>
+                            <td class="baseRateColumn">
+                                <apex:outputText label="Brokerage (GST Exc)" value="{0, number, $##,###,##0.00}" id="exclusive" >
+                                    <apex:param value="{!brokerageInc/1.1}" assignTo="{!brokerageExc}"/>
+                                </apex:outputText>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+                <div id="rightTables">
+                    <br/>
+                    <p>&nbsp;</p>
+                    <p>&nbsp;</p>
+                    <p>&nbsp;</p>
+                    <p>&nbsp;</p>
+                    <p>&nbsp;</p>
+                    <p>&nbsp;</p>
+                </div>
+            </div>
+        </apex:form>
+    </div>
+    
+    <apex:outputField value="{!o.Email_Address__c}" rendered="false" />
+    <apex:outputField value="{!o.Owner_Name__c}" rendered="false" />
+    <apex:outputField value="{!o.Mobile_Number__c}" rendered="false" />
+    <apex:outputField value="{!o.Owner_Phone__c}" rendered="false" />
+    <apex:outputField value="{!o.Owner_Mobile__c}" rendered="false" />
+    <apex:outputField value="{!o.Owner_Email__c}" rendered="false" />
+    <apex:outputField value="{!o.First_Name__c}" rendered="false" />
+    <apex:outputField value="{!o.Last_Name__c}" rendered="false" />
+    <apex:outputField value="{!o.Loan_Product__c}" rendered="false" />
+    <apex:outputField value="{!o.Account__c}" rendered="false" />
+    <apex:outputField value="{!o.Account__r.FirstName}" rendered="false" />
+    <apex:outputField value="{!o.Account__r.LastName}" rendered="false" />
+    <apex:outputField value="{!o.Account__r.Phone}" rendered="false" />
+    <apex:outputField value="{!o.Lead__r.First_Name__c}" rendered="false" />
+    <apex:outputField value="{!o.Lead__r.Last_Name__c}" rendered="false" />
+    <apex:outputField value="{!o.Lead__r.Mobile_Number__c}" rendered="false" />
+    <apex:outputField value="{!o.Lead__r.Email_Address__c}" rendered="false" />
+    <apex:outputField value="{!o.Application__r.Application_Quoting__c}" rendered="false" />
+    <apex:outputField value="{!o.Application__r.Title_1__c}" rendered="false" />
+    <apex:outputField value="{!o.Application__r.Name}" rendered="false" />
+    <apex:outputField value="{!o.Application__r.First_Name__c}" rendered="false" />
+    <apex:outputField value="{!o.Application__r.Last_Name__c}" rendered="false" />
+    <apex:outputField value="{!o.Application__r.Mobile_Number__c}" rendered="false" />
+    <apex:outputField value="{!o.Application__r.Email_Address__c}" rendered="false" />
+    <apex:outputField value="{!o.Application__r.Status__c}" rendered="false" />
+    <apex:outputField value="{!o.Application__r.Vehicle_Year__c}" rendered="false" />
+    <apex:outputField value="{!o.Application_AssetDetail__c}" rendered="false" />
+    <apex:outputField value="{!o.Application_AssetDetail__r.Year__c}" rendered="false" />
+    <apex:outputField value="{!o.Application_AssetDetail__r.Type__c}" rendered="false" />
+    <apex:outputField value="{!o.Application__r.State__c}" rendered="false" />
+    <apex:outputField value="{!o.Application__r.Type_of_Asset__c}" rendered="false" />
+    <apex:outputField value="{!o.Loan_Product__r.Brokerage_GST_Inc__c}" rendered="false" />
+    <apex:outputField value="{!o.Loan_Product__r.Brokerage__c}" rendered="false" />
+    <apex:outputField value="{!o.Loan_Product__r.Loan_Purpose__c}" rendered="false" />
+    <apex:outputField value="{!o.Loan_Product__r.Loan_Type__c}" rendered="false" />
+    <apex:outputField value="{!o.Loan_Product__r.Loan_Product__c}" rendered="false" />
+    <apex:outputField value="{!o.Loan_Product__r.Loan_Type_Detail__c}" rendered="false" />
+    <apex:outputField value="{!o.Loan_Product__r.Loan_Term__c}" rendered="false" />
+    <apex:outputField value="{!o.Loan_Product__r.Balloon_Residual_Requested__c}" rendered="false" />
+    <apex:outputField value="{!o.Loan_Product__r.Client_Rate__c}" rendered="false" />
+    <apex:outputField value="{!o.Loan_Product__r.Repayment_Regularity__c}" rendered="false" />
+    <apex:outputField value="{!o.Loan_Product__r.Lender__c}" rendered="false" />
+    <apex:outputField value="{!o.Loan_Product__r.Loan_Number__c}" rendered="false" />
+    <apex:outputField value="{!o.Loan_Product__r.Cost_of_Goods__c}" rendered="false" />
+    <apex:outputField value="{!o.Loan_Product__r.DOF__c}" rendered="false" />
+    <apex:outputField value="{!o.Loan_Product__r.Lender_App_Fee__c}" rendered="false" />
+    <apex:outputField value="{!o.Loan_Product__r.Deposit__c}" rendered="false" />
+    <apex:outputField value="{!o.Loan_Product__r.Equalisation_Fee_PPSR__c}" rendered="false" />
+    <apex:outputField value="{!o.Loan_Product__r.Quoting_Source__c}" rendered="false" />
+    <apex:outputField value="{!o.ApplicationServicing__r.NAF__c}" rendered="false" />
+</apex:page>

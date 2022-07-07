@@ -1,0 +1,44 @@
+<apex:page showHeader="false" sidebar="false" standardStylesheets="false">
+	<strong>Mimimum Loan size</strong>
+	$1,500
+
+	<hr/><strong>Purchase Type </strong>
+	Dealer only. 
+	Use caution with boat brokers as they are not dealers and won’t be acceptable.
+
+	<hr/><strong>Employment Type </strong>
+	Full time. 
+	Casual need to be working 20 hours per week in same job for 6 months. 
+	Can split expenses. 
+	Low doc available – property owner 25% deposit.
+
+	<hr/><strong>Credit History </strong>
+	Clean credit. 
+	Will consider small defaults for the right profile.
+
+	<hr/><strong>Financed Assets </strong>
+	Bikes, boats, watercraft, golf carts, outboard motors, trailers and anything branded Yamaha. 
+	Will fund unregistered bikes.
+
+	<hr/><strong>Loan Terms </strong>
+	24-60 months. 
+	Residual available for new goods.
+
+	<hr/><strong>Term End  </strong>
+	12 years at term end - motorcycles. 
+	20 years at term end – boats. 
+	*Will consider extension of these terms for the right client.
+
+	<hr/><strong>LTV Ratios </strong>
+	130-150% LTV dependant on asset.
+
+	<hr/><strong>Why? &amp; When? </strong>
+	Their business is boats and bikes.  
+	They don’t have problems funding large amounts for boats. 
+	 
+	<hr/><strong>Early repayment fees</strong>
+	Early repayment fee (ERF) $300. 
+	Administration fee $50. 
+	The ERF reduces every month that the loan is in existence.  So on a 60 month term the ERF drops by $5 per month. So if a client paid out their loan 12 months early the fee would be (12 x $5) +$50 = $110.
+
+</apex:page>

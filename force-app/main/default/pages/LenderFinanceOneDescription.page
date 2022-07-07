@@ -1,0 +1,43 @@
+<apex:page showHeader="false" sidebar="false" standardStylesheets="false">
+	<strong>Risk fees apply:</strong>
+	Loan (Total Principal Financed) Fee. 
+	$5000 - $12000 		$995. 
+	$12,001 - $20,000 	$1495. 
+	$20,001 - $50,000 	$1995. 
+
+	<hr/><strong>Minimum Loan size</strong>
+	$5,000 
+
+	<hr/><strong>Purchase Type </strong>
+	Dealer or Private sales.  Refinancing.
+
+	<hr/><strong>Employment Type </strong>
+	FT – no minimum but they don’t accept probation periods and must have employment continuity for at least 6 months. 
+	PT – no minimum but they don’t accept probation periods and must have employment continuity for at least 6 months.  
+	Casual – minimum 6 months. 
+
+	Will accept 6 months minimum employment with no previous employment/previous unemployed.
+
+	<hr/><strong>Credit History</strong> 
+	Will accept adverse credit.  
+
+	<hr/><strong>Financed Assets </strong>
+	Cars , Bikes, caravans, boats, watercraft, campervans.
+
+	<hr/><strong>Loan Terms </strong>
+	0-84 months dependant on profile and asset.
+
+	<hr/><strong>Term End  </strong>
+	25 years at term end.
+
+	<hr/><strong>LTV Ratios </strong>
+	Recommended retail or retail price.  Max 160%. Km adjusted.
+
+	<hr/><strong>Why? &amp; When? </strong>
+	Bad credit.  Deals where they don’t fit with Liberty. 
+	No early repayment fees. 
+	Can add trail on all deals except Economy Motors.
+
+	<hr/><strong>Early repayment fees</strong>
+	
+</apex:page>

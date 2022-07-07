@@ -1,0 +1,105 @@
+<apex:page standardController="Custom_Opportunity__c" extensions="ValidateGenerateDocumentsExtension" action="{!DoValidate}" title="Generate Documents">
+    <apex:variable value="{!Custom_Opportunity__c}" var="o" />
+    <apex:sectionHeader title="Generate Documents" subtitle="{!Custom_Opportunity__c.Name}" />
+    <apex:pageMessages />
+    <script>
+        /*
+        {!o.Account__c}
+        {!o.Loan_Product__c} 
+        {!o.Purchase_Type__c}
+        {!o.Occupation_Status__c}       
+        */
+    </script>
+    <apex:form >
+    <apex:pageBlock mode="edit">
+        <div style="padding: 10px;">          
+            <b>The following fields must be completed before documents can be generated.</b>                     
+        </div>
+        <apex:pageBlockSection title="Customer Details">
+            <apex:inputField value="{!o.Account__r.Unit_House_Number__c}" required="true" />
+            <apex:pageBlockSectionItem />
+            <apex:inputField value="{!o.Account__r.Street_Address__c}" required="true" />
+            <apex:inputField value="{!o.Account__r.Street_Type__c}" required="true" />
+            <apex:inputField value="{!o.Account__r.Suburb__c}" required="true" />
+            <apex:inputField value="{!o.Account__r.State__c}" required="true" />
+            <apex:inputField value="{!o.Account__r.Postcode__c}" required="true" />
+            <apex:inputField value="{!o.Occupation__c}" required="true" />
+            <apex:inputField value="{!o.Occupation_Status__c}" required="true" />
+            <apex:inputField value="{!o.Occupation_Time_Years__c}" required="true" />
+            <apex:inputField value="{!o.Occupation_Time_Months__c}" required="true" />
+            <apex:inputField value="{!o.Number_of_Dependents__c}" required="true" />            
+        </apex:pageBlockSection>
+        <apex:pageBlockSection title="Customer Objectives">
+            <apex:inputField value="{!o.Goods_Description__c}" required="true" />
+            <apex:inputField value="{!o.Preferred_Lender__c}" required="true" />
+            <apex:inputField value="{!o.Insurance_Cover__c}" required="true" />
+        </apex:pageBlockSection>        
+        <apex:pageBlockSection title="Serviceability Exercise" >                        
+            <apex:inputField value="{!o.Applicant_Net_Income__c}" required="true" taborderhint="10" />
+            <apex:inputField value="{!o.Mortgage_Rent__c}" required="true" taborderhint="40" />
+            <apex:inputField value="{!o.Co_Borrower_Net_Income__c}" required="true" taborderhint="20" />
+            <apex:inputField value="{!o.Living_Expenses__c}" required="true" taborderhint="50" />
+            <apex:inputField value="{!o.Other_Income__c}" taborderhint="30" />        
+            <apex:inputField value="{!o.Existing_Loan_Payments__c}" required="true" taborderhint="55" />
+            <apex:inputField value="{!o.Other_Income_Detail__c}" taborderhint="35" />            
+            <apex:inputField value="{!o.Credit_Card_Payments__c}" required="true" taborderhint="60" />            
+            <apex:pageBlockSectionItem />           
+            <apex:inputField value="{!o.Other_Expenses__c}" required="true" taborderhint="70" /> 
+            <apex:pageBlockSectionItem />           
+            <apex:inputField value="{!o.This_Commitment__c}" required="true" taborderhint="80" />                    
+        </apex:pageBlockSection>
+        
+        <apex:pageBlockSection title="Business Use - select at least one of the below" columns="1" rendered="{!o.Loan_Product__r.Loan_Purpose__c == 'Business Use' && o.Occupation_Status__c != 'Self Employment'}" >                        
+            <apex:inputField value="{!o.Current_payslip_with_vehicle_allowance__c}" />        
+            <apex:inputField value="{!o.Employer_letter_confirming_business_use__c}" />        
+            <apex:inputField value="{!o.Signed_Deed_of_Novation__c}" />                                                                         
+        </apex:pageBlockSection>
+        
+        <apex:pageBlockSection title="Business Use - select at least one of the below" columns="1" rendered="{!o.Loan_Product__r.Loan_Purpose__c == 'Business Use' && o.Occupation_Status__c == 'Self Employment'}" >                        
+            <apex:inputField value="{!o.Recent_Tax_Return_with_M_V_deductions__c}" />        
+            <apex:inputField value="{!o.Recent_Business_Activity_Statement__c}" />                    
+            <apex:inputField value="{!o.Letter_from_Accountant__c}" />                    
+        </apex:pageBlockSection>
+        
+        <apex:pageBlockSection title="Preliminary Assessment Result - Commercial" rendered="{!o.Loan_Product__r.Loan_Purpose__c == 'Business Use'}" >                        
+            <apex:inputField value="{!o.No_hardship_for_applicant__c}" />        
+            <apex:inputField value="{!o.Low_Doc_confirmation__c}" />                                                        
+        </apex:pageBlockSection>
+                
+        <apex:pageBlockSection title="Personal Use" rendered="{!o.Loan_Product__r.Loan_Purpose__c == 'Personal Use'}">
+            <apex:inputField value="{!o.Finance_Product__c}" required="true" />           
+        </apex:pageBlockSection>     
+        <apex:pageBlockSection title="Finance Product ">
+            <apex:inputField value="{!o.Loan_Product__r.Balloon_Residual_Requested__c}" required="true" />
+            <apex:inputField value="{!o.Loan_Product__r.Residual_Percentage__c}" required="true" />
+            <apex:inputField value="{!o.Loan_Product__r.Liberty_Trail__c}" required="true" />           
+            <apex:inputField value="{!o.Loan_Product__r.Client_Rate__c}" required="true" />           
+            <apex:inputField value="{!o.Loan_Product__r.Repayment_Regularity__c}" required="true" />           
+            <apex:inputField value="{!o.Loan_Product__r.Payments__c}" required="true" />           
+            <apex:inputField value="{!o.Loan_Product__r.Deposit__c}" required="true" />           
+            <apex:inputField value="{!o.Loan_Product__r.Lender_App_Fee__c}" required="true" />           
+            <apex:inputField value="{!o.Loan_Product__r.Equalisation_Fee_PPSR__c}" required="true" />           
+        </apex:pageBlockSection>                               
+        <apex:pageBlockSection title="Worksheet Details">
+            <apex:inputField value="{!o.Dealer_Name__c}" required="true" />           
+            <apex:inputField value="{!o.Dealer_Contact_Name__c}" required="true" />           
+            <apex:inputField value="{!o.Dealer_Address__c}" required="true" />           
+            <apex:inputField value="{!o.Dealer_Phone_Number__c}" required="true" />           
+            <apex:inputField value="{!o.Dealer_Email__c}" required="true" /> 
+            <apex:pageBlockSectionItem />   
+            <apex:inputField value="{!o.Borrower_Contact__c}" required="true" />                              
+        </apex:pageBlockSection>     
+        <!--   
+        <apex:pageBlockSection title="Amounts Payable to Other Persons">
+            <apex:inputField value="{!o.Vehicle_securities_registration_fee__c}" required="true" />
+            <apex:inputField value="{!o.ASIC_Registration__c}" required="true" />
+            <apex:inputField value="{!o.Other_Fees_or_Charges__c}" required="true" />
+        </apex:pageBlockSection>    
+        -->            
+        <apex:pageBlockButtons location="bottom">
+            <apex:commandButton value="Save & Continue" action="{!SaveContinue}" />
+            <apex:commandButton value="Cancel" action="{!Cancel}" />
+        </apex:pageBlockButtons>
+    </apex:pageBlock>
+    </apex:form>
+</apex:page>

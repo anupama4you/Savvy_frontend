@@ -1,0 +1,183 @@
+<apex:page standardController="Custom_Opportunity__c" extensions="OpportunityEditExtension" title="Opportunity Edit">
+    <apex:variable value="{!Custom_Opportunity__c}" var="o" />
+    <apex:sectionHeader title="Opportunity Edit" subtitle="{!IF(ISBLANK(o.Id), 'New Opportunity', o.Name)}" />
+    <apex:pageMessages id="msg" />
+    <style>
+        table.prod, table.prod td, table.prod th
+        {
+            border-collapse: collapse;
+            border-width: 0px;
+        }
+        
+        table.prod td, table.prod th
+        {
+            padding-left: 10px;
+        }
+        
+        table.prod th
+        {
+            font-weight: bold;
+        }
+    </style>
+    <script>
+        function confirmRemoveProduct()
+        {
+            return confirm('Are you sure you want to remove this product?');        
+        }
+    </script>
+    <apex:form >
+    <apex:pageBlock title="Opportunity Edit" mode="edit">
+        <apex:pageBlockButtons >
+            <apex:commandButton value="Save" action="{!Save}" />
+            <apex:commandButton value="Cancel" action="{!Cancel}" />
+        </apex:pageBlockButtons>
+        <apex:pageBlockSection title="Information" >
+            <apex:inputField value="{!o.Name}" required="true" />
+            <apex:inputField value="{!o.Email_Address__c}" />
+            <apex:inputField value="{!o.Account__c}" required="true" />
+            <apex:inputField value="{!o.Home_Phone__c}" />
+            <apex:inputField value="{!o.Work_Phone__c}" />
+            <apex:inputField value="{!o.State__c}" required="true"/>
+            <apex:inputField value="{!o.Mobile_Number__c}" />
+            <apex:pageBlockSectionItem />            
+            <apex:inputField value="{!o.Status__c}" required="true" />
+            <apex:pageBlockSectionItem />            
+            <apex:inputField value="{!o.Notes__c}" style="width: 250px;" />
+            <apex:pageBlockSectionItem rendered="{!NOT(ISBLANK(LeadNotes))}">
+                <apex:outputLabel value="Lead Notes" />
+                <apex:outputText value="{!LeadNotes}" />
+            </apex:pageBlockSectionItem>            
+        </apex:pageBlockSection>  
+        
+        <apex:pageBlockSection title="Products" collapsible="false" rendered="false" />            
+        <apex:outputPanel id="prod" rendered="false">
+        <apex:actionRegion >            
+            <apex:commandButton value="Add Product" action="{!AddProduct}" reRender="prod,msg" />
+            <apex:outputPanel layout="block" rendered="{!Products.size > 0}">                
+                <apex:repeat value="{!Products}" var="p" >
+                    <br />
+                    <apex:outputPanel layout="none" rendered="{!p.Product.RecordTypeId = FinanceRT}">
+                        <table class="prod">                
+                            <tr>
+                                <th>Product Type</th>
+                                <th>Loan Type</th>
+                                <th>Loan Purpose</th>
+                                <th>Cost of Goods</th>
+                                <th>DOF</th>
+                                <th>Brokerage</th>
+                                <th>Lender</th>
+                                <th>Loan Term (months)</th>                                
+                                <th>Loan Number</th>
+                            </tr>                                
+                            <tr>
+                                <td>
+                                    <apex:outputPanel layout="block" styleClass="requiredInput">
+                                        <apex:outputPanel layout="block" styleClass="requiredBlock" />    
+                                        <apex:selectList value="{!p.Product.RecordTypeId}" size="1">
+                                            <apex:selectOptions value="{!ProductTypes}" />
+                                            <apex:actionSupport event="onchange" reRender="prod,msg" />
+                                        </apex:selectList>
+                                    </apex:outputPanel>
+                                </td>
+                                <td>
+                                    <apex:outputPanel layout="block" styleClass="requiredInput">
+                                        <apex:outputPanel layout="block" styleClass="requiredBlock" />    
+                                        <apex:inputField value="{!p.Product.Loan_Type__c}" />
+                                    </apex:outputPanel>
+                                </td>
+                                <td>
+                                    <apex:outputPanel layout="block" styleClass="requiredInput">
+                                        <apex:outputPanel layout="block" styleClass="requiredBlock" />    
+                                        <apex:inputField value="{!p.Product.Loan_Purpose__c}" />
+                                    </apex:outputPanel>
+                                </td>                                
+                                <td>
+                                    <apex:outputPanel layout="block" styleClass="requiredInput">
+                                        <apex:outputPanel layout="block" styleClass="requiredBlock" />    
+                                        <apex:inputField value="{!p.Product.Cost_of_Goods__c}" />
+                                    </apex:outputPanel>
+                                </td>
+                                <td>
+                                    <apex:outputPanel layout="block" styleClass="requiredInput">
+                                        <apex:outputPanel layout="block" styleClass="requiredBlock" />    
+                                        <apex:inputField value="{!p.Product.DOF__c}" style="width: 70px;" />
+                                    </apex:outputPanel>
+                                </td>
+                                <td>
+                                    <apex:outputPanel layout="block" styleClass="requiredInput">
+                                        <apex:outputPanel layout="block" styleClass="requiredBlock" />    
+                                        <apex:inputField value="{!p.Product.Brokerage__c}" style="width: 70px;" />
+                                    </apex:outputPanel>
+                                </td>
+                                <td>
+                                    <apex:outputPanel layout="block" styleClass="requiredInput">
+                                        <apex:outputPanel layout="block" styleClass="requiredBlock" />    
+                                        <apex:inputField value="{!p.Product.Lender__c}" />
+                                    </apex:outputPanel>
+                                </td>
+                                <td>
+                                    <apex:outputPanel layout="block" styleClass="requiredInput">
+                                        <apex:outputPanel layout="block" styleClass="requiredBlock" />    
+                                        <apex:inputField value="{!p.Product.Loan_Term__c}" style="width: 70px;" />
+                                    </apex:outputPanel>
+                                </td>                                                            
+                                <td><apex:inputField value="{!p.Product.Loan_Number__c}" /></td>
+                                <td>
+                                    <apex:commandButton value="Remove" action="{!RemoveProduct}" onclick="if (!confirmRemoveProduct()) { return false; }" reRender="prod,msg" >
+                                        <apex:param assignTo="{!RemoveKey}" value="{!p.Key}" name="RemoveKey" />
+                                    </apex:commandButton>
+                                </td>
+                            </tr>                    
+                        </table>
+                    </apex:outputPanel>
+                    <apex:outputPanel layout="none" rendered="{!p.Product.RecordTypeId = InsuranceRT}">
+                        <table class="prod">                
+                            <tr>
+                                <th>Product Type</th>
+                                <th>Insurance Type</th>                                
+                                <th>Insurance Commission</th>
+                                <th>Insurer</th>                        
+                            </tr>                                
+                            <tr>
+                                <td>
+                                    <apex:outputPanel layout="block" styleClass="requiredInput">
+                                        <apex:outputPanel layout="block" styleClass="requiredBlock" />    
+                                        <apex:selectList value="{!p.Product.RecordTypeId}" size="1">
+                                            <apex:selectOptions value="{!ProductTypes}" />
+                                            <apex:actionSupport event="onchange" reRender="prod,msg" />
+                                        </apex:selectList>
+                                    </apex:outputPanel>
+                                </td>
+                                <td>
+                                    <apex:outputPanel layout="block" styleClass="requiredInput">
+                                        <apex:outputPanel layout="block" styleClass="requiredBlock" />    
+                                        <apex:inputField value="{!p.Product.Insurance_Type__c}" />
+                                    </apex:outputPanel>
+                                </td>                               
+                                <td>
+                                    <apex:outputPanel layout="block" styleClass="requiredInput">
+                                        <apex:outputPanel layout="block" styleClass="requiredBlock" />    
+                                        <apex:inputField value="{!p.Product.Insurance_Commission__c}" />
+                                    </apex:outputPanel>
+                                </td>
+                                <td>
+                                    <apex:outputPanel layout="block" styleClass="requiredInput">
+                                        <apex:outputPanel layout="block" styleClass="requiredBlock" />    
+                                        <apex:inputField value="{!p.Product.Insurer__c}" />
+                                    </apex:outputPanel>
+                                </td> 
+                                <td>
+                                    <apex:commandButton value="Remove" action="{!RemoveProduct}" onclick="if (!confirmRemoveProduct()) { return false; }" reRender="prod,msg" >
+                                        <apex:param assignTo="{!RemoveKey}" value="{!p.Key}" name="RemoveKey" />
+                                    </apex:commandButton>
+                                </td>                           
+                            </tr>                    
+                        </table>
+                    </apex:outputPanel>
+                </apex:repeat>
+            </apex:outputPanel>
+        </apex:actionRegion> 
+        </apex:outputPanel>                
+    </apex:pageBlock>
+    </apex:form>
+</apex:page>

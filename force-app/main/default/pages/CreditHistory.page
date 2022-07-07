@@ -1,0 +1,412 @@
+<apex:page docType="html-5.0" standardController="Custom_Opportunity__c" extensions="CreditHistoryExtension" sidebar="false" showHeader="true">
+	<style type="text/css">
+    
+        /* Lelo */
+
+        .customInputStyle {
+            width: 20px;
+        }
+        .leftTablesNotFloat {
+            display: inline-block;
+            width: 48%;
+            padding-left: 20px;
+            vertical-align: top;
+        }
+        .leftTables {
+            display: inline-block;
+            float: left;
+            width: 48%;
+            padding-left: 20px;
+            vertical-align: top;
+        }
+        .rightTables {
+            display: inline-block;
+            width: 48%;
+            padding-left: 20px;
+            vertical-align: top;
+        }
+        
+        .leftTables2 {
+            display: inline-block;
+            float: left;
+            width: 32%;
+            padding-left: 20px;
+        }
+        .leftTables2NotFloat {
+            display: inline-block;
+            width: 32%;
+            padding-left: 20px;
+        }
+        .leftTables3NotFloat {
+            display: inline-block;
+            width: 48%;
+            padding-left: 20px;
+        }
+        .rightTables2 {
+            display: inline-block;
+            width: 64%;
+            padding-left: 20px;
+        }
+      
+        .oneTables {
+            display: inline-block;
+            /*float: left;*/
+            width: 97.5%;
+            padding-left: 20px;
+        }
+      
+        .section {
+            background: #f8f8f8;
+            border: 1px solid #ddd;
+            padding-bottom: 20px;
+        }
+        
+         .subSectionTab {
+            border: 1px solid #ddd;
+            border-bottom: transparent;
+            display: inline-block;
+            background-color: #fff;
+            position: relative;
+            padding: 3px;
+            padding-right: 20px;
+            padding-left: 20px;
+            top: 20px;
+        }
+        
+        .tableSubsection {
+            width: 100%;
+            background: white;
+            border: 1px solid #ddd;
+            margin-top: 18px;
+            padding: 2px;
+            padding-left: 20px;
+            padding-top: 10px;
+            padding-bottom: 10px;
+        }
+        
+        .labelColumn {
+            width: 25%;
+            /*padding-bottom: 13px;*/
+        }
+        .dataColumn {
+            width: 25%;
+        }
+      
+        .divTitle {
+            background-color: #ddd;
+            padding-top: 1px;
+            padding-bottom: 1px;
+            padding-left: 15px;
+            /*text-transform: uppercase;*/
+            font-weight: bold;
+            border: 1px solid #ddd;
+        }
+        .dataInput {
+            border: 1px solid #e0e0e0;
+            padding: 0.3em !important;;
+            min-width: 173px !important;;
+        }
+        .dataInput2 {
+            border: 1px solid #e0e0e0;
+            padding: 0.3em !important;
+            min-width: 70px !important;
+            max-width: 70px !important;
+        }
+        
+        .dataInputCheckBox {
+            border: 1px solid #e0e0e0;
+            padding: 0.3em !important;;
+            min-width: 10px !important;;
+        }
+        .selectList {
+            border: 1px solid #e0e0e0;
+            padding: 0.3em;
+            width:182px;
+            height: 25px !important;
+        }
+        .selectList2 {
+            border: 1px solid #e0e0e0;
+            padding: 0.3em;
+            width:90px;
+            height: 25px !important;
+        }
+        
+        .titleDiv {
+            width: 100%;
+            height: 43px;
+            font-size: 1.0rem;
+        }
+        .toolOptions {
+            float: right;
+            text-align: right;
+            width: 45%;
+        }
+
+        .commandButtons {
+            padding: 5px 6px !important;
+            color: #fff !important;
+            font-size: 10px !important;
+            outline: none !important;
+            /*text-transform: uppercase !important;*/
+            background: rgb(125,126,125) !important; /* Old browsers */
+            background: -moz-linear-gradient(top,  rgba(125,126,125,1) 0%, rgba(14,14,14,1) 100%) !important; /* FF3.6-15 */
+            background: -webkit-linear-gradient(top,  rgba(125,126,125,1) 0%,rgba(14,14,14,1) 100%) !important; /* Chrome10-25,Safari5.1-6 */
+            background: linear-gradient(to bottom,  rgba(125,126,125,1) 0%,rgba(14,14,14,1) 100%) !important; /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
+            filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#7d7e7d', endColorstr='#0e0e0e',GradientType=0 ) !important; /* IE6-9 */
+        }
+        .commandButtons:hover {
+            background: rgb(125,126,125) !important; /* Old browsers */
+            background: -moz-linear-gradient(top,  rgba(125,126,125,1) 0%, rgba(14,14,14,1) 41%) !important; /* FF3.6-15 */
+            background: -webkit-linear-gradient(top,  rgba(125,126,125,1) 0%,rgba(14,14,14,1) 41%) !important; /* Chrome10-25,Safari5.1-6 */
+            background: linear-gradient(to bottom,  rgba(125,126,125,1) 0%,rgba(14,14,14,1) 41%) !important; /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
+            filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#7d7e7d', endColorstr='#0e0e0e',GradientType=0 ) !important; /* IE6-9 */
+        }
+
+        .noSidebarCell, .sidebarCell .fixed {
+            height: inherit;
+        }
+        
+        /* Servicing Calculator*/
+        
+        #ServicingCalc .bPageBlock {
+            border-top: 1px solid white !important;
+        }
+        .cellMultiTables {
+            vertical-align: top;
+        }
+        .cellExtraRigthPading {
+            padding-right: 18px;
+        }
+        .incomeValue {
+            color: #1a75ff !important;
+        }
+        .notIncomeValue {
+            color: #cc0000 !important;
+        }     
+        
+        #YtdCalc .bPageBlock {
+            border-top: 1px solid white !important;
+        }
+        
+        #notesSection .bPageBlock {
+            border-top: 1px solid white !important;
+        }
+        .textBarOptions {
+            font-size: 12px !important;
+            font-weight: bold;
+        }
+        .process_pending {
+            color: white !important;
+            background-color: grey !important;
+        }
+        .process_done {
+            color: white !important;
+            background-color: green !important;
+        }
+        .comment1 {
+            font-size: 0.8em !important;
+            font-style: italic;
+        }
+        .bEditBlock input {
+            min-width: 2px !important;
+        }
+        
+        .none_sec {
+        background: white;   
+        border-style: none;
+         padding: 0;
+        margin:0;
+        }
+        /* end */
+        .objecting-ui-widget-header {
+            border: 1px solid #dddddd;
+            background: #e9e9e9;
+            color: #333333;
+            font-weight: bold;
+        }
+        .objecting-ui-widget-content {
+            border: 1px solid #f5c6cb !important;
+            background: #f8d7da !important;
+            color: #721c24 !important;
+        }
+        
+        .dynamic-section {
+            background: #ff9900!important;
+            border: 1px solid #ddd;
+            padding: 10px;
+            display: block;
+            width: 100%;
+        }
+        
+        .dynamic-one {
+            display: inline-block;
+            width: 83%;
+            padding-left: 20px;
+        }
+        
+        .div1 {
+        	width: 100px;
+            height: 100px;
+            float: left;
+        }
+        .div2 {
+        	width: 100px;
+        	height: 100px;
+        }
+        
+        .LibertyTab {
+            border: 1px solid #ddd;
+            border-bottom: transparent;
+            display: inline-block;
+            background-color: #fff;
+            position: relative;
+            padding: 6px;
+            top: 17px;
+        }
+        .LibertyDetails {
+            width: 80%;
+            background: white;
+            border: 1px solid #ddd;
+            margin-top: 15px;
+            padding: 2px;
+            padding-left: 20px;
+            padding-top: 10px;
+            padding-bottom: 2px;
+        }
+        .LibertyColumn {
+            width: 25%;
+        }
+        
+        .selectList3{
+        	border: 1px solid #e0e0e0;
+            padding: 0 em;
+            width: 120px;
+            height: 25px !important;
+            margin-left: 10px;
+        }
+        .dataInputD {
+            border: 1px solid #e0e0e0;
+            padding: 0.3em !important;
+            min-width: 70px !important;
+            max-width: 70px !important;
+        	margin-left: 10px;
+        }
+        .dataOutputD {
+        /*border: 0px none #b95e5e; */
+            padding: 0em !important;
+            min-width: 70px !important;
+            max-width: 150px !important;
+            margin-left: 0px;
+            /* width: 150px !important; */
+            position: absolute;
+        }
+        #main .bPageBlock {
+            border-top: 1px solid white !important;
+            width: 84% !important;
+            position: absolute;
+            margin: 0.5% 0% 0% 14%;
+        }
+        
+        .tableHeaderD{
+        	width: 84% !important;
+        }
+    </style>
+    <!-- end -->
+    <apex:includeScript value="{! $Resource.jQuery }"/>
+    <script type="text/javascript">
+        jQuery.noConflict();
+        jQuery(document).ready(function() {});
+    </script>
+    <div id="main" class="bPageBlock">
+        <apex:variable value="{!Custom_Opportunity__c}" var="opp" />
+        <c:sidebarV2 id="pnlSideBar" oppId="{!opp.Id}" appId="{!opp.Application__c}"/>
+        <div id="CreditHistory">
+            <apex:pageMessages id="msgCreditHistory" />
+            <apex:form id="dataForm">
+                <apex:actionFunction action="{!addAdverseEvent}" name="updateEvents" reRender="test1" oncomplete="" />
+                <apex:outputPanel layout="block" styleClass="titleDiv">
+                    <h1>Credit History for {!opp.Name}</h1>
+                    <apex:outputPanel layout="block" styleClass="toolOptions">
+                        <apex:actionStatus startText="(processing...)" id="stsSave"  />&nbsp;
+                        <apex:commandButton value="Remove" action="{!removeCreditHistory}" styleClass="commandButtons"  status="stsSave" />
+                        <apex:commandButton value="Save" action="{!saveCreditHistory}" styleClass="commandButtons"  status="stsSave" />
+                    </apex:outputPanel>
+                </apex:outputPanel>
+                <apex:outputPanel >
+                    <apex:outputPanel layout="relative" styleClass="titleDiv">
+                        <apex:selectList title="Add Adverse Event" label="Add Adverse Event" value="{!adverseEvent}" multiselect="false" size="1" styleClass="selectList" rendered="{!IF(ISBLANK(Custom_Opportunity__c.Application__c),false,true)}" >
+                            <apex:selectOptions value="{!adverseEventOptions}" />
+                        </apex:selectList>
+                        <apex:commandButton value="Add Adverse Event" action="{!addAdverseEvent}" styleClass="commandButtons" onclick="updateEvents" status="addingAdverse"/>
+                        <apex:actionStatus startText="(adding...)" id="addingAdverse"  />
+                     </apex:outputPanel>
+                </apex:outputPanel>
+                <div>
+                    <!--
+                    <table class="tableHeaderD">
+                        <tr>
+                            <td width="15%"><strong>#</strong></td>
+                            <td width="11%"><strong>Adv</strong></td>
+                            <td width="11%"><strong>Creditor</strong></td>
+                            <td width="11%"><strong>Worst Past</strong></td>
+                            <td width="11%"><strong>Paid/UnPaid</strong></td>
+                            <td width="11%"><strong>Date Incurred</strong></td>
+                            <td width="11%"><strong>Date Rectified</strong></td>
+                            <td width="11%"><strong>Amount</strong></td>
+                            <td width="11%"><strong>Payments Missed</strong></td>
+                            <td width="11%"><strong>Reason</strong></td>
+                        </tr>
+                    </table>
+-->
+                    <apex:dynamicComponent id="test1" componentValue="{!dynamicForm}"/>
+                </div>
+                
+                <!--
+                <apex:outputPanel layout="block" styleClass="titleDiv">
+                    <h1>Credit History for {!opp.Name}</h1>
+                    <apex:outputPanel layout="block" styleClass="toolOptions">
+                        <apex:actionStatus startText="(processing...)" id="stsSave"  />&nbsp;
+                        <apex:commandButton value="Save" action="{!saveCreditHistory}" styleClass="commandButtons" reRender="dataForm, msgCreditHistory, test1" status="stsSave" />
+                    </apex:outputPanel>
+                </apex:outputPanel>
+                <apex:outputPanel layout="block" styleClass="section">  
+                    <div class="divTitle">CREDIT HISTORY</div>
+                    <apex:outputPanel styleClass="dynamic-one">
+                        <apex:selectList label="Add Adverse Event" value="{!adverseEvent}" multiselect="false" size="1" styleClass="selectList" rendered="{!IF(ISBLANK(Custom_Opportunity__c.Application__c),false,true)}" >
+                            <apex:selectOptions value="{!adverseEventOptions}" />
+                        </apex:selectList>
+                        <apex:commandButton value="Add Adverse Event" action="{!addAdverseEvent}" styleClass="commandButtons" reRender="test1, dataForm" status="addingAdverse"/>
+                        <apex:actionStatus startText="(processing...)" id="addingAdverse"  />
+                                
+                        <apex:dynamicComponent id="test1" componentValue="{!dynamicForm}"/>
+                        <table>
+                            <tr>
+                                <td>
+                                    <apex:outputPanel styleClass="subSectionTab"><h3>History</h3></apex:outputPanel>
+                                    
+                                    <table class="tableSubsection">
+                                        <tr>
+                                            <td></td>
+                                            <td width="11%"><strong>Creditor</strong></td>
+                                            <td width="11%"><strong>Worst Past</strong></td>
+                                            <td width="11%"><strong>Paid/UnPaid</strong></td>
+                                            <td width="11%"><strong>Date Incurred</strong></td>
+                                            <td width="11%"><strong>Date Rectified</strong></td>
+                                            <td width="11%"><strong>Amount</strong></td>
+                                            <td width="11%"><strong>Payments Missed</strong></td>
+                                            <td width="11%"><strong>Reason</strong></td>
+                                        </tr>
+                                        
+                                    </table>
+                                </td>
+                            </tr>
+                    	</table>
+                     </apex:outputPanel>  
+                </apex:outputPanel>  
+                <!-- SECTION: CREDIT HISTORY  - F-->
+                <!-- </apex:pageBlock> -->
+            </apex:form>
+        </div>
+    </div>
+    <!-- </apex:outputPanel> -->
+</apex:page>

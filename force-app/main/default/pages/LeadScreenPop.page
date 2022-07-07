@@ -1,0 +1,48 @@
+<apex:page controller="LeadScreenPopControlller" showHeader="false" sidebar="false" docType="html-5.0" title="Lead Screen Pop" readOnly="true" setup="false" standardStylesheets="false">
+	<head>
+		<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"/>
+		<!-- Bootstrap style -->
+		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/css/bootstrap.min.css" integrity="sha384-PsH8R72JQ3SOdhVi3uxftmaW6Vc51MKb0q5P2rRUpPvrszuE4W1povHYgTpBfshb" crossorigin="anonymous"/>
+		<link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet"/>
+		<!-- App Flow Styles -->
+		<apex:stylesheet value="{! $Resource.AppFlowCSS }"/>
+	    <!-- Bootstrap scripts -->
+	    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+	    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.3/umd/popper.min.js" integrity="sha384-vFJXuSJphROIrBnz7yo7oB41mKfc8JzQZiCq4NCceLEaO4IHwicKwpJf9c9IpFgh" crossorigin="anonymous"></script>
+	    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/js/bootstrap.min.js" integrity="sha384-alpBpkh1PFOepccYVYDB4do5UnbKysX5WZXm3XxPqe5iKTfUKjNkCk9SaVuEZflJ" crossorigin="anonymous"></script>
+	    <script>
+	   		jQuery.noConflict();
+	   	</script>
+	</head>
+	<apex:outputPanel layout="block" styleClass="container-fluid">
+		<apex:outputPanel layout="block" styleClass="row rowHeader rowHeaderObjecting">
+			<apex:outputPanel layout="block" styleClass="col-sm stepTitle">
+		        Lead Screen Pop
+		    </apex:outputPanel>
+	    </apex:outputPanel>
+	    <apex:outputPanel layout="block" styleClass="row">
+			<apex:outputPanel layout="block" styleClass="col-sm">
+				<h3>Objects found</h3>
+				<apex:outputPanel layout="block" rendered="{!opp != null}">
+					<hr/>
+					<p>Opportunity:&nbsp;&nbsp;<apex:outputLink value="/{!opp.Id}"><apex:outputField value="{!opp.Name}"/></apex:outputLink>&nbsp;&nbsp;&nbsp;<i>(Status: {!opp.Status__c})</i></p>
+				</apex:outputPanel>
+				<apex:outputPanel layout="block" rendered="{!lead != null}">
+					<hr/>
+					<p>Lead:&nbsp;&nbsp;<apex:outputLink value="/{!lead.Id}"><apex:outputField value="{!lead.Name}"/></apex:outputLink> &nbsp;&nbsp;&nbsp;<i>(Status: {!lead.Status__c})</i></p>
+				</apex:outputPanel>
+				<apex:outputPanel layout="block" rendered="{!account != null}">
+					<hr/>
+					<p>Account:&nbsp;&nbsp;<apex:outputLink value="/{!account.Id}"><apex:outputField value="{!account.Name}"/></apex:outputLink> &nbsp;&nbsp;&nbsp;<i>(Phone: {!account.PersonHomePhone})</i></p>
+				</apex:outputPanel>
+			</apex:outputPanel>
+			<apex:outputPanel layout="block" styleClass="col-sm">
+				<h3>Parameters received</h3>
+				<hr/>
+				<apex:repeat value="{!parameters}" var="p" >
+					<p><strong>{!p.key}</strong>:&nbsp;{!p.value}</p>
+				</apex:repeat>
+			</apex:outputPanel>
+		</apex:outputPanel>
+	</apex:outputPanel>
+</apex:page>

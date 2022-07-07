@@ -1,0 +1,15 @@
+﻿<apex:page controller="CallRemindersPageCtrl">
+    <apex:stylesheet value="/sCSS/21.0/sprites/1297816277000/Theme3/default/gc/versioning.css" />   
+    <apex:stylesheet value="/sCSS/21.0/sprites/1297816277000/Theme3/default/gc/extended.css" />﻿
+ 
+    <apex:tabPanel id="theTabPanel" switchType="ajax" styleClass="theTabPanel" tabClass="theTabPanel" contentClass="tabContent" activeTabClass="activeTab" inactiveTabClass="inactiveTab">
+        <apex:tab label="Customer Loyalty Team" name="Tab1" id="tTab1" status="sLoading" rendered="{!isCustomerLoyalty}">
+            <apex:enhancedList type="Call_Reminder__c" height="300" rowsPerPage="10" customizable="false" rendered="{!isCustomerLoyalty}" listid="00B9000000A6HeD" />
+        </apex:tab> 
+        <apex:tab label="My Call Reminders" name="Tab2" id="tTab2" status="sLoading">      
+            <apex:enhancedList type="Call_Reminder__c" height="300" rowsPerPage="10" customizable="false" rendered="true" listid="00B9000000A6HeE" />
+        </apex:tab>
+    </apex:tabPanel>
+
+
+</apex:page>

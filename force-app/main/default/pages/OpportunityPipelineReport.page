@@ -1,0 +1,199 @@
+<apex:page controller="OpportunityPipelineReportExtension" showHeader="false" sidebar="true" standardStylesheets="true" cache="false">
+    <apex:includeScript value="/support/console/20.0/integration.js" />
+
+    <style type="text/css">
+        .body {
+            background-color: #000000;
+        }
+        
+        .cextras {
+            position: fixed !important;
+            list-style-type: none !important;
+            padding: 0 !important;
+            width: auto !important;
+            min-height: 100px !important;
+            overflow: auto;
+            top: 120px;
+        }
+        
+        .columnsTable {
+            text-overflow:ellipsis !important;
+        	white-space: nowrap; 
+            overflow: hidden;
+        }
+        
+        .slds-table--fixed-layout {
+            table-layout: fixed;
+            width: 100%;
+            overflow: hidden;
+            thead {
+                background-color: $color-background-alt;
+                th {
+                    padding: 0; // Due to HTML structure, need to reset the padding on all th elements in thead
+                }
+            }
+        }
+        
+        .THIS.slds-table.slds-table--fixed-layout thead th {
+            padding: 0rem;
+        }
+        
+        .THIS.slds-table.slds-table--cell-buffer tr>th:first-child {
+            padding-left: 0rem;
+        }
+        
+        .slds-select_container:before {
+            border-bottom: 0px!important;
+        }
+        
+        .THIS .slds-select_container::before {
+            border-bottom: none;
+        }
+        
+        .THIS .slds-select_container::after {
+            border-top: none;
+        }
+        
+        .THIS .slds-select_container .slds-select {
+            width: 100%;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            background: transparent;
+        }
+        
+        .center {
+            margin: auto;
+            width: 100%;
+            padding: 1px;
+            background-color: #FFF9F9 !important;
+        }
+        
+        .bPageBlock {
+            background-color: white !important;
+        }
+        
+        .content {
+            margin-top: auto;
+            margin-bottom: auto;
+            text-align: center;
+            background-color: #F8F9F9 !important;
+        	position:fixed;
+        	right:0;
+        	bottom:0;
+        	left:0;
+        }
+        
+        .slds-truncate-1 {
+            text-align: left!important;
+        	text-overflow:ellipsis !important;
+        	white-space: nowrap; 
+            overflow: hidden;
+        }
+        
+        .divListAll{
+        	width:100%; 
+        	heigth: 100%;
+        	overflow-y: hidden;
+        	overflow-x: hidden; 
+        	background-color: transparent!important;
+        }
+
+    </style>
+    <script type="text/javascript">
+        function openOpportunitty(redirectUrl, name) {
+            sforce.console.openPrimaryTab(null, '/' + redirectUrl, true, name, '')
+        }
+
+    </script>
+    <apex:slds />
+    <div class="body">
+
+
+        <apex:form id="frm">
+            <apex:actionFunction action="{!chooseState}" name="chooseState" reRender="theRepeat, frm" />
+            <apex:pageBlock id="pgb">
+                <div class="slds-form-element" width="180px">
+                    <label class="slds-form-element__label" for="select-01">Status</label>
+                    <div class="slds-form-element__control topNav primaryPalette">
+                        <div class="slds-select_container">
+                            <apex:selectList styleClass="slds-select slds-select_container:before" id="select-01" value="{!stateSelected}" multiselect="false" size="1" onchange="chooseState()">
+                                <apex:selectOptions value="{!statesOptions}" />
+                            </apex:selectList>
+                        </div>
+                    </div>
+                </div>
+                &nbsp;
+                <div id="divList" class="divListAll">
+
+                    <table>
+                        <colgroup>
+                            <col style="width: 50%; text-align: left;"/>
+                            <col style="width: 25%; text-align: left;"/>
+                            <col style="width: 25%; text-align: left;"/>
+                        </colgroup>
+                        <tr>
+                            <td>
+                                <div class="slds-truncate columnsTable" style="font-weight: bold;">Oppotunity Name</div>
+                            </td>
+                            <td>
+                                <div class="slds-truncate slds-truncate-1" style="font-weight: bold;">Comms</div>
+                            </td>
+                            <td>
+                                <div class="slds-truncate slds-truncate-1" style="font-weight: bold;">NAF</div>
+                            </td>
+                        </tr>
+                    </table>
+                    &nbsp;
+                    <ul class="slds-list" id="listUl">
+                        <apex:repeat value="{!listState}" var="r" id="theRepeat">
+                            <li class="slds-form-element slds-border_bottom">
+                                <table>
+                                    <colgroup>
+                                        <col style="width: 50%; text-align: left;"/>
+                                        <col style="width: 25%; text-align: left;"/>
+                                        <col style="width: 25%; text-align: left;"/>
+  									</colgroup>
+                                    <tr>
+                                        <td colspan="3">
+                                            <div class="slds-form-element__label columnsTable">
+                                                <a href="#" onclick="openOpportunitty('{!r.id}','{!r.name}');return false">{!r.name}</a>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <support:clickToDial number="{!r.Application__r.Mobile_Number__c}"/>
+                                        </td>
+                                        <td>
+                                            <div class="slds-truncate slds-truncate-1">{!r.Total_Commission__c}</div>
+                                        </td>
+                                        <td>
+                                            <div class="slds-truncate slds-truncate-1">{!r.NAF_Net_Amount_Financed__c}</div>
+                                        </td>
+                                    </tr>
+                                </table>
+                                <!--span class="slds-form-element__label"> &nbsp;</span-->
+
+                            </li>
+                        </apex:repeat>
+                    </ul>
+
+                </div>
+                <br/>
+                
+                <div width="100%" class="content">
+                    <!--
+                    <apex:actionStatus id="stProcess">
+                        <apex:facet name="start"> Please wait ...</apex:facet>
+                    </apex:actionStatus>
+                    &nbsp; -->
+                    <apex:commandButton value="<" action="{!goBack}" reRender="stLst,theRepeat, frm" status="stProcess" />
+                    <apex:outputPanel id="footer">
+                        &nbsp;&nbsp;(Page {!currentPage} of {!totalPages})&nbsp;&nbsp;
+                    </apex:outputPanel>
+                    <apex:commandButton value=">" action="{!goNext}" reRender="stLst, theRepeat, frm" status="stProcess" />
+                </div>
+            </apex:pageBlock>
+        </apex:form>
+    </div>
+</apex:page>

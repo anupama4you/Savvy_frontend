@@ -1,0 +1,111 @@
+<apex:page showHeader="true" sidebar="false" standardController="Custom_Opportunity__c" extensions="InsuranceQuoteStep1Extension" action="{!initialValidation}">
+	<apex:variable value="{!Custom_Opportunity__c}" var="o" />
+	<apex:sectionHeader title="Insurance" subtitle="Quote for {!o.Name}" />
+	<apex:form >
+		<apex:pageBlock title="Step 1 - Products">
+			<apex:pageBlockButtons location="bottom">
+				<apex:commandButton action="{!goToQuotingTool}" value="Return to Quoting Tool" />
+				<!-- &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; -->
+				<!-- <apex:commandButton value="Next" action="{!nextAction}" reRender="msg" rendered="false" /> -->
+        <!-- <apex:commandButton value=">> Save & Next <<" action="{!saveAndNextAction}" reRender="msg" /> -->
+			</apex:pageBlockButtons>
+			<apex:pageBlockSection id="blkDetails" columns="2">
+				<apex:pageBlockSection columns="1">
+					<apex:pageBlockSection title="Customer Details" collapsible="false">
+						<apex:outputField value="{!o.Name}" />
+					</apex:pageBlockSection>
+					<apex:pageBlockSection title="Finance Details" collapsible="false">
+						<apex:pageBlockSectionItem >
+							<apex:outputLabel value="Is the vehicle under finance?" />
+							<apex:outputText value="YES"/>
+						</apex:pageBlockSectionItem>
+					</apex:pageBlockSection>
+					<apex:pageBlockSection title="Financier" collapsible="false">
+						<apex:pageBlockSectionItem >
+							<apex:outputLabel value="Financier:" />
+							<apex:outputField value="{!quoting.Name}"/>
+						</apex:pageBlockSectionItem>
+					</apex:pageBlockSection>
+				</apex:pageBlockSection>
+				<apex:pageBlockSection columns="1">
+					<apex:pageBlockSection title="Products and Cover Types" collapsible="false" columns="1" rendered="false">
+						<apex:inputField id="mv" value="{!quote.Motor_Vehicle__c}" rendered="{!displayMVProduct}" />
+						<apex:inputField value="{!quote.Gap__c}" rendered="{!AND(isGAPRequired,displayGAPProduct)}"/>
+						<!-- <apex:outputField value="{!quote.Gap__c}" rendered="{!isRTIRequired}"/> -->
+						<apex:inputField value="{!quote.Total_assist_RTI__c}" rendered="{!AND(isRTIRequired,displayRTIProduct)}" />
+						<apex:inputField value="{!quote.Warranty_Insurance__c}" rendered="{!displayWarrProduct}"/>
+                        <apex:pageBlockSectionItem >
+							<hr/>
+						</apex:pageBlockSectionItem>
+						<!-- <apex:outputField value="{!quote.Total_assist_RTI__c}" rendered="{!!isRTIRequired}" />--> 
+						<apex:inputField value="{!quote.LTI_BRI__c}" rendered="{!displayLTIProduct}"/>
+            <!--Jesus Mora 2020-03-26 start-->
+            <apex:inputField value="{!quote.LPI__c}" rendered="{!AND(displayLPIProduct,disabledLPI)}" html-disabled="true"/>
+            <apex:inputField value="{!quote.LPI__c}" rendered="{!AND(displayLPIProduct,!disabledLPI)}"/>
+            <apex:pageMessage summary="Please only select one product: LTI/BRI or LPI." severity="info" strength="2" rendered="{!AND(displayLTIProduct,!disabledLPI)}"/>
+            <apex:pageMessage summary="LPI not implemented for this lender yet." severity="info" strength="2" rendered="{!AND(displayLTIProduct,disabledLPI)}"/>
+            <!--Jesus Mora 2020-03-26 end-->
+						<!-- <apex:pageBlockSectionItem />
+						<apex:inputField value="{!quote.LPI__c}"/> -->
+          </apex:pageBlockSection>
+          <!-- <apex:pageBlockSection title="Products and Cover Types (new)" collapsible="false" columns="1">
+              <apex:inputField value="{!quotingSel.Insurance_MV_Options__c}" />
+              <apex:inputField value="{!quotingSel.Insurance_Shortfall_Options__c}" />
+              <apex:inputField value="{!quotingSel.Insurance_LPI_Options__c}" />
+              <apex:inputField value="{!quotingSel.Insurance_Warranty_Options__c}" />
+              <apex:inputField value="{!quotingSel.Insurance_Tyre_Whell_Options__c}" />
+            </apex:pageBlockSection> -->
+          <apex:pageBlockSection title="Products and Cover Types" collapsible="false" columns="1">
+            <h1>Functionality not available, please return to quoting tools</h1>
+          </apex:pageBlockSection>
+				</apex:pageBlockSection>
+
+        <apex:pageBlockSection columns="1">
+          
+        </apex:pageBlockSection>
+
+				<apex:pageBlockSection title="Vehicle Details" collapsible="false" rendered="false">
+					<apex:outputLabel value="Has the vehicle been registered, and do you have the vehicle registration number available?" />
+					<apex:pageBlockSectionItem >
+						<apex:outputPanel >
+							<apex:inputField label="" value="{!quote.Vehicle_Been_Registered__c}">
+								<apex:actionSupport event="onchange" reRender="blkDetails" status="stVDetails" />
+							</apex:inputField>
+							&nbsp;&nbsp;&nbsp;&nbsp;
+                    		<apex:actionStatus id="stVDetails" startText="(processing...)" />
+						</apex:outputPanel>
+					</apex:pageBlockSectionItem>
+				</apex:pageBlockSection>
+
+				<apex:pageBlockSection columns="1" rendered="{!quote.Vehicle_Been_Registered__c}">
+					<apex:outputText value=" "/>
+					<apex:outputText value=" "/>
+					<apex:outputText value=" "/>
+					<apex:outputText value=" "/>
+					<apex:outputLabel value="Please provide a vehicle registration number below." />
+					<apex:pageBlockSectionItem >
+						<apex:outputPanel >
+						<strong>VIN</strong>&nbsp;
+							<!-- <apex:inputField label="VIN" value="{!o.Application_AssetDetail__r.VIN__c}" />
+							&nbsp;&nbsp;&nbsp;&nbsp; or &nbsp;&nbsp;&nbsp;&nbsp; -->
+							<strong>Registration Number</strong>&nbsp;
+							<apex:inputField value="{!o.Application_AssetDetail__r.Rego__c}"/>
+							<apex:inputField value="{!o.Application_AssetDetail__r.Rego_State__c}"/>
+						</apex:outputPanel>
+					</apex:pageBlockSectionItem>
+					<!-- <apex:inputField value="{!quote.Vehicle_Registration__c}"/> -->
+				</apex:pageBlockSection>
+				<apex:pageBlockSectionItem rendered="{!!quote.Vehicle_Been_Registered__c}">
+					<apex:outputText value=" "/>
+				</apex:pageBlockSectionItem>
+			</apex:pageBlockSection>
+			<br/>
+			<apex:pageMessages id="msg"/>
+		</apex:pageBlock>
+	</apex:form>
+	<apex:outputField value="{!o.Application__c}" rendered="false" />
+    <apex:outputField value="{!o.Application__r.Status__c}" rendered="false" />
+	<apex:outputField value="{!o.Application_AssetDetail__r.VIN__c}" rendered="false" />
+	<apex:outputField value="{!o.Application_AssetDetail__r.Type__c}" rendered="false" />
+
+</apex:page>

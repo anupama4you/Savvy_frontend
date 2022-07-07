@@ -182,8 +182,8 @@ export default class PartnerOppToDoList extends NavigationMixin(LightningElement
   loadStatuses() {
     getOppTodoListStatuses({ oppId: this.recordId })
       .then((data) => {
-        console.log(`getOppTodoListStatuses...`);
-        console.log(JSON.stringify(data));
+        // console.log(`getOppTodoListStatuses...`);
+        // console.log(JSON.stringify(data));
         this.todoStatus = data;
       })
       .catch((error) => {
@@ -200,7 +200,7 @@ export default class PartnerOppToDoList extends NavigationMixin(LightningElement
   findQuotingPage() {
     let r = "Quoting_Tools__c";
     if (this.quoting) {
-      console.log(`Quoting Name => ${this.quoting.Name}`);
+      // console.log(`Quoting Name => ${this.quoting.Name}`);
       if (this.quoting.Name === "Affordable") {
         r = "PARTNER_QT_Affordable__c";
       } else if (this.quoting.Name === "AFS Commercial") {
@@ -213,10 +213,16 @@ export default class PartnerOppToDoList extends NavigationMixin(LightningElement
         r = "PARTNER_QT_ANZ_Comm__c";
       } else if (this.quoting.Name === "ANZ Others") {
         r = "PARTNER_QT_ANZ_Others__c";
+      } else if (this.quoting.Name === "APF") {
+        r = "PARTNER_QT_APF__c";
+      } else if (this.quoting.Name === "Azora Consumer") {
+        r = "PARTNER_QT_Azora__c";
       } else if (this.quoting.Name === "BOQ") {
         r = "PARTNER_QT_BOQ__c";
       } else if (this.quoting.Name === "Finance One") {
         r = "PARTNER_QT_Finance1__c";
+      } else if (this.quoting.Name === "Finance One Commercial") {
+        r = "PARTNER_QT_Finance1_Comm__c";
       } else if (this.quoting.Name === "Finance One PL") {
         r = "PARTNER_QT_Finance1_PL__c";
       } else if (this.quoting.Name === "Firstmac") {
@@ -263,8 +269,14 @@ export default class PartnerOppToDoList extends NavigationMixin(LightningElement
         r = "PARTNER_QT_Plenti_PL__c";
       } else if (this.quoting.Name === "Prospa") {
         r = "PARTNER_QT_Prospa__c";
+      } else if (this.quoting.Name === "Society One") {
+        r = "PARTNER_QT_Society_One__c";
+      } else if (this.quoting.Name === "UME Loans") {
+        r = "PARTNER_QT_UME_Loans__c";
       } else if (this.quoting.Name === "Wisr VL") {
         r = "PARTNER_QT_Wisr__c";
+      } else if (this.quoting.Name === "Westpac") {
+        r = "PARTNER_QT_Westpac__c";
       } else if (this.quoting.Name === "Wisr") {
         r = "PARTNER_QT_Wisr_PL__c";
       } else if (this.quoting.Name === "Azora") {
@@ -296,7 +308,7 @@ export default class PartnerOppToDoList extends NavigationMixin(LightningElement
       }
       
     }
-    console.log(`Quoting tool page => ${r}`);
+    // console.log(`Quoting tool page => ${r}`);
     return r;
   }
 
@@ -306,7 +318,7 @@ export default class PartnerOppToDoList extends NavigationMixin(LightningElement
       this[NavigationMixin.GenerateUrl](pageRef)
         .then((url) => {
           this.quotingToolUrl = url;
-          console.log(`this.quotingToolUrl 2: ${this.quotingToolUrl}`);
+          // console.log(`this.quotingToolUrl 2: ${this.quotingToolUrl}`);
         })
         .catch((err) => console.log(err));
     }

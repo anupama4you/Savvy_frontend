@@ -1,0 +1,86 @@
+<template>
+  <lightning-card class="c-record-card">
+    <template if:true={isCalculating}>
+      <lightning-spinner alternative-text="Loading"></lightning-spinner>
+    </template>
+    <div class="slds-grid slds-gutters c-row">
+      <div class="slds-col slds-size_2-of-12">
+        <img src={logoUrl} class="c-lender-logo" title={record.Name}>
+      </div>
+      <div class="slds-grid slds-size_10-of-12 c-cols">
+        <div class="slds-col slds-size_2-of-12">{data.details}</div>
+        <div class="slds-col slds-size_1-of-12">
+          <lightning-formatted-number
+            value={data.monthlyPayment}
+            format-style="currency"
+            currency-code="AUD"
+          ></lightning-formatted-number>
+        </div>
+        <div class="slds-col slds-size_1-of-12">
+          <lightning-formatted-number
+            value={data.clientRate}
+            maximum-fraction-digits="2"
+            minimum-significant-digits="2"
+          ></lightning-formatted-number
+          >%
+        </div>
+        <div class="slds-col slds-size_1-of-12">
+          <lightning-formatted-number
+            value={data.baseRate}
+            maximum-fraction-digits="2"
+            minimum-significant-digits="2"
+          ></lightning-formatted-number
+          >%
+        </div>
+        <div class="slds-col slds-size_1-of-12">
+          <lightning-formatted-number
+            value={data.commission}
+            format-style="currency"
+            currency-code="AUD"
+          ></lightning-formatted-number>
+        </div>
+        <div class="slds-col slds-size_1-of-12">
+          <lightning-formatted-number
+            value={data.dof}
+            format-style="currency"
+            currency-code="AUD"
+          ></lightning-formatted-number>
+        </div>
+        <div class="slds-col slds-size_1-of-12">
+          <lightning-formatted-number
+            value={data.totalCommission}
+            format-style="currency"
+            currency-code="AUD"
+          ></lightning-formatted-number>
+        </div>
+        <div class="slds-col slds-size_1-of-12">
+          <lightning-formatted-number
+            value={data.monthlyFee}
+            format-style="currency"
+            currency-code="AUD"
+          ></lightning-formatted-number>
+        </div>
+        <div class="slds-col slds-size_1-of-12">
+          <lightning-formatted-number
+            value={data.weeklyPayment}
+            format-style="currency"
+            currency-code="AUD"
+          ></lightning-formatted-number>
+        </div>
+        <div class="slds-col slds-size_2-of-12">
+          <lightning-button-group class="c-actions">
+            <lightning-button
+              label="Calculate"
+              onclick={handleCalculate}
+              size="x-small"
+              variant="brand-outline"
+            ></lightning-button>
+            <!-- <lightning-button label="Calculate" icon-name="utility:topic2" onclick={handleCalculate} size="x-small" variant="brand-outline"></lightning-button> -->
+            <!-- <lightning-button-icon icon-name="utility:topic2"  size="large" variant="border"  alternative-text="Calculate" onclick={handleCalculate}></lightning-button-icon> -->
+            <!-- <lightning-button label="Delete" variant="destructive" icon-name="utility:topic2"></lightning-button> -->
+          </lightning-button-group>
+        </div>
+      </div>
+    </div>
+  </lightning-card>
+</template>

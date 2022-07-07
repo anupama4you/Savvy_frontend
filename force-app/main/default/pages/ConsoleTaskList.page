@@ -1,0 +1,103 @@
+<!--created by Jack.li@toptechservice.com.au on 19/07/2017. This page is included in sidebar console component of sales console-->
+<apex:page controller="consoleTaskList" sidebar=" false" showheader="false" >
+    <!--apex:stylesheet value="/sCSS/40.0/sprites/1498159010000/Theme3/default/gc/ServiceDeskListReskin.css" /-->
+
+    <style type="text/css">
+        .imageDiv{
+            position:absolute;
+            top: 30%;
+            left:0%;
+        	vertical-align: middle;
+        }
+    </style>
+    
+    <apex:includescript value="/support/console/40.0/integration.js" />
+    
+    <div  align="center" class="imageDiv">
+        <!--apex:image id="img1" URL="https://c.cs6.content.force.com/servlet/servlet.FileDownload?file=015N0000000ovPw" width="80%" height="80%" alt="Blue&White" /> <!--Sandbox-->
+        <apex:image id="img1" URL="https://c.ap1.content.force.com/servlet/servlet.ImageServer?id=0159000000EbZEP&oid=00D90000000l2Kx&lastMod=1516342407000" width="80%" height="80%" alt="Blue&White" /> <!--Production-->
+    </div>
+
+<!--
+    <apex:pageblock mode="maindetail">
+            <p/>
+    <p/>
+    <apex:outputtext >
+        <strong style="font-size: 18px; text-align: right;">&nbsp;My Tasks&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            <input style="color:#006cb5;" type="button" class="btn" onclick="myFunction()" value="Refresh" /></strong>
+
+</apex:outputtext>
+    <p/>
+    <p/>
+        
+        <apex:pageblocktable value="{!tasks}" var="t" >
+            <apex:column value="{!t.ActivityDate}" style="color: #006cb5; font-family: 'SalesforceSans-Regular',Helvetica,Arial,sans-serif;" >
+                <apex:facet name="header" ><strong>Due Date</strong></apex:facet>
+            </apex:column>
+            <apex:column style="color: #006cb5; font-family: 'SalesforceSans-Regular',Helvetica,Arial,sans-serif;">
+                <apex:facet name="header"><strong>Subject</strong></apex:facet>
+                <a href="#" onclick="sforce.console.openPrimaryTab(null, '/{!t.id}', true,'Task: {!t.Subject}', 'Task');return false"><apex:outputtext style="color: #006cb5; font-family: SalesforceSans-Regular,Helvetica,Arial,sans-serif;"  value="{!left(t.Subject,30)}" /></a>
+            </apex:column>
+
+            <apex:column style="color: #006cb5; font-family: 'SalesforceSans-Regular',Helvetica,Arial,sans-serif;">
+                <apex:facet name="header"><strong>Related To</strong></apex:facet>
+                <apex:outputtext style="color: #006cb5" value="{!left(t.What.name,12)}" />
+            </apex:column>
+
+</apex:pageblocktable>
+
+        <p/>
+        
+        <table>
+            <tr>
+            <td style='padding: 15px;text-align: left;'>
+                <a href="#" onclick="sforce.console.openPrimaryTab(null, '/apex/OpenNextLead?id=00590000001GTJr', true,'Next Lead', 'Next Lead');return false"><apex:outputtext style="color: #006cb5; font-family: 'SalesforceSans-Regular',Helvetica,Arial,sans-serif;"  value="Next Lead" /></a>
+
+                </td>
+                            <td style='padding: 15px;text-align: left;'>
+                <a href="#" onclick="sforce.console.openPrimaryTab(null, '/apex/LeadEdit', true,'Create New Lead', 'Create New Lead');return false"><apex:outputtext style="color: #006cb5; font-family: 'SalesforceSans-Regular',Helvetica,Arial,sans-serif;"  value="Create New Lead" /></a>
+
+                </td>
+            </tr>
+                        <tr>
+            <td style='padding: 15px;text-align: left;'>
+                <a href="#" onclick="sforce.console.openPrimaryTab(null, '/apex/DisplayTVReport', true,'Performance Report', 'Performance Report');return false"><apex:outputtext style="color: #006cb5; font-family: 'SalesforceSans-Regular',Helvetica,Arial,sans-serif;" value="Performance Report" /></a>
+&nbsp;
+                </td>
+                            <td style='padding: 15px;text-align: left;'>
+                <a href="#" onclick="sforce.console.openPrimaryTab(null, '/apex/LenderLogins', true,'My Lender Logins', 'My Lender Logins');return false"><apex:outputtext style="color: #006cb5; font-family: 'SalesforceSans-Regular',Helvetica,Arial,sans-serif;" value="My Lender Logins" /></a>
+
+                </td>
+            </tr>
+                        <tr>
+            <td style='padding: 15px;text-align: left;'>
+                <a href="#" onclick="sforce.console.openPrimaryTab(null, '/apex/DisplayStaffPartnerContacts', true,'Staff & Partner Contacts', 'Staff & Partner Contacts');return false"><apex:outputtext style="color: #006cb5; font-family: 'SalesforceSans-Regular',Helvetica,Arial,sans-serif;" value="Staff & Partner Contacts" /></a>
+&nbsp;
+                </td>
+                            <td style='padding: 15px;text-align: left;'>
+                <a href="#" onclick="sforce.console.openPrimaryTab(null, 'apex/CommissionConversionReport', true,'Comms & Conversion Report', 'Comms & Conversion Report');return false"><apex:outputtext style="color: #006cb5; font-family: 'SalesforceSans-Regular',Helvetica,Arial,sans-serif;" value="Comms & Conversion Report" /></a>
+
+                </td>
+            </tr>
+            <tr>
+            <td style='padding: 15px;text-align: left;'>
+                <a href="#" onclick="sforce.console.openPrimaryTab(null, '/apex/OpportunityPipelineReport', true,'Opportunity pipeline', 'Opportunity pipeline');return false"><apex:outputtext style="color: #006cb5; font-family: 'SalesforceSans-Regular',Helvetica,Arial,sans-serif;" value="Opportunity pipeline" /></a>
+&nbsp;
+                </td>
+                <td/>
+            </tr>
+        </table>
+
+
+            <script>
+function myFunction() {
+    location.reload(true);
+}
+            </script>
+
+
+</apex:pageblock>
+
+
+-->
+</apex:page>

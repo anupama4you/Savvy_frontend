@@ -1,0 +1,79 @@
+<template>
+        <div id="mainContent" style="height:500px; width: 500px;background-color: aqua;" class="main-content slds-m-top_medium slds-m-bottom_x-large">
+            <div class="buttonPanel">
+                <table>
+                    <tbody>
+                        <tr>
+                            <td>
+                                <!-- action buttons here -->
+                                <div style="height:80px;background-color: purple;"></div>
+                            </td>
+                            <td>
+                                <!-- logo image here -->
+                                <div style="height:80px;background-color: blue;"></div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="calculatorInput" style="padding-bottom: 20px;background: #f8f8f8; border: 1px solid #ddd;">
+                <div class="divTitle" style="background-color: #ddd;
+                padding-top: 2px;
+                padding-bottom: 2px;
+                padding-left: 20px;
+                text-transform: uppercase;
+                border: 1px solid #ddd;"><h3>Input</h3></div>
+                <div style="display: flex;">
+                    <div id="leftTables">
+                        <div id="financeTab"><h3>Finance Details</h3></div>
+                        <table id="financeDetails">
+                            <tbody>
+                                <tr>
+                                    <!-- Loan Type -->
+                                    <td class="financeColumn">
+                                        <label class="calcLabel" for="LoanType">Loan Type</label>
+                                    </td>
+                                    <td class="financeColumn">
+                                      <lightning-combobox
+                                      name="Loan Type"
+                                      value={value}
+                                      placeholder="Select Loan Type"
+                                      options={options}
+                                      onchange={handleChange} ></lightning-combobox>
+                                    </td>
+                                  </tr>
+                                  <!-- Loan Product -->
+                                  <tr>
+                                    <td class="financeColumn">
+                                        <label class="calcLabel" for="LoanType">Loan Product</label>
+                                    </td>
+                                    <td class="financeColumn">
+                                      <lightning-combobox
+                                      name="Loan Type"
+                                      value={value}
+                                      placeholder="Select Loan Type"
+                                      options={options}
+                                      onchange={handleChange} ></lightning-combobox>
+                                    </td>
+                                  </tr>
+                                  <!-- Goods Type -->
+                                  <tr>
+                                    <td class="financeColumn">
+                                        <label class="calcLabel" for="LoanType">Goods Type</label>
+                                    </td>
+                                    <td class="financeColumn">
+                                      <lightning-combobox
+                                      name="Loan Type"
+                                      value={value}
+                                      placeholder="Select Loan Type"
+                                      options={options}
+                                      onchange={handleChange} ></lightning-combobox>
+                                    </td>
+                                  </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+</template>

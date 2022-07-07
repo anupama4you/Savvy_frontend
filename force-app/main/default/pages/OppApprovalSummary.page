@@ -1,0 +1,135 @@
+<apex:page controller="OppApprovalSummaryExtension" cache="false" readOnly="true" title="Approval Summary">
+    <style type='text/css'>
+        .labelTableBeside {
+            font-size: 25px;
+            font-weight: bold;
+            vertical-align: middle !important;
+        }
+        .labelTableResult {
+            font-size: 16px;
+            font-weight: bold;
+        }
+        .labelTableResultOthers {
+            font-size: 14px;
+            font-weight: bold;
+        }
+        .labelTableResultTotals {
+            font-size: 14px;
+            font-weight: bold;
+            color: blue !important;
+        }
+    </style>
+    <apex:form id="formData">
+        <apex:pageBlock title="Approval Processes" mode="edit">
+        	<apex:pageBlockButtons location="top">
+                <apex:commandButton onclick="window.open('OppApprovalSaleConsultantsList');" value="Consultant Detailts"/>
+                <apex:commandButton onclick="window.open('OppApprovalLenderLogins');" value="Lender Log-Ins"/>
+                <apex:commandButton onclick="window.open('OppApprovalFavoriteLinks');" value="Favorite Links"/>
+            </apex:pageBlockButtons>
+            <table align="center" width="90%">
+                <tr>
+                    <td width="33%">
+                        <table width="90%">
+                            <tr>
+                                <td rowspan="5" class="labelTableBeside" width="40%" align="center">Formal Approval</td>
+                                <th width="30%">Status</th>
+                                <th width="15%" align="center">Own</th>
+                                <th width="15%" align="center">Total</th>
+                            </tr>
+                            <tr>
+                                <td>Submited</td>
+                                <td class="labelTableResult" align="center">{!mySubmitedFormalApprovalProcessess}</td>
+                                <td class="labelTableResultOthers" align="center">{!allSubmitedFormalApprovalProcessess}</td>
+                            </tr>
+                            <tr>
+                                <td>Sent to Lender</td>
+                                <td class="labelTableResult" align="center">{!mySentToLenderFormalApprovalProcessess}</td>
+                                <td class="labelTableResultOthers" align="center">{!allSentToLenderFormalApprovalProcessess}</td>
+                            </tr>
+                            <tr>
+                                <td class="labelTableResultTotals">Totals</td>
+                                <td class="labelTableResultTotals" align="center">{!myFormalApprovalProcessTotals}</td>
+                                <td class="labelTableResultTotals" align="center">{!allFormalApprovalProcessTotals}</td>
+                            </tr>
+                            <tr>
+                            	<td colspan="3">&nbsp;</td>
+                            </tr>
+                            <tr>
+                                <td colspan="4" align="center">
+                                    <apex:outputLink target="_top" value="{!$Page.OppApprovalList}?approvalType=FORMALAPPROVALS">Manage Formal Approvals</apex:outputLink>
+                                </td>
+                            </tr>
+                        </table>
+                    </td>
+                    <td width="34%">
+                        <table width="90%">
+                            <tr>
+                                <td rowspan="5" class="labelTableBeside" width="45%" align="center">Amendment</td>
+                                <th width="25%">Status</th>
+                                <th width="15%" align="center">Own</th>
+                                <th width="15%" align="center">Total</th>
+                            </tr>
+                            <tr>
+                                <td>Submited</td>
+                                <td class="labelTableResult" align="center">{!mySubmitedAmendmentProcessess}</td>
+                                <td class="labelTableResultOthers" align="center">{!allSubmitedAmendmentProcessess}</td>
+                            </tr>
+                            <tr>
+                                <td>Sent to Lender</td>
+                                <td class="labelTableResult" align="center">{!mySentToLenderAmendmentProcessess}</td>
+                                <td class="labelTableResultOthers" align="center">{!allSentToLenderAmendmentProcessess}</td>
+                            </tr>
+                            <tr>
+                                <td class="labelTableResultTotals">Totals</td>
+                                <td class="labelTableResultTotals" align="center">{!myAmendmentProcessTotals}</td>
+                                <td class="labelTableResultTotals" align="center">{!allAmendmentProcessTotals}</td>
+                            </tr>
+                            <tr>
+                            	<td colspan="3">&nbsp;</td>
+                            </tr>
+                            <tr>
+                                <td colspan="4" align="center">
+                                	<apex:outputLink target="_top" value="{!$Page.OppApprovalList}?approvalType=AMENDMENTS">Manage Amendments</apex:outputLink>
+                                </td>
+                            </tr>
+                        </table>
+                    </td>
+                    <td width="33%">
+                        <table width="90%">
+                            <tr>
+                                <td rowspan="5" class="labelTableBeside" width="40%" align="center">Pre-Approval</td>
+                                <th width="30%">Status</th>
+                                <th width="15%" align="center">Own</th>
+                                <th width="15%" align="center">Total</th>
+                            </tr>
+                            <tr>
+                                <td>Submited</td>
+                                <td class="labelTableResult" align="center">{!mySubmitedPreApprovalProcessess}</td>
+                                <td class="labelTableResultOthers" align="center">{!allSubmitedPreApprovalProcessess}</td>
+                            </tr>
+                            <tr>
+                                <td>Sent to Lender</td>
+                                <td class="labelTableResult" align="center">{!mySentToLenderPreApprovalProcessess}</td>
+                                <td class="labelTableResultOthers" align="center">{!allSentToLenderPreApprovalProcessess}</td>
+                            </tr>
+                            <tr>
+                                <td class="labelTableResultTotals">Totals</td>
+                                <td class="labelTableResultTotals" align="center">{!myPreApprovalProcessTotals}</td>
+                                <td class="labelTableResultTotals" align="center">{!allPreApprovalProcessTotals}</td>
+                            </tr>
+                            <tr>
+                            	<td colspan="3">&nbsp;</td>
+                            </tr>
+                            <tr>
+                                <td colspan="4" align="center">
+                                	<apex:outputLink target="_top" value="{!$Page.OppApprovalList}?approvalType=PREAPPROVALS">Manage Pre-Approvals</apex:outputLink>
+                                </td>
+                            </tr>
+                        </table>
+                    </td>
+                </tr>
+            </table>
+            <br/>
+    	</apex:pageBlock>
+    </apex:form>
+</apex:page>

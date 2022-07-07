@@ -1,0 +1,123 @@
+/* Common styles */
+
+:host {
+  --lwc-heightInput: 1.5rem;
+}
+
+.c-details {
+  /* padding-right: 60px; */
+  padding-left: 20px;
+}
+
+.c-details div {
+  margin-top: 5px;
+  display: flex;
+  font-size: 0.8rem;
+}
+
+.c-read-only-field {
+  padding-left: 15px;
+}
+
+.c-naf-division {
+  /* border: 1px solid #d3d3d3; */
+}
+
+.c-naf-field {
+  font-weight: 600;
+  font-size: 1rem;
+}
+
+.c-detail-subtitle {
+  font-weight: 600;
+}
+
+/* Fields */
+.slds-form__item {
+  min-width: auto;
+}
+
+.field-small-width {
+  max-width: 125px;
+}
+
+.field-x-small-width {
+  max-width: 115px;
+}
+
+.c-max-details {
+  font-size: 0.7rem;
+  margin-top: 5px;
+}
+
+.c-lender-logo {
+  height: 35px;
+  margin-left: 10px;
+}
+
+.c-label {
+  font-weight: 400;
+  font-size: 0.75rem;
+  margin-top: 5px;
+}
+
+.c-base-rate {
+  display: flex;
+  justify-content: space-between;
+}
+
+.c-max-rate {
+  padding-right: 15px;
+}
+
+/* Finance Details layout */
+.c-details-row {
+  display: flex;
+}
+
+.c-detail-labels {
+  width: 35%;
+}
+
+.c-detail-fields {
+  width: 65%;
+  display: inline-flex;
+}
+
+.c-row-details {
+  content: "";
+  display: inline-flex;
+  clear: both;
+  width: 100%;
+  padding-left: 18px;
+  margin-bottom: 3px;
+}
+
+.c-title-section {
+  margin-bottom: 10px;
+}
+
+.c-title {
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+.c-sub-title {
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+.c-rates-section {
+  margin: 20px 0px;
+  border-top: 1px solid #d3d3d3;
+  padding-right: 25px;
+  padding-left: 15px;
+  padding-top: 10px;
+}
+
+.c-rates-section-title {
+  font-size: 0.8rem;
+  font-weight: 600;
+  margin-bottom: 10px;
+  margin-left: 5px;
+}

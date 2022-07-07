@@ -1,0 +1,122 @@
+<apex:component >
+  <apex:attribute name="qext" type="QuotingExtension" required="true" description="Quoting extension controller" />
+  <div class="titleTableTab">
+    <h3>Commission and Repayment</h3>
+  </div>
+  <table class="tableDetails">
+    <tr>
+      <td width="30%" class="labelHeading">
+        <apex:outputLabel value="Estimated Commission" for="estimatedCommission" />
+      </td>
+      <td width="20%" class="resultValue">
+        <apex:outputText label="Estimated Commission" value="{0, number, $##,###,##0.00}" id="estimatedCommission">
+          <apex:param value="{!qext.estimatedCommission}" />
+        </apex:outputText>
+      </td>
+      <td width="30%" class="labelHeading">
+        <apex:outputLabel value="NAF" for="naf" />
+      </td>
+      <td width="20%" class="resultValue">
+        <apex:outputText value="{0, number, $##,###,##0.00}" id="naf">
+          <apex:param value="{!qext.naf}" />
+        </apex:outputText>
+      </td>
+    </tr>
+    <tr>
+      <td class="labelHeading">
+        <apex:outputLabel value="DOF" for="dofResult" />
+      </td>
+      <td class="resultValue">
+        <apex:outputText label="DOF" value="{0, number, $##,###,##0.00}" id="dofResult">
+          <apex:param value="{!qext.dofResult}" />
+        </apex:outputText>
+      </td>
+      <td class="labelHeading">
+        <apex:outputLabel value="Rental" for="rental" />
+      </td>
+      <td class="resultValue">
+        <apex:outputText label="Rental" value="{0, number, $##,###,##0.00}" id="rental">
+          <apex:param value="{!qext.rental}" />
+        </apex:outputText>
+      </td>
+    </tr>
+    <tr>
+      <td class="labelHeading">
+        <apex:outputLabel style="display:inline-block;" value="Insurance Income" for="insuranceIncome" />
+      </td>
+      <td class="resultValue">
+        <apex:outputText label="Insurance Income" value="{0, number, $##,###,##0.00}" id="insuranceIncome">
+          <apex:param value="{!qext.insuranceIncome}" />
+        </apex:outputText>
+      </td>
+      <td class="labelHeading">
+        <apex:outputLabel style="display:inline-block;" value="Monthly Payment" for="monthlyPayment" />
+      </td>
+      <td class="resultValue">
+        <apex:outputText label="Monthly Payment" value="{0, number, $##,###,##0.00}" id="monthlyPayment">
+          <apex:param value="{!qext.monthlyPayment}" />
+        </apex:outputText>
+      </td>
+    </tr>
+    <tr>
+      <td class="labelHeading">
+        <apex:outputLabel style="display:inline-block;" value="TOTAL Commission (GST Exc)" for="totalCommission" />
+      </td>
+      <td class="resultValue">
+        <apex:outputText label="TOTAL Commission (GST Exc)" value="{0, number, $##,###,##0.00}" id="totalCommission">
+          <apex:param value="{!qext.totalCommission}" />
+        </apex:outputText>
+      </td>
+      <td class="labelHeading">
+        <apex:outputLabel style="display:inline-block;" value="Fortnightly Payment" for="fortnightlyPayment" />
+      </td>
+      <td class="resultValue">
+        <apex:outputText label="Fortnightly Payment" value="{0, number, $##,###,##0.00}" id="fortnightlyPayment">
+          <apex:param value="{!qext.fortnightlyPayment}" />
+        </apex:outputText>
+      </td>
+    </tr>
+    <tr>
+      <td class="labelHeading">
+        <apex:outputLabel style="display:inline-block;" value="TOTAL Commission (GST Inc)" for="totalCommissionGst" />
+      </td>
+      <td class="resultValue">
+        <apex:outputText label="TOTAL Commission (GST Inc)" value="{0, number, $##,###,##0.00}" id="totalCommissionGst">
+          <apex:param value="{!qext.totalCommissionGst}" />
+        </apex:outputText>
+      </td>
+      <td class="labelHeading">
+        <apex:outputLabel style="display:inline-block;" value="Weekly Payment" for="weeklyPayment" />
+      </td>
+      <td class="resultValue">
+        <apex:outputText label="Weekly Payment" value="{0, number, $##,###,##0.00}" id="weeklyPayment">
+          <apex:param value="{!qext.weeklyPayment}" />
+        </apex:outputText>
+      </td>
+    </tr>
+    <tr style="display: {!IF(qext.mvAcceptance=='A', '', 'none')}">
+      <td colspan="2">&nbsp;</td>
+      <td class="mv-results">
+        <h4>Comprehensive</h4>
+        <br/> Monthly
+        <br/> Fortnightly
+        <br/> Weekly
+      </td>
+      <td align="right" class="mv-results">
+        <br/>
+        <apex:outputText value="+{0, number, $##,###,##0.00}">
+          <apex:param value="{!(qext.monthlyPayment + (qext.mv / 12) - qext.monthlyPayment)}" />
+        </apex:outputText>
+        <br/>
+        <apex:outputText value="+{0, number, $##,###,##0.00}">
+          <apex:param value="{!(qext.fortnightlyPayment + (qext.mv / 26) - qext.fortnightlyPayment)}" />
+        </apex:outputText>
+        <br/>
+        <apex:outputText value="+{0, number, $##,###,##0.00}">
+          <apex:param value="{!(qext.weeklyPayment + (qext.mv / 52) - qext.weeklyPayment)}" />
+        </apex:outputText>
+      </td>
+      <td colspan="5">&nbsp;</td>
+    </tr>
+  </table>
+</apex:component>

@@ -1,0 +1,217 @@
+<apex:page controller="FollowingUpReportDetailController" showHeader="true" sidebar="false" standardStylesheets="true" cache="true" title="Following Up Report" id="FollowingUpRpt" action="{!initReport}">
+    <!-- Partner Portal Styles -->
+    <apex:outputPanel rendered="{!isBrokerPartnerUser}">
+      <style type="text/css">
+        html .brandQuaternaryBgr,
+        .titleDiv {
+          background: #ffffff !important;
+        }
+    
+        .bPageBlock {
+          border: 1px solid white !important;
+        }
+      </style>
+    </apex:outputPanel>
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.1/css/all.css" integrity="sha384-50oBUHEmvpQ+1lW4y57PTFmhCaXp0ML5d60M1M7uH2+nqUivzIebhndOJK28anvf" crossorigin="anonymous"/>
+    <apex:stylesheet value="{!$Resource.PerformanceRptCSS}"/>
+    <apex:sectionHeader title="{!rptUser.Name}: Following Up Detail Report"/>
+    <apex:form id="formData">
+        <apex:pageBlock mode="Detail" id="blkReport">
+            <table width="100%">
+                <tr>
+                    <td width="70%" valign="top">
+                        <apex:outputPanel layout="block" id="pnlRpt">
+                            <apex:pageBlockSection title="Consultat Notification: {!report.name}" columns="1" collapsible="false" id="secNotify">
+                                <apex:outputField value="{!report.User__c}" label="Consultant"/>
+                                <apex:outputField value="{!report.Notes__c}"/>
+                                <apex:pageBlockSectionItem rendered="{!hasNotes}">
+                                    <apex:outputLabel value="Response(s)"/>
+                                    <apex:outputPanel layout="block">
+                                        <apex:repeat value="{!notes}" var="a">
+                                            <p>
+                                                <strong>{!a.Title}</strong><br/>
+                                                <apex:outputField value="{!a.Body}"/> - 
+                                                <strong><i><apex:outputText value="{!a.CreatedDate} "/></i></strong><br/>
+                                            </p>
+                                        </apex:repeat>
+                                    </apex:outputPanel>
+                                </apex:pageBlockSectionItem>
+                                <apex:outputField value="{!report.Status__c}"/>
+                                <apex:outputField value="{!report.Total_Opportunities__c}"/>
+                                <apex:pageBlockSectionItem >
+                                    <apex:outputLabel value=" "/>
+                                    <apex:outputPanel >
+                                        <apex:commandButton value="Respond" action="{!displayResponse}" reRender="pnlRpt" status="sttDetaProcessing" rendered="{!AND(NOT(isResponding),report!=null)}" >
+                                            <apex:param name="responding" assignTo="{!isResponding}" value="true"/>
+                                        </apex:commandButton>&nbsp;&nbsp;&nbsp;
+                                        <apex:actionStatus startText="(Processing...)" id="sttDetaProcessing"/>
+                                    </apex:outputPanel>
+                                </apex:pageBlockSectionItem>
+                            </apex:pageBlockSection>
+                            <apex:pageBlockSection title="Preparing a response: {!report.name}" columns="1" collapsible="false" id="secResp" rendered="{!isResponding}">
+                                <apex:inputTextarea label="Response" value="{!response.Body}" cols="60" rows="6" id="fldNotes" />
+                                <apex:pageBlockSectionItem >
+                                    <apex:outputLabel value=" "/>
+                                    <apex:outputPanel >
+                                        <apex:commandButton value="Respond Report" action="{!respondReport}" reRender="blkReport" status="sttRespProcessing"/>
+                                        <apex:commandButton value="Cancel" reRender="pnlRpt" status="sttRespProcessing">
+                                            <apex:param name="responding" assignTo="{!isResponding}" value="false"/>
+                                        </apex:commandButton>
+                                        &nbsp;&nbsp;&nbsp;
+                                        <apex:actionStatus startText="(Processing...)" id="sttRespProcessing"/>
+                                    </apex:outputPanel>
+                                </apex:pageBlockSectionItem>
+                            </apex:pageBlockSection>
+                        </apex:outputPanel>
+                        <hr/>
+                        <!-- Details -->
+                        <apex:repeat value="{!detailReportKeys}" var="k">
+                            <apex:variable value="{!detailData[k]}" var="rptList"/  >
+                            <!-- Calculate totasl -->
+                            <apex:variable value="{!0.00}" var="tComm"/>
+                            <apex:variable value="{!0.00}" var="tBroke"/>
+                            <apex:variable value="{!0.00}" var="tDof"/>
+                            <apex:variable value="{!0.00}" var="tIns"/>
+                            <apex:variable value="{!0.00}" var="tFina"/>
+                            <apex:repeat var="a" value="{!rptList}">
+                                <apex:variable value="{!a.opp.Total_Commission__c + tComm}" var="tComm"/>
+                                <apex:variable value="{!a.opp.Total_Brokerage__c + tBroke}" var="tBroke"/>
+                                <apex:variable value="{!a.opp.Total_DOF__c + tDof}" var="tDof"/>
+                                <apex:variable value="{!a.opp.Total_Insurance_Commission__c + tIns}" var="tIns"/>
+                                <apex:variable value="{!IF(a.opp.Finance_Amount__c==NULL,0,a.opp.Finance_Amount__c) + tFina}" var="tFina"/>
+                            </apex:repeat>
+                            <!-- <apex:sectionHeader title="{!k} ({!rptList.size} records)" /> -->
+                            <div class="bPageTitle">
+                                <div class="ptBody secondaryPalette brandSecondaryBrd">
+                                    <div class="content">
+                                        <span class="pageType sectionTitle">{!k} ({!rptList.size} records)</span>
+                                        <!-- &nbsp;&nbsp;&nbsp;&nbsp;
+                                        <apex:outputPanel rendered="{!AND(isNotifying,rptList.size>0)}">
+                                            <apex:commandButton value="Select All" action="{!selectAllCategory}" reRender="blkDetail" status="sttSelecting" >
+                                                <apex:param name="catSelectedTrue" assignTo="{!catSelected}" value="{!k}"/>
+                                            </apex:commandButton>&nbsp;&nbsp;
+                                            <apex:commandButton value="Unselect All" action="{!unselectAllCategory}" reRender="blkDetail" status="sttSelecting">
+                                                <apex:param name="catSelectedTrue" assignTo="{!catSelected}" value="{!k}"/>
+                                            </apex:commandButton>
+                                        </apex:outputPanel> -->
+                                    </div>
+                                </div>
+                            </div>
+                            <apex:pageBlockTable value="{!rptList}" var="d" rowClasses="rowOne, rowTwo" width="100%" rendered="{!rptList.size>0}">
+                                <!-- <apex:column width="1%" rendered="{!isNotifying}">
+                                    <apex:commandButton value="+" action="{!addOppNotification}" reRender="blkDetail" status="sttSelecting" rendered="{!NOT(d.sel)}">
+                                        <apex:param name="oppSelected" assignTo="{!oppSelected}" value="{!d.opp.Id}"/>
+                                    </apex:commandButton>
+                                    <apex:commandButton value="x" action="{!remOppNotification}" reRender="blkDetail" status="sttSelecting" rendered="{!d.sel}">
+                                        <apex:param name="oppSelected" assignTo="{!oppSelected}" value="{!d.opp.Id}"/>
+                                    </apex:commandButton>
+                                </apex:column> -->
+                                <apex:column styleClass="{!IF(d.sel,'selectedCell','')}">
+                                    <apex:facet name="header">Opp Name</apex:facet>
+                                    <apex:outputLink value="/{!d.opp.Id}"><apex:outputField value="{!d.opp.Name}"/></apex:outputLink>
+                                </apex:column>
+                                <apex:column width="7%" value="{!d.opp.Mobile_Number__c}" styleClass="numbers {!IF(d.sel,'selectedCell','')}" headerClass="numbers">
+                                    <apex:facet name="header">Mobil</apex:facet>
+                                </apex:column>
+                                <apex:column width="11%" value="{!d.opp.Email_Address__c}" styleClass="{!IF(d.sel,'selectedCell','')}">
+                                    <apex:facet name="header">Email</apex:facet>
+                                </apex:column>
+                                <apex:column width="11%" value="{!d.opp.Status__c}">
+                                    <apex:facet name="header">Status</apex:facet>
+                                </apex:column>
+                                <apex:column width="7%" styleClass="numbers" headerClass="numbers">
+                                    <apex:facet name="header">Last Call</apex:facet>
+                                    <apex:outputText value="{!d.LastCallDate} "/>
+                                </apex:column>
+                                <apex:column width="4%" styleClass="numbers" headerClass="numbers">
+                                    <apex:facet name="header">Total Calls</apex:facet>
+                                    <apex:outputText value="{!d.totalCalls} "/>
+                                </apex:column>
+                                <apex:column width="7%" styleClass="numbers" headerClass="numbers">
+                                    <apex:facet name="header">Last SMS</apex:facet>
+                                    <apex:outputText value="{!d.LastSMSDate} "/>
+                                </apex:column>
+                                <apex:column width="4%" styleClass="numbers" headerClass="numbers">
+                                    <apex:facet name="header">Total SMS</apex:facet>
+                                    <apex:outputText value="{!d.totalSMS} "/>
+                                </apex:column>
+                                <apex:column width="7%" styleClass="numbers" headerClass="numbers">
+                                    <apex:facet name="header">Last Email</apex:facet>
+                                    <apex:outputText value="{!d.LastEmailDate} "/>
+                                </apex:column>
+                                <apex:column width="4%" styleClass="numbers" headerClass="numbers">
+                                    <apex:facet name="header">Total Emails</apex:facet>
+                                    <apex:outputText value="{!d.totalEmails} "/>
+                                </apex:column>
+                                <apex:column width="7%" value="{!d.opp.Finance_Amount__c}" styleClass="moneyAndPercentage" headerClass="numbers" footerClass="moneyAndPercentage">
+                                    <apex:facet name="header">Lead Finance Amount</apex:facet>
+                                    <apex:facet name="footer">
+                                        <apex:outputText value="{0, number, $##,###,##0.00}">
+                                          <apex:param value="{!tFina}"/>
+                                        </apex:outputText>
+                                    </apex:facet>
+                                </apex:column>
+                                <apex:column width="7%" value="{!d.opp.Total_Commission__c}" styleClass="moneyAndPercentage" headerClass="numbers" footerClass="moneyAndPercentage">
+                                    <apex:facet name="header">Total Commission</apex:facet>
+                                    <apex:facet name="footer">
+                                        <apex:outputText value="{0, number, $##,###,##0.00}">
+                                          <apex:param value="{!tComm}"/>
+                                        </apex:outputText>
+                                    </apex:facet>
+                                </apex:column>
+                                <!-- <apex:column width="6%" value="{!d.opp.Total_Brokerage__c}" styleClass="moneyAndPercentage" headerClass="numbers" footerClass="moneyAndPercentage">
+                                    <apex:facet name="header">Brokerage</apex:facet>
+                                    <apex:facet name="footer">
+                                        <apex:outputText value="{0, number, $##,###,##0.00}">
+                                          <apex:param value="{!tBroke}"/>
+                                        </apex:outputText>
+                                    </apex:facet>
+                                </apex:column>
+                                <apex:column width="6%" value="{!d.opp.Total_DOF__c}" styleClass="moneyAndPercentage" headerClass="numbers" footerClass="moneyAndPercentage">
+                                    <apex:facet name="header">DOF</apex:facet>
+                                    <apex:facet name="footer">
+                                        <apex:outputText value="{0, number, $##,###,##0.00}">
+                                          <apex:param value="{!tDof}"/>
+                                        </apex:outputText>
+                                    </apex:facet>
+                                </apex:column>
+                                <apex:column width="7%" value="{!d.opp.Total_Insurance_Commission__c}" styleClass="moneyAndPercentage" headerClass="numbers" footerClass="moneyAndPercentage">
+                                    <apex:facet name="header">Total Insurance </apex:facet>
+                                    <apex:facet name="footer">
+                                        <apex:outputText value="{0, number, $##,###,##0.00}">
+                                          <apex:param value="{!tIns}"/>
+                                        </apex:outputText>
+                                    </apex:facet>
+                                </apex:column> -->
+                            </apex:pageBlockTable>
+                            <hr/>
+                        </apex:repeat>
+                    </td>
+                    <td width="30%" valign="top">
+                        <apex:pageBlockTable value="{!notifications}" var="n">
+                            <apex:column styleClass="{!IF(reportId==n.Id,'selectedCell','')}">
+                                <apex:facet name="header">Report(s)</apex:facet>
+                                <apex:outputPanel layout="inline" styleClass="fa fa-envelope" rendered="{!n.Status__c=='Unread'}"/>
+                                <apex:outputPanel layout="inline" styleClass="fa fa-envelope-open-text" rendered="{!n.Status__c=='Read'}"/>
+                                <apex:outputPanel layout="inline" styleClass="fa fa-paper-plane" rendered="{!n.Status__c=='Responded'}"/>
+                                &nbsp;
+                                <apex:outputText value="{!n.Name}"/>
+                                &nbsp;&nbsp;&nbsp;
+                                <apex:actionStatus startText="(Processing...)" id="sttProcessing"/>
+                            </apex:column>
+                            <apex:column width="25%"  styleClass="{!IF(reportId==n.Id,'selectedCell','')}" value="{!n.Status__c}">
+                                <apex:facet name="header">Status</apex:facet>
+                            </apex:column>
+                            <apex:column width="1%" headerClass="numbers">
+                                <apex:facet name="header"><span class="fa fa-tools"></span></apex:facet>
+                                <apex:commandButton value="Open" action="{!selectReport}" reRender="blkReport" status="sttProcessing">
+                                    <apex:param name="opReportId" assignTo="{!reportId}" value="{!n.Id}"/>
+                                </apex:commandButton>
+                            </apex:column>
+                        </apex:pageBlockTable>
+                    </td>
+                </tr>
+            </table>
+        </apex:pageBlock>
+    </apex:form>
+</apex:page>

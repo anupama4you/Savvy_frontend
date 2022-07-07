@@ -1,0 +1,9 @@
+<apex:component layout="block">
+	<apex:attribute name="task" type="Task" description="A task" required="true"/>
+	<apex:outputPanel layout="inline" 
+		styleClass="fa fa-flag {!IF(AND(task.ActivityDate!=null,task.ActivityDate>=TODAY()),'green-flag','red-flag')}"></apex:outputPanel>
+	<strong> <apex:outputLink value="/{!task.Id}" target="_blank">{!task.Subject}</apex:outputLink></strong>&nbsp;<i><apex:outputText value="missing a task!" rendered="{!task=null}"/></i><br/>
+	<apex:outputPanel layout="inline" rendered="{!task!=null}">
+		<i>Due Date:&nbsp;<apex:outputField value="{!task.ActivityDate}"/></i><br/>
+	</apex:outputPanel>
+</apex:component>

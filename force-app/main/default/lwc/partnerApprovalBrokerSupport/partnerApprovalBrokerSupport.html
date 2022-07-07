@@ -42,12 +42,22 @@
             <template if:false={hasLenderApi}>
               <p>
                 API is not available for
-                <span class="lender-name"> {lenderLabel}</span>,
-                would you like to send this through to broker support?
+                <span class="lender-name"> {lenderLabel}</span>, &nbsp;
+                <template if:true={isExternal}>
+                  please proceed to submit the loan directly to the lender.
+                </template>
+                <template if:false={isExternal}>
+                  would you like to send this through to broker support?
+                </template>
               </p>
             </template>
             <template if:true={hasLenderApi}>
-              <p>Would you like to send this through to broker support?</p>
+              <template if:true={isExternal}>
+                  <p>Please proceed to submit the loan directly to the lender.</p>
+                </template>
+              <template if:false={isExternal}>
+                <p>Would you like to send this through to broker support?</p>
+              </template>
             </template>
           </template>
           <template if:true={displaySubmission}>
@@ -118,7 +128,7 @@
             if:true={displayIntro}
             class="slds-button slds-m-left_x-small"
             type="button"
-            label="Yes"
+            label={yesLabel}
             onclick={handleYes}
             variant="brand"
           >
@@ -134,8 +144,17 @@
             icon-name="utility:share_file"
           >
           </lightning-button>
+          <lightning-button
+            if:true={displaySubmission}
+            class="slds-button slds-m-left_x-small"
+            type="button"
+            label="Cancel"
+            onclick={handleCloseDialog}
+          >
+          </lightning-button>
           <!-- Close / Cancel -->
           <lightning-button
+            if:true={displayNoCloseButton}
             class="slds-button slds-m-left_x-small"
             type="button"
             label={closeLabel}

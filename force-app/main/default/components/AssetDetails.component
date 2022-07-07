@@ -1,0 +1,92 @@
+<apex:component >
+    <apex:attribute name="asset" type="AssetDetailsDTO" description="Asset Data" required="true"/>
+    <apex:outputPanel rendered="{!asset.assetType == 'Car'}">
+        <table width="100%" border="1">
+            <tr><td colspan="4" class="tableCaption">Asset Details</td></tr>
+            <tr>
+                <td width="20" class="labelDate">Condition</td>
+                <td width="30">{!asset.newUsed}</td>
+                <td width="20" class="labelDate">Year</td>
+                <td width="30">{!asset.variantObj.Year__c}</td>
+            </tr>
+            <tr>
+                <td class="labelDate">Make</td>
+                <td>{!asset.make}</td>
+                <td class="labelDate">Style</td>
+                <td>{!asset.variantObj.Style__c}</td>
+            </tr>
+            <tr>
+                <td class="labelDate">Model</td>
+                <td>{!asset.model}</td>
+                <td class="labelDate">Variant</td>
+                <td>{!asset.variantObj.Description__c}</td>
+            </tr>
+            <tr>
+                <td class="labelDate">Series</td>
+                <td>{!asset.variantObj.Series__c}</td>
+                <td class="labelDate">Class</td>
+                <td>
+                    <apex:outputText value="Light Commercial Vehicles" rendered="{!asset.modelTypeSource = 'CVG'}" />
+                    <apex:outputText value="Passenger Vehicles" rendered="{!asset.modelTypeSource = 'PVG'}" />
+                    <apex:outputText value="Older Cars" rendered="{!asset.modelTypeSource = 'OCG'}" />
+                    <apex:outputText value="Older Light Commercial" rendered="{!asset.modelTypeSource = 'OLC'}" />
+                    &nbsp;
+                </td>
+            </tr>
+            <tr>
+                <td class="labelDate">Engine</td>
+                <td>{!asset.variantObj.Engine__c}</td>
+                <td class="labelDate">CC</td>
+                <td>{!asset.variantObj.CC__c}</td>
+            </tr>
+            <tr>
+                <td class="labelDate">Transmission</td>
+                <td>{!asset.variantObj.Transmission__c}</td>
+                <td class="labelDate">Average Km</td>
+                <td>
+                    <apex:outputText value="{0, Number, ###,###}" rendered="{!asset.assetType == 'Car'}">
+                        <apex:param value="{!asset.averageKmValue}" />
+                    </apex:outputText>
+                    <apex:outputText value="N/A" rendered="{!asset.assetType != 'Car'}" />
+                </td>
+            </tr>
+            <tr>
+                <td class="labelDate">NVIC</td>
+                <td>{!asset.variantObj.NVIC__c}</td>
+                <td class="labelDate">Actual Km</td>
+                <td>
+                    <apex:outputText value="{0, Number, ###,###}">
+                        <apex:param value="{!asset.actualKms}" />
+                    </apex:outputText>
+                </td>
+            </tr>
+            <tr>
+                <td class="labelDate">Redbook Key</td>
+                <td colspan="3">{!asset.redbookKey}</td>
+            </tr>
+        </table>
+    </apex:outputPanel>
+    <apex:outputPanel rendered="{!asset.assetType != 'Car'}">
+        <table width="100%" border="1">
+            <tr><td colspan="4" class="tableCaption">Asset Details</td></tr>
+            <tr>
+                <td width="20" class="labelDate">Condition</td>
+                <td width="30">{!asset.newUsed}</td>
+                <td width="20" class="labelDate">Year</td>
+                <td width="30">{!asset.year}</td>
+            </tr>
+            <tr>
+                <td class="labelDate">Make</td>
+                <td>{!asset.makeOVehicle}</td>
+                <td class="labelDate">Model</td>
+                <td>{!asset.modelOVehicle}</td>
+            </tr>
+            <tr>
+                <td class="labelDate">Variant</td>
+                <td>{!asset.variantOVehicle}</td>
+                <td class="labelDate">Series</td>
+                <td>{!asset.seriesOVehicle}</td>
+            </tr>
+        </table>
+    </apex:outputPanel>
+</apex:component>

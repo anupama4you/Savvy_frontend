@@ -1,0 +1,85 @@
+<apex:page showHeader="false" sidebar="false" docType="html-5.0" title="Objecting Handling" readOnly="true" setup="false" standardStylesheets="false">
+	<head>
+		<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"/>
+		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/css/bootstrap.min.css" integrity="sha384-PsH8R72JQ3SOdhVi3uxftmaW6Vc51MKb0q5P2rRUpPvrszuE4W1povHYgTpBfshb" crossorigin="anonymous"/>
+		<link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet"/>
+		<apex:stylesheet value="{! $Resource.AppFlowCSS }"/>
+	    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+    	<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.3/umd/popper.min.js" integrity="sha384-vFJXuSJphROIrBnz7yo7oB41mKfc8JzQZiCq4NCceLEaO4IHwicKwpJf9c9IpFgh" crossorigin="anonymous"></script>
+    	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/js/bootstrap.min.js" integrity="sha384-alpBpkh1PFOepccYVYDB4do5UnbKysX5WZXm3XxPqe5iKTfUKjNkCk9SaVuEZflJ" crossorigin="anonymous"></script>
+	    <script>
+	   		jQuery.noConflict();
+	   	</script>
+	</head>
+	<apex:outputPanel layout="block" styleClass="container-fluid">
+		<!-- <apex:outputPanel layout="block" styleClass="row rowHeader rowHeaderObjecting">
+			<apex:outputPanel layout="block" styleClass="col-sm stepTitle">
+		        Objecting Handling For Insurance
+		    </apex:outputPanel>
+	    </apex:outputPanel> -->
+		<apex:outputPanel layout="block" styleClass="row>">
+			<apex:outputPanel layout="block" styleClass="col-sm">
+				<div id="accordion" role="tablist" aria-multiselectable="true">
+				  <div class="card">
+				    <div class="card-header" role="tab" id="objecting1">
+				      <h5 class="mb-0">
+				        <a data-toggle="collapse" data-parent="#accordion" href="#collapseObj1" aria-expanded="true" aria-controls="collapseObj1">
+				          No, I don’t want any of the packages? 
+				        </a>
+				      </h5>
+				    </div>
+				    <div id="collapseObj1" class="collapse show" role="tabpanel" aria-labelledby="objecting1">
+				      <div class="card-block">
+				        Ok, that’s fine, our packages are not always perfect, hence why we have the ability to customize your own, out of all of the products presented which one do you believe you will get the best use out of?
+				      </div>
+				    </div>
+				  </div>
+				  <div class="card">
+				    <div class="card-header" role="tab" id="objecting2">
+				      <h5 class="mb-0">
+				        <a class="collapsed" data-toggle="collapse" data-parent="#accordion" href="#collapseObj2" aria-expanded="false" aria-controls="collapseObj2">
+				          No, not interested in anything? 
+				        </a>
+				      </h5>
+				    </div>
+				    <div id="collapseObj2" class="collapse" role="tabpanel" aria-labelledby="objecting2">
+				      <div class="card-block">
+				        OK, Look John, what I’ll do is I’ll leave this presentation with you, I am like you and I usually don’t buy products on the spot without first giving myself some time to digest all the information and then determine if I will get any use of something I am about to buy,  Please have a further read through the presentation I have sent through tonight before you make a decision, I wouldn’t be persisting with this if it wasn’t for good reason, these protection packages are quality, the amount of calls I get  from happy customers that have fell into trouble and utilized the protection benefits we organized is staggering, I also get calls from customers wanting to discuss executing the protection benefits that end up disappointed because they declined them. Anyway, I have sent you through some testimonials from several customers that have had some great experiences
+				      </div>
+				    </div>
+				  </div>
+
+				  <div class="card">
+				    <div class="card-header" role="tab" id="objecting3">
+				      <h5 class="mb-0">
+				        <a class="collapsed" data-toggle="collapse" data-parent="#accordion" href="#collapseObj3" aria-expanded="false" aria-controls="collapseObj3">
+				          I have plenty of savings so I don’t need GAP? 
+				        </a>
+				      </h5>
+				    </div>
+				    <div id="collapseObj3" class="collapse" role="tabpanel" aria-labelledby="objecting3">
+				      <div class="card-block">
+				        John, many customers say the same thing and your right, if you have the savings in the bank, then you can cover the GAP but do you want to? GAP’s a good investment.  On an average 25K loan, 2.5 years into the loan contract would generally give you 5K GAP, would you prefer to pay 5K in one lump sum, or pay $4 a week over 5 years, think about what most people waste $4 a week on. I think it’s a great investment, out of all the protection packages, this is the one that most people take out as it deliver you great coverage for a small weekly cost. So what do you think? 
+				      </div>
+				    </div>
+				  </div>
+
+				  <div class="card">
+				    <div class="card-header" role="tab" id="objecting4">
+				      <h5 class="mb-0">
+				        <a class="collapsed" data-toggle="collapse" data-parent="#accordion" href="#collapseObj4" aria-expanded="false" aria-controls="collapseObj4">
+				          Would like to think about it?
+				        </a>
+				      </h5>
+				    </div>
+				    <div id="collapseObj4" class="collapse" role="tabpanel" aria-labelledby="objecting4">
+				      <div class="card-block">
+				        Sure, that’s the whole point of this presentation, it’s produced to provide you with all the information you require to make a decision in your own time and respond. We still have at least 24 hours before we are ready to generate loan documents which gives you plenty of time to look over all options again, when you are ready to proceed, just tick whichever package or custom option you would like and I will receive instant notification, this presentation feeds directly back into our online system.
+				      </div>
+				    </div>
+				  </div>				  
+				</div>
+			</apex:outputPanel>
+		</apex:outputPanel>
+    </apex:outputPanel>
+</apex:page>

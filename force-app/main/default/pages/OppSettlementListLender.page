@@ -1,0 +1,143 @@
+<apex:page controller="OppSettlementSumaryExtension" cache="false" readOnly="true" title="Settlement Summary">
+    <style type='text/css'>
+        .captionTable {
+            font-size: 16px;
+            font-weight: bold;
+        }
+        .footerTable {
+            font-size: 14px;
+            font-weight: bold;
+        }
+        .odd {
+            background-color: #e7ebee;
+        }
+        .even {
+            
+        }
+        .tableClass {
+            background-color: #ffffff;  
+        }        
+    </style>
+    <apex:form id="formData">
+    <apex:pageBlock title="Opportunity: {!approvalTypeLabel}">
+        <apex:pageBlockSection columns="2">
+            <apex:pageBlockSection columns="1">
+                <apex:dataTable value="{!myOpportunitiesSubmitedList}" var="o" id="myOppSub" rowClasses="odd,even" 
+                                styleClass="tableClass"  cellpadding="4" width="100%" align="center"
+                                captionClass="captionTable" footerClass="footerTable" cellspacing="4">
+                    <apex:facet name="caption">Sent to Lender for Settlement (Own)</apex:facet>
+                    <apex:facet name="footer">Total {!myOpportunitiesSubmitedList.size}</apex:facet>
+                    <apex:column headerClass=" zen-deemphasize" width="10%">
+                        <apex:facet name="header">Actions</apex:facet>
+                        <apex:outputLink value="/apex/OppApprovalSettlementDetail?id={!o.oppId}" title="Approve / Reject"> <apex:image url="{!$Resource.ApprovalIcon}" width="16" height="16" /><apex:image url="{!$Resource.RejectionIcon}" width="16" height="16" /></apex:outputLink>&nbsp;&nbsp;
+                        <apex:outputLink value="/{!o.processInstanceWorkitemId}/e?et=REASSIGN&retURL=/apex/OppSettlementSumary" title="Reassign"><apex:image url="{!$Resource.ReassignIcon}" width="16" height="16" /></apex:outputLink>&nbsp;&nbsp;
+                        <apex:outputLink value="/apex/{!o.approvalTemplate}?id={!o.oppId}" title="Approval Summary" target="_blank"> <apex:image url="{!$Resource.PdfDocIcon}" width="16" height="16" /></apex:outputLink>&nbsp;&nbsp;
+                        <apex:outputLink value="/apex/GenerateAppPdf?id={!o.oppId}&IS_PREAPPROVAL=true" title="Application Form document" target="_blank"> <apex:image url="{!$Resource.PreviewAppForm}" width="16" height="16" /></apex:outputLink>
+                    </apex:column>
+                    <apex:column width="30%">
+                        <apex:facet name="header">Name</apex:facet>
+                        <apex:outputLink value="/{!o.oppId}"><apex:outputText value="{!o.name}"/></apex:outputLink>
+                        <br/><apex:outputText value="[{!o.productLender}]"/>
+                    </apex:column>
+                    <apex:column width="30%">
+                        <apex:facet name="header">Opportunity Owner</apex:facet>
+                        <apex:outputLink value="/{!o.ownerId}"><apex:outputText value="{!o.ownerName}"/></apex:outputLink>
+                        <br/><apex:outputText value="{!o.submittedDateFormatted}"/>
+                    </apex:column>
+                    <apex:column width="30%">
+                        <apex:facet name="header">Approver</apex:facet>
+                        <apex:outputText value="{!o.approverName}"/>
+                    </apex:column>
+                </apex:dataTable>
+                <!-- Others -->
+                <hr/>
+                <apex:dataTable value="{!otherOpportunitiesSubmitedList}" var="o" id="otherOppSub" rowClasses="odd,even" 
+                                styleClass="tableClass"  cellpadding="4" width="100%" align="center" 
+                                captionClass="captionTable" footerClass="footerTable" cellspacing="4">
+                    <apex:facet name="caption">Sent to Lender for Settlement (Others)</apex:facet>
+                    <apex:facet name="footer">Total {!otherOpportunitiesSubmitedList.size}</apex:facet>
+                    <apex:column headerClass=" zen-deemphasize" width="10%">
+                        <apex:facet name="header">Actions</apex:facet>
+                        <apex:outputLink value="/apex/OppApprovalSettlementDetail?id={!o.oppId}" title="Approve / Reject"> <apex:image url="{!$Resource.ApprovalIcon}" width="16" height="16" /><apex:image url="{!$Resource.RejectionIcon}" width="16" height="16" /></apex:outputLink>&nbsp;&nbsp;
+                        <apex:outputLink value="/{!o.processInstanceWorkitemId}/e?et=REASSIGN&retURL=/apex/OppSettlementSumary" title="Reassign"><apex:image url="{!$Resource.ReassignIcon}" width="16" height="16" /></apex:outputLink>&nbsp;&nbsp;
+                        <apex:outputLink value="/apex/{!o.approvalTemplate}?id={!o.oppId}" title="Approval Summary" target="_blank"> <apex:image url="{!$Resource.PdfDocIcon}" width="16" height="16" /></apex:outputLink>&nbsp;&nbsp;
+                        <apex:outputLink value="/apex/GenerateAppPdf?id={!o.oppId}&IS_PREAPPROVAL=true" title="Application Form document" target="_blank"> <apex:image url="{!$Resource.PreviewAppForm}" width="16" height="16" /></apex:outputLink>
+                    </apex:column>
+                    <apex:column width="30%">
+                        <apex:facet name="header">Name</apex:facet>
+                        <apex:outputLink value="/{!o.oppId}"><apex:outputText value="{!o.name}"/></apex:outputLink>
+                        <br/><apex:outputText value="[{!o.productLender}]"/>
+                    </apex:column>
+                    <apex:column width="30%">
+                        <apex:facet name="header">Opportunity Owner</apex:facet>
+                        <apex:outputLink value="/{!o.ownerId}"><apex:outputText value="{!o.ownerName}"/></apex:outputLink>
+                        <br/><apex:outputText value="{!o.submittedDateFormatted}"/>
+                    </apex:column>
+                    <apex:column width="30%">
+                        <apex:facet name="header">Approver</apex:facet>
+                        <apex:outputText value="{!o.approverName}"/>
+                    </apex:column>
+                </apex:dataTable>
+            </apex:pageBlockSection>
+            <apex:pageBlockSection columns="1">
+                <apex:dataTable value="{!myOpportunitiesSentList}" var="o" id="oppSent" rowClasses="odd,even" 
+                                styleClass="tableClass" cellpadding="4" width="100%" align="center" 
+                                captionClass="captionTable" footerClass="footerTable">
+                    <apex:facet name="caption">Rejected By Lender (Own)</apex:facet>
+                    <apex:facet name="footer">Total {!myOpportunitiesSentList.size}</apex:facet>
+                    <apex:column headerClass=" zen-deemphasize" width="10%">
+                        <apex:facet name="header">Actions</apex:facet>
+                        <apex:outputLink value="/apex/OppApprovalSettlementDetail?id={!o.oppId}" title="Approve / Reject"> <apex:image url="{!$Resource.ApprovalIcon}" width="16" height="16" /><apex:image url="{!$Resource.RejectionIcon}" width="16" height="16" /></apex:outputLink>&nbsp;&nbsp;
+                        <apex:outputLink value="/{!o.processInstanceWorkitemId}/e?et=REASSIGN&retURL=/apex/OppSettlementSumary" title="Reassign"><apex:image url="{!$Resource.ReassignIcon}" width="16" height="16" /></apex:outputLink>&nbsp;&nbsp;
+                        <apex:outputLink value="/apex/{!o.approvalTemplate}?id={!o.oppId}" title="Approval Summary" target="_blank"> <apex:image url="{!$Resource.PdfDocIcon}" width="16" height="16" /></apex:outputLink>&nbsp;&nbsp;
+                        <apex:outputLink value="/apex/GenerateAppPdf?id={!o.oppId}&IS_PREAPPROVAL=true" title="Application Form document" target="_blank"> <apex:image url="{!$Resource.PreviewAppForm}" width="16" height="16" /></apex:outputLink>
+                    </apex:column>
+                    <apex:column width="30%">
+                        <apex:facet name="header">Name</apex:facet>
+                        <apex:outputLink value="/{!o.oppId}"><apex:outputText value="{!o.name}"/></apex:outputLink>
+                        <br/><apex:outputText value="[{!o.productLender}]"/>
+                    </apex:column>
+                    <apex:column width="30%">
+                        <apex:facet name="header">Opportunity Owner</apex:facet>
+                        <apex:outputLink value="/{!o.ownerId}"><apex:outputText value="{!o.ownerName}"/></apex:outputLink>
+                        <br/><apex:outputText value="{!o.submittedDateFormatted}"/>
+                    </apex:column>
+                    <apex:column width="30%">
+                        <apex:facet name="header">Approver</apex:facet>
+                        <apex:outputText value="{!o.approverName}"/>
+                    </apex:column>
+                </apex:dataTable>
+                <!-- Others -->
+                <hr/>
+                <apex:dataTable value="{!otherOpportunitiesSentList}" var="o" id="otherOppSent" rowClasses="odd,even" 
+                                styleClass="tableClass" cellpadding="4" width="100%" align="center" 
+                                captionClass="captionTable" footerClass="footerTable">
+                    <apex:facet name="caption">Rejected By Lender (Others)</apex:facet>
+                    <apex:facet name="footer">Total {!otherOpportunitiesSentList.size}</apex:facet>
+                    <apex:column headerClass=" zen-deemphasize" width="10%">
+                        <apex:facet name="header">Actions</apex:facet>
+                        <apex:outputLink value="/apex/OppApprovalSettlementDetail?id={!o.oppId}" title="Approve / Reject"> <apex:image url="{!$Resource.ApprovalIcon}" width="16" height="16" /><apex:image url="{!$Resource.RejectionIcon}" width="16" height="16" /></apex:outputLink>&nbsp;&nbsp;
+                        <apex:outputLink value="/{!o.processInstanceWorkitemId}/e?et=REASSIGN&retURL=/apex/OppSettlementSumary" title="Reassign"><apex:image url="{!$Resource.ReassignIcon}" width="16" height="16" /></apex:outputLink>&nbsp;&nbsp;
+                        <apex:outputLink value="/apex/{!o.approvalTemplate}?id={!o.oppId}" title="Approval Summary" target="_blank"> <apex:image url="{!$Resource.PdfDocIcon}" width="16" height="16" /></apex:outputLink>&nbsp;&nbsp;
+                        <apex:outputLink value="/apex/GenerateAppPdf?id={!o.oppId}&IS_PREAPPROVAL=true" title="Application Form document" target="_blank"> <apex:image url="{!$Resource.PreviewAppForm}" width="16" height="16" /></apex:outputLink>
+                    </apex:column>
+                    <apex:column width="30%">
+                        <apex:facet name="header">Name</apex:facet>
+                        <apex:outputLink value="/{!o.oppId}"><apex:outputText value="{!o.name}"/></apex:outputLink>
+                        <br/><apex:outputText value="[{!o.productLender}]"/>
+                    </apex:column>
+                    <apex:column width="30%">
+                        <apex:facet name="header">Opportunity Owner</apex:facet>
+                        <apex:outputLink value="/{!o.ownerId}"><apex:outputText value="{!o.ownerName}"/></apex:outputLink>
+                        <br/><apex:outputText value="{!o.submittedDateFormatted}"/>
+                    </apex:column>
+                    <apex:column width="30%">
+                        <apex:facet name="header">Approver</apex:facet>
+                        <apex:outputText value="{!o.approverName}"/>
+                    </apex:column>
+                </apex:dataTable>
+            </apex:pageBlockSection>
+        </apex:pageBlockSection>
+    </apex:pageBlock>
+    </apex:form>
+</apex:page>

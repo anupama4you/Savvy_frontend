@@ -1,0 +1,30 @@
+<apex:page standardController="Custom_Opportunity__c" extensions="VDReassignmentProcessExtension" showHeader="true" sidebar="true">
+	<apex:sectionHeader title="VD Approval Process" subtitle="VD Reassignment Process" />
+	<apex:variable value="{!Custom_Opportunity__c}" var="o" />
+	<apex:form id="formData">
+		<apex:pageBlock title="VD Process for {!o.Name}">
+			<table width="400px">
+				<tr>
+					<td width="40%">Current Approver</td>
+					<td width="60%"><apex:outputField value="{!o.VD_Owner__c}"/></td>
+				</tr>
+				<tr>
+					<td>New Approver</td>
+					<td>
+						<apex:selectList value="{!newApproverId}" multiselect="false" size="1" styleClass="selectList">
+		                    <apex:selectOptions value="{!approverList}" />
+		                </apex:selectList>
+					</td>
+				</tr>
+				<tr>
+					<td>&nbsp;</td>
+					<td>
+						<apex:commandButton value="Reassign" action="{!reassign}" styleClass="commandButtons" rerender="msg" /><br/><br/>
+						<apex:pageMessages id="msg" />
+					</td>
+				</tr>
+			</table>
+			<apex:outputField value="{!o.VD_Worksheet__c}" rendered="false" />
+		</apex:pageBlock>
+	</apex:form>
+</apex:page>

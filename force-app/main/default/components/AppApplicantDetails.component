@@ -1,0 +1,696 @@
+<apex:component >
+    <apex:attribute name="app" type="Application__c" description="Application Data" required="true"/>
+    <apex:attribute name="numApplicant" type="Integer" description="Applicant number" required="true"/>
+    <apex:attribute name="prevEmployApp" type="AppEmploymentList" description="Applicant Employment"/>
+    <apex:attribute name="secondJobApplic1" type="Application_Employment__c" description="Application Employment"/>
+    <apex:attribute name="isSecondJobApplic1" type="boolean" description="Applicant Employment"/> 
+    <apex:attribute name="secondJobApplic2" type="Application_Employment__c" description="Application Employment"/>
+    <apex:attribute name="isSecondJobApplic2" type="boolean" description="Applicant Employment"/>
+    <table width="100%" border="1">
+        <tr>
+            <td colspan="4" class="tableCaption"><strong>
+                <apex:outputText value="Applicant {!numApplicant}" rendered="{!app.Application_Type__c=='Personal'}"/>
+                <apex:outputText value="Director {!numApplicant}" rendered="{!app.Application_Type__c=='Business'}"/>
+                </strong>
+            </td>
+        </tr>
+        <tr>
+            <td width="20%" class="labelDate">Surname</td>
+            <td width="30%">
+                <apex:outputField value="{!app.Last_Name__c}" rendered="{!numApplicant=1}" />
+                <apex:outputField value="{!app.Last_Name_2__c}" rendered="{!numApplicant=2}" />
+            </td>
+            <td width="20%" class="labelDate">Driver's License</td>
+            <td width="30%">
+                <apex:outputField value="{!app.Drivers_License_1__c}" rendered="{!numApplicant=1}" />
+                <apex:outputField value="{!app.Drivers_License_2__c}" rendered="{!numApplicant=2}" />
+            </td>
+        </tr>
+        <tr>
+            <td class="labelDate">First Name</td>
+            <td>
+                <apex:outputField value="{!app.First_Name__c}" rendered="{!numApplicant=1}" />
+                <apex:outputField value="{!app.First_Name_2__c}" rendered="{!numApplicant=2}" />
+            </td>
+            <td class="labelDate">DL Expiry Date</td>
+            <td>
+                <apex:outputField value="{!app.Expiry_Date_1__c}" rendered="{!numApplicant=1}" />
+                <apex:outputField value="{!app.Expiry_Date_2__c}" rendered="{!numApplicant=2}" />
+            </td>
+        </tr>
+        <tr>
+            <td class="labelDate">Middle Name</td>
+            <td>
+                <apex:outputField value="{!app.Middle_Name__c}" rendered="{!numApplicant=1}" />
+                <apex:outputField value="{!app.Middle_Name_2__c}" rendered="{!numApplicant=2}" />
+            </td>
+            <td class="labelDate">Residency Status</td>
+            <td>
+                <apex:outputField value="{!app.Current_Residential_Status_1__c}" rendered="{!numApplicant=1}" />
+                <apex:outputField value="{!app.Current_Residential_Status_2__c}" rendered="{!numApplicant=2}" />
+            </td>
+        </tr>
+        <tr>
+            <td class="labelDate">Date of Birth</td>
+            <td>
+                <apex:outputField value="{!app.Date_of_Birth_1__c}" rendered="{!numApplicant=1}" />
+                <apex:outputField value="{!app.Date_of_Birth_2__c}" rendered="{!numApplicant=2}" />
+            </td>
+            <td class="labelDate">Nationality</td>
+            <td>
+                <apex:outputField value="{!app.Actual_Nationality_1__c}" rendered="{!numApplicant=1}" />
+                <apex:outputField value="{!app.Actual_Nationality_2__c}" rendered="{!numApplicant=2}" />
+            </td>
+        </tr>
+        <tr>
+            <td class="labelDate">Gender</td>
+            <td>
+                &nbsp;
+            </td>
+            <td class="labelDate">Mobile</td>
+            <td>
+                <apex:outputField value="{!app.Mobile_Number__c}" rendered="{!numApplicant=1}" />
+                <apex:outputField value="{!app.Mobile_Number_2__c}" rendered="{!numApplicant=2}" />
+            </td>
+        </tr>
+        <tr>
+            <td class="labelDate">Marital Status</td>
+            <td>
+                <apex:outputField value="{!app.Marital_Status_1__c}" rendered="{!numApplicant=1}" />
+                <apex:outputField value="{!app.Marital_Status_2__c}" rendered="{!numApplicant=2}" />
+            </td>
+            <td class="labelDate">Homa Phone</td>
+            <td>
+                <apex:outputField value="{!app.Home_Phone__c}" rendered="{!numApplicant=1}" />
+                <apex:outputField value="{!app.Home_Phone_2__c}" rendered="{!numApplicant=2}" />
+            </td>
+        </tr>
+        <tr>
+            <td class="labelDate">Dependants</td>
+            <td>
+                <apex:outputField value="{!app.No_of_Dependants_1__c}" rendered="{!numApplicant=1}" />
+                <apex:outputField value="{!app.No_of_Dependants_2__c}" rendered="{!numApplicant=2}" />
+            </td>
+            <td class="labelDate">Work Phone</td>
+            <td>
+                <apex:outputField value="{!app.Work_Phone__c}" rendered="{!numApplicant=1}" />
+                <apex:outputField value="{!app.Work_Phone_2__c}" rendered="{!numApplicant=2}" />
+            </td>
+        </tr>
+        <tr>
+            <td class="labelDate">Credit Status</td>
+            <td>
+                <apex:outputField value="{!app.Credit_Status_1__c}" rendered="{!numApplicant=1}" />
+                <apex:outputField value="{!app.Credit_Status_2__c}" rendered="{!numApplicant=2}" />
+            </td>
+            <td class="labelDate">Email</td>
+            <td>
+                <apex:outputField value="{!app.Email_Address__c}" rendered="{!numApplicant=1}" />
+                <apex:outputField value="{!app.Email_Address_2__c}" rendered="{!numApplicant=2}" />
+            </td>
+        </tr>
+    </table>
+    <!-- Address Applicant 1-->
+    <apex:outputPanel rendered="{!numApplicant==1}">
+        <table width="100%" border="1">
+            <tr><td colspan="3" class="tableCaption"><strong>Address {!numApplicant}</strong></td></tr>
+            <tr>
+                <td class="cellHeading">Street Address</td>
+                <td class="cellHeading">Time Living</td>
+                <td class="cellHeading">Status</td>
+            </tr>
+            <tr>
+                <td>(Current)&nbsp; 
+                    <apex:outputText value="{!app.Unit_Number__c} / " rendered="{!!ISBLANK(app.Unit_Number__c)}"/> 
+                    <apex:outputText value="{!app.Street_Number__c} "/> 
+                    <apex:outputField value="{!app.Street_Address__c}"/>
+                    <apex:outputText value=" " rendered="{!!ISBLANK(app.Street_Type__c)}"/> 
+                    <apex:outputField value="{!app.Street_Type__c}"/>, 
+                    <apex:outputLabel value="{!app.Suburb__c}" />, 
+                    <apex:outputLabel value="{!app.State__c}" />
+                    <apex:outputLabel value="{!app.Postcode__c}" /></td>
+                <td><apex:outputField value="{!app.Date_Moved_in_1__c}"/></td>
+                <td><apex:outputField value="{!app.Current_Residence_Status_1__c}"/></td>
+            </tr>
+            <tr style= "display: {!IF(ISBLANK(app.Previous_Street_Address_1__c), 'none','')}">
+                <td>(Prev 1)&nbsp;
+                    <apex:outputText value="{!app.Previous_Unit_Number_1__c} / " rendered="{!AND(
+                                                                                           !ISBLANK(app.Previous_Unit_Number_1__c),
+                                                                                           app.Previous_Country_1__c == 'AUS')}"/> 
+                    <apex:outputText value="{!app.Previous_Street_Number_1__c} " rendered="{!app.Previous_Country_1__c == 'AUS'}"/> 
+                    <apex:outputField value="{!app.Previous_Street_Address_1__c}"/> 
+                    <apex:outputField value="{!app.Previous_Street_Address_2nd_1__c}" rendered="{!app.Previous_Country_1__c != 'AUS'}"/>
+                    <apex:outputField value="{!app.Previous_Street_Type_1__c}" rendered="{!app.Previous_Country_1__c == 'AUS'}"/>, 
+                    <apex:outputLabel value="{!app.Previous_Suburb_1__c}" rendered="{!app.Previous_Country_1__c == 'AUS'}" />
+                    <apex:outputLabel value="{!app.Previous_Overseas_City_1__c}"  rendered="{!app.Previous_Country_1__c != 'AUS'}" />, 
+                    <apex:outputLabel value="{!app.Previous_State_1__c}" rendered="{!app.Previous_Country_1__c == 'AUS'}" /> 
+                    <apex:outputLabel value="{!app.Previous_Overseas_State_1__c}"  rendered="{!app.Previous_Country_1__c != 'AUS'}" />, 
+                    <apex:outputLabel value="{!app.Previous_Postcode_1__c}" /> 
+                    <apex:outputLabel value="({!app.Previous_Country_1__c})" rendered="{!app.Previous_Country_1__c != 'AUS'}" /> 
+                </td>
+                <td><apex:outputField value="{!app.Date_From_1__c}"/></td>
+                <td><apex:outputField value="{!app.Previous_Residence_Status_1__c}"/></td>
+            </tr>
+            <tr style= "display: {!IF(ISBLANK(app.Previous_Street_Address_1b__c), 'none','')}">
+                <td>(Prev 2)&nbsp;
+                    <apex:outputText value="{!app.Previous_Unit_Number_1b__c} / " rendered="{!AND(
+                                                                                            !ISBLANK(app.Previous_Unit_Number_1b__c),
+                                                                                            app.Previous_Country_1b__c == 'AUS')}"/> 
+                    <apex:outputText value="{!app.Previous_Street_Number_1b__c} " rendered="{!app.Previous_Country_1b__c == 'AUS'}"/> 
+                    <apex:outputLabel value="{!app.Previous_Street_Address_1b__c} "/> 
+                    <apex:outputLabel value="{!app.Previous_Street_Address_2nd_1b__c}" rendered="{!app.Previous_Country_1b__c != 'AUS'}"/>
+                    <apex:outputField value="{!app.Previous_Street_Type_1b__c}" rendered="{!app.Previous_Country_1b__c == 'AUS'}"/>, 
+                    <apex:outputLabel value="{!app.Previous_Suburb_1b__c}" rendered="{!app.Previous_Country_1b__c == 'AUS'}" />
+                    <apex:outputLabel value="{!app.Previous_Overseas_City_1b__c}"  rendered="{!app.Previous_Country_1b__c != 'AUS'}" />, 
+                    <apex:outputLabel value="{!app.Previous_State_1b__c}" rendered="{!app.Previous_Country_1b__c == 'AUS'}" /> 
+                    <apex:outputLabel value="{!app.Previous_Overseas_State_1b__c}"  rendered="{!app.Previous_Country_1b__c != 'AUS'}" />, 
+                    <apex:outputLabel value="{!app.Previous_Postcode_1b__c}" /> 
+                    <apex:outputLabel value="({!app.Previous_Country_1b__c})" rendered="{!app.Previous_Country_1b__c != 'AUS'}" /> 
+                </td>
+                <td><apex:outputField value="{!app.Date_From_1b__c}"/></td>
+                <td><apex:outputField value="{!app.Previous_Residence_Status_1b__c}"/></td>
+            </tr>
+            <tr style= "display: {!IF(ISBLANK(app.Previous_Street_Address_1c__c), 'none','')}">
+                <td>(Prev 3)&nbsp;
+                    <apex:outputText value="{!app.Previous_Unit_Number_1c__c} / " rendered="{!AND(
+                                                                                            !ISBLANK(app.Previous_Unit_Number_1c__c),
+                                                                                            app.Previous_Country_1c__c == 'AUS')}"/> 
+                    <apex:outputText value="{!app.Previous_Street_Number_1c__c} " rendered="{!app.Previous_Country_1c__c == 'AUS'}"/> 
+                    <apex:outputLabel value="{!app.Previous_Street_Address_1c__c} "/> 
+                    <apex:outputLabel value="{!app.Previous_Street_Address_2nd_1c__c}" rendered="{!app.Previous_Country_1c__c != 'AUS'}"/>
+                    <apex:outputField value="{!app.Previous_Street_Type_1c__c}" rendered="{!app.Previous_Country_1c__c == 'AUS'}"/>, 
+                    <apex:outputLabel value="{!app.Previous_Suburb_1c__c}" rendered="{!app.Previous_Country_1c__c == 'AUS'}" />
+                    <apex:outputLabel value="{!app.Previous_Overseas_City_1c__c}"  rendered="{!app.Previous_Country_1c__c != 'AUS'}" />, 
+                    <apex:outputLabel value="{!app.Previous_State_1c__c}" rendered="{!app.Previous_Country_1c__c == 'AUS'}" /> 
+                    <apex:outputLabel value="{!app.Previous_Overseas_State_1c__c}"  rendered="{!app.Previous_Country_1c__c != 'AUS'}" />, 
+                    <apex:outputLabel value="{!app.Previous_Postcode_1c__c}" /> 
+                    <apex:outputLabel value="({!app.Previous_Country_1c__c})" rendered="{!app.Previous_Country_1c__c != 'AUS'}" /> 
+                </td>
+                <td><apex:outputField value="{!app.Date_From_1c__c}"/></td>
+                <td><apex:outputField value="{!app.Previous_Residence_Status_1C__c}"/></td>
+            </tr>
+            <tr style= "display: {!IF(ISBLANK(app.Previous_Street_Address_1d__c), 'none','')}">
+                <td>(Prev 4)&nbsp;
+                    <apex:outputText value="{!app.Previous_Unit_Number_1d__c} / " rendered="{!AND(
+                                                                                            !ISBLANK(app.Previous_Unit_Number_1d__c),
+                                                                                            app.Previous_Country_1d__c == 'AUS')}"/> 
+                    <apex:outputText value="{!app.Previous_Street_Number_1d__c} " rendered="{!app.Previous_Country_1d__c == 'AUS'}"/> 
+                    <apex:outputLabel value="{!app.Previous_Street_Address_1d__c} "/> 
+                    <apex:outputLabel value="{!app.Previous_Street_Address_2nd_1d__c}" rendered="{!app.Previous_Country_1d__c != 'AUS'}"/>
+                    <apex:outputField value="{!app.Previous_Street_Type_1d__c}" rendered="{!app.Previous_Country_1d__c == 'AUS'}"/>, 
+                    <apex:outputLabel value="{!app.Previous_Suburb_1d__c}" rendered="{!app.Previous_Country_1d__c == 'AUS'}" />
+                    <apex:outputLabel value="{!app.Previous_Overseas_City_1d__c}"  rendered="{!app.Previous_Country_1d__c != 'AUS'}" />, 
+                    <apex:outputLabel value="{!app.Previous_State_1d__c}" rendered="{!app.Previous_Country_1d__c == 'AUS'}" /> 
+                    <apex:outputLabel value="{!app.Previous_Overseas_State_1d__c}"  rendered="{!app.Previous_Country_1d__c != 'AUS'}" />, 
+                    <apex:outputLabel value="{!app.Previous_Postcode_1d__c}" /> 
+                    <apex:outputLabel value="({!app.Previous_Country_1d__c})" rendered="{!app.Previous_Country_1d__c != 'AUS'}" /> 
+                </td>
+                <td><apex:outputField value="{!app.Date_From_1d__c}"/></td>
+                <td><apex:outputField value="{!app.Previous_Residence_Status_1d__c}"/></td>
+            </tr>
+            <tr style= "display: {!IF(ISBLANK(app.Previous_Street_Address_1e__c), 'none','')}">
+                <td>(Prev 5)&nbsp;
+                    <apex:outputText value="{!app.Previous_Unit_Number_1e__c} / " rendered="{!AND(
+                                                                                            !ISBLANK(app.Previous_Unit_Number_1e__c),
+                                                                                            app.Previous_Country_1e__c == 'AUS')}"/> 
+                    <apex:outputText value="{!app.Previous_Street_Number_1e__c} " rendered="{!app.Previous_Country_1e__c == 'AUS'}"/> 
+                    <apex:outputLabel value="{!app.Previous_Street_Address_1e__c} "/> 
+                    <apex:outputLabel value="{!app.Previous_Street_Address_2nd_1e__c}" rendered="{!app.Previous_Country_1e__c != 'AUS'}"/>
+                    <apex:outputField value="{!app.Previous_Street_Type_1e__c}" rendered="{!app.Previous_Country_1e__c == 'AUS'}"/>, 
+                    <apex:outputLabel value="{!app.Previous_Suburb_1e__c}" rendered="{!app.Previous_Country_1e__c == 'AUS'}" />
+                    <apex:outputLabel value="{!app.Previous_Overseas_City_1e__c}"  rendered="{!app.Previous_Country_1e__c != 'AUS'}" />, 
+                    <apex:outputLabel value="{!app.Previous_State_1e__c}" rendered="{!app.Previous_Country_1e__c == 'AUS'}" /> 
+                    <apex:outputLabel value="{!app.Previous_Overseas_State_1e__c}"  rendered="{!app.Previous_Country_1e__c != 'AUS'}" />, 
+                    <apex:outputLabel value="{!app.Previous_Postcode_1e__c}" /> 
+                    <apex:outputLabel value="({!app.Previous_Country_1e__c})" rendered="{!app.Previous_Country_1e__c != 'AUS'}" /> 
+                </td>
+                <td><apex:outputField value="{!app.Date_From_1e__c}"/></td>
+                <td><apex:outputField value="{!app.Previous_Residence_Status_1e__c}"/></td>
+            </tr>
+        </table>
+    </apex:outputPanel>
+    <!-- Address Applicant 2-->
+    <apex:outputPanel rendered="{!numApplicant==2}">
+        <apex:outputPanel rendered="{!app.Applicant_2_living_in_the_same_address__c=='Yes'}">
+            <table width="100%" border="1">
+                <tr><td class="tableCaption"><strong>Address {!numApplicant}</strong></td></tr>
+                <tr>
+                    <td>
+                        <apex:outputText value="Applicant" rendered="{!app.Application_Type__c=='Personal'}"/>
+                        <apex:outputText value="Director" rendered="{!app.Application_Type__c=='Business'}"/>
+                        &nbsp; 2 living in the same address</td>
+                </tr>
+            </table>
+        </apex:outputPanel>
+        <apex:outputPanel rendered="{!app.Applicant_2_living_in_the_same_address__c!='Yes'}">
+            <table width="100%" border="1">
+                <tr><td colspan="3" class="tableCaption"><strong>Address {!numApplicant}</strong></td></tr>
+                <tr>
+                    <td class="cellHeading">Street Address</td>
+                    <td class="cellHeading">Time Living</td>
+                    <td class="cellHeading">Status</td>
+                </tr>
+                <tr>
+                    <td>(Current)&nbsp; 
+                        <apex:outputText value="{!app.Unit_Number_2__c} / " rendered="{!!ISBLANK(app.Unit_Number_2__c)}"/> 
+                        <apex:outputText value="{!app.Street_Number_2__c} "/> 
+                        <apex:outputField value="{!app.Street_Address_2__c}"/>
+                        <apex:outputText value=" " rendered="{!!ISBLANK(app.Street_Type_2__c)}"/> 
+                        <apex:outputField value="{!app.Street_Type_2__c}"/>, 
+                        <apex:outputLabel value="{!app.Suburb_2__c}" />, 
+                        <apex:outputLabel value="{!app.State_2__c}" />
+                        <apex:outputLabel value="{!app.Postcode_2__c}" /></td>
+                    <td><apex:outputField value="{!app.Date_Moved_in_2__c}"/></td>
+                    <td><apex:outputField value="{!app.Current_Residence_Status_2__c}"/></td>
+                </tr>
+                <tr style= "display: {!IF(ISBLANK(app.Previous_Street_Address_2__c), 'none','')}">
+                    <td>(Prev 1)&nbsp;
+                        <apex:outputText value="{!app.Previous_Unit_Number_2__c} / " rendered="{!AND(
+                                                                                               !ISBLANK(app.Previous_Unit_Number_2__c),
+                                                                                               app.Previous_Country_2__c == 'AUS')}"/> 
+                        <apex:outputText value="{!app.Previous_Street_Number_2__c} " rendered="{!app.Previous_Country_2__c == 'AUS'}"/> 
+                        <apex:outputField value="{!app.Previous_Street_Address_2__c}"/> 
+                        <apex:outputField value="{!app.Previous_Street_Address_2nd_2__c}" rendered="{!app.Previous_Country_2__c != 'AUS'}"/>
+                        <apex:outputField value="{!app.Previous_Street_Type_2__c}" rendered="{!app.Previous_Country_2__c == 'AUS'}"/>, 
+                        <apex:outputLabel value="{!app.Previous_Suburb_2__c}" rendered="{!app.Previous_Country_2__c == 'AUS'}" />
+                        <apex:outputLabel value="{!app.Previous_Overseas_City_2__c}"  rendered="{!app.Previous_Country_2__c != 'AUS'}" />, 
+                        <apex:outputLabel value="{!app.Previous_State_2__c}" rendered="{!app.Previous_Country_2__c == 'AUS'}" /> 
+                        <apex:outputLabel value="{!app.Previous_Overseas_State_2__c}"  rendered="{!app.Previous_Country_2__c != 'AUS'}" />, 
+                        <apex:outputLabel value="{!app.Previous_Postcode_2__c}" /> 
+                        <apex:outputLabel value="({!app.Previous_Country_2__c})" rendered="{!app.Previous_Country_2__c != 'AUS'}" /> 
+                    </td>
+                    <td><apex:outputField value="{!app.Date_From_2__c}"/></td>
+                    <td><apex:outputField value="{!app.Previous_Residence_Status_2__c}"/></td>
+                </tr>
+                <tr style= "display: {!IF(ISBLANK(app.Previous_Street_Address_2b__c), 'none','')}">
+                    <td>(Prev 2)&nbsp;
+                        <apex:outputText value="{!app.Previous_Unit_Number_2b__c} / " rendered="{!AND(
+                                                                                                !ISBLANK(app.Previous_Unit_Number_2b__c),
+                                                                                                app.Previous_Country_2b__c == 'AUS')}"/> 
+                        <apex:outputText value="{!app.Previous_Street_Number_2b__c} " rendered="{!app.Previous_Country_2b__c == 'AUS'}"/> 
+                        <apex:outputLabel value="{!app.Previous_Street_Address_2b__c} "/> 
+                        <apex:outputLabel value="{!app.Previous_Street_Address_2nd_2b__c}" rendered="{!app.Previous_Country_2b__c != 'AUS'}"/>
+                        <apex:outputField value="{!app.Previous_Street_Type_2b__c}" rendered="{!app.Previous_Country_2b__c == 'AUS'}"/>, 
+                        <apex:outputLabel value="{!app.Previous_Suburb_2b__c}" rendered="{!app.Previous_Country_2b__c == 'AUS'}" />
+                        <apex:outputLabel value="{!app.Previous_Overseas_City_2b__c}"  rendered="{!app.Previous_Country_2b__c != 'AUS'}" />, 
+                        <apex:outputLabel value="{!app.Previous_State_2b__c}" rendered="{!app.Previous_Country_2b__c == 'AUS'}" /> 
+                        <apex:outputLabel value="{!app.Previous_Overseas_State_2b__c}"  rendered="{!app.Previous_Country_2b__c != 'AUS'}" />, 
+                        <apex:outputLabel value="{!app.Previous_Postcode_2b__c}" /> 
+                        <apex:outputLabel value="({!app.Previous_Country_2b__c})" rendered="{!app.Previous_Country_2b__c != 'AUS'}" /> 
+                    </td>
+                    <td><apex:outputField value="{!app.Date_From_2b__c}"/></td>
+                    <td><apex:outputField value="{!app.Previous_Residence_Status_2b__c}"/></td>
+                </tr>
+                <tr style= "display: {!IF(ISBLANK(app.Previous_Street_Address_2c__c), 'none','')}">
+                    <td>(Prev 3)&nbsp;
+                        <apex:outputText value="{!app.Previous_Unit_Number_2c__c} / " rendered="{!AND(
+                                                                                                !ISBLANK(app.Previous_Unit_Number_2c__c),
+                                                                                                app.Previous_Country_2c__c == 'AUS')}"/> 
+                        <apex:outputText value="{!app.Previous_Street_Number_2c__c} " rendered="{!app.Previous_Country_2c__c == 'AUS'}"/> 
+                        <apex:outputLabel value="{!app.Previous_Street_Address_2c__c} "/> 
+                        <apex:outputLabel value="{!app.Previous_Street_Address_2nd_2c__c}" rendered="{!app.Previous_Country_2c__c != 'AUS'}"/>
+                        <apex:outputField value="{!app.Previous_Street_Type_2c__c}" rendered="{!app.Previous_Country_2c__c == 'AUS'}"/>, 
+                        <apex:outputLabel value="{!app.Previous_Suburb_2c__c}" rendered="{!app.Previous_Country_2c__c == 'AUS'}" />
+                        <apex:outputLabel value="{!app.Previous_Overseas_City_2c__c}"  rendered="{!app.Previous_Country_2c__c != 'AUS'}" />, 
+                        <apex:outputLabel value="{!app.Previous_State_2c__c}" rendered="{!app.Previous_Country_2c__c == 'AUS'}" /> 
+                        <apex:outputLabel value="{!app.Previous_Overseas_State_2c__c}"  rendered="{!app.Previous_Country_2c__c != 'AUS'}" />, 
+                        <apex:outputLabel value="{!app.Previous_Postcode_2c__c}" /> 
+                        <apex:outputLabel value="({!app.Previous_Country_2c__c})" rendered="{!app.Previous_Country_2c__c != 'AUS'}" /> 
+                    </td>
+                    <td><apex:outputField value="{!app.Date_From_2c__c}"/></td>
+                    <td><apex:outputField value="{!app.Previous_Residence_Status_2c__c}"/></td>
+                </tr>
+                <tr style= "display: {!IF(ISBLANK(app.Previous_Street_Address_2d__c), 'none','')}">
+                    <td>(Prev 4)&nbsp;
+                        <apex:outputText value="{!app.Previous_Unit_Number_2d__c} / " rendered="{!AND(
+                                                                                                !ISBLANK(app.Previous_Unit_Number_2d__c),
+                                                                                                app.Previous_Country_2d__c == 'AUS')}"/> 
+                        <apex:outputText value="{!app.Previous_Street_Number_2d__c} " rendered="{!app.Previous_Country_2d__c == 'AUS'}"/> 
+                        <apex:outputLabel value="{!app.Previous_Street_Address_2d__c} "/> 
+                        <apex:outputLabel value="{!app.Previous_Street_Address_2nd_2d__c}" rendered="{!app.Previous_Country_2d__c != 'AUS'}"/>
+                        <apex:outputField value="{!app.Previous_Street_Type_2d__c}" rendered="{!app.Previous_Country_2d__c == 'AUS'}"/>, 
+                        <apex:outputLabel value="{!app.Previous_Suburb_2d__c}" rendered="{!app.Previous_Country_2d__c == 'AUS'}" />
+                        <apex:outputLabel value="{!app.Previous_Overseas_City_2d__c}"  rendered="{!app.Previous_Country_2d__c != 'AUS'}" />, 
+                        <apex:outputLabel value="{!app.Previous_State_2d__c}" rendered="{!app.Previous_Country_2d__c == 'AUS'}" /> 
+                        <apex:outputLabel value="{!app.Previous_Overseas_State_2d__c}"  rendered="{!app.Previous_Country_2d__c != 'AUS'}" />, 
+                        <apex:outputLabel value="{!app.Previous_Postcode_2d__c}" /> 
+                        <apex:outputLabel value="({!app.Previous_Country_2d__c})" rendered="{!app.Previous_Country_2d__c != 'AUS'}" /> 
+                    </td>
+                    <td><apex:outputField value="{!app.Date_From_2d__c}"/></td>
+                    <td><apex:outputField value="{!app.Previous_Residence_Status_2d__c}"/></td>
+                </tr>
+                <tr style= "display: {!IF(ISBLANK(app.Previous_Street_Address_2e__c), 'none','')}">
+                    <td>(Prev 5)&nbsp;
+                        <apex:outputText value="{!app.Previous_Unit_Number_2e__c} / " rendered="{!AND(
+                                                                                                !ISBLANK(app.Previous_Unit_Number_2e__c),
+                                                                                                app.Previous_Country_2e__c == 'AUS')}"/> 
+                        <apex:outputText value="{!app.Previous_Street_Number_2e__c} " rendered="{!app.Previous_Country_2e__c == 'AUS'}"/> 
+                        <apex:outputLabel value="{!app.Previous_Street_Address_2e__c} "/> 
+                        <apex:outputLabel value="{!app.Previous_Street_Address_2nd_2e__c}" rendered="{!app.Previous_Country_2e__c != 'AUS'}"/>
+                        <apex:outputField value="{!app.Previous_Street_Type_2e__c}" rendered="{!app.Previous_Country_2e__c == 'AUS'}"/>, 
+                        <apex:outputLabel value="{!app.Previous_Suburb_2e__c}" rendered="{!app.Previous_Country_2e__c == 'AUS'}" />
+                        <apex:outputLabel value="{!app.Previous_Overseas_City_2e__c}"  rendered="{!app.Previous_Country_2e__c != 'AUS'}" />, 
+                        <apex:outputLabel value="{!app.Previous_State_2e__c}" rendered="{!app.Previous_Country_2e__c == 'AUS'}" /> 
+                        <apex:outputLabel value="{!app.Previous_Overseas_State_2e__c}"  rendered="{!app.Previous_Country_2e__c != 'AUS'}" />, 
+                        <apex:outputLabel value="{!app.Previous_Postcode_2e__c}" /> 
+                        <apex:outputLabel value="({!app.Previous_Country_2e__c})" rendered="{!app.Previous_Country_2e__c != 'AUS'}" /> 
+                    </td>
+                    <td><apex:outputField value="{!app.Date_From_2e__c}"/></td>
+                    <td><apex:outputField value="{!app.Previous_Residence_Status_2e__c}"/></td>
+                </tr>
+            </table>
+        </apex:outputPanel>
+    </apex:outputPanel>
+    <!-- Employment Applicant 1 -->
+    <apex:outputPanel rendered="{!numApplicant==1}">
+        <table width="100%" border="1">
+            <tr>
+                <td colspan="4" class="tableCaption"><strong>Current Employment - &nbsp;
+                    <apex:outputText value="Applicant" rendered="{!app.Application_Type__c=='Personal'}"/>
+                    <apex:outputText value="Director" rendered="{!app.Application_Type__c=='Business'}"/>
+                    &nbsp; {!numApplicant}</strong>
+                </td>
+            </tr>
+            <tr>
+                <td width="20%" class="labelDate">Type</td>
+                <td width="30%"><apex:outputField value="{!app.Mode_of_Employment_1__c}" /> </td>
+                <td width="20%" class="labelDate">Occupation</td>
+                <td width="30%"><apex:outputField value="{!app.Current_Occupation_1__c}" /> </td>
+            </tr>
+            <tr>
+                <td class="labelDate">Employer</td>
+                <td><apex:outputField value="{!app.Current_Employer_Name_1__c}" /> </td>
+                <td class="labelDate">Time Working</td>
+                <td><apex:outputField value="{!app.Date_Started_1__c}" /> </td>
+            </tr>
+            <tr>
+                <td class="labelDate">Address</td>
+                <td><apex:outputField value="{!app.Current_Work_Address_1__c}" /> </td>
+                <td class="labelDate">Phone</td>
+                <td><apex:outputField value="{!app.Current_Employer_Phone_1__c}" /> </td>
+            </tr>
+        </table>
+        <apex:outputPanel layout="block" style="display: {!IF(isSecondJobApplic1==true, '','none')}" id="secondJob1">
+            <table width="100%" border="1">
+                <tr>
+                    <td colspan="4" class="tableCaption"><strong>Second Job - &nbsp;
+                        <apex:outputText value="Applicant" rendered="{!app.Application_Type__c=='Personal'}"/>
+                        <apex:outputText value="Director" rendered="{!app.Application_Type__c=='Business'}"/>
+                        &nbsp; {!numApplicant}</strong>
+                    </td>
+                </tr>
+                <tr> 
+                    <td class="labelColumn">Employment Type</td>
+                    <td class="dataColumn">
+                        <apex:outputField value="{!secondJobApplic1.Employment_Type__c}" />
+                    </td>
+                    <td class="labelColumn">Employer Name</td>
+                    <td class="dataColumn">
+                        <apex:outputField value="{!secondJobApplic1.Employer_Name__c}" />
+                    </td>
+                </tr>
+                <tr>
+                    <td class="labelColumn">Unit Number</td>
+                    <td class="dataColumn">
+                        <apex:outputField value="{!secondJobApplic1.Unit_Number__c}"/>
+                    </td>
+                    <td class="labelColumn">Street Number</td>
+                    <td class="dataColumn">
+                        <apex:outputField value="{!secondJobApplic1.Street_Number__c}"/>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="labelColumn">Work Address</td>
+                    <td class="dataColumn">
+                        <apex:outputField value="{!secondJobApplic1.Work_Address__c}"/>
+                    </td>
+                    <td class="labelColumn">Street Type</td>
+                    <td class="dataColumn">
+                        <apex:outputField value="{!secondJobApplic1.Street_Type__c}"/>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="labelColumn">Suburb</td>
+                    <td class="dataColumn">
+                        <apex:outputField value="{!secondJobApplic1.Suburb__c}"/>
+                    </td>
+                    <td class="labelColumn">Postcode</td>
+                    <td class="dataColumn">
+                        <apex:outputLabel value="{!secondJobApplic1.Postcode__c}"/>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="labelColumn">State</td>
+                    <td class="dataColumn">
+                        <apex:outputLabel value="{!secondJobApplic1.State__c}"/>
+                    </td>
+                    <td class="labelColumn">Employer's Phone</td>
+                    <td class="dataColumn">
+                        <apex:outputLabel value="{!secondJobApplic1.Phone__c}"/>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="labelColumn">Contact Name</td>
+                    <td class="dataColumn">
+                        <apex:outputField styleClass="dataInput" value="{!secondJobApplic1.Contact_Name__c}"/>
+                    </td>
+                    <td class="labelColumn">Occupation</td>
+                    <td class="dataColumn">
+                        <apex:outputField value="{!secondJobApplic1.Occupation__c}"/>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="labelColumn">Start Date</td>
+                    <td class="dataColumn">
+                        <apex:outputField value="{!secondJobApplic1.Start_Date__c}"/>
+                    </td>
+                    <td class="labelColumn">Income After Tax</td>
+                    <td class="dataColumn">
+                        <apex:outputField value="{!secondJobApplic1.Income__c}"/>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="labelColumn">Payment Frequency</td>
+                    <td class="dataColumn">
+                        <apex:outputField value="{!secondJobApplic1.Frequency__c}"/>
+                    </td>
+                    <td class="labelColumn">Monthly Income</td>
+                    <td class="dataColumn">
+                        <apex:outputField value="{!secondJobApplic1.Monthly_Income__c}"/>   	
+                    </td>
+                </tr>
+                <tr>
+                    <td class="labelColumn">Employer ABN</td>
+                    <td class="dataColumn">
+                        <apex:outputField value="{!secondJobApplic1.Employer_ABN_1__c}"/>
+                    </td>
+                    <td></td>
+                    <td></td>
+                </tr>
+            </table>
+        </apex:outputPanel>
+        
+        <table width="100%" border="1">
+            <tr style= "display: {!IF(ISBLANK(app.Previous_Mode_of_Employment_1__c), 'none','')}">
+                <td colspan="4" class="tableCaption"><strong>Previous Employment - &nbsp;
+                    <apex:outputText value="Applicant" rendered="{!app.Application_Type__c=='Personal'}"/>
+                    <apex:outputText value="Director" rendered="{!app.Application_Type__c=='Business'}"/>
+                    &nbsp; {!numApplicant}  &nbsp;({!app.Previous_Work_Country_1__c})</strong>
+                </td>
+            </tr>
+            <tr style= "display: {!IF(ISBLANK(app.Previous_Mode_of_Employment_1__c), 'none','')}">
+                <td width="20%" class="labelDate">Type</td>
+                <td width="30%"><apex:outputField value="{!app.Previous_Mode_of_Employment_1__c}" /> </td>
+                <td width="20%" class="labelDate">Occupation</td>
+                <td width="30%"><apex:outputField value="{!app.Previous_Occupation_1__c}" /> </td>
+            </tr>
+            <tr style= "display: {!IF(ISBLANK(app.Previous_Mode_of_Employment_1__c), 'none','')}">
+                <td class="labelDate">Employer</td>
+                <td><apex:outputField value="{!app.Previous_Employer_Name_1__c}" /> </td>
+                <td class="labelDate">Time Working</td>
+                <td>
+                    <apex:outputField value="{!app.Start_Date_1__c}" /> &nbsp;&nbsp;/&nbsp;&nbsp; 
+                    <apex:outputField value="{!app.Finish_Date_1__c}" /> 
+                </td>
+            </tr>
+        </table>
+    </apex:outputPanel>
+    <!-- Employment Applicant 2 -->
+    <apex:outputPanel rendered="{!numApplicant==2}">
+        <table width="100%" border="1">
+            <tr>
+                <td colspan="4" class="tableCaption"><strong>Current Employment - &nbsp;
+                    <apex:outputText value="Applicant" rendered="{!app.Application_Type__c=='Personal'}"/>
+                    <apex:outputText value="Director" rendered="{!app.Application_Type__c=='Business'}"/>
+                    &nbsp; {!numApplicant}</strong>
+                </td>
+            </tr>
+            <tr>
+                <td width="20%" class="labelDate">Type</td>
+                <td width="30%"><apex:outputField value="{!app.Mode_of_Employment_2__c}" /> </td>
+                <td width="20%" class="labelDate">Occupation</td>
+                <td width="30%"><apex:outputField value="{!app.Current_Occupation_2__c}" /> </td>
+            </tr>
+            <tr>
+                <td class="labelDate">Employer</td>
+                <td><apex:outputField value="{!app.Current_Employer_Name_2__c}" /> </td>
+                <td class="labelDate">Time Working</td>
+                <td><apex:outputField value="{!app.Date_Started_2__c}" /> </td>
+            </tr>
+            <tr>
+                <td class="labelDate">Address</td>
+                <td><apex:outputField value="{!app.Current_Work_Address_2__c}" /> </td>
+                <td class="labelDate">Phone</td>
+                <td><apex:outputField value="{!app.Current_Employer_Phone_2__c}" /> </td>
+            </tr>
+            <tr style= "display: {!IF(ISBLANK(app.Previous_Mode_of_Employment_2__c), 'none','')}">
+                <td colspan="4" class="tableCaption"><strong>Previous Employment - &nbsp;
+                    <apex:outputText value="Applicant" rendered="{!app.Application_Type__c=='Personal'}"/>
+                    <apex:outputText value="Director" rendered="{!app.Application_Type__c=='Business'}"/>
+                    &nbsp; {!numApplicant} &nbsp;({!app.Previous_Work_Country_2__c})</strong>
+                </td>
+            </tr>
+            <tr style= "display: {!IF(ISBLANK(app.Previous_Mode_of_Employment_2__c), 'none','')}">
+                <td width="20%" class="labelDate">Type</td>
+                <td width="30%"><apex:outputField value="{!app.Previous_Mode_of_Employment_2__c}" /> </td>
+                <td width="20%" class="labelDate">Occupation</td>
+                <td width="30%"><apex:outputField value="{!app.Previous_Occupation_2__c}" /> </td>
+            </tr>
+            <tr style= "display: {!IF(ISBLANK(app.Previous_Mode_of_Employment_2__c), 'none','')}">
+                <td class="labelDate">Employer</td>
+                <td><apex:outputField value="{!app.Previous_Employer_Name_2__c}" /> </td>
+                <td class="labelDate">Time Working</td>
+                <td>
+                    <apex:outputField value="{!app.Start_Date_2__c}" /> &nbsp;&nbsp;/&nbsp;&nbsp; 
+                    <apex:outputField value="{!app.Finish_Date_2__c}" /> 
+                </td>
+            </tr>
+        </table>
+        <apex:outputPanel layout="block" style="display: {!IF(isSecondJobApplic2==true, '','none')}" id="secondJob2">
+            <table width="100%" border="1">
+                <tr>
+                    <td colspan="4" class="tableCaption"><strong>Second Job - &nbsp;
+                        <apex:outputText value="Applicant" rendered="{!app.Application_Type__c=='Personal'}"/>
+                        <apex:outputText value="Director" rendered="{!app.Application_Type__c=='Business'}"/>
+                        &nbsp; {!numApplicant}</strong>
+                    </td>
+                </tr>
+                <tr> 
+                    <td class="labelColumn">Employment Type</td>
+                    <td class="dataColumn">
+                        <apex:outputField value="{!secondJobApplic2.Employment_Type__c}" />
+                    </td>
+                    <td class="labelColumn">Employer Name</td>
+                    <td class="dataColumn">
+                        <apex:outputField value="{!secondJobApplic2.Employer_Name__c}" />
+                    </td>
+                </tr>
+                <tr>
+                    <td class="labelColumn">Unit Number</td>
+                    <td class="dataColumn">
+                        <apex:outputField value="{!secondJobApplic2.Unit_Number__c}"/>
+                    </td>
+                    <td class="labelColumn">Street Number</td>
+                    <td class="dataColumn">
+                        <apex:outputField value="{!secondJobApplic2.Street_Number__c}"/>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="labelColumn">Work Address</td>
+                    <td class="dataColumn">
+                        <apex:outputField value="{!secondJobApplic2.Work_Address__c}"/>
+                    </td>
+                    <td class="labelColumn">Street Type</td>
+                    <td class="dataColumn">
+                        <apex:outputField value="{!secondJobApplic2.Street_Type__c}"/>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="labelColumn">Suburb</td>
+                    <td class="dataColumn">
+                        <apex:outputField value="{!secondJobApplic2.Suburb__c}"/>
+                    </td>
+                    <td class="labelColumn">Postcode</td>
+                    <td class="dataColumn">
+                        <apex:outputLabel value="{!secondJobApplic2.Postcode__c}"/>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="labelColumn">State</td>
+                    <td class="dataColumn">
+                        <apex:outputLabel value="{!secondJobApplic2.State__c}"/>
+                    </td>
+                    <td class="labelColumn">Employer's Phone</td>
+                    <td class="dataColumn">
+                        <apex:outputLabel value="{!secondJobApplic2.Phone__c}"/>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="labelColumn">Contact Name</td>
+                    <td class="dataColumn">
+                        <apex:outputField styleClass="dataInput" value="{!secondJobApplic2.Contact_Name__c}"/>
+                    </td>
+                    <td class="labelColumn">Occupation</td>
+                    <td class="dataColumn">
+                        <apex:outputField value="{!secondJobApplic2.Occupation__c}"/>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="labelColumn">Start Date</td>
+                    <td class="dataColumn">
+                        <apex:outputField value="{!secondJobApplic2.Start_Date__c}"/>
+                    </td>
+                    <td class="labelColumn">Income After Tax</td>
+                    <td class="dataColumn">
+                        <apex:outputField value="{!secondJobApplic2.Income__c}"/>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="labelColumn">Payment Frequency</td>
+                    <td class="dataColumn">
+                        <apex:outputField value="{!secondJobApplic2.Frequency__c}"/>
+                    </td>
+                    <td class="labelColumn">Monthly Income</td>
+                    <td class="dataColumn">
+                        <apex:outputField value="{!secondJobApplic2.Monthly_Income__c}"/>   	
+                    </td>
+                </tr>
+                <tr>
+                    <td class="labelColumn">Employer ABN</td>
+                    <td class="dataColumn">
+                        <apex:outputField value="{!secondJobApplic2.Employer_ABN_1__c}"/>
+                    </td>
+                    <td></td>
+                    <td></td>
+                </tr>
+            </table>
+        </apex:outputPanel>
+    </apex:outputPanel>
+    <!-- More Previous Employments -->
+    <table width="100%" border="1">
+        <apex:repeat value="{!prevEmployApp.data}" var="prev" >
+            <tr>
+                <td colspan="4" class="tableCaption"><strong>Previous Employment - &nbsp;
+                    <apex:outputText value="Applicant" rendered="{!app.Application_Type__c=='Personal'}"/>
+                    <apex:outputText value="Director" rendered="{!app.Application_Type__c=='Business'}"/>
+                    &nbsp; {!numApplicant} &nbsp;({!prev.Country__c})</strong>
+                </td>
+            </tr>
+            <tr>
+                <td width="20%" class="labelDate">Type</td>
+                <td width="30%"><apex:outputField value="{!prev.Employment_Type__c}" /> </td>
+                <td width="20%" class="labelDate">Occupation</td>
+                <td width="30%"><apex:outputField value="{!prev.Occupation__c}" /> </td>
+            </tr>
+            <tr>
+                <td class="labelDate">Employer</td>
+                <td><apex:outputField value="{!prev.Employer_Name__c}" /> </td>
+                <td class="labelDate">Time Working</td>
+                <td>
+                    <apex:outputField value="{!prev.Start_Date__c}" /> &nbsp;&nbsp;/&nbsp;&nbsp; 
+                    <apex:outputField value="{!prev.Finish_Date__c}" /> 
+                </td>
+            </tr>
+        </apex:repeat>
+    </table>
+</apex:component>

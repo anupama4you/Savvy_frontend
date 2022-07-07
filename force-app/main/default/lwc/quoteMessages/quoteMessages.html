@@ -1,0 +1,35 @@
+<template>
+
+    <!-- <template if:true={displayAssetMessages}>
+        <c-quote-message-item title="Asset Details" messages={listAssetMessages} icon-name="utility:color_swatch">
+        </c-quote-message-item>
+    </template>
+
+    <template if:true={displayDocMessages}>
+        <c-quote-message-item title="Required documents" messages={listDocMessages} icon-name="utility:display_text">
+        </c-quote-message-item>
+    </template> -->
+
+    <!-- Errors -->
+    <template if:true={displayErrorMessages}>
+        <c-quote-message-item title="Errors" messages={listErrorMessages} icon-name="utility:error" variant="error">
+        </c-quote-message-item>
+    </template>
+
+    <!-- Warnings -->
+    <template if:true={displayWarningMessages}>
+        <c-quote-message-item title="Warnings" messages={listWarningMessages} icon-name="utility:warning"
+            variant="warning"></c-quote-message-item>
+    </template>
+    <!-- Info -->
+    <template if:true={displayInfoMessage}>
+        <c-quote-message-item title="Info" messages={listInfoMessages} icon-name="utility:info" variant="info">
+        </c-quote-message-item>
+    </template>
+    <!-- Confirm Messages -->
+    <template if:true={displayConfirmMessages}>
+        <c-quote-message-item title="Confirm" messages={listConfirmMessages} icon-name="utility:success"
+            variant="success">
+        </c-quote-message-item>
+    </template>
+</template>

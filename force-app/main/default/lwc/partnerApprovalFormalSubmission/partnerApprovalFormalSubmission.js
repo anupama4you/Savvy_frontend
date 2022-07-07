@@ -93,8 +93,7 @@ export default class PartnerApprovalFormalSubmission extends LightningElement {
         });
     } else {
       // Otherwise close dialog
-      this.dispatchEvent(new CustomEvent("close"));
-      this.processStage = STAGE_INTRO;
+      this.handleCancel();
     }
   }
 
@@ -127,6 +126,11 @@ export default class PartnerApprovalFormalSubmission extends LightningElement {
       });
   }
 
+  handleCancel() {    
+    this.dispatchEvent(new CustomEvent("close"));
+    this.processStage = STAGE_INTRO;
+  }
+  
   processApproval() {
     this.showSpinner = true;
     let params = {

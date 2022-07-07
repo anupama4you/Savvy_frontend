@@ -1,0 +1,19 @@
+<template>
+  <lightning-card  title="New Comparison Tool 2022!">
+    <template if:true={isSearching}>
+      <lightning-spinner alternative-text="Loading"></lightning-spinner>
+    </template>
+    <div class="c-container slds-p-horizontal_small">
+      <lightning-layout pull-to-boundary="medium">
+        <lightning-layout-item size="12" flexibility="auto" padding="horizontal-medium">
+          <c-filter-form-com-tools onsearch={handleSearch}></c-filter-form-com-tools>
+        </lightning-layout-item>
+      </lightning-layout>
+      <lightning-layout pull-to-boundary="medium">
+        <lightning-layout-item size="12" flexibility="auto" padding="horizontal-medium">
+          <c-comparison-tool-result params={filterParams} records={calcs} ></c-comparison-tool-result>
+        </lightning-layout-item>
+      </lightning-layout>
+    </div>
+  </lightning-card>
+</template>

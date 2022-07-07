@@ -1,0 +1,16 @@
+<apex:component >
+    <apex:attribute name="lenderCode" type="String" description="Lender" required="false"/>    
+    <apex:attribute name="isPayout" type="boolean" description="If Payout"/>
+    <apex:attribute name="limit" type="Decimal" description="Limit"/>
+    
+    <apex:outputText value="{0, Number, Currency}" rendered="{!AND(NOT(OR(lenderCode='LIB', lenderCode='PEP', lenderCode='LAP', lenderCode='MAC', lenderCode='Latitude', lenderCode='GRE')), isPayout = false)}">
+    	<apex:param value="{!limit*0.03}" />
+    </apex:outputText>
+    <apex:outputText value="{0, Number, Currency}" rendered="{!AND(OR(lenderCode='LIB', lenderCode='PEP', lenderCode='MAC', lenderCode='GRE'), isPayout = false)}">
+        <apex:param value="{!limit*0.038}" />
+    </apex:outputText>
+    <apex:outputText value="{0, Number, Currency}" rendered="{!AND(OR(lenderCode='LAP', lenderCode='Latitude'), isPayout = false)}">
+        <apex:param value="{!limit*0.042}" />
+    </apex:outputText>
+    <apex:outputText value="$ 0.00 (payout)" rendered="{!IF(isPayout, true, false)}"/>
+</apex:component>

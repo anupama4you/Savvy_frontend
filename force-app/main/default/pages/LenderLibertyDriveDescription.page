@@ -1,0 +1,37 @@
+<apex:page showHeader="false" sidebar="false" standardStylesheets="false">
+	<strong>Minimum Loan size</strong>
+	$5,000 
+
+	<hr/><strong>Purchase Type </strong>
+	Dealer or Private sales.  Refinancing.
+
+	<hr/><strong>Employment Type </strong>
+	FT – 12 months current
+
+	<hr/><strong>Credit History </strong>
+	•	Clean, 
+	•	No more than 3 enquiries in the last 6 months, 
+	•	Must be Property owner.
+
+	<hr/><strong>Financed Assets </strong>
+	Cars 
+
+	<hr/><strong>Loan Terms </strong>
+	0-84 months, 
+	Residual available for 5 year terms – restrictions apply.
+
+	<hr/><strong>Term End  </strong>
+	20 years at term end  
+
+	<hr/><strong>LTV Ratios </strong>
+	Recommended retail or retail price.  
+	Km adjusted.
+
+	<hr/><strong>Why? &amp; When? </strong>
+	New and used cars. Dealer or private.  Will accept defaults paid and unpaid, discharged part IX/X and discharged bankrupt.
+
+	<hr/><strong>Early repayment fees</strong>
+	Pre-determination fee of $245 plus any applicable break costs. 
+	They also have a discharge fee of $125 (plus govt charges) to remove the PPSR from the vehicle.
+	
+</apex:page>

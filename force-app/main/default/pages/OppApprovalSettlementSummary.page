@@ -1,0 +1,69 @@
+<apex:page controller="OppApprovalSettlementSummaryExtension" cache="false" readOnly="true" title="Approval Summary">
+    <style type='text/css'>
+        .labelTableBeside {
+            font-size: 25px;
+            font-weight: bold;
+            vertical-align: middle !important;
+        }
+        .labelTableTitle {
+            font-size: 16px;
+            font-weight: bold;
+            text-align: center;
+        }
+        .labelTableResult {
+            font-size: 16px;
+            font-weight: bold;
+            text-align: center;
+        }
+        .labelTableResultOthers {
+            font-size: 14px;
+            font-weight: bold;
+            text-align: center;
+        }
+        .labelTableResultTotals {
+            font-size: 14px;
+            font-weight: bold;
+            color: blue !important;
+            text-align: center;
+        }
+    </style>
+    <apex:form id="formData">
+        <apex:pageBlock title="Settlement Approval Processes" mode="edit">
+        	<table width="90%" align="center" cellpadding="10">
+                <tr>
+                    <th width="10%">&nbsp;</th>
+                    <th width="20%" class="labelTableTitle"><apex:outputLink value="/apex/OppApprovalSettlementList?IDX=0">{!status1}</apex:outputLink></th>
+                    <th width="20%" class="labelTableTitle"><apex:outputLink value="/apex/OppApprovalSettlementList?IDX=1">{!status2}</apex:outputLink></th>
+                    <th width="20%" class="labelTableTitle"><apex:outputLink value="/apex/OppApprovalSettlementList?IDX=2">{!status3}</apex:outputLink></th>
+                    <th width="20%" class="labelTableTitle"><apex:outputLink value="/apex/OppApprovalSettlementList?IDX=3">{!status4}</apex:outputLink></th>
+                    <th width="10%" class="labelTableTitle">Total</th>
+                </tr>
+                <tr>
+                    <td class="labelTableResult">Own</td>
+                    <td class="labelTableResult">{!dataStatus1.own}</td>
+                    <td class="labelTableResult">{!dataStatus2.own}</td>
+                    <td class="labelTableResult">{!dataStatus3.own}</td>
+                    <td class="labelTableResult">{!dataStatus4.own}</td>
+                    <td class="labelTableResultTotals">{!dataTotal.own}</td>
+                </tr>
+                <tr>
+                    <td class="labelTableResultOthers">Others</td>
+                    <td class="labelTableResultOthers">{!dataStatus1.others}</td>
+                    <td class="labelTableResultOthers">{!dataStatus2.others}</td>
+                    <td class="labelTableResultOthers">{!dataStatus3.others}</td>
+                    <td class="labelTableResultOthers">{!dataStatus4.others}</td>
+                    <td class="labelTableResultTotals">{!dataTotal.others}</td>
+                </tr>
+                <tr>
+                    <td class="labelTableResultTotals">Total</td>
+                    <td class="labelTableResultTotals">{!dataStatus1.total}</td>
+                    <td class="labelTableResultTotals">{!dataStatus2.total}</td>
+                    <td class="labelTableResultTotals">{!dataStatus3.total}</td>
+                    <td class="labelTableResultTotals">{!dataStatus4.total}</td>
+                    <td class="labelTableResultTotals">{!dataTotal.total}</td>
+                </tr>
+            </table>
+            <br/>
+    	</apex:pageBlock>
+    </apex:form>
+</apex:page>

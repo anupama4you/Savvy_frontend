@@ -1,0 +1,39 @@
+<apex:page controller="PortalAdministrationController" title="Administration" readOnly="true">
+    <apex:sectionHeader title="Administration" subtitle="{!DealerName}" />    
+    <apex:form >
+    <script>
+        function openInvoice(invoiceId)
+        {
+            openIntegration('/apex/Invoice?scontrolCaching=1&id=' + invoiceId, 'height=600,location=no,resizable=yes,toolbar=no,status=no,menubar=no,scrollbars=1', 1);
+        }
+    </script>
+    <apex:pageBlock >
+        <apex:pageBlockSection title="Leads">
+            <apex:pageBlockSectionItem >
+                <apex:outputLabel value="Leads sent this month" />
+                <apex:outputText value="{!ThisLeadSummary.LeadsSentThisMonth}" />
+            </apex:pageBlockSectionItem>    
+            <apex:pageBlockSectionItem >
+                <apex:outputLabel value="Leads sent all time" />
+                <apex:outputText value="{!ThisLeadSummary.LeadsSentAllTime}" />
+            </apex:pageBlockSectionItem>    
+            <apex:pageBlockSectionItem >
+                <apex:outputLabel value="Opportunities settled this month" />
+                <apex:outputText value="{!ThisLeadSummary.OpportunitiesSettledThisMonth}" />
+            </apex:pageBlockSectionItem>    
+            <apex:pageBlockSectionItem >
+                <apex:outputLabel value="Opportunities settled all time" />
+                <apex:outputText value="{!ThisLeadSummary.OpportunitiesSettledAllTime}" />
+            </apex:pageBlockSectionItem>    
+        </apex:pageBlockSection>
+        <apex:pageBlockSection title="Invoices" />
+        <apex:pageBlockTable value="{!Invoices}" var="i">
+            <apex:column value="{!i.Date_of_Invoice__c}" />
+            <apex:column value="{!i.Invoice_Amount__c}" /> 
+            <apex:column >
+                <apex:commandLink value="View Invoice" onclick="openInvoice('{!i.Id}'); return false;" />
+            </apex:column>       
+        </apex:pageBlockTable>    
+    </apex:pageBlock>
+    </apex:form>
+</apex:page>

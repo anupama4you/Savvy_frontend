@@ -1,0 +1,183 @@
+<apex:page standardController="Invoice__c" renderAs="pdf">
+    <apex:variable value="{!Invoice__c}" var="i" />
+    <head>
+        <style>
+            @page
+            {
+                size: a4 portrait;                
+                margin: 1cm;  
+                margin-left: 2cm;
+                margin-right: 2cm; 
+                
+                @bottom-right
+                {                   
+                    content: element(footer);
+                }                                             
+            }  
+            
+            body
+            {
+                font-family: Sans-Serif; 
+                font-size: 10pt;
+            }  
+            
+            div.footer 
+            {                
+                font-family: Sans-Serif; 
+                font-size: 8pt;
+                display: block;             
+                padding: 5px;               
+                padding-bottom: 1cm;
+                position: running(footer);          
+            } 
+            
+            .pagenumber:before 
+            {                
+                content: counter(page);             
+            }                       
+            
+            .pagecount:before 
+            {             
+                content: counter(pages);            
+            }   
+            
+            .bdrBtm
+            {
+                border-bottom: solid 1px black;
+            }
+            
+            .bdrTop
+            {
+                border-top: solid 1px black;
+            }                                                                                                                                                      
+        </style>                
+    </head>
+    
+    <div class="footer">        
+        <div style="width: 100%; text-align: right;">
+            Page <span class="pagenumber"/> / <span class="pagecount"/>
+        </div> 
+    </div>     
+    
+    <body>
+        <div style="width: 100%;">
+            <div style="float: left;">
+                <img src="{!$Resource.SavvyLogo}" />
+                <br />
+                <apex:outputText value="Recipient Created Tax Invoice" />
+            </div>
+            <div style="float: right;">
+                Quantum Savvy Pty Ltd<br />                
+                ABN: 12134138686<br />
+                Level 1, 145 The Parade<br />
+                Norwood SA 5067
+            </div>
+        </div>                                  
+        <div style="height: 250px;" />           
+            {!i.Account__r.Name}
+        <div style="height: 100px;" />
+        <!--<span style="font-size: 16pt;"><b>Purchase Order</b></span>-->
+        <br />
+        <br />
+        <table style="border-collapse: collapse;">
+            <tr>
+                <td style="width: 100px;"><b>Invoice #</b></td>
+                <td>{!i.Name}</td>
+            </tr>
+            <!--<tr>
+                <td><b>PO #</b></td>
+                <td>{!i.Saasu_Expense_Number__c}</td>
+            </tr>-->
+            <tr>
+                <td><b>Issued</b></td>
+                <td>
+                    <apex:outputText value="{0, date, dd MMM yyyy}">
+                        <apex:param value="{!i.Date_of_Invoice__c}" />
+                    </apex:outputText>    
+                </td>
+            </tr>
+            <tr>
+                <td>&nbsp;</td>
+            </tr>
+            <tr>
+                <td><b>Summary</b></td>
+                <td>Brokerage</td>
+            </tr>
+        </table>
+        <br />
+        <br />
+        <table style="border-collapse: collapse; width: 100%;">
+            <tr>
+                <td class="bdrBtm" style="vertical-align: top;"><b>Description</b></td>
+                <td class="bdrBtm"></td>
+                <td class="bdrBtm" style="text-align: right; vertical-align: top;"><b>Amount<br/>(Exc GST)</b></td>
+            </tr>            
+            <tr>
+                <td class="bdrBtm">Brokerage</td>
+                <td class="bdrBtm" />
+                <td class="bdrBtm" style="text-align: right;">
+                    <apex:outputText value="{0, number, #,###,###,##0.00}">
+                        <apex:param value="{!i.Invoice_Amount__c}" />
+                    </apex:outputText>
+                </td>
+            </tr>
+            <tr>
+                <td />
+                <td style="text-align: right;">Sub-Total Exc GST (AUD)</td>                
+                <td style="text-align: right;">
+                    <apex:outputText value="{0, number, #,###,###,##0.00}">
+                        <apex:param value="{!i.Invoice_Amount__c}" />
+                    </apex:outputText>
+                </td>
+            </tr>
+            <tr>
+                <td />
+                <td style="text-align: right;">Plus GST (AUD)</td>                
+                <td style="text-align: right;">
+                    <apex:outputText value="{0, number, #,###,###,##0.00}">
+                        <apex:param value="{!i.Invoice_Amount__c * 0.1}" />
+                    </apex:outputText>
+                </td>
+            </tr>
+            <tr>
+                <td />
+                <td style="text-align: right;">Total Inc GST (AUD)</td>                
+                <td style="text-align: right;">
+                    <apex:outputText value="{0, number, #,###,###,##0.00}">
+                        <apex:param value="{!i.Invoice_Amount__c * 1.1}" />
+                    </apex:outputText>
+                </td>
+            </tr>
+            <tr>
+                <td class="bdrBtm" />
+                <td class="bdrBtm" style="text-align: right;">Amount Paid (AUD)</td>                
+                <td class="bdrBtm" style="text-align: right;">
+                    <apex:outputText value="{0, number, #,###,###,##0.00}">
+                        <apex:param value="{!0}" />
+                    </apex:outputText>
+                </td>
+            </tr>
+            <tr>
+                <td />
+                <td style="text-align: right;"><b>Balance Due (AUD)</b></td>                
+                <td style="text-align: right;">
+                    <b>
+                        <apex:outputText value="{0, number, #,###,###,##0.00}">
+                            <apex:param value="{!i.Invoice_Amount__c * 1.1}" />
+                        </apex:outputText>
+                    </b>
+                </td>
+            </tr>
+        </table>
+        <br />
+        <!--<apex:outputPanel layout="none" >
+            <div style="font-size: 8pt" >
+                Please make all payments quoting invoice number to<br />
+                Quantum Savvy Pty Ltd<br />                
+                Bank: Bank SA<br />
+                BSB: 105-148<br />
+                Account: 027 093 740 
+            </div>       
+        </apex:outputPanel>  -->      
+    </body>
+</apex:page>

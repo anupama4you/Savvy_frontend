@@ -1,0 +1,52 @@
+<apex:page showHeader="false" sidebar="false" standardStylesheets="false">
+	<strong>Fees</strong>
+	$295 Lender app fee. 
+	$990 DOF Fee (maximum or 15% of NAF). 
+	$10.20 PPSR fee. 
+	$10.00 Monthly Fee.
+
+	<hr/><strong>Minimum Loan size</strong>
+	$3,000 Leisure goods. 
+	$5,000 Cars.
+
+	<hr/><strong>Purchase Type </strong>
+	Dealer or Private sales.  
+
+	<hr/><strong>Employment Type </strong>
+	Prefer 3 years of continuous employment.
+
+	<hr/><strong>Credit History </strong>
+	Clean credit – but will consider small defaults on a case by case basis.  
+
+	<hr/><strong>Financed Assets </strong>
+	Cars, bikes, caravans, personal watercraft.
+
+	<hr/><strong>Loan Terms </strong>
+	12-84 months
+
+	<hr/><strong>Term End  </strong>
+	20 years at term end for cars. 
+	12 years at term end for bikes caravans and watercraft.
+
+	<hr/><strong>LTV Ratios </strong>
+	RRP for new and Retail for used. 
+	Will lend up to 150% LTV for cars. 
+	Will lend up to 140% LTV for bikes. 
+	Will lend up to 120% LTV for caravans/watercraft.
+
+	<hr/><strong>Insurances can be added</strong>
+
+
+	<hr/><strong>Why? &amp; When? </strong>
+	20 years at term end. 
+	Will finance off road (unregistered) bikes. 
+	Quick approvals. 
+	Rates are based on profile.  You can determine profile prior to submission on their loan portal. 
+	They do personal loans as well – online portal.
+
+	<hr/><strong>Early repayment fees</strong>
+	NAF over $12k  = $750 pro rata over the remaining term (eg over a 5 year term the fee reduces by $12.50 ($750 divided by 60) per month so if paid out 12 months early it would be 12 x $12.50 = $150). 
+
+	NAF under $12K, 6.25% of the NAF reducing over the term  (eg $10K loan would be $625, reduces by $10.42 per month so if loan paid out 12 months early – $10.42 x 12 = $125.04.
+	
+</apex:page>

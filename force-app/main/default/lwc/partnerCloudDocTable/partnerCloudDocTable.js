@@ -12,19 +12,6 @@ const COLS = [
   { label: "File Name", fieldName: "File_Name__c", editable: false },
   { label: "Document Type", fieldName: "Document_Type__c", editable: false },
   { label: "Send To Lender", fieldName: "Send_To_Lender__c", editable: false },
-  // {
-  //   label: "Document Type",
-  //   fieldName: "Document_Type__c",
-  //   type: "picklist",
-  //   wrapText: true,
-  //   typeAttributes: {
-  //     placeholder: "select a type...",
-  //     options: [
-  //       { label: "Savvy Consent", value: "SavvyConsent" },
-  //       { label: "Formal Document", value: "Formaldocument" }
-  //     ]
-  //   }
-  // },
   {
     label: "File",
     fieldName: "Id",

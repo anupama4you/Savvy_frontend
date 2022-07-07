@@ -1,0 +1,12 @@
+<template>
+  <lightning-quick-action-panel header="My action">
+    <p>Here's some content for the modal body.</p>
+    <p>Are you sure to delete the record: {recordId}?</p>
+    <div slot="footer">
+      <lightning-button variant="neutral" label="Cancel"></lightning-button>
+      <lightning-button variant="brand" label="Save" class="slds-m-left_x-small"></lightning-button>
+    </div>
+  </lightning-quick-action-panel>
+    
+    <!-- <lightning-button label="Neutral" title="Non-primary action" onclick={handleSuccess} class="slds-m-left_x-small"></lightning-button> -->
+</template>

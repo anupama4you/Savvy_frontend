@@ -1,0 +1,163 @@
+<apex:page docType="html-5.0" standardController="Custom_Opportunity__c" extensions="FleetReferralExtension" id="FleetReferral" action="{!validate}" lightningStylesheets="true">
+    <!-- Partner Portal Styles -->
+    <apex:outputPanel rendered="{!isBrokerPartnerUser}">
+      <apex:slds />
+      <style type="text/css">
+        html .brandQuaternaryBgr,
+        .titleDiv {
+          background: #ffffff !important;
+        }
+        .bPageBlock {
+          border: 1px solid white !important;
+        }
+        .bPageBlock .detailList .labelCol {
+          width: 40% !important;
+        }
+        .bPageBlock .detailList .data2Col {
+            width: 60% !important;
+        }
+        .editPage .pbSubsection {
+            padding: 0 50px;
+        }
+        html .brandSecondaryBrd {
+          border-top-color: #eaeaea !important;
+        }
+      </style>
+    </apex:outputPanel>
+    <apex:includeScript value="{! $Resource.jQuery }"/>
+    <script type="text/javascript">
+        jQuery.noConflict();
+        jQuery(document).ready(function() {
+            var FirstName = document.getElementById("{!$Component.FleetReferralForm:FleetReferralBlock:FleetReferralSection:ClientDetails:firstName}");
+            var LastName = document.getElementById("{!$Component.FleetReferralForm:FleetReferralBlock:FleetReferralSection:ClientDetails:lastName}");
+            var Address = document.getElementById("{!$Component.FleetReferralForm:FleetReferralBlock:FleetReferralSection:ClientDetails:address}");
+            var VehicleDetails = document.getElementById("{!$Component.FleetReferralForm:FleetReferralBlock:FleetReferralSection2:VehicleDetails:vehicleDetails}");
+            var LenderApproval = document.getElementById("{!$Component.FleetReferralForm:FleetReferralBlock:FleetReferralSection:FinanceDetails:lenderApproval}");
+            var PreApprovedAmount = document.getElementById("{!$Component.FleetReferralForm:FleetReferralBlock:FleetReferralSection:FinanceDetails:preapprovedAmount}");
+            
+            jQuery(FirstName).val("{!Custom_Opportunity__c.Account__r.FirstName}");
+            jQuery(LastName).val("{!Custom_Opportunity__c.Account__r.LastName}");
+            var clientAddress = "{!Custom_Opportunity__c.Application__r.Street_Address__c}" + ", " + "{!Custom_Opportunity__c.Application__r.Suburb__c}" + ", " + "{!Custom_Opportunity__c.Lead__r.State__c}" + " " + "{!Custom_Opportunity__c.Application__r.Postcode__c}";
+            jQuery(Address).val(clientAddress);
+            var vehicleDetails = "{!Custom_Opportunity__c.Application__r.Vehicle_Year__c}" + " " + "{!Custom_Opportunity__c.Application__r.Vehicle_Make__c}" + " " + "{!Custom_Opportunity__c.Application__r.Vehicle_Model__c}";
+            jQuery(VehicleDetails).val(vehicleDetails);
+            jQuery(LenderApproval).val("{!Custom_Opportunity__c.Loan_Product__r.Lender__c}");
+            jQuery(PreApprovedAmount).val("{!Custom_Opportunity__c.Loan_Product__r.Cost_of_Goods__c}");
+
+            //Applicant 2
+            //FleetReferral:FleetReferralForm:FleetReferralBlock:FleetReferralSection2:VehicleDetails:vehicleDetails
+            var FirstName2 = document.getElementById("{!$Component.FleetReferralForm:FleetReferralBlock:FleetReferralSection:ClientDetails:firstName2}");
+            var LastName2 = document.getElementById("{!$Component.FleetReferralForm:FleetReferralBlock:FleetReferralSection:ClientDetails:lastName2}");
+            var noApplicants = "{!Custom_Opportunity__c.Application__r.No_of_People__c}";
+            if (noApplicants == 2) {
+                jQuery(FirstName2).val("{!Custom_Opportunity__c.Application__r.First_Name_2__c}");
+                jQuery(LastName2).val("{!Custom_Opportunity__c.Application__r.Last_Name_2__c}");
+            }
+        });   
+    </script>
+    <style type="text/css">
+        textarea {
+            font-family: 'Arial','Helvetica',sans-serif;
+            font-size: 100%;
+            width:200px;
+        }
+        .VDInput {
+            width:200px;
+        }
+        .head2 {
+            font-size: 1.0rem;
+            font-weight: bold;
+        }
+        .calculateButtons {
+          padding: 6px 7px !important;
+          color: #fff !important;
+          font-size: 11px !important;
+          outline: none !important;
+          background: rgb(0,0,0) !important; /* Old browsers */
+        }
+
+        .calculateButtons:hover {
+          background: rgb(14,14,14) !important; /* Old browsers */
+        }
+    </style>
+    <apex:variable value="{!Custom_Opportunity__c}" var="o" />
+    <apex:sectionHeader title="Savvy Fleet Referral Form" subtitle="{!o.Name}" rendered="{!NOT(isBrokerPartnerUser)}"/>
+    <apex:pageMessages />
+    <apex:form id="FleetReferralForm">
+        <apex:pageBlock id="FleetReferralBlock" mode="edit">
+            <apex:pageBlockSection id="FleetReferralSection" columns="2">
+                <apex:pageBlockSection id="ClientDetails" columns="1">
+                    <apex:outputText value="Client Details:" styleClass="head2" />
+                    <!-- <apex:outputField label="Consultant details" value="{!o.Owner_Name__c}"/> -->
+                    <apex:outputText label="Date" value="{!currentTime}"/>
+                    <apex:inputField styleClass="{!IF(isBrokerPartnerUser,'slds-input','VDInput')}" id="firstName" label="First Name 1: " value="{!o.First_Name__c}"/>
+                    <apex:inputField styleClass="{!IF(isBrokerPartnerUser,'slds-input','VDInput')}" id="lastName" label="Last Name 1: " value="{!o.Last_Name__c}"/>
+                    <apex:inputField styleClass="{!IF(isBrokerPartnerUser,'slds-input','VDInput')}" id="firstName2" label="First Name 2: " 
+                    value="{!o.Second_Applicant_First_Name__c}" 
+                    rendered="{!Custom_Opportunity__c.Application__r.No_of_People__c == 2}"/>
+                    <apex:inputField styleClass="{!IF(isBrokerPartnerUser,'slds-input','VDInput')}" id="lastName2" label="Last Name 2: " 
+                    value="{!o.Second_Applicant_Last_Name__c}" 
+                    rendered="{!Custom_Opportunity__c.Application__r.No_of_People__c == 2}"/>
+                    <apex:pageBlockSectionItem >
+                        <apex:outputLabel value="Client Address:" />
+                        <apex:outputPanel >
+                          <apex:outputText value="{!customerAdrress} " />
+                            <!-- <apex:outputText value="{!o.Application__r.Unit_Number__c} / " rendered="{!!ISBLANK(o.Application__r.Unit_Number__c)}"/> 
+                            <apex:outputText value="{!o.Application__r.Street_Number__c} "/> 
+                            <apex:outputField value="{!o.Application__r.Street_Address__c}"/>
+                            <apex:outputText value=" " rendered="{!!ISBLANK(o.Application__r.Street_Type__c)}"/> 
+                            <apex:outputField value="{!o.Application__r.Street_Type__c}"/>, 
+                            <apex:outputLabel value="{!o.Application__r.Suburb__c}" />, 
+                            <apex:outputLabel value="{!o.Application__r.State__c}" />
+                            <apex:outputLabel value="{!o.Application__r.Postcode__c}" /> -->
+                        </apex:outputPanel>
+                    </apex:pageBlockSectionItem>
+                    <!-- <apex:inputField id="address" label="Client Address: " value="{!o.Address__c}" required="true" /> -->
+                    <apex:inputField styleClass="{!IF(isBrokerPartnerUser,'slds-input','VDInput')}" label="Mobile Number: " value="{!o.Mobile_Number__c}"/>
+                    <apex:inputField styleClass="{!IF(isBrokerPartnerUser,'slds-input','VDInput')}" label="Home Phone Number: " value="{!o.Home_Phone__c}"/>
+                    <apex:inputField styleClass="{!IF(isBrokerPartnerUser,'slds-input','VDInput')}" label="Work Phone Number: " value="{!o.Work_Phone__c}"/>
+                    <apex:inputField styleClass="{!IF(isBrokerPartnerUser,'slds-input','VDInput')}" label="Email: " value="{!o.Email_Address__c}"/>
+                </apex:pageBlockSection>
+                <apex:pageBlockSection id="FinanceDetails" columns="1">
+                    <apex:outputText value="Finance Details:" styleClass="head2" />
+                    <apex:outputText label="Date" value="{!currentTime}" />
+                    <apex:inputField styleClass="{!IF(isBrokerPartnerUser,'slds-input','VDInput')}" id="lenderApproval" label="Lender approved with: " value="{!o.Lender_Approved__c}"/>
+                    <apex:inputField styleClass="{!IF(isBrokerPartnerUser,'slds-input','VDInput')}" id="preapprovedAmount" label="Lender Pre-Approved Amount: " value="{!o.Pre_Approved_Amount__c}" required="true" />
+                    <apex:inputField styleClass="{!IF(isBrokerPartnerUser,'slds-input','VDInput')}" id="preapprovedAge" label="Lender Pre-Approved Maximum Age of Vehicle: " value="{!o.Pre_Approved_Vehicle_Age__c}" required="true" />
+                    <apex:inputField styleClass="{!IF(isBrokerPartnerUser,'slds-input','VDInput')}" id="requiredDeposit" label="Client Deposit Amount Required: " value="{!o.Required_Client_Deposit__c}" required="true" />
+                    <apex:inputField styleClass="{!IF(isBrokerPartnerUser,'slds-input','VDInput')}" id="clientBudget" label="Client Budget (Range): " value="{!o.Client_Budget__c}" required="true" />
+                    <apex:inputField styleClass="{!IF(isBrokerPartnerUser,'slds-input','VDInput')}" label="Payout Details for Trade-in: " value="{!o.Payout_Details__c}"/>
+                    <apex:inputField styleClass="{!IF(isBrokerPartnerUser,'slds-input','VDInput')}" label="Trade In Details: " value="{!o.Trade_in_Details__c}"/>
+                    <!-- <apex:inputField label="Dealer Contacted (if applicable): " value="{!o.Dealer_Contacted__c}"/> -->
+                    <apex:inputField styleClass="{!IF(isBrokerPartnerUser,'slds-input','VDInput')}" label="Special Conditions (LTV etc): " value="{!o.Special_Conditions__c}"/>
+                </apex:pageBlockSection>
+            </apex:pageBlockSection>
+            <hr/>
+            <apex:pageBlockSection id="FleetReferralSection2" columns="2">
+                <apex:pageBlockSection id="VehicleDetails" columns="1">
+                    <apex:outputText value="Vehicle Details (indicative):" styleClass="head2" />
+                    <apex:inputField label="New/Used: " value="{!o.New_Used__c}"/>
+                    <apex:inputField styleClass="{!IF(isBrokerPartnerUser,'slds-input','VDInput')}" id="vehicleDetails" label="Vehicle Details (if known): " value="{!o.Vehicle_Details__c}"/>
+                </apex:pageBlockSection>
+                <apex:pageBlockSection columns="1">
+                    <apex:inputField label="Notes: " required="true" value="{!o.VD_Notes__c}" styleClass="{!IF(isBrokerPartnerUser,'slds-textarea','')}"/>
+                </apex:pageBlockSection>
+            </apex:pageBlockSection>
+            <apex:pageBlockButtons location="bottom">
+              <!--
+                <apex:commandButton value="Submit" action="{!sendVDForApproval}" styleClass="{!IF(isBrokerPartnerUser,'slds-button slds-button_brand','calculateButtons')}"/>
+                <apex:commandButton value="Return" action="{!Cancel}" styleClass="{!IF(isBrokerPartnerUser,'slds-button slds-button_neutral','calculateButtons')}" immediate="true"/>
+              -->
+                <apex:commandButton value="Submit" action="{!sendVDForApproval}" styleClass="calculateButtons"/>
+                <apex:commandButton value="Return" action="{!Cancel}" styleClass="calculateButtons"
+                  immediate="true" />
+            </apex:pageBlockButtons>
+        </apex:pageBlock>
+    </apex:form>
+    <apex:outputText value="{!Custom_Opportunity__c.VD_Owner__c}" rendered="false"/>
+    <apex:outputText value="{!Custom_Opportunity__c.VD_Worksheet__c}" rendered="false"/>
+    <apex:outputText value="{!Custom_Opportunity__c.VD_Worksheet__r.VD_Approver__c}" rendered="false"/>
+    <apex:outputText value="{!Custom_Opportunity__c.VD_Worksheet__r.Id}" rendered="false"/>
+    <apex:outputText value="{!Custom_Opportunity__c.VD_Status_Process__c}" rendered="false"/>
+    <apex:outputText value="{!Custom_Opportunity__c.VD_Worksheet__r.Type_of_Process__c}" rendered="false"/>
+</apex:page>

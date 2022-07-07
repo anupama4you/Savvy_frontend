@@ -1,0 +1,225 @@
+<apex:page docType="html-5.0" standardController="Custom_Opportunity__c" extensions="OppApplicationExtension" showHeader="true" standardStylesheets="true" sidebar="false">
+
+<script>
+
+
+function addDriversPopUp() { 
+
+        var pgTwoAddDriver = document.getElementById('j_id0:j_id2:j_id29:pageTwoareThereAddDriversSelectListId').value;
+        
+        if(pgTwoAddDriver == 'No') {
+
+            var newwindow = window.open('/apex/CreateQuotePage2AddDriverPopUp',"Create Quote","scrollbars=1,resizable=1,Width=278px,Height=225px,Top=300,Left=800");
+            
+         
+            newwindow.focus();
+        
+        } 
+
+    }
+    
+</script>  
+
+
+<style type="text/css">
+
+/*
+.unsizedButton {
+    padding: 7px 36px;
+     min-width: 160px; 
+    color: #ffffff !important;
+    background-color: #c4122e;
+    border: 1.5px solid #c4122e;
+    border-radius: 4px;
+    font-size: 13px !important;
+    font-weight: normal !important;
+    text-transform: uppercase;
+    -moz-appearance: none;
+    -webkit-appearance: none;
+    cursor: pointer;
+    font-family: "museo-sans-rounded", "Helvetica Neue", Calibri, Candara, Segoe, Segoe UI, Optima, Arial, sans-serif;
+}
+*/
+
+/*
+body button, body .x-btn, body .btn, body .btnDisabled, body .btnCancel, body .menuButton .menuButtonButton {
+     padding: 7px 36px;
+    min-width: 160px;
+    color: #ffffff !important;
+    background-color: #c4122e;
+    border: 1.5px solid #c4122e;
+    border-radius: 4px;
+    font-size: 13px !important;
+    font-weight: normal !important;
+    text-transform: uppercase;
+    -moz-appearance: none;
+    -webkit-appearance: none;
+    cursor: pointer;
+    font-family: "museo-sans-rounded", "Helvetica Neue", Calibri, Candara, Segoe, Segoe UI, Optima, Arial, sans-serif;
+    
+}
+*/
+
+body input.btn, body input.btnDisabled, body input.btnCancel{
+         padding: 7px 36px;
+  
+    color: #ffffff !important;
+    background-color: #c4122e; !important;
+    border: 1.5px solid #c4122e;
+    border-radius: 4px;
+    font-size: 13px !important;
+    font-weight: normal !important;
+    text-transform: uppercase;
+    -moz-appearance: none;
+    -webkit-appearance: none;
+    cursor: pointer;
+    font-family: "Calibri";
+    
+}
+
+
+body button, body .x-btn, body .btn, body .btnDisabled, body .btnCancel, body .menuButton .menuButtonButton{
+    background: none;
+}
+
+</style>
+
+
+<apex:form >
+
+<apex:pageMessages />
+
+<apex:pageBlock >
+
+
+<div>
+<apex:outputLabel value="CURRENTLY SELECTED COVER TYPES" style="text-transform:uppercase;color:#c4122e;font-size:24px;font-family:Calibri" />
+<br/>
+<apex:outputText style="font-family:Calibri;font-weight:bold;">→&nbsp;&nbsp;Loan Protection</apex:outputText>
+</div>
+<br/>
+<br/>
+
+
+<apex:pageBlockSection title="VEHICLE DETAILS" columns="2">
+    
+<apex:pageBlockSectionItem >
+<apex:outputLabel value="SUBURB" style="font-family:Calibri;width:500px;"/><apex:inputText value="{!suburbVFInput}" style="width:500px;"/>
+</apex:pageBlockSectionItem>
+
+</apex:pageBlockSection>
+
+
+<br/>
+
+<apex:pageBlockSection title="MAIN INSURED" columns="2">
+
+<apex:pageBlockSectionItem >
+<apex:outputLabel value="DATE OF BIRTH" style="font-family:Calibri;"/><apex:inputText value="{!mainInsuredDoByPolcyStringVF}"/>
+</apex:pageBlockSectionItem>
+
+<apex:pageBlockSectionItem >
+<apex:outputLabel value="GENDER" style="font-family:Calibri;"/><apex:selectRadio value="{!mainInsuredGenderByPolcyVF}" ><apex:selectOptions value="{!mainInsuredGenderByPolcyVFOptions}"/></apex:selectRadio>
+</apex:pageBlockSectionItem>
+
+<apex:pageBlockSectionItem >
+<apex:outputLabel value="IS HOLDING INTERNATIONAL LICENSE?" style="font-family:Calibri;"/><apex:selectRadio value="{!mainInsuredInterLicByPolcyVF}" ><apex:selectOptions value="{!mainInsuredInterLicByPolcyVFOptions}"/></apex:selectRadio>
+</apex:pageBlockSectionItem>
+
+<apex:pageBlockSectionItem >
+<apex:outputLabel value="LICENSE NUMBER" style="font-family:Calibri;"/><apex:inputText value="{!mainInsuredLicNumberByPolcyVF}"/>
+</apex:pageBlockSectionItem>
+
+<apex:pageBlockSectionItem >
+<apex:outputLabel value="YEAR FIRST LICENSED" style="font-family:Calibri;"/><apex:inputText value="{!mainInsuredYrLicByPolcyVF}" />
+</apex:pageBlockSectionItem>
+
+<apex:pageBlockSectionItem >
+<apex:outputLabel value="YEAR SINCE LAST ACCIDENT" style="font-family:Calibri;"/><apex:selectList value="{!mainInsuredLstAccSelectList}" size="1" style="width:500px;"><apex:selectOptions value="{!MainInsuredLstAccOptions}"/></apex:selectList>
+</apex:pageBlockSectionItem>
+
+<apex:pageBlockSectionItem >
+<apex:outputLabel value="INPUT TAX CREDIT" style="font-family:Calibri;"/><apex:inputText value="{!mainInsuredInptTxCrdtByPolcyVF}" />
+</apex:pageBlockSectionItem>
+
+<apex:pageBlockSectionItem >
+<apex:outputLabel value="IS BUSINESS USE" style="font-family:Calibri;"/><apex:selectRadio value="{!mainInsuredIsBusUseByPolcyVF}" ><apex:selectOptions value="{!mainInsuredIsBusUseByPolcyVFOptions}"/></apex:selectRadio>
+</apex:pageBlockSectionItem>
+
+<apex:pageBlockSectionItem >
+<apex:outputLabel value="IS REGISTERED OWNER" style="font-family:Calibri;width:500px;"/><apex:selectRadio value="{!mainInsuredIsRegOwnByPolcyVF}" ><apex:selectOptions value="{!mainInsuredIsRegOwnByPolcyVFOptions}"/></apex:selectRadio>
+</apex:pageBlockSectionItem>
+
+<apex:pageBlockSectionItem >
+<apex:outputLabel value="REGISTERED FOR GST" style="font-family:Calibri;"/><apex:selectRadio value="{!mainInsuredRegForGstByPolcyVF}" ><apex:selectOptions value="{!mainInsuredRegForGstByPolcyVFOptions}"/></apex:selectRadio>
+</apex:pageBlockSectionItem>
+
+<apex:pageBlockSectionItem >
+<apex:outputLabel value="STATE" style="font-family:Calibri;"/><apex:inputText value="{!mainInsuredStateByPolcyVF}"/>
+</apex:pageBlockSectionItem>
+
+</apex:pageBlockSection>
+
+<br/>
+<br/>
+
+<div>
+<apex:outputLabel value="FINANCIER" style="text-transform:uppercase;color:#c4122e;font-size:24px;font-family:Calibri;position:relative;margin-top:50%;"/>
+</div>
+<br/>
+
+<div><apex:outputLabel value="FINANCIER" style="text-transform:uppercase;font-size:16px;font-family:Calibri;margin-left:100px;padding-left:10px;"/><span style="padding-left:20px;"><apex:inputText value="{!pageTwoFinancierSelectList}" /></span></div>
+
+
+<apex:pageBlockSection title="FINANCE" columns="2">
+
+<apex:pageBlockSectionItem >
+<apex:outputLabel value="Finance Term(Months)" style="font-family:Calibri;"/><apex:inputText style="width:20px;" value="{!finTermPage3VFInput}" />
+</apex:pageBlockSectionItem>
+
+<apex:pageBlockSectionItem >
+<apex:outputLabel value="Finance Type" style="font-family:Calibri;"/><apex:selectRadio value="{!consmrBusinessRadio}" ><apex:selectOptions value="{!ConsmrBusinessRadioBtn}"/></apex:selectRadio>
+</apex:pageBlockSectionItem>
+
+<apex:pageBlockSectionItem >
+<apex:outputLabel value="Amount Financed(inc. Balloon) $" style="font-family:Calibri;"/><apex:inputtext value="{!amtFinPage3VFInput}" />
+</apex:pageBlockSectionItem>
+
+<apex:pageBlockSectionItem >
+<apex:outputLabel value="Balloon Amount $" style="font-family:Calibri;"/><apex:inputtext value="{!amtBalAmountPage3VFInput}" />
+</apex:pageBlockSectionItem>
+
+<apex:pageBlockSectionItem >
+<apex:outputLabel value="Second Insured" style="font-family:Calibri;"/><apex:inputCheckbox value="{!secInsuredPage3VFInput}" />
+</apex:pageBlockSectionItem>
+
+<apex:pageBlockSectionItem >
+</apex:pageBlockSectionItem>
+
+    
+</apex:pageBlockSection>    
+
+<div><apex:outputLabel value="EMPLOYMENT INFORMATION" style="text-transform:uppercase;color:#c4122e;font-size:24px;font-family:Calibri"/></div><br/>
+
+<div style="float:left;"><apex:outputLabel value="Are all insured persons currently employed?" style="text-transform:uppercase;font-size:16px;font-family:Calibri"/></div><div style="margin-left:1300px;"><apex:selectRadio value="{!allInsureEmpRadio}"><apex:selectOptions value="{!AllInsureEmpRadioBtn}"/></apex:selectRadio></div><br/>
+<div style="float:left;"><apex:outputLabel style="text-transform:uppercase;font-size:16px;font-family:Calibri">Are all insured persons employed as Permanent full-time, Permanent part-time for at least twenty (20) hours per week, or Casual employment for at least twenty<br/> (20) hours per week having been<br/> with the same employer for at least the past twelve (12) months? </apex:outputLabel></div><div style="margin-left:1300px;"><apex:selectRadio value="{!allInsurePermRadio}"><apex:selectOptions value="{!AllInsurePermRadioBtn}"/></apex:selectRadio></div><br/>
+
+<br/>
+
+<div style="float:left;"><apex:outputLabel value="Are any insured persons self-employed?" style="text-transform:uppercase;font-size:16px;font-family:Calibri"/></div><div style="margin-left:1300px;"><apex:selectRadio value="{!allInsureSelfEmpRadio}"><apex:selectOptions value="{!AllInsureSelfEmpRadioBtn}"/></apex:selectRadio></div>   
+
+
+<br/>
+<br/>
+
+<apex:commandButton value="PREVIOUS" action="{!previousCreateQuotePage1}" style="background-color: #c4122e;"/><apex:commandButton value="NEXT" action="{!nextCreateQuotePage3}" style="background-color: #c4122e;"/>
+
+<!--<apex:commandButton value="NEXT" action="{!nextCreateQuotePage3}" style="background-color: #c4122e;"/>-->
+    
+</apex:pageBlock>
+
+
+</apex:form>
+
+   
+</apex:page>

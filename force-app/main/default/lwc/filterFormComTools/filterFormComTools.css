@@ -1,3 +1,26 @@
+:host {
+  --lwc-heightInput: 1.5rem;
+}
+
 .c-container {
-  background-color: #d3d3d3;
+  /* background-color: #d3d3d3; */
+}
+
+.combobox-small {
+  width: 100px;
+  min-width: 100px;
+}
+
+.combobox-medium {
+  width: 160px;
+  min-width: 160px;
+}
+
+.input-small {
+  width: 120px;
+  min-width: 120px;
+}
+
+.x-large {
+  /* height: 300px; */
 }

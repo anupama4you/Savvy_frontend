@@ -1,0 +1,205 @@
+<apex:page showHeader="true" sidebar="false" standardController="Custom_Opportunity__c" extensions="InsuranceQuoteStep3Extension">
+	<apex:stylesheet value="{!$Resource.EricInsuranceCSS}"/>
+	<apex:variable value="{!Custom_Opportunity__c}" var="o" />
+	<apex:sectionHeader title="Insurance" subtitle="Quote for {!o.Name}" />
+	<apex:form id="frmPage">
+		<!-- <apex:actionFunction action="{!applyMV}" name="applyMV" reRender="statuses, msg" status="Status1" oncomplete="CallWebService_JS();"/>
+		<apex:actionFunction action="{!invokeWS}" name="CallWebService_JS" status="Status2" reRender="statuses, frmPage, msg"/> -->
+
+		<apex:pageBlock title="Step 3 - Review">
+			<apex:pageBlockButtons location="bottom">
+				<apex:commandButton action="{!goToEditCoverTypes}" value="Edit Cover Types"/>
+				<apex:commandButton action="{!goToEditCoverInformation}" value="Edit Cover Information" rendered="false"/>
+				&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+				<apex:commandButton action="{!goToQuotingTool}" value="Return to Quoting Tool"/>
+				&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+				<apex:commandButton value="Import this Quote in Quoting Tools" action="{!importQuote}" />
+			</apex:pageBlockButtons>
+			<apex:pageBlockSection title="Currently Selected Cover Types" collapsible="false" columns="1">
+				<apex:outputField label="Motor Vehicle (MV)" value="{!quote.Motor_Vehicle__c}" rendered="{!!ISBLANK(quote.Motor_Vehicle__c)}" />
+				<apex:outputField label="GAP" value="{!quote.Gap__c}" rendered="{!!ISBLANK(quote.Gap__c)}" />
+				<apex:outputField label="Total assist/RTI" value="{!quote.Total_assist_RTI__c}" rendered="{!!ISBLANK(quote.Total_assist_RTI__c)}" />
+				<apex:outputField label="Truck GAP" value="{!quote.Truck_GAP__c}" rendered="{!!ISBLANK(quote.Truck_GAP__c)}" />
+				<apex:outputField label="LTI/BRI" value="{!quote.LTI_BRI__c}" rendered="{!!ISBLANK(quote.LTI_BRI__c)}" />
+                <!--Jesus Mora 2020-03-26 start-->
+                <apex:outputField label="LPI" value="{!quote.LPI__c}" rendered="{!!ISBLANK(quote.LPI__c)}" />
+                <!--Jesus Mora 2020-03-26 end-->
+				<apex:outputField label="Warranty - Insurance" value="{!quote.Warranty_Insurance__c}" rendered="{!!ISBLANK(quote.Warranty_Insurance__c)}" />
+			</apex:pageBlockSection>
+			<apex:pageBlockSection title="Premiums" collapsible="false" columns="1">
+				<apex:panelGrid columns="5" id="theGrid" cellpadding="5" cellspacing="2" width="60%" rowClasses="row1, row2" styleClass="tableResult">
+				
+					<apex:outputText value="Product" styleClass="columnHeader" />
+					<apex:outputText value="Premium" styleClass="columnHeader"/>
+					<apex:outputText value="Monthly" styleClass="columnHeader"/>
+					<apex:outputText value="Establishment Fee" styleClass="columnHeader"/>
+					<apex:outputText value="Total Payable" styleClass="columnHeader"/>
+					<!-- <apex:outputText value="Accept"/> -->
+					
+					<!-- Motor Vehicle -->
+					<apex:outputPanel rendered="{!!ISNULL(quote.Motor_Vehicle__c)}">
+						<apex:outputText value="Motor Vehicle - " />
+						<apex:outputField value="{!quote.Motor_Vehicle__c}"/>
+						<apex:outputText value="<br/><b>(* This risk is outside our acceptance guidelines)</b>" rendered="{!quote.MV_Total_Payable__c == 0}" escape="false" />
+					</apex:outputPanel>
+					<apex:outputField value="{!quote.MV_Premium__c}" rendered="{!!ISNULL(quote.Motor_Vehicle__c)}"/>
+					<apex:outputText value=" " rendered="{!!ISNULL(quote.Motor_Vehicle__c)}"/>
+					<apex:outputField value="{!quote.MV_Establishment_Fee__c}" rendered="{!!ISNULL(quote.Motor_Vehicle__c)}"/>
+					<apex:outputField value="{!quote.MV_Total_Payable__c}" rendered="{!!ISNULL(quote.Motor_Vehicle__c)}"/>
+					<!-- <apex:inputField value="{!quote.MV_Accept__c}" rendered="{!!ISNULL(quote.Motor_Vehicle__c)}"/> -->
+					<!-- GAP -->
+					<apex:pageBlockSectionItem rendered="{!!ISNULL(quote.Gap__c)}">
+						<apex:outputText value="GAP - " />
+						<apex:outputField value="{!quote.Gap__c}"/>	
+					</apex:pageBlockSectionItem>
+					<apex:outputField value="{!quote.GAP_Premium__c}" rendered="{!!ISNULL(quote.Gap__c)}"/>
+					<apex:outputText value=" " rendered="{!!ISNULL(quote.Gap__c)}"/>
+					<apex:outputField value="{!quote.GAP_Establishment_Fee__c}" rendered="{!!ISNULL(quote.Gap__c)}"/>
+					<apex:outputField value="{!quote.GAP_Total_Payable__c}" rendered="{!!ISNULL(quote.Gap__c)}"/>
+					<!-- <apex:inputField value="{!quote.GAP_Accept__c}" rendered="{!!ISNULL(quote.Gap__c)}"/> -->
+					<!-- Total Assist -->
+					<apex:pageBlockSectionItem rendered="{!!ISNULL(quote.Total_assist_RTI__c)}">
+						<apex:outputText value="RTI - " />
+						<apex:outputField value="{!quote.Total_assist_RTI__c}"/>	
+					</apex:pageBlockSectionItem>
+					<apex:outputField value="{!quote.TAS_Premium__c}" rendered="{!!ISNULL(quote.Total_assist_RTI__c)}"/>
+					<apex:outputText value=" " rendered="{!!ISNULL(quote.Total_assist_RTI__c)}"/>
+					<apex:outputField value="{!quote.TAS_Establishment_Fee__c}" rendered="{!!ISNULL(quote.Total_assist_RTI__c)}"/>
+					<apex:outputField value="{!quote.TAS_Total_Payable__c}" rendered="{!!ISNULL(quote.Total_assist_RTI__c)}"/>
+					<!-- <apex:inputField value="{!quote.TAS_Accept__c}" rendered="{!!ISNULL(quote.Total_assist_RTI__c)}"/> -->
+					<!-- LTI -->
+					<apex:pageBlockSectionItem rendered="{!!ISNULL(quote.LTI_BRI__c)}">
+						<apex:outputText value="LTI/BRI - " />
+						<apex:outputField value="{!quote.LTI_BRI__c}"/>	
+					</apex:pageBlockSectionItem>
+					<apex:outputField value="{!quote.LTI_Premium__c}" rendered="{!!ISNULL(quote.LTI_BRI__c)}"/>
+					<apex:outputText value=" " rendered="{!!ISNULL(quote.LTI_BRI__c)}"/>
+					<apex:outputField value="{!quote.LTI_Establishment_Fee__c}" rendered="{!!ISNULL(quote.LTI_BRI__c)}"/>
+					<apex:outputField value="{!quote.LTI_Total_Payable__c}" rendered="{!!ISNULL(quote.LTI_BRI__c)}"/>
+					<!-- <apex:inputField value="{!quote.LTI_Accept__c}" rendered="{!!ISNULL(quote.LTI_BRI__c)}"/> -->
+                    <!--Jesus Mora 2020-03-26 start-->
+                    <!-- LPI -->
+					<apex:pageBlockSectionItem rendered="{!!ISNULL(quote.LPI__c)}">
+						<apex:outputText value="LPI - " />
+						<apex:outputField value="{!quote.LPI__c}"/>	
+					</apex:pageBlockSectionItem>
+					<apex:outputField value="{!quote.LPI_Premium__c}" rendered="{!!ISNULL(quote.LPI__c)}"/>
+					<apex:outputText value=" " rendered="{!!ISNULL(quote.LPI__c)}"/>
+					<apex:outputField value="{!quote.LPI_Establishment_Fee__c}" rendered="{!!ISNULL(quote.LPI__c)}"/>
+					<apex:outputField value="{!quote.LPI_Total_Payable__c}" rendered="{!!ISNULL(quote.LPI__c)}"/>
+                    <!--Jesus Mora 2020-03-26 end-->
+					<!-- Warranty -->
+					<apex:outputPanel rendered="{!!ISNULL(quote.Warranty_Insurance__c)}">
+						<apex:outputText value="Warranty - " />
+						<apex:outputField value="{!quote.Warranty_Insurance__c}"/>	
+						<apex:outputText value="<br/><b>(* This risk is outside our acceptance guidelines)</b>" rendered="{!quote.WRR_Total_Payable__c == 0}" escape="false" />
+					</apex:outputPanel>
+					<apex:outputField value="{!quote.WRR_Premium__c}" rendered="{!!ISNULL(quote.Warranty_Insurance__c)}"/>
+					<apex:outputText value=" " rendered="{!!ISNULL(quote.Warranty_Insurance__c)}"/>
+					<apex:outputField value="{!quote.WRR_Establishment_Fee__c}" rendered="{!!ISNULL(quote.Warranty_Insurance__c)}"/>
+					<apex:outputField value="{!quote.WRR_Total_Payable__c}" rendered="{!!ISNULL(quote.Warranty_Insurance__c)}"/>
+					<!-- <apex:inputField value="{!quote.WRR_Accept__c}" rendered="{!!ISNULL(quote.Warranty_Insurance__c)}"/> -->
+				</apex:panelGrid>
+			</apex:pageBlockSection>
+			<apex:pageBlockSection title="Motor Vehicle Options" collapsible="false" columns="1" rendered="{!!ISNULL(quote.Motor_Vehicle__c) && !(o.Application_AssetDetail__r.Type__c=='Car' && quote.MV_Total_Payable__c==0)}">
+				<apex:pageBlockSectionItem >
+					<apex:outputLabel value="Select your Standard Excess" />
+					<apex:selectList value="{!standardExcessSelected}" multiselect="false" size="1" styleClass="selectList">
+						<apex:selectOptions value="{!excessOptions}" />
+					</apex:selectList>
+				</apex:pageBlockSectionItem>
+				<apex:pageBlockSectionItem >
+					<apex:outputLabel value="Your Amount Covered" />
+					<apex:outputPanel >
+						<apex:inputField value="{!quote.MV_Amount_Covered__c}"/>
+						&nbsp;&nbsp; (Between ${!minAmountCovered} and ${!maxAmountCovered})
+					</apex:outputPanel>
+				</apex:pageBlockSectionItem>
+				<apex:inputField value="{!quote.NCB_Protection__c}"/>
+				<apex:inputField value="{!quote.Windscreen_Protection__c}"/>
+				<apex:pageBlockSectionItem >
+					<apex:outputLabel value="" />
+					<apex:outputPanel >
+						<!-- <apex:commandButton action="{!applyMV}" value="Apply (old)" status="Status2" reRender="frmPage"/>&nbsp;&nbsp;&nbsp; -->
+						<apex:commandButton action="{!applyRestMV}" value=">> Apply <<" status="Status2" reRender="frmPage"/>
+						<apex:outputPanel id="statuses">
+							&nbsp;&nbsp;&nbsp;
+				            <apex:actionStatus id="Status1" startText="... Updating records ..." />
+				            <apex:actionStatus id="Status2" startText="... Connecting with insurance provider service ..." />
+				        </apex:outputPanel>
+				    </apex:outputPanel>
+				</apex:pageBlockSectionItem>
+			</apex:pageBlockSection>
+            <apex:pageBlockSection title="Suncorp" collapsible="false" columns="1" rendered="{!o.Application_AssetDetail__r.Type__c=='Car' && quote.MV_Total_Payable__c==0}">
+                <apex:pageBlockSectionItem >
+                    <apex:outputLabel value="Premium"/>
+                    <apex:inputField value="{!quoting.Insurance_MV_Retail_Price__c}"/>
+                </apex:pageBlockSectionItem>
+                <apex:pageBlockSectionItem >
+                    <apex:outputLabel value="Commision" />
+                    <apex:inputField value="{!quoting.Insurance_MV_Income__c}"/>
+                </apex:pageBlockSectionItem>
+			</apex:pageBlockSection>
+			<apex:pageBlockSection title="Quote Details" collapsible="false" columns="2">
+				<apex:outputField value="{!quote.Quotation_Number__c}" />
+				<apex:outputField label="Customer Name" value="{!o.Name}" />
+				<apex:outputField value="{!quote.Quotation_Date__c}" />
+				<apex:outputField label="Created By" value="{!quote.Quotation_Creator__c}" />
+				<apex:outputField value="{!o.Application__r.Suburb__c}" />
+				<apex:outputField label="Vehicle Garage Location" value="{!o.Application__r.State__c}" />
+				<apex:outputField label="Youngest Driver's DOB" value="{!o.Application__r.Date_of_Birth_1__c}" rendered="{!!ISNULL(quote.Motor_Vehicle__c)}"/>
+				<apex:pageBlockSectionItem rendered="{!OR(!ISNULL(quote.Motor_Vehicle__c),!ISNULL(quote.Warranty_Insurance__c))}">
+					<apex:outputLabel value="Vehicle" />
+					<apex:outputText value="{!quote.Vehicle_Make__c}, {!quote.Vehicle_Model__c}" />
+				</apex:pageBlockSectionItem>
+				<apex:outputField value="{!quote.Vehicle_Usage__c}" rendered="{!!ISNULL(quote.Motor_Vehicle__c)}" />
+				<apex:outputField value="{!quote.Vehicle_Purchase_Price__c}" rendered="{!OR(!ISNULL(quote.Motor_Vehicle__c),!ISNULL(quote.Warranty_Insurance__c))}" />
+				<apex:outputField label="Warranty Cover Term (months)" value="{!quote.Warranty_Insurance_Contract__c}" rendered="{!!ISNULL(quote.Warranty_Insurance__c)}" />
+				<apex:outputField label="Motor Cover Term (months)" value="{!quote.Motor_Cover_Term__c}" rendered="{!!ISNULL(quote.Motor_Vehicle__c)}" />
+				<apex:outputField label="Financier" value="{!quote.Financier_Name__c}" />
+			</apex:pageBlockSection>
+			<apex:pageMessages id="msg"/>
+		</apex:pageBlock>
+	</apex:form>
+	<apex:outputField value="{!o.Application__c}" rendered="false" />
+	<apex:outputField value="{!o.Application__r.Application_Type__c}" rendered="false" />
+	<apex:outputField value="{!o.Application__r.Mode_of_Employment_1__c}" rendered="false" />
+	<apex:outputField value="{!o.Application__r.Date_Started_1__c}" rendered="false" />
+	<apex:outputField value="{!o.Application__r.First_Name__c}" rendered="false" />
+	<apex:outputField value="{!o.Application__r.Last_Name__c}" rendered="false" />
+	<apex:outputField value="{!o.Application__r.Title_1__c}" rendered="false" />
+	<apex:outputField value="{!o.Application__r.Drivers_License_1__c}" rendered="false" />
+	<apex:outputField value="{!o.Application__r.Date_of_Birth_1__c }" rendered="false" />
+	<apex:outputField value="{!o.Application__r.Gender_1__c}" rendered="false" />
+	<apex:outputField value="{!o.Application__r.Email_Address__c }" rendered="false" />
+	
+	<apex:outputField value="{!o.Application__r.Mobile_Number__c}" rendered="false" />
+	<apex:outputField value="{!o.Application__r.Home_Phone__c}" rendered="false" />
+	<apex:outputField value="{!o.Application__r.Work_Phone__c}" rendered="false" />
+	<apex:outputField value="{!o.Application__r.Business_ABN__c}" rendered="false" />
+	<apex:outputField value="{!o.Application__r.Time_Last_Fault_1__c}" rendered="false" />
+	<apex:outputField value="{!o.Application__r.Year_First_Licensed_1__c}" rendered="false" />
+	<apex:outputField value="{!o.Application__r.Start_Date_1__c}" rendered="false" />
+	<apex:outputField value="{!o.Application__r.Finish_Date_1__c}" rendered="false" />
+	<apex:outputField value="{!o.Application__r.Type_of_Asset__c}" rendered="false" />
+	<apex:outputField value="{!o.Application__r.Entity_Name__c}" rendered="false" />
+
+	<apex:outputField value="{!o.Application__r.Suburb__c}" rendered="false" />
+	<apex:outputField value="{!o.Application__r.State__c}" rendered="false" />
+	<apex:outputField value="{!o.Application__r.Postcode__c}" rendered="false" />
+
+	<apex:outputField value="{!o.Application_AssetDetail__r.Make__c}" rendered="false" />
+	<apex:outputField value="{!o.Application_AssetDetail__r.Model__c}" rendered="false" />
+	<apex:outputField value="{!o.Application_AssetDetail__r.Variant__c}" rendered="false" />
+	<apex:outputField value="{!o.Application_AssetDetail__r.Condition__c}" rendered="false" />
+	<apex:outputField value="{!o.Application_AssetDetail__r.Rego__c}" rendered="false" />
+	<apex:outputField value="{!o.Application_AssetDetail__r.Rego_State__c}" rendered="false" />
+	<apex:outputField value="{!o.Application_AssetDetail__r.VIN__c}" rendered="false" />
+	<apex:outputField value="{!o.Application_AssetDetail__r.Type__c}" rendered="false" />
+	<apex:outputField value="{!o.Application_AssetDetail__r.Year__c}" rendered="false" />
+	<apex:outputField value="{!o.Application_AssetDetail__r.Redbook_Key__c}" rendered="false" />
+	<apex:outputField value="{!o.Application_AssetDetail__r.Actual_KM__c}" rendered="false" />
+	<apex:outputField value="{!o.Application_AssetDetail__r.Date_First_Registered__c}" rendered="false" />
+	<apex:outputField value="{!o.Application_AssetDetail__r.Engine_No__c}" rendered="false" />
+	<apex:outputField value="{!o.Vehicle_Registration__c}" rendered="false" />
+</apex:page>

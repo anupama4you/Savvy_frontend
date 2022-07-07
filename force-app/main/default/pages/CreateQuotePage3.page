@@ -1,0 +1,505 @@
+<apex:page docType="html-5.0" standardController="Custom_Opportunity__c" extensions="OppApplicationExtension" showHeader="true" standardStylesheets="true" sidebar="false">
+    
+    
+    <apex:includeScript value="{! $Resource.jQuery }"/>
+
+    <script type="text/javascript" >
+            
+        $(document).ready(function(){
+        
+            
+        });
+
+    //WORKING JAVASCRIPT
+    $(document).ready(function() {
+    
+    //CREATE TRIGGER FUNCTIONS FOR 4 BUTTONS
+    $('#sixFiftyButtonId').click(function(){
+    
+        //working set 1          
+        $('#sixFiftyButtonId.stndrdExcessBtn').removeClass('stndrdExcessBtn')
+        $(this).addClass('stndrdExcessBtnSelected');
+        
+        localStorage.setItem('stndrdExcessStorage', '650');  
+        
+    });
+    
+    
+    $('#nineFiftyButtonId').click(function(){
+        
+        $('#nineFiftyButtonId.stndrdExcessBtn').removeClass('stndrdExcessBtn')
+        $(this).addClass('stndrdExcessBtnSelected');
+        
+        localStorage.setItem('stndrdExcessStorage', '950');
+        
+    });
+    
+    
+    $('#oneTwoFiftyButtonId').click(function(){
+        
+        $('#oneTwoFiftyButtonId.stndrdExcessBtn').removeClass('stndrdExcessBtn')
+        $(this).addClass('stndrdExcessBtnSelected');
+        
+        localStorage.setItem('stndrdExcessStorage', '1250');
+        
+    });
+    
+    $('#oneFiveFiftyButtonId').click(function(){
+        
+        $('#oneFiveFiftyButtonId.stndrdExcessBtn').removeClass('stndrdExcessBtn')
+        $(this).addClass('stndrdExcessBtnSelected');
+        
+        localStorage.setItem('stndrdExcessStorage', '1550');
+        
+    });
+    
+    
+    var stndrdExcessStorageVar = localStorage.getItem('stndrdExcessStorage');
+    
+    if (stndrdExcessStorageVar == '650') {
+        //$(this).addClass('red');
+        
+        //localStorage.removeItem('cookieRedClass');
+        $('#sixFiftyButtonId.stndrdExcessBtn').removeClass('stndrdExcessBtn')
+        $('#sixFiftyButtonId').addClass('stndrdExcessBtnSelected');
+        //alert(cookieRedClass);  
+        
+    } else if (stndrdExcessStorageVar == '950') {
+        
+        $('#nineFiftyButtonId.stndrdExcessBtn').removeClass('stndrdExcessBtn')
+        $('#nineFiftyButtonId').addClass('stndrdExcessBtnSelected');
+        
+    } else if (stndrdExcessStorageVar == '1250') {
+        
+        $('#oneTwoFiftyButtonId.stndrdExcessBtn').removeClass('stndrdExcessBtn')
+        $('#oneTwoFiftyButtonId').addClass('stndrdExcessBtnSelected');
+        
+    } else if (stndrdExcessStorageVar == '1550') {
+        
+        $('#oneFiveFiftyButtonId.stndrdExcessBtn').removeClass('stndrdExcessBtn')
+        $('#oneFiveFiftyButtonId').addClass('stndrdExcessBtnSelected');
+        
+    }     
+
+    
+    });
+
+    </script>  
+
+    <style type="text/css">
+
+    .uiButton:active, .active {
+        background-color:blue;
+    }
+
+    input[name=btnsubmit]:active {
+        color: green;
+    }
+
+    .ButtonClicked {
+        background-color:red;
+    }
+
+    .red{
+        background-color:red;
+    }
+
+    body input.btn, body input.btnDisabled, body input.btnCancel{
+        padding: 7px 36px;
+
+        color: #ffffff !important;
+        background-color: #c4122e; !important;
+        border: 1.5px solid #c4122e;
+        border-radius: 4px;
+        font-size: 13px !important;
+        font-weight: normal !important;
+        text-transform: uppercase;
+        -moz-appearance: none;
+        -webkit-appearance: none;
+        cursor: pointer;
+        font-family: "Calibri";
+    }
+
+    body button, body .x-btn, body .btn, body .btnDisabled, body .btnCancel, body .menuButton .menuButtonButton{
+        background: none;
+    }
+
+    .btn:hover {
+        color: #c4122e !important;
+        background-color: white !important; 
+        background: none !important;
+    }
+
+    .sixFiftyBtn{
+        padding: 7px 36px;
+        color: #ffffff !important;
+        background-color: #c4122e; !important;
+        border: 1.5px solid #c4122e;
+        border-radius: 4px;
+        font-size: 13px !important;
+        font-weight: normal !important;
+        text-transform: uppercase;
+        -moz-appearance: none;
+        -webkit-appearance: none;
+        cursor: pointer;
+        font-family: "Calibri";
+    }
+
+    .stndrdExcessBtn {
+        padding: 7px 7px 7px 7px;  
+        color: #ffffff !important;
+        background-color: #c4122e; !important;
+        border: 1.5px solid #c4122e;
+        border-radius: 4px;
+        font-size: 13px !important;
+        font-weight: normal !important;
+        text-transform: uppercase;
+        -moz-appearance: none;
+        -webkit-appearance: none;
+        cursor: pointer;
+        font-family: "Calibri";
+        text-align:center !important;
+        width:100px !important;
+    }
+
+    .stndrdExcessBtn:hover {
+        color: #c4122e !important;
+        background-color: white !important; 
+        background: none !important;
+    }
+
+    .stndrdExcessBtnSelected {
+        padding: 7px 7px 7px 7px;
+    
+        color: #c4122e !important;
+        background-color: white !important; 
+        background: none !important;
+        border: 1.5px solid #c4122e;
+        border-radius: 4px;
+        font-size: 13px !important;
+        font-weight: normal !important;
+        text-transform: uppercase;
+        -moz-appearance: none;
+        -webkit-appearance: none;
+        cursor: pointer;
+        font-family: "Calibri";
+
+        text-align:center !important;
+
+        width:100px !important;
+
+    }
+
+    .cQuotePage3CovType{
+        text-transform:uppercase;
+        color:#c4122e;
+        font-size:24px;
+        font-family:Calibri;
+    }
+
+    .cQuoteSpan{
+        float:right;
+        font-family:Calibri;
+        color:blue;
+    }
+
+    .cQuotePage3EditCov{
+        background-color: #c4122e;
+    }
+
+    .cQuotePage3PremLBL{
+        text-transform:uppercase;
+        color:#c4122e;
+        font-size:24px;
+        font-family:Calibri;
+    }
+
+    .cQuotePage3PremTab{
+        position:absolute !important;
+        width:1330px !important;
+    }
+
+    .cQuotePage3TDPad{
+        padding-bottom: 1.5em;
+    }
+
+    .cQuotePage3StdEx{
+        text-transform:uppercase;
+        color:#c4122e;
+        font-size:24px;
+        font-family:Calibri;
+    }
+
+    .cQuotePage3TDAddOpt{
+        position:absolute !important; 
+        top:28.3%;
+    }
+
+    .cQuotePage3AddOptLBL{
+        text-transform:uppercase;
+        color:#c4122e;
+        font-size:24px;
+        font-family:Calibri;
+        margin-left:100px;
+        position:relative !important;
+    }
+
+    .cQuotePage3SpnTxt{
+        color:#c4122e;
+        font-size:24px;
+        font-family:Calibri;
+        margin-left:100px;
+    }
+
+    .cQuotePage3TDPad2{
+        padding-bottom: 2em;
+    }
+
+    .cQuotePage3AmtCov{
+        text-transform:uppercase;
+        color:#c4122e;
+        font-size:24px;
+        font-family:Calibri;
+    }
+
+    .cQuotePage3DivRT{
+        text-align:right;
+    }
+
+    .cQuotePage3AppClr{
+        background-color: #c4122e;
+    }
+
+    .cQuotePage3QDetLBL{
+        text-transform:uppercase;
+        color:#c4122e;
+        font-size:24px;
+        font-family:Calibri;
+    }
+
+    .cQuotePage3QDetBlk{
+        font-family:Calibri;
+    }
+
+    .cQuotePage3EditCMD{
+        background-color: #c4122e;
+    }
+
+    .cQuotePage3Term{
+        text-transform:uppercase;
+        color:#c4122e;
+        font-size:24px;
+        font-family:Calibri;
+    }
+
+    .cQuotePage3Stmt{
+        font-family:Calibri;
+        font-weight:bold;
+    }
+
+    .cQuotePage3BtnClr{
+        background-color: #c4122e;
+    }
+
+</style>
+
+
+<apex:form >
+
+    <!--Created By: Phil Fang | Date: February 2, 2017 | Description: Apex error message for Create Quote page 3 validation-->
+    <apex:pageMessages />
+    
+    <apex:pageBlock >
+        
+        
+        <div>
+            <apex:outputLabel value="CURRENTLY SELECTED COVER TYPES" styleClass="cQuotePage3CovType" /><span class="cQuoteSpan">{!quotationNumberPage3VFInput}</span>
+            <br/>
+        </div>
+        <br/>
+        <br/>
+        <apex:commandButton value="EDIT COVER TYPES" action="{!editCoverTypePage3}" styleClass="cQuotePage3EditCov"/>
+        <br/>
+        <br/>
+        <apex:outputLabel value="PREMIUMS" styleClass="cQuotePremLBL" />
+        <br/>
+        <br/>
+        
+        <apex:pageBlockTable value="{!premsTableWrapperList}" var="premsTabVar" styleClass="cQuotePage3PremTab">
+            <apex:column headerValue="PRODUCT" >
+
+                <apex:outPutText value="{!premsTabVar.productPremsTablePage3}"></apex:outputText>
+            </apex:column>
+            
+            <apex:column headerValue="PREMIUM" ><apex:outPutText value="{!premsTabVar.premiumPremsTablePage3}"></apex:outputText></apex:column>
+            <apex:column headerValue="MONTHLY" ><apex:outPutText value="{!premsTabVar.monthlyPremsTablePage3}"></apex:outputText></apex:column>
+            <apex:column headerValue="ESTAB. FEE" ><apex:outPutText value="{!premsTabVar.estabFeePremsTablePage3}"></apex:outputText></apex:column>
+            <apex:column headerValue="TOTAL PAYABLE" ><apex:outPutText value="{!premsTabVar.totalPayablePremsTablePage3}"></apex:outputText></apex:column>
+            
+        </apex:pageBlockTable>
+        
+        <br/>
+        <br/>
+        <br/>
+        <br/>
+        <br/>
+        <br/>
+        <br/>
+
+        <br/>
+        <br/>
+        <br/>
+        <br/>
+        
+        <table>
+            
+            
+            <tr >
+                
+                <td class="cQuotePage3TDPad">
+                    <apex:outputLabel value="SELECT YOUR STANDARD EXCESS" styleClass="cQuotePage3StdEx" />
+                    <br/>
+                    <br/>
+                    <input class="stndrdExcessBtn" value="$650" name="sixFiftyButton" id="sixFiftyButtonId" onclick="sixFiftyActFunction();"><apex:actionFunction name="sixFiftyActFunction" action="{!sixFiftyStandardExcessSetter}" /></input>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<input class="stndrdExcessBtn" value="$950" name="nineFiftyButton" id="nineFiftyButtonId" onclick="nineFiftyActFunction();"><apex:actionFunction name="nineFiftyActFunction" action="{!nineFiftyStandardExcessSetter}" /></input>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<input class="stndrdExcessBtn" value="$1,250" name="oneTwoFiftyButton" id="oneTwoFiftyButtonId" onclick="oneTwoFiftyActFunction();"><apex:actionFunction name="oneTwoFiftyActFunction" action="{!oneTwoFiftyStandardExcessSetter}" /></input>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<input class="stndrdExcessBtn" value="$1,550" name="oneFiveFiftyButton" id="oneFiveFiftyButtonId" onclick="oneFiveFiftyActFunction();"><apex:actionFunction name="oneFiveFiftyActFunction" action="{!oneFiveFiftyStandardExcessSetter}" /></input>    
+                </td>    
+
+
+                <td class="cQuotePage3TDAddOpt">
+                    <apex:outputLabel value="ADDITIONAL OPTIONS" styleClass="cQuotePage3AddOptLBL"/>    
+    
+                <br/>
+                <br/>
+    <br/>
+    
+    <apex:outputPanel id="qDownloadMessagePanel">
+        <apex:outputPanel rendered="{!IF(qDownloadMessageRender == True,True,False)}" >
+            
+            <span class="cQuotePage3SpnTxt"><apex:outputText >CONGRATULATIONS! Your quote is now ready, to download your quote</apex:outputText></span><br/>
+            <span class="cQuotePage3SpnTxt"><apex:outputText >information press IMPORT QUOTE after this page and click DONE!</apex:outputText></span>
+            
+        </apex:outputPanel>
+    </apex:outputPanel>
+    
+    
+    <br/>
+    
+</td> 
+
+</tr>
+
+
+
+<tr >
+    
+    <td class="cQuotePage3TDPad2">
+        <apex:outputLabel value="YOUR AMOUNT COVERED" styleClass="cQuotePage3AmtCov" />
+        
+    </td> 
+    
+    
+    <td>
+        
+        
+        
+        
+    </td> 
+    
+</tr>    
+
+</table>
+
+<br/>
+<br/>
+<br/>
+
+<div style="text-align:right;"><apex:commandButton value="APPLY" action="{!settoLoan}" styleClass="cQuotePage3AppClr" rerender="qDownloadMessagePanel"/></div>
+
+<hr/>
+
+<apex:outputLabel value="QUOTE DETAILS" styleClass="cQuotePage3QDetLBL" />
+<br/>
+<br/>
+<apex:pageBlockSection columns="2">
+    
+    <apex:pageBlockSectionItem >
+        <apex:outputLabel value="QUOTATION NUMBER" styleClass="cQuotePage3QDetBlk"/><apex:inputText value="{!quotationNumberPage3VFInput}"/>
+    </apex:pageBlockSectionItem>
+    
+    <apex:pageBlockSectionItem >
+        <apex:outputLabel value="CUSTOMER NAME" styleClass="cQuotePage3QDetBlk"/><apex:inputText value="{!cuNamePage3VFInput}"/>
+    </apex:pageBlockSectionItem>
+    
+    <apex:pageBlockSectionItem >
+        <apex:outputLabel value="EXPIRES ON" styleClass="cQuotePage3QDetBlk"/><apex:inputText value="{!expireOnPage3VFInput}"/>
+    </apex:pageBlockSectionItem>
+    
+    <apex:pageBlockSectionItem >
+        <apex:outputLabel value="CREATED BY" styleClass="cQuotePage3QDetBlk"/><apex:inputText value="{!createdByPage3VFInput}"/>
+    </apex:pageBlockSectionItem>
+    
+    <apex:pageBlockSectionItem >
+        <apex:outputLabel value="QUOTATION DATE" styleClass="cQuotePage3QDetBlk"/><apex:inputText value="{!quotationDatePage3VFInput}"/>
+    </apex:pageBlockSectionItem>
+    
+    <apex:pageBlockSectionItem >
+        <apex:outputLabel value="VEHICLE GARAGE LOCATION" styleClass="cQuotePage3QDetBlk"/><apex:inputText value="{!vehGarageLocPage3VFInput}"/>
+    </apex:pageBlockSectionItem>
+    
+    <apex:pageBlockSectionItem >
+        <apex:outputLabel value="SUBURB" styleClass="cQuotePage3QDetBlk"/><apex:inputText value="{!suburbPage3VFInput}"/>
+    </apex:pageBlockSectionItem>
+    
+    <apex:pageBlockSectionItem >
+        <apex:outputLabel value="VEHICLE" styleClass="cQuotePage3QDetBlk"/><apex:inputText value="{!vehiclePage3VFInput}"/>
+    </apex:pageBlockSectionItem>
+    
+    <apex:pageBlockSectionItem >
+        <apex:outputLabel value="YOUNGEST DRIVER'S DOB" styleClass="cQuotePage3QDetBlk"/><apex:inputText value="{!youngestDrDOBPage3VFInput}"/>
+    </apex:pageBlockSectionItem>
+    
+    <apex:pageBlockSectionItem >
+        <apex:outputLabel value="NCB RATING" styleClass="cQuotePage3QDetBlk"/><apex:inputText value="{!niceRatingPage3VFInput}"/>
+    </apex:pageBlockSectionItem>
+    
+    <apex:pageBlockSectionItem >
+        <apex:outputLabel value="MOTOR COVER TERM" styleClass="cQuotePage3QDetBlk"/><apex:inputText value="{!motorCovTermPage3VFInput}"/>
+    </apex:pageBlockSectionItem>
+    
+    <apex:pageBlockSectionItem >
+        <apex:outputLabel value="VEHICLE PURCHASE PRICE" styleClass="cQuotePage3QDetBlk"/><apex:inputText value="{!vehPurPriceTermPage3VFInput}"/>
+    </apex:pageBlockSectionItem>
+    
+    <apex:pageBlockSectionItem >
+        <apex:outputLabel value="ACCESSORIES & MODIFICATION VALUE" styleClass="cQuotePage3QDetBlk"/><apex:inputText value="{!accModValPage3VFInput}"/>
+    </apex:pageBlockSectionItem>
+    
+    <apex:pageBlockSectionItem >
+        <apex:outputLabel value="FINANCIER" styleClass="cQuotePage3QDetBlk"/><apex:inputText value="{!financierPage3VFInput}"/>
+    </apex:pageBlockSectionItem>
+    
+</apex:pageBlockSection>
+
+
+<div ><apex:commandButton value="EDIT" action="{!editButtonPage3}" styleClass="cQuotePage3EditCMD"/></div>
+<br/>
+<br/>
+<apex:outputLabel value="TERMS AND CONDITIONS" styleClass="cQuotePage3Term" />
+<br/>
+<apex:outputText styleClass="cQuotePage3Stmt">The premium estimates shown here are based on the information you have provided and are intended as a guide only, it does not provide any insurance cover.<br/>
+    <p/>
+    When you apply for insurance we may ask you more detailed questions and as a result we may decide to vary the premium or excess amounts (where applicable),<br/> 
+    impose conditions or elect not to offer insurance at all.<br/>
+    <p/>
+    You should consider the Product Disclosure Statement and Policy booklet before making any decisions regarding this insurance.</apex:outputText>
+<br/>
+<br/>
+<br/>
+<br/>
+<apex:commandButton value="VALIDATE CHANGES" styleClass="cQuotePage3BtnClr"/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<apex:commandButton value="NEW QUOTE" action="{!newQuotePage3}" styleClass="cQuotePage3BtnClr"/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<apex:commandButton value="CANCEL" onclick="window.close();" style="background-color: #c4122e;"/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<apex:commandButton value="DONE" onclick="window.close();" styleClass="cQuotePage3BtnClr"/>
+</apex:pageBlock>
+
+
+</apex:form>
+
+
+</apex:page>

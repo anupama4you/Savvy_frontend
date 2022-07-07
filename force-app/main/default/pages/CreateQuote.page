@@ -1,0 +1,579 @@
+<!--
+* @author  Phil Dennison C. Fang
+* @version 1.0
+* @date   2017-02-13 
+* @description    Visualforce page for Quotation Requests with ERIC API integration
+-->
+
+<apex:page standardController="Custom_Opportunity__c" extensions="OppApplicationExtension" showHeader="false" standardStylesheets="true" sidebar="false">
+    
+    <style type="text/css">
+        
+        body input.btn, body input.btnDisabled, body input.btnCancel{
+        padding: 7px 36px;
+        
+        color: #ffffff !important;
+        background-color: #c4122e; !important;
+        border: 1.5px solid #c4122e;
+        border-radius: 4px;
+        font-size: 13px !important;
+        font-weight: normal !important;
+        text-transform: uppercase;
+        -moz-appearance: none;
+        -webkit-appearance: none;
+        cursor: pointer;
+        font-family: "Calibri";
+        
+        }
+        
+        
+        body button, body .x-btn, body .btn, body .btnDisabled, body .btnCancel, body .menuButton .menuButtonButton{
+        background: none;
+        }
+        
+        .currentSelCvrType{
+            text-transform:uppercase;
+            color:#c4122e;
+            font-size:24px;
+            font-family:Calibri;
+        }
+        
+        .currentSelCvrTypeText{
+            font-family:Calibri;
+            font-weight:bold;
+        }
+        
+        .vehDetBlkSecLabel{
+            font-family:Calibri;
+        }
+        
+        .createQuotSelectList{
+            width:150px;
+        }
+        
+        .createQuotSelectListLong{
+            width:500px;
+        }
+        
+        .vehSuburb{
+            font-family:Calibri;
+            width:500px;
+        }
+        
+        .vehUsageDiv{
+            margin-left:108px;
+        }
+        
+        .vehUsageLabel{
+            font-family:Calibri;
+            font-weight:bold;
+            font-size:91%;
+            color:#4a4a56;
+        }
+        
+        .vehUsageSelectList{
+            margin-left:20px;
+        }
+        
+        .mainInsuredBlkSecLabel{
+            font-family:Calibri;
+        }
+        
+        .financrOutputLbl{
+            text-transform:uppercase;
+            color:#c4122e;
+            font-size:24px;
+            font-family:Calibri;
+            position:relative;
+            margin-top:50%;
+        }
+        
+        .financrOutputLblField{
+            text-transform:uppercase;
+            font-size:16px;
+            font-family:Calibri;
+            margin-left:100px;padding-left:10px;
+        }
+        
+        .financrOutputLblFieldSpn{
+            padding-left:20px;
+        }
+        
+        .motorCvrTermTitle{
+            text-transform:uppercase;
+            color:#c4122e;
+            font-size:24px;
+            font-family:Calibri;
+        }
+        
+        .coverTermMnthsLblField{
+            text-transform:uppercase;
+            font-size:16px;
+            font-family:Calibri;
+            margin-left:0.8%;
+        }
+        
+        .coverTermMnthsLblFieldSpn{
+            padding-left:17px;
+        }
+        
+        .leftMarginDiv{
+            margin-left:230px;
+        }
+        
+        .hwLongSinceLstFaultAccLblField{
+            font-size:80%;
+            font-weight:bold;
+            color:#4a4a56;
+            font-family:Calibri;
+        }
+        
+        .hwLongSinceLstFaultAccLblFieldSpn{
+            padding-left:20px;
+        }
+        
+        .areThereAddDriversLblField{
+            text-transform:uppercase;
+            color:#c4122e;
+            font-size:24px;
+            font-family:Calibri;
+            position:relative;
+            margin-top:50%;
+        }
+        
+        .addDriverColumn{
+            width:80%;
+            text-align:right;
+        }
+        
+        .addDriverColumnAddBtn{
+            background-color: #c4122e;
+        }
+        
+        .addDriverColumnRemoveBtn{
+            background-color: #c4122e;
+        }
+        
+        .areThereAddDriversColDiv{
+            width:230px;
+        }
+        
+        .addDriverPanelCol{
+            width:80%;
+            text-align:right;
+        }
+        
+        .createQuoteBtnBottom{
+            background-color: #c4122e;
+        }
+        
+        .cvrMnthsLeftSpn{
+            padding-left:17px;
+        }
+        
+        .cvrMnthsLblField{
+            text-transform:uppercase;
+            font-size:16px;
+            font-family:Calibri;
+            margin-left:0.8%;
+        }
+        
+        .mtrCoverTrm{
+            text-transform:uppercase;
+            color:#c4122e;
+            font-size:24px;
+            font-family:Calibri;
+        }
+        
+        .employMargnDiv{
+            margin-left:800px;
+        }
+        
+        .contEmploySixMnthsLblField{
+            text-transform:uppercase;
+            font-size:16px;
+            font-family:Calibri;
+        }
+        
+        .employInfoLblField{
+            text-transform:uppercase;
+            color:#c4122e;
+            font-size:24px;
+            font-family:Calibri;
+            position:relative;
+            margin-top:50%;
+        }
+        
+        .isEmployFullorPartLblField{
+            text-transform:uppercase;
+            font-size:16px;
+            font-family:Calibri;
+        }
+        
+        .areCurrEmployLblField{
+            text-transform:uppercase;
+            font-size:16px;
+            font-family:Calibri;
+        }
+        
+        .empInfoLblField{
+            text-transform:uppercase;
+            color:#c4122e;
+            font-size:24px;
+            font-family:Calibri;
+            position:relative;
+            margin-top:50%;
+        }
+        
+        .vehUsageWarQuestionUL{
+            margin:0px;
+        }
+        
+        .vehUsageWarQuestionDiv{
+            margin-left:800px;
+        }
+        
+        .vehUsageWarQuestionLblField{
+            font-size:16px;
+            font-family:Calibri;
+        }
+        
+        .vehUsageWarLeftDiv{
+            float:left;
+        }
+        
+        .vehUsageWarLblField{
+            text-transform:uppercase;
+            color:#c4122e;
+            font-size:24px;
+            font-family:Calibri;
+        }
+        
+        .warContractLblField{
+            text-transform:uppercase;
+            color:#c4122e;
+            font-size:24px;
+            font-family:Calibri;
+            position:relative;
+            margin-top:50%;
+        }
+        
+        .warContractCvrTrmMnths{
+            text-transform:uppercase;
+            font-size:16px;
+            font-family:Calibri;
+            margin-left:87px;
+        }
+        
+        .warContractLeftSelect{
+            margin-left:5px;
+        }
+        
+        .otherInfoLblField{
+            text-transform:uppercase;
+            color:#c4122e;
+            font-size:24px;
+            font-family:Calibri;
+        }
+        
+        .odoReadingLblField{
+            text-transform:uppercase;
+            font-size:16px;
+            font-family:Calibri;
+        }
+        
+        .dtFirstRegLblField{
+            text-transform:uppercase;
+            font-size:16px;
+            font-family:Calibri;
+        }
+        
+        .dtFirstRegSpan{
+            font-size:9px;
+            font-family:Calibri;
+            color:#a9a9a9;
+        }
+        
+        .createQuoteBlckLBL{
+            text-transform:uppercase;
+            font-size:16px;
+            font-family:Calibri;
+        }
+        
+        .createQuoteDivProdTab{
+            background-color:#666666;
+            color:white;
+            font-weight:bold;
+            font-size:14px;
+        }
+
+        .createQuoteSLCoverType{
+            width:150px;
+        }
+
+        .createQuotePadLeftTD1{
+            padding-left: 15px;
+        }
+
+        .createQuotePadLeftTD2{
+            padding-left: 16px;
+        }
+
+        .createQuoteVINLBL{
+            text-transform:uppercase;
+            font-size:16px;
+            font-family:Calibri;
+        }
+
+        .createQuoteVINLBLInp{
+            margin-left:155px;
+        }
+
+        .createQuoteORLBL{
+            text-transform:uppercase;
+            font-size:14px;
+            font-family:Calibri;
+        }
+
+        .createQuoteRegNum{
+            text-transform:uppercase;
+            font-size:16px;
+            font-family:Calibri;
+        }
+
+        .createQuoteRegNumMar{
+            margin-left:20px;
+        }
+
+        .createQuoteRNMarSelect{
+            margin-left:5px;
+        }
+
+        .createQuoteNEXT{
+            b1ckground-color: #c4122e;
+        }
+
+        .selectListMarLeft{
+            margin-left:5px
+        }
+        
+    </style>
+    
+    
+    <apex:form >
+        
+        
+        <apex:pageBlock >
+            
+            <apex:pageMessages />
+            
+            <div>
+                <apex:outputLabel value="CUSTOMER DETAILS" styleClass="currentSelCvrType" />
+            </div>
+            <br/>
+            
+            <div>
+                <apex:outputLabel value="CUSTOMER NAME" styleClass="createQuoteBlckLBL"/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<apex:inputText label="Customer Name" value="{!cuNameVFInput}" required="true"/><span >*</span>
+            </div>
+            
+            <br/>
+            
+            
+            <div><apex:outputLabel value="FINANCE DETAILS" styleClass="currentSelCvrType"/></div><br/>
+            
+            <div class="vehUsageWarLeftDiv"><apex:outputLabel value="IS THE VEHICLE UNDER FINANCE?" styleClass="createQuoteBlckLBL"/></div><div><apex:selectRadio value="{!prodFinLoan}" ><apex:selectOptions value="{!ProdFinLoanOptions}"/><apex:actionSupport event="onchange" rerender="finDetailsPanel" /></apex:selectRadio></div>
+            
+            <apex:outputPanel id="finDetailsPanel">
+                <apex:outputPanel rendered="{!IF(prodFinLoan =='Yes',True,False)}" >
+                    
+                    <apex:outputLabel value="FINANCIER" styleClass="warContractCvrTrmMnths"/>&nbsp;&nbsp;&nbsp;<apex:selectList value="{!financierSelectList}" size="1" styleClass="selectListMarLeft"><apex:selectOptions value="{!FinancierSelectOptions}"/></apex:selectList><br/>
+                    
+                    
+                </apex:outputPanel>
+            </apex:outputPanel>
+            
+            
+            <div><apex:outputLabel value="PRODUCTS AND COVER TYPES" styleClass="currentSelCvrType"/></div>
+            <br/>
+            
+            <table>         
+                
+                <tr>
+                    <div class="createQuoteDivProdTab">PRODUCT&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;COVER&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;VIDEO&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;PDS</div>
+                </tr>
+                
+                
+                <tr>
+                    
+                    <td>
+                        Motor Vehicle    
+                    </td>    
+                    
+                    <td>
+                        <apex:selectList value="{!coverTypeSelectList}" size="1" styleClass="createQuoteSLCoverType">
+                            <apex:selectOptions value="{!CoverTypes}"/>
+                        </apex:selectList><p/>    
+                    </td>    
+                    
+                    <td class="createQuotePadLeftTD1">
+                        <a href="https://youtu.be/ehz49QuGpiI"><img src="https://fastr.com.au/Images/VideoPlay.png"/></a>
+                    </td>
+                    
+                    <td class="createQuotePadLeftTD2">
+                        <apex:outputLink value="https://c.cs6.content.force.com/servlet/servlet.FileDownload?file=015N0000000RydD" target="_blank"><img src="https://fastr.com.au/Images/adobe_reader_icon.png"/></apex:outputLink>
+                    </td>
+                    
+                </tr>
+                
+                
+                <tr>
+                    
+                    <td>
+                        GAP
+                    </td>  
+                    
+                    <td>
+                        <apex:selectList value="{!gapCoverTypeSelectList}" size="1" styleClass="createQuoteSLCoverType">
+                            <apex:selectOptions value="{!GapCoverTypes}"/>
+                        </apex:selectList><p/>    
+                    </td>    
+                    
+                    <td class="createQuotePadLeftTD1">
+                        <img src="https://fastr.com.au/Images/VideoPlay.png"/>
+                    </td>
+                    
+                    <td class="createQuotePadLeftTD2">
+                        <img src="https://fastr.com.au/Images/adobe_reader_icon.png"/>    
+                    </td>
+                    
+                </tr>    
+                
+                
+                <tr>
+                    
+                    
+                    <td>
+                        Total assist/RTI
+                    </td>  
+                    
+                    <td>
+                        <apex:selectList value="{!totalAssistloanProtectCoverTypeSelectList}" size="1" styleClass="createQuoteSLCoverType">
+                            <apex:selectOptions value="{!TotalAssistCoverTypes}"/>
+                        </apex:selectList><p/>    
+                    </td>    
+                    
+                    <td class="createQuotePadLeftTD1">
+                        <img src="https://fastr.com.au/Images/VideoPlay.png"/>
+                    </td>
+                    
+                    <td class="createQuotePadLeftTD2">
+                        <img src="https://fastr.com.au/Images/adobe_reader_icon.png"/>    
+                    </td>
+                    
+                </tr>  
+                
+                
+                
+                <tr>
+                    
+                    <td>
+                        Truck GAP
+                    </td>  
+                    
+                    <td>
+                        <apex:selectList value="{!truckGapCoverTypeSelectList}" size="1" styleClass="createQuoteSLCoverType">
+                            <apex:selectOptions value="{!TruckGapCoverTypes}"/>
+                        </apex:selectList><p/>    
+                    </td>    
+                    
+                    <td class="createQuotePadLeftTD1">
+                        <img src="https://fastr.com.au/Images/VideoPlay.png"/>
+                    </td>
+                    
+                    <td class="createQuotePadLeftTD2">
+                        <img src="https://fastr.com.au/Images/adobe_reader_icon.png"/>    
+                    </td>
+                    
+                </tr>  
+                
+                
+                <tr>
+                    
+                    <td>
+                        LTI/BRI
+                    </td>  
+                    
+                    <td>
+                        <apex:selectList value="{!ltiCoverTypeSelectList}" size="1" styleClass="createQuoteSLCoverType">
+                            <apex:selectOptions value="{!LtiCoverTypes}"/>
+                        </apex:selectList><p/>    
+                    </td>    
+                    
+                    <td class="createQuotePadLeftTD1">
+                        <img src="https://fastr.com.au/Images/VideoPlay.png"/>
+                    </td>
+                    
+                    <td class="createQuotePadLeftTD2">
+                        <img src="https://fastr.com.au/Images/adobe_reader_icon.png"/>    
+                    </td>
+                    
+                </tr>  
+                
+                
+                <tr>
+                    
+                    <td>
+                        Warranty - Insurance 
+                    </td>  
+                    
+                    <td>
+                        <apex:selectList value="{!warrantyCoverTypeSelectList}" size="1" styleClass="createQuoteSLCoverType">
+                            <apex:selectOptions value="{!WarrantyCoverTypes}"/>
+                        </apex:selectList><p/>    
+                    </td>    
+                    
+                    <td class="createQuotePadLeftTD1">
+                        <img src="https://fastr.com.au/Images/VideoPlay.png"/>
+                    </td>
+                    
+                    <td class="createQuotePadLeftTD2">
+                        <img src="https://fastr.com.au/Images/adobe_reader_icon.png"/>    
+                    </td>
+                    
+                </tr> 
+                
+                
+            </table>   
+            
+            <br/>
+            <br/>
+            <div><apex:outputLabel value="VEHICLE DETAILS" styleClass="currentSelCvrType"/></div><br/>
+            
+            <div class="vehUsageWarLeftDiv"><apex:outputLabel value="Has the vehicle been registered, and do you have the VIN or vehicle registration number available?" styleClass="createQuoteBlckLBL"/></div><div><apex:selectRadio value="{!vehicleRegVINAvail}"><apex:selectOptions value="{!VehicleRegVINAvailOptions}"/>
+            <apex:actionSupport event="onchange" rerender="vinRegPanel" /></apex:selectRadio></div>
+            
+            <br/>
+            
+            
+            <apex:outputPanel id="vinRegPanel">
+                <apex:outputPanel rendered="{!IF(vehicleRegVINAvail=='Yes',True,False)}" >
+                    
+                    <apex:outputLabel value="VIN" styleClass="createQuoteVINLBL"/><apex:inputText value="{!vinVFInput}" styleClass="createQuoteVINLBLInp"/><br/>
+                    <apex:outputLabel value="OR" styleClass="createQuoteORLBL"/><br/>
+                    <apex:outputLabel value="REGISTRATION NUMBER" styleClass="createQuoteRegNum"/><apex:inputText value="{!regNumberVFInput}" styleClass="createQuoteRegNumMar"/><apex:selectList value="{!regNumberRegionSelectList}" size="1" styleClass="createQuoteRNMarSelect"><apex:selectOptions value="{!RegNumberRegionOptions}"/></apex:selectList><br/>
+                    
+                    
+                </apex:outputPanel>
+            </apex:outputPanel>
+            
+            
+            <apex:commandButton value="NEXT" action="{!nextCreateQuotePage2}" styleClass="createQuoteNEXT"/>
+            
+            
+        </apex:pageBlock>
+        
+        
+    </apex:form>
+    
+    
+</apex:page>

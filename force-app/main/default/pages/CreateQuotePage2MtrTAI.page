@@ -1,0 +1,465 @@
+<!--
+* @author  Phil Dennison C. Fang
+* @version 1.0
+* @date   2017-02-13 
+* @description    Visualforce page for Motor vehicle and TAI
+-->
+
+
+<apex:page docType="html-5.0" standardController="Custom_Opportunity__c" extensions="OppApplicationExtension" showHeader="true" standardStylesheets="true" sidebar="false">
+    
+    <style type="text/css">
+        
+        body input.btn, body input.btnDisabled, body input.btnCancel{
+        padding: 7px 36px;
+        
+        color: #ffffff !important;
+        background-color: #c4122e; !important;
+        border: 1.5px solid #c4122e;
+        border-radius: 4px;
+        font-size: 13px !important;
+        font-weight: normal !important;
+        text-transform: uppercase;
+        -moz-appearance: none;
+        -webkit-appearance: none;
+        cursor: pointer;
+        font-family: "Calibri";
+        
+        }
+        
+        
+        body button, body .x-btn, body .btn, body .btnDisabled, body .btnCancel, body .menuButton .menuButtonButton{
+        background: none;
+        }
+        
+        
+        .currentSelCvrType{
+            text-transform:uppercase;
+            color:#c4122e;
+            font-size:24px;
+            font-family:Calibri;
+        }
+        
+        .currentSelCvrTypeText{
+           font-family:Calibri;
+           font-weight:bold;
+        }
+        
+        .vehDetBlkSecLabel{
+            font-family:Calibri;
+        }
+        
+        .createQuotSelectList{
+            width:150px;
+        }
+        
+        .createQuotSelectListLong{
+            width:500px;
+        }
+        
+        .vehSuburb{
+            font-family:Calibri;
+            width:500px;
+        }
+        
+        .vehUsageDiv{
+            margin-left:108px;
+        }
+        
+        .vehUsageLabel{
+            font-family:Calibri;
+            font-weight:bold;
+            font-size:91%;
+            color:#4a4a56;
+        }
+        
+        .vehUsageSelectList{
+            margin-left:20px;
+        }
+        
+        .mainInsuredBlkSecLabel{
+            font-family:Calibri;
+        }
+        
+        .financrOutputLbl{
+            text-transform:uppercase;
+            color:#c4122e;
+            font-size:24px;
+            font-family:Calibri;
+            position:relative;
+            margin-top:50%;
+        }
+        
+        .financrOutputLblField{
+            text-transform:uppercase;
+            font-size:16px;
+            font-family:Calibri;
+            margin-left:100px;padding-left:10px;
+        }
+        
+        .financrOutputLblFieldSpn{
+            padding-left:20px;
+        }
+        
+        .motorCvrTermTitle{
+            text-transform:uppercase;
+            color:#c4122e;
+            font-size:24px;
+            font-family:Calibri;
+        }
+        
+        .coverTermMnthsLblField{
+            text-transform:uppercase;
+            font-size:16px;
+            font-family:Calibri;
+            margin-left:0.8%;
+        }
+        
+        .coverTermMnthsLblFieldSpn{
+            padding-left:17px;
+        }
+        
+        .leftMarginDiv{
+            margin-left:230px;
+        }
+        
+        .hwLongSinceLstFaultAccLblField{
+            font-size:80%;
+            font-weight:bold;
+            color:#4a4a56;
+            font-family:Calibri;
+        }
+        
+        .hwLongSinceLstFaultAccLblFieldSpn{
+            padding-left:20px;
+        }
+        
+        .areThereAddDriversLblField{
+            text-transform:uppercase;
+            color:#c4122e;
+            font-size:24px;
+            font-family:Calibri;
+            position:relative;
+            margin-top:50%;
+        }
+        
+        .addDriverColumn{
+	        width:80%;
+	        text-align:right;
+        }
+ 
+        .addDriverColumnAddBtn{
+	        background-color: #c4122e;
+        }
+ 
+        .addDriverColumnRemoveBtn{
+	        background-color: #c4122e;
+        }
+        
+        .areThereAddDriversColDiv{
+            width:230px;
+        }
+        
+        .addDriverPanelCol{
+            width:80%;
+            text-align:right;
+        }
+        
+        .createQuoteBtnBottom{
+            background-color: #c4122e;
+        }
+        
+        .taiCoverTrmMnthsSelectList{
+        	margin-left:5px;
+        } 
+ 
+        .taiCoverTrmMnthsLblField{
+	        text-transform:uppercase;
+	        font-size:16px;
+	        font-family:Calibri;
+        	margin-left:87px;
+        }
+        
+    </style>
+    
+    
+    <apex:form >
+        
+        <apex:pageMessages />
+        
+        <apex:pageBlock >
+            
+            
+            <div>
+                <apex:outputLabel value="CURRENTLY SELECTED COVER TYPES" styleClass="currentSelCvrType" />
+                <br/>
+                <apex:outputText styleClass="currentSelCvrTypeText">→&nbsp;&nbsp;Motor vehicle</apex:outputText><br/>
+                <apex:outputText styleClass="currentSelCvrTypeText">→&nbsp;&nbsp;TAI</apex:outputText>
+            </div>
+            <br/>
+            <br/>
+            
+            
+             <apex:pageBlockSection title="VEHICLE DETAILS" columns="2">
+                
+                <apex:pageBlockSectionItem >
+                    <apex:outputLabel value="TYPE" styleClass="vehDetBlkSecLabel"/><apex:selectList value="{!pageTwoTypeSelectList}" size="1" styleClass="createQuotSelectList"><apex:selectOptions value="{!PageTwoType}"/></apex:selectList>
+                </apex:pageBlockSectionItem>
+                
+                <apex:pageBlockSectionItem >
+                </apex:pageBlockSectionItem>
+                
+                <apex:pageBlockSectionItem >
+                    <apex:outputLabel value="MAKE" styleClass="vehDetBlkSecLabel"/><apex:inputtext value="{!pageTwoMake}" />
+                </apex:pageBlockSectionItem>
+                
+                <apex:pageBlockSectionItem >
+                    <apex:outputLabel value="MODEL" styleClass="vehDetBlkSecLabel"/><apex:inputtext value="{!pageTwoBuildModel}" />
+                </apex:pageBlockSectionItem>
+                
+                <apex:pageBlockSectionItem >
+                    <apex:outputLabel value="BUILD YEAR" styleClass="vehDetBlkSecLabel"/><apex:selectList value="{!pageTwoBuildYearSelectList}" size="1" styleClass="createQuotSelectList"><apex:selectOptions value="{!PageTwoBuildYear}"/></apex:selectList>
+                </apex:pageBlockSectionItem>
+                
+                <apex:pageBlockSectionItem >
+                    <apex:outputLabel value="BADGE" styleClass="vehDetBlkSecLabel"/><apex:selectList value="{!pageTwoBadgeSelectList}" size="1" styleClass="createQuotSelectList"><apex:selectOptions value="{!PageTwoBadge}"/></apex:selectList>
+                </apex:pageBlockSectionItem>
+                
+                <apex:pageBlockSectionItem >
+                    <apex:outputLabel value="DESCRIPTION" styleClass="vehDetBlkSecLabel"/><apex:inputText value="{!descriptionLongText}" styleClass="createQuotSelectListLong"/>
+                </apex:pageBlockSectionItem>
+                
+                <apex:pageBlockSectionItem >
+                </apex:pageBlockSectionItem>
+                
+                <apex:pageBlockSectionItem >
+                    <apex:outputLabel value="PURCHASE PRICE" styleClass="vehDetBlkSecLabel"/><apex:inputText value="{!purPriceVFInput}" />
+                </apex:pageBlockSectionItem>
+                
+                <apex:pageBlockSectionItem >
+                    <apex:outputLabel value="NON-STANDARD ACCESSORIES AND MODIFICATIONS VALUE" styleClass="vehDetBlkSecLabel"/><apex:inputText value="{!nonStdrdAccVFInput}"/>
+                </apex:pageBlockSectionItem>
+                
+                <apex:pageBlockSectionItem >
+                    <apex:outputLabel value="SUBURB" styleClass="vehSuburb"/><apex:inputText value="{!suburbVFInput}" styleClass="createQuotSelectListLong"/>
+                </apex:pageBlockSectionItem>
+                
+                <apex:pageBlockSectionItem >
+                </apex:pageBlockSectionItem>
+                
+                
+                <apex:pageBlockSectionItem >
+                    
+                    <apex:outputPanel id="usagePanel" >
+                        <apex:outputPanel rendered="{!IF(usagePrivBus=='Business',True,False)}" >
+                            
+                            <div class="vehUsageDiv"><apex:outputLabel value="VEHICLE USE FOR" styleClass="vehUsageLabel"/><apex:selectList value="{!vehUseForVFInput}" size="1" styleClass="vehUsageSelectList"><apex:selectOptions value="{!vehUseForVFInputOptions}"/></apex:selectList></div>
+                            
+                        </apex:outputPanel>
+                    </apex:outputPanel>       
+                    
+                </apex:pageBlockSectionItem>
+                
+            </apex:pageBlockSection>
+            
+            
+            <br/>
+            
+            <apex:pageBlockSection title="MAIN INSURED" columns="2">
+                
+                <apex:pageBlockSectionItem >
+                    <apex:outputLabel value="DATE OF BIRTH" styleClass="vehDetBlkSecLabel"/><apex:inputText value="{!mainInsuredDoByPolcyStringVF}"/>
+                </apex:pageBlockSectionItem>
+                
+                <apex:pageBlockSectionItem >
+                    <apex:outputLabel value="GENDER" styleClass="vehDetBlkSecLabel"/><apex:selectRadio value="{!mainInsuredGenderByPolcyVF}" ><apex:selectOptions value="{!mainInsuredGenderByPolcyVFOptions}"/></apex:selectRadio>
+                </apex:pageBlockSectionItem>
+                
+                <apex:pageBlockSectionItem >
+                    <apex:outputLabel value="IS HOLDING INTERNATIONAL LICENSE?" styleClass="vehDetBlkSecLabel"/><apex:selectRadio value="{!mainInsuredInterLicByPolcyVF}" ><apex:selectOptions value="{!mainInsuredInterLicByPolcyVFOptions}"/></apex:selectRadio>
+                </apex:pageBlockSectionItem>
+                
+                <apex:pageBlockSectionItem >
+                    <apex:outputLabel value="LICENSE NUMBER" styleClass="vehDetBlkSecLabel"/><apex:inputText value="{!mainInsuredLicNumberByPolcyVF}" required="true"/>
+                </apex:pageBlockSectionItem>
+                
+                <apex:pageBlockSectionItem >
+                    <apex:outputLabel value="YEAR FIRST LICENSED" styleClass="vehDetBlkSecLabel"/><apex:inputText value="{!mainInsuredYrLicByPolcyVF}" />
+                </apex:pageBlockSectionItem>
+                
+                <apex:pageBlockSectionItem >
+                    <apex:outputLabel value="YEAR SINCE LAST ACCIDENT" styleClass="vehDetBlkSecLabel"/><apex:selectList value="{!mainInsuredLstAccSelectList}" size="1" styleClass="createQuotSelectListLong"><apex:selectOptions value="{!MainInsuredLstAccOptions}"/></apex:selectList>
+                </apex:pageBlockSectionItem>
+                
+                <apex:pageBlockSectionItem >
+                    <apex:outputLabel value="INPUT TAX CREDIT" styleClass="vehDetBlkSecLabel"/><apex:inputText value="{!mainInsuredInptTxCrdtByPolcyVF}" />
+                </apex:pageBlockSectionItem>
+                
+                <apex:pageBlockSectionItem >
+                    <apex:outputLabel value="IS BUSINESS USE" styleClass="vehDetBlkSecLabel"/><apex:selectRadio value="{!mainInsuredIsBusUseByPolcyVF}" ><apex:selectOptions value="{!mainInsuredIsBusUseByPolcyVFOptions}"/></apex:selectRadio>
+                </apex:pageBlockSectionItem>
+                
+                <apex:pageBlockSectionItem >
+                    <apex:outputLabel value="IS REGISTERED OWNER" styleClass="vehSuburb"/><apex:selectRadio value="{!mainInsuredIsRegOwnByPolcyVF}" ><apex:selectOptions value="{!mainInsuredIsRegOwnByPolcyVFOptions}"/></apex:selectRadio>
+                </apex:pageBlockSectionItem>
+                
+                <apex:pageBlockSectionItem >
+                    <apex:outputLabel value="REGISTERED FOR GST" styleClass="vehDetBlkSecLabel"/><apex:selectRadio value="{!mainInsuredRegForGstByPolcyVF}" ><apex:selectOptions value="{!mainInsuredRegForGstByPolcyVFOptions}"/></apex:selectRadio>
+                </apex:pageBlockSectionItem>
+                
+                <apex:pageBlockSectionItem >
+                    <apex:outputLabel value="STATE" styleClass="vehDetBlkSecLabel"/><apex:inputText value="{!mainInsuredStateByPolcyVF}"/>
+                </apex:pageBlockSectionItem>
+                
+            </apex:pageBlockSection>
+            
+            <br/>
+            <br/>
+            
+            <div>
+                <apex:outputLabel value="FINANCIER" styleClass="financrOutputLbl"/>
+            </div>
+            <br/>
+            
+            <div><apex:outputLabel value="FINANCIER" styleClass="financrOutputLblField"/><span class="financrOutputLblFieldSpn"><apex:inputText value="{!financierNamePage2}" /></span></div>
+            
+            <br/>
+            
+            <div>
+                <apex:outputLabel value="MOTOR COVER TERM" styleClass="motorCvrTermTitle"/>
+            </div>
+            
+            <br/>
+            
+            <div ><apex:outputLabel value="*COVER TERM (MONTHS)" styleClass="coverTermMnthsLblField"/><span class="coverTermMnthsLblFieldSpn"><apex:selectList value="{!pageTwoCoverTermSelectList}" size="1" ><apex:selectOptions value="{!PageTwoCoverTerm}"/></apex:selectList></span></div>
+            <br/>
+            
+            <div>
+                <apex:outputLabel value="TOTAL ASSIST COVER TERM" styleClass="areThereAddDriversLblField"/>
+            </div>
+            <br/>
+            
+            <apex:outputPanel id="cvrTrmTAICover1Panel">
+                <apex:outputPanel >
+                    
+                    <apex:outputLabel value="COVER TERM (MONTHS)" styleClass="taiCoverTrmMnthsLblField"/>&nbsp;&nbsp;&nbsp;<apex:selectList value="{!pageTwoCvrTrmTAICover1SelectList}" size="1" styleClass="taiCoverTrmMnthsSelectList"><apex:selectOptions value="{!PageTwoCvrTrmTAICover1}"/></apex:selectList><br/>
+                    
+                </apex:outputPanel>
+            </apex:outputPanel>
+            
+            
+            <apex:pageBlockSection title="DRIVER DETAILS" columns="2">
+                
+                <apex:pageBlockSectionItem >
+                    <apex:outputLabel value="DATE OF BIRTH" styleClass="vehDetBlkSecLabel"/><apex:inputText value="{!dobVFInput}"/>
+                </apex:pageBlockSectionItem>
+                
+                <apex:pageBlockSectionItem >
+                    <apex:outputLabel value="GENDER" styleClass="vehDetBlkSecLabel"/><apex:selectRadio value="{!pageTwoGenderSelectList}" styleClass="createQuotSelectList" required="True" label="Gender"><apex:selectOptions value="{!PageTwoGender}" /></apex:selectRadio>
+                </apex:pageBlockSectionItem>
+                
+                <apex:pageBlockSectionItem >
+                    <apex:outputLabel value="YEAR FIRST LICENSE" styleClass="vehDetBlkSecLabel"/><apex:inputText value="{!yrFirstLicenseVFInput}" required="True" label="Year First License"/>
+                </apex:pageBlockSectionItem>
+            </apex:pageBlockSection>
+            
+            <br/>
+            <div class="leftMarginDiv"><apex:outputLabel value="HOW LONG SINCE YOU HAD AN AT FAULT ACCIDENT/CLAIM (INCLUDING THEFT, HAIL, FIRE)" styleClass="hwLongSinceLstFaultAccLblField"/><span class="hwLongSinceLstFaultAccLblFieldSpn"><apex:selectList value="{!pageTwohwLongSFaultSelectList}" size="1" styleClass="createQuotSelectList" required="True"><apex:selectOptions value="{!pageTwohwLongSFault}"/></apex:selectList></span></div>
+            
+            <br/>
+            <br/>
+            
+            <table>
+                
+                <tr>    
+                    
+                    <td>
+                        <div class="areThereAddDriversColDiv">
+                            <apex:outputLabel value="ARE THERE ANY ADDITIONAL DRIVERS?*" styleClass="areThereAddDriversLblField"/></div>
+                    </td>
+                    
+                    <td>
+                        <apex:selectList value="{!pageTwoareThereAddDriversSelectList}" size="1" styleClass="createQuotSelectList" id="pageTwoareThereAddDriversSelectListId"  ><apex:selectOptions value="{!pageTwoareThereAddDrivers}"/><apex:actionSupport event="onchange" rerender="addDriverPanel"/><apex:actionSupport event="onchange" action="{!areThereAdditionalDriver}"/></apex:selectList>
+                    </td>
+                    
+                    
+                    <td class="addDriverColumn">
+                        
+                        <apex:outputPanel id="addDriverPanel">
+                            <apex:outputPanel rendered="{!IF(pageTwoareThereAddDriversSelectList=='Yes',True,False)}" >
+                                
+                                <apex:commandButton value="ADD DRIVER" action="{!addDriverSection}" styleClass="addDriverColumnAddBtn" rerender="addMoreDriversPanelId, removeDriversPanelId"/>
+                                
+                            </apex:outputPanel>
+                        </apex:outputPanel>
+                        
+                        
+                        
+                        <apex:outputPanel id="removeDriversPanelId">
+                            <apex:outputPanel rendered="{!IF(renderAddDriverBlckSection = True,True,False)}" >
+                                
+                                <apex:commandButton value="REMOVE DRIVER" action="{!removeDriverSection}" styleClass="addDriverColumnRemoveBtn" />
+                                
+                            </apex:outputPanel>
+                        </apex:outputPanel> 
+                        
+                        
+                        <br/>
+                        
+                    </td>
+                    
+                    
+                    
+                </tr>
+                
+            </table>
+            
+            
+            
+            <!--Created By: Phil Fang | Date: February 1, 2017 | Description: Apex repeat version of dynamic page section apex repeat version-->
+            <apex:pageBlockSection id="addMoreDriversPanelId" >
+                
+                <apex:repeat value="{!addDriverWrapperList}" var="addDrvLst"> 
+                    
+                    <br/>
+                    
+                    <apex:pageBlockSectionItem rendered="{!IF(renderAddDriverBlckSection = True,True,False)}">
+                    </apex:pageBlockSectionItem>  
+                    
+                    <apex:pageBlockSectionItem rendered="{!IF(renderAddDriverBlckSection = True,True,False)}">
+                        <apex:outputLabel value="{!dateOfBirthWrapperFieldLabel}" styleClass="vehDetBlkSecLabel"/><apex:inputText value="{!addDrvLst.dateOfBirthWrapper}" required="true"/>
+                        
+                    </apex:pageBlockSectionItem>
+                    
+                    <apex:pageBlockSectionItem rendered="{!IF(renderAddDriverBlckSection = True,True,False)}">
+                        <apex:outputLabel value="{!genderDriverWrapperFieldLabel}" styleClass="vehDetBlkSecLabel" /><apex:selectRadio value="{!addDrvLst.pageTwogenderSLWrapper}" styleClass="createQuotSelectList" required="true" ><apex:selectOptions value="{!addDrvLst.PageTwoGenderOptsWrapper}"/></apex:selectRadio>
+                    </apex:pageBlockSectionItem>
+                    
+                    <apex:pageBlockSectionItem rendered="{!IF(renderAddDriverBlckSection = True,True,False)}">
+                        <apex:outputLabel value="{!yrFirstLicWrapperFieldLabel}" styleClass="vehDetBlkSecLabel" /><apex:inputText value="{!addDrvLst.yearFirstLicenseWrapper}" required="true"/>
+                    </apex:pageBlockSectionItem>
+                    
+                    <apex:pageBlockSectionItem rendered="{!IF(renderAddDriverBlckSection = True,True,False)}">
+                    </apex:pageBlockSectionItem>    
+                    
+                    <apex:pageBlockSectionItem rendered="{!IF(renderAddDriverBlckSection = True,True,False)}" >
+                        <apex:outputLabel value="{!twoHwLongSFaultWrapperFieldLabel}" style="font-family:Calibri;"/><apex:selectList value="{!addDrvLst.pageTwoHwLngSFaultSLWrapper}" size="1" styleClass="createQuotSelectList" required="true"><apex:selectOptions value="{!addDrvLst.PageTwoHwLngSFaultOptsWrapper}"/></apex:selectList>
+                    </apex:pageBlockSectionItem>
+                    
+                    <apex:pageBlockSectionItem rendered="{!IF(renderAddDriverBlckSection = True,True,False)}">
+                    </apex:pageBlockSectionItem> 
+                    
+                </apex:repeat>
+                
+            </apex:pageBlockSection> 
+            
+            <br/>
+            <apex:commandButton value="PREVIOUS" action="{!previousCreateQuotePage1}" styleClass="createQuoteBtnBottom"/><apex:commandButton value="NEXT" action="{!nextCreateQuotePage3}" styleClass="createQuoteBtnBottom"/>
+            
+        </apex:pageBlock>
+        
+        
+    </apex:form>
+    
+    
+</apex:page>
