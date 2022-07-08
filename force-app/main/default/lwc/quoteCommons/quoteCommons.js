@@ -103,15 +103,18 @@ const mapSObjectToLwc = ({
   if (quoteData.data) {
     // Validate same calculator
     if (calcName === quoteData.data.Name) {
+      r["Id"] = quoteData.data["Id"];
       // Set Finance Detail Values
       quotingFields.forEach((value, key, map) => {
         r[`${key}`] = quoteData.data[`${value}`];
-        // console.log(`{${key}: ${value}} | `, quoteFields[`${value}`]);
+        console.log(`{${key}: ${value}} | `, quoteData.data[`${value}`]);
+        if (typeof quoteData.data[`${value}`] == "undefined")
+          r[`${key}`] = null;
       });
       // Set Commission Calculations
       COMMISSION_FIELDS.forEach((value, key, map) => {
         r.commissions[`${key}`] = quoteData.data[`${value}`];
-        console.log(`{${key}: ${value}} | `, quoteData[`${value}`]);
+        // console.log(`{${key}: ${value}} | `, quoteData[`${value}`]);
       });
     }
   }
@@ -235,7 +238,7 @@ const resetValidateFields = (obj) => {
 };
 
 /**
- *
+ * -- Lee
  * @param {Object} obj - simple passing [this] to the function, for getting fields from instance
  * @param {Array} messages - list of message object
  */
@@ -253,7 +256,7 @@ const fieldErrorHandler = (obj, messages) => {
 };
 
 /**
- *
+ * -- Lee
  * @returns return an empty object for clearing the old one
  */
 const resetMessage = () => {
@@ -266,6 +269,7 @@ const resetMessage = () => {
 };
 
 /**
+ * -- Lee
  * avoid duplicated element in array
  * @param {[]} array
  * @returns {[]}
@@ -279,6 +283,46 @@ const uniqueArray = (array) => {
       )
   );
 };
+
+/**
+ * -- lee
+ * @param {Object} quoteForm - quote form DATA
+ * @param {Id} oppId - record id
+ * @param {String} LENDER_QUOTING - constant value for each calculator
+ * @returns new Mapping Object for server
+ */
+const mapLWCToSObject = (quoteForm, oppId, LENDER_QUOTING) => {
+  let obj = { data: {}, results: { commissions: {} } };
+  console.log(`@@quote form : ${JSON.stringify(quoteForm, null, 2)}`);
+  for (const [key, value] of QUOTE_FIELDS_MAPPING) {
+    obj.data[value] = quoteForm[key];
+  }
+  obj.data["Opportunity__c"] = oppId;
+  obj.data["Name"] = LENDER_QUOTING;
+  for (const [key, value] of COMMISSION_FIELDS) {
+    obj.results["commissions"][value] = quoteForm["commissions"][key];
+    obj.data[value] = quoteForm["commissions"][key];
+  }
+  console.log(`@@obj mapping --- ${JSON.stringify(obj, null, 2)}`);
+  return obj;
+};
+
+// - TODO: need to map more fields
+const QUOTE_FIELDS_MAPPING = new Map([
+  ["loanType", "Loan_Type__c"],
+  ["loanProduct", "Loan_Product__c"],
+  ["price", "Vehicle_Price__c"],
+  ["applicationFee", "Application_Fee__c"],
+  ["dof", "DOF__c"],
+  ["ppsr", "PPSR__c"],
+  ["residual", "Residual_Value__c"],
+  ["term", "Term__c"],
+  ["monthlyFee", "Monthly_Fee__c"],
+  ["clientRate", "Client_Rate__c"],
+  ["paymentType", "Payment__c"],
+  ["loanPurpose", "Loan_Purpose__c"],
+  ["Id", "Id"]
+]);
 
 const QuoteCommons = {
   resetResults: resetResults,
@@ -295,7 +339,8 @@ const QuoteCommons = {
   resetValidateFields: resetValidateFields,
   fieldErrorHandler: fieldErrorHandler,
   resetMessage: resetMessage,
-  uniqueArray: uniqueArray
+  uniqueArray: uniqueArray,
+  mapLWCToSObject: mapLWCToSObject
 };
 
 export { QuoteCommons, CommonOptions, FinancialUtilities, VALIDATION_OPTIONS };

@@ -41,6 +41,10 @@
             label="Send quote"
             slot="actions"
             disabled={disableAction}></lightning-button>
+        <lightning-button
+            label="Test Button"
+            slot="actions"
+            onclick={triggerOptions}></lightning-button>
 
         <!-- Finance Details -->
         <!-- Loan Type -->
@@ -87,8 +91,8 @@
                     type="number"
                     formatter="currency"
                     step="0.01"
-                    name="financeAmount"
-                    data-id="financeAmount-field"
+                    name="price"
+                    data-id="price-field"
                     value={quoteForm.price}
                     label="Finance Amount"
                     placeholder="$"

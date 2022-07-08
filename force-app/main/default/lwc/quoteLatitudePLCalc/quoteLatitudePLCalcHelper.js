@@ -11,6 +11,7 @@ import { Validations } from "./quoteValidations";
 // Default settings
 let lenderSettings = {};
 let tableRatesData = [];
+let riskGradeOptionsData = [];
 let tableRateDataColumns = [
   { label: "Risk Grade", fieldName: "Risk_Grade__c" },
   {
@@ -26,7 +27,6 @@ let tableRateDataColumns = [
 ];
 
 const LENDER_QUOTING = "Latitude Personal Loan";
-const REGISTRATION_FEE = 3.40;
 
 const QUOTING_FIELDS = new Map([
   ["loanType", "Loan_Type__c"],
@@ -54,16 +54,23 @@ const RATE_SETTING_NAMES = ["LatitudePersonalRates__c"];
 const SETTING_FIELDS = new Map([
   ["applicationFee", "Application_Fee__c"],
   ["maxApplicationFee", "Application_Fee__c"],
-  ["dof", "DOF__c"],
-  ["maxDof", "DOF__c"],
+  ["maxDof", "Max_DOF__c"],
   ["ppsr", "PPSR__c"],
-  ["monthlyFee", "Monthly_Fee__c"]
+  ["monthlyFee", "Monthly_Fee__c"],
+  ["registrationFee", "Registration_Fee__c"]
 ]);
 
 const BASE_RATE_FIELDS = [
   "customerProfile",
   "loanTypeDetail",
   "securedUnsecured"
+];
+
+const DOF_CALC_FIELDS = [
+  "price",
+  "deposit",
+  "tradeIn",
+  "payoutOn"
 ];
 
 const calculate = (quote) =>
@@ -73,13 +80,15 @@ const calculate = (quote) =>
       commissions: QuoteCommons.resetResults(),
       messages: QuoteCommons.resetMessage()
     };
+    console.log(`Calculating repayments...`, JSON.stringify(res, null, 2));
     // Validate quote
     res.messages = Validations.validate(quote, res.messages);
+    console.log(`Calculating repayments...`, JSON.stringify(res, null, 2));
     if (res.messages && res.messages.errors.length > 0) {
       reject(res);
     } else {
       // Prepare params
-      const profile = quote.assetType === "Caravan" ? "CARAVAN" : "MV";
+      const profile = quote.securedUnsecured === "Secured" ? "Secured" : "Unsecured";
       const p = {
         lender: LENDER_QUOTING,
         productLoanType: quote.loanProduct,
@@ -96,7 +105,9 @@ const calculate = (quote) =>
         term: quote.term,
         dof: quote.dof,
         monthlyFee: quote.monthlyFee,
-        residualValue: quote.residual
+        residualValue: quote.residual,
+        registrationFee: quote.registrationFee,
+        loanTypeDetail: quote.loanTypeDetail,
       };
 
       // Calculate
@@ -140,13 +151,6 @@ const calcOptions = {
     { label: "Used 6-9 years", value: "Used 6-9 years" },
     { label: "Used 10+ years", value: "Used 10+ years" }
   ],
-  riskGrades: [
-    { label: "AAA", value: "AAA" },
-    { label: "AA", value: "AA" },
-    { label: "A", value: "A" },
-    { label: "B", value: "B" },
-    { label: "C", value: "C" },
-  ],
   securedUnsecured: [
     { label: "Secured", value: "Secured" },
     { label: "Unsecured", value: "Unsecured" }
@@ -161,7 +165,6 @@ const reset = (recordId) => {
     quoteName: LENDER_QUOTING,
     loanType: calcOptions.loanTypes[0].value,
     loanProduct: calcOptions.loanProducts[0].value,
-    assetType: calcOptions.assetTypes[0].value,
     price: null,
     deposit: null,
     tradeIn: null,
@@ -179,9 +182,10 @@ const reset = (recordId) => {
     clientRate: null,
     privateSales: "N",
     paymentType: "Arrears",
-    clientTier: calcOptions.clientTiers[0].value,
-    assetAge: calcOptions.vehicleAges[0].value,
-    commissions: QuoteCommons.resetResults()
+    commissions: QuoteCommons.resetResults(),
+    registrationFee: 3.40,
+    loanTypeDetail: "AAA",
+    securedUnsecured: "Secured"
   };
   r = QuoteCommons.mapDataToLwc(r, lenderSettings, SETTING_FIELDS);
   return r;
@@ -231,6 +235,16 @@ const loadData = (recordId) =>
       .catch((error) => reject(error));
   });
 
+const getRiskGradeOptions = () => {
+  let riskGradeOptions = []
+  if (tableRatesData) {
+    for (const [key, obj] of Object.entries(tableRatesData)) {
+      riskGradeOptions.push({ label: obj['Risk_Grade__c'], value: obj['Risk_Grade__c'] });
+    }
+  }
+  return riskGradeOptions;
+};
+
 // Get Base Rates
 const getMyBaseRates = (quote) =>
   new Promise((resolve, reject) => {
@@ -254,23 +268,47 @@ const getMyBaseRates = (quote) =>
   });
 
 // Get Quote Fees
-const getQuoteFees = (quote) =>
-  new Promise((resolve, reject) => {
-    if ('Secured' === quote.securedUnsecured) {
-      quote.ppsr = lenderSettings.PPSR__c;
-      quote.registrationFee = REGISTRATION_FEE;
-    } else if ('Unsecured' === quote.securedUnsecured) {
-      quote.ppsr = 0.00;
-      quote.registrationFee = 0.00;
-    }
-    resolve(quote);
-  });
+const getQuoteFees = (quote) => {
+  if ('Secured' === quote.securedUnsecured) {
+    quote.ppsr = lenderSettings.PPSR__c;
+    quote.registrationFee = lenderSettings.Registration_Fee__c;
+  } else if ('Unsecured' === quote.securedUnsecured) {
+    quote.ppsr = 0.00;
+    quote.registrationFee = 0.00;
+  }
+  return quote;
+}
 
 const getTableRatesData = () => {
   console.log('table Data::', tableRatesData)
 
   return tableRatesData;
 };
+
+// custom calculations for NAF generations
+const calcNetRealtimeNaf = (quote) => {
+  let netRealtimeNaf = QuoteCommons.calcNetRealtimeNaf(quote);
+  let r = quote.registrationFee + netRealtimeNaf;
+  return r;
+}
+
+const calcNetRealtimeDOF = (quote) => {
+  let netRealtimeNaf = QuoteCommons.calcNetRealtimeNaf(quote);
+  let r = quote.registrationFee + netRealtimeNaf;
+  console.log('calcNetRealtimeDOF', r)
+  if (r > 20000) {
+    r = 1650.00;
+  } else if (r > 0) {
+    r = r * 0.15;
+    if (r >= 990) {
+        r = 990.0;
+    }
+  } else {
+    r = 0;
+  }
+  console.log('calcNetRealtimeDOF', r)
+  return r;
+}
 
 export const CalHelper = {
   options: calcOptions,
@@ -282,7 +320,10 @@ export const CalHelper = {
   lenderSettings: lenderSettings,
   getTableRatesData: getTableRatesData,
   tableRateDataColumns: tableRateDataColumns,
-  getNetRealtimeNaf: QuoteCommons.calcNetRealtimeNaf,
+  getNetRealtimeNaf: calcNetRealtimeNaf,
   getNetDeposit: QuoteCommons.calcNetDeposit,
-  getQuoteFees: getQuoteFees
+  getQuoteFees: getQuoteFees,
+  getRiskGradeOptions: getRiskGradeOptions,
+  getNetRealtimeDOF: calcNetRealtimeDOF,
+  DOF_CALC_FIELDS: DOF_CALC_FIELDS
 };

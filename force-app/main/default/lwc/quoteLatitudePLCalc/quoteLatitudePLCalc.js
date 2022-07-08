@@ -66,21 +66,21 @@ export default class QuoteLatitudePLCalc extends LightningElement {
             });
     }
 
+    // DOF calculation
+    dofCalc(){
+        let quote = this.quoteForm;
+        // omit the dof addition 
+        quote.dof = 0;
+        this.quoteForm.dof = CalHelper.getNetRealtimeDOF(quote);
+        this.quoteForm.maxDof = this.quoteForm.dof;
+    }
+
     // Calculate Quote Fees
     calcFees() {
-        CalHelper.getQuoteFees(this.quoteForm)
-            .then((data) => {
-                console.log(`Data loaded!`);
-                this.quoteForm.ppsr = data.ppsr;
-                this.quoteForm.registrationFee = data.registrationFee;
-            })
-            .catch((error) => {
-                console.error(JSON.stringify(error, null, 2));
-                displayToast(this, "Base Rate...", error, "error");
-            })
-            .finally(() => {
-                this.isBaseRateBusy = false;
-            });
+        const quote = CalHelper.getQuoteFees(this.quoteForm);
+        this.quoteForm.ppsr = quote.ppsr;
+        this.quoteForm.registrationFee = quote.registrationFee;
+        this.isBaseRateBusy = false;
     }
 
     // Combobox options
@@ -117,7 +117,7 @@ export default class QuoteLatitudePLCalc extends LightningElement {
     }
 
     get riskGradeOptions() {
-        return CalHelper.options.riskGrades;
+        return CalHelper.getRiskGradeOptions();
     }
 
     get securedUnsecuredOptions() {
@@ -147,32 +147,36 @@ export default class QuoteLatitudePLCalc extends LightningElement {
 
     // Calculate
     handleCalculate(event) {
-        // this.isBusy = true;
-        // CalHelper.calculate(this.quoteForm)
-        // .then((data) => {
-        //     console.log("@@data:", JSON.stringify(data, null, 2));
-        //     this.quoteForm.commissions = data.commissions;
-        //     // displayToast(this, "Calculate", "Done!", "info");
-        //     this.messageObj = data.messages;
-        //     QuoteCommons.handleHasErrorClassClear(this);
-        //     if (this.quoteForm.commissions) this.isCalculated = true;
-        // })
-        // .catch((error) => {
-        //     this.messageObj = error.messages;
-        //     QuoteCommons.fieldErrorHandler(this, this.messageObj.errors);
-        //     console.error(
-        //     "quotePepperMVCalc.js: get errors -- ",
-        //     JSON.stringify(error.messages.errors, null, 2)
-        //     );
-        // })
-        // .finally(() => {
-        //     this.isBusy = false;
-        // });
+        this.isBusy = true;
+        CalHelper.calculate(this.quoteForm)
+        .then((data) => {
+            console.log("@@data:", JSON.stringify(data, null, 2));
+            this.quoteForm.commissions = data.commissions;
+            // displayToast(this, "Calculate", "Done!", "info");
+            this.messageObj = data.messages;
+            QuoteCommons.handleHasErrorClassClear(this);
+            if (this.quoteForm.commissions) this.isCalculated = true;
+        })
+        .catch((error) => {
+            console.error(
+                "quoteLatitudePLCalc.js: get errors -- ",
+                JSON.stringify(error.messages.errors, null, 2)
+                );
+            this.messageObj = error.messages;
+            QuoteCommons.fieldErrorHandler(this, this.messageObj.errors);
+            console.error(
+            "quoteLatitudePLCalc.js: get errors -- ",
+            JSON.stringify(error.messages.errors, null, 2)
+            );
+        })
+        .finally(() => {
+            this.isBusy = false;
+        });
 
-        // if (results && Array.isArray(results) && results.length > 0) {
-        // // this.quoteResult = results[0];
-        // }
-        // this.baseRateCalc();
+        if (results && Array.isArray(results) && results.length > 0) {
+        // this.quoteResult = results[0];
+        }
+        this.baseRateCalc();
     }
 
     // Reset
@@ -186,15 +190,15 @@ export default class QuoteLatitudePLCalc extends LightningElement {
 
     // Reset
     handleReset(event) {
-        // this.reset();
-        // this.messageObj = QuoteCommons.resetMessage();
-        // this.isCalculated = false;
-        // QuoteCommons.handleHasErrorClassClear(this);
-        // console.log(
-        // "🚀 ~ file: QuotePepperMVCalc.js ~ line 172 ~ QuotePepperMVCalc ~ reset ~ this.quoteForm",
-        // JSON.stringify(this.quoteForm, null, 2)
-        // );
-        // this.baseRateCalc();
+        this.reset();
+        this.messageObj = QuoteCommons.resetMessage();
+        this.isCalculated = false;
+        QuoteCommons.handleHasErrorClassClear(this);
+        console.log(
+        "🚀 ~ file: QuotePepperMVCalc.js ~ line 172 ~ QuotePepperMVCalc ~ reset ~ this.quoteForm",
+        JSON.stringify(this.quoteForm, null, 2)
+        );
+        this.baseRateCalc();
     }
 
     // Events
@@ -221,8 +225,12 @@ export default class QuoteLatitudePLCalc extends LightningElement {
             this.baseRateCalc();
         }
 
+        // DOF calculation
+        if (CalHelper.DOF_CALC_FIELDS.includes(fldName)) {
+            this.dofCalc();
+        }
+
         // --------------
     }
-
 
 }
