@@ -1,4 +1,5 @@
 import { QuoteCommons } from "c/quoteCommons";
+import { CalHelper } from "./quoteLatitudePLCalcHelper";
 
 // Validation Types: ERROR, WARNING, INFO
 /**
@@ -16,15 +17,67 @@ const validate = (quote, messages) => {
 
   const baseRate = quote["baseRate"];
   const maxRate = quote["maxRate"];
+  const maxDofRate = CalHelper.getDOF(quote);
+
+  console.log(`@@validation:`, JSON.stringify(quote, null, 2));
 
   console.log(
-    "🚀 ~ file: quoteValidations.js ~ line 17 ~ validate ~ quote.clientTier",
-    quote.clientTier
+    "🚀 ~ file: quoteValidations.js ~ line 17 ~ validate ~ quote.price",
+    quote.price
   );
-  if (quote.clientTier === null || quote.clientTier.length === 0) {
+  if (quote.price === null || quote.price === 0) {
     errorList.push({
-      field: "clientTier",
-      message: "Please select a tier for your client."
+      field: "price",
+      message: "Finance amount should not be Zero."
+    });
+  }
+
+  console.log(
+    "🚀 ~ file: quoteValidations.js ~ line 19 ~ validate ~ quote.applicationFee",
+    quote.applicationFee
+  );
+  if (quote.applicationFee === null || quote.applicationFee === 0) {
+    errorList.push({
+      field: "applicationFee",
+      message: "Application Fee should not be Zero."
+    });
+  }
+
+  console.log(
+    "🚀 ~ file: quoteValidations.js ~ line 20 ~ validate ~ quote.dof",
+    quote.dof
+  );
+  if (quote.dof === null || quote.dof === 0) {
+    errorList.push({
+      field: "dof",
+      message: "DOF should not be Zero."
+    });
+  } else if (quote.dof > quote.maxDof) {
+    errorList.push({
+      field: "DOF",
+      message: `Max DOF exceeded: ${quote.maxDof}%`
+    });
+  }
+
+  console.log(
+    "🚀 ~ file: quoteValidations.js ~ line 19 ~ validate ~ quote.ppsr",
+    quote.ppsr
+  );
+  if (quote.ppsr === null || quote.ppsr === 0) {
+    errorList.push({
+      field: "ppsr",
+      message: "PPSR should not be null."
+    });
+  }
+
+  console.log(
+    "🚀 ~ file: quoteValidations.js ~ line 19 ~ validate ~ quote.registrationFee",
+    quote.registrationFee
+  );
+  if (quote.registrationFee === null || quote.registrationFee === 0 ) {
+    errorList.push({
+      field: "ppsr",
+      message: "PPSR should not be null."
     });
   }
 
@@ -32,60 +85,39 @@ const validate = (quote, messages) => {
     "🚀 ~ file: quoteValidations.js ~ line 21 ~ validate ~ quote.clientRate",
     quote.clientRate
   );
-  if (quote.clientRate === null || !(quote.clientRate > 0.0)) {
+  if (quote.clientRate === null || quote.clientRate == 0.0) {
     errorList.push({
       field: "clientRate",
       message: "Client Rate should not be zero."
     });
-  } else if (quote.clientRate > maxRate) {
+  } else if (quote.baseRate > quote.clientRate) {
     errorList.push({
       field: "clientRate",
-      message: `Client Rate cannot exceed the max rate: ${maxRate}%`
-    });
-  } else if (quote.clientRate < baseRate) {
-    warningList.push({
-      field: "clientRate",
-      message: `Client Rate should not be below base rate`
+      message: `The Base Rate is below than the Client Rate: ${quote.clientRate}%`
     });
   }
 
-  // const baseRate = quote["baseRate"];
-  // const maxRate = quote["maxRate"];
-  // for (const fieldName in quote) {
-  //   const element = quote[fieldName];
-  //   switch (fieldName) {
-  //     case "commission":
-  //       if (element < 0)
-  //         warningList.push({
-  //           field: "commission",
-  //           message:
-  //             "The commission is below zero. Please make adjustment to make sure commission is above zero."
-  //         });
-  //       break;
-  //     case "clientRate":
-  //       console.log("client rate: ", element);
-  //       if (element <= 0 || element === null)
-  //         errorList.push({
-  //           field: "clientRate",
-  //           message: "Client Rate must be a POSITIVE number and cannot be ZERO"
-  //         });
-  //       if (element < baseRate && element !== null) {
-  //         warningList.push({
-  //           field: "clientRate",
-  //           message: "Client Rate should not be below base rate"
-  //         });
-  //       }
-  //       if (element > maxRate && element !== null) {
-  //         errorList.push({
-  //           field: "clientRate",
-  //           message: `Client Rate cannot exceed the max rate: ${maxRate}%`
-  //         });
-  //       }
-  //       break;
-  //     default:
-  //       break;
-  //   }
-  // }
+  console.log(
+    "🚀 ~ file: quoteValidations.js ~ line 19 ~ validate ~ quote.term",
+    quote.term
+  );
+  if (quote.term === null || quote.term === 0) {
+    errorList.push({
+      field: "term",
+      message: "Please choose an appropriate term"
+    });
+  }
+
+  console.log(
+    "🚀 ~ file: quoteValidations.js ~ line 19 ~ validate ~ quote.residual",
+    quote.residual
+  );
+  if (quote.residual > 0 && quote.term > 60) {
+    errorList.push({
+      field: "residual",
+      message: "You should not have a balloon or residual payment when the loan term is > 5 years"
+    });
+  }
 
   r.warnings = [].concat(QuoteCommons.uniqueArray(warningList));
   r.errors = [].concat(QuoteCommons.uniqueArray(errorList));

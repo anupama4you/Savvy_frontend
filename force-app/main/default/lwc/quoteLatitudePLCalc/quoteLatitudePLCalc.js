@@ -71,7 +71,7 @@ export default class QuoteLatitudePLCalc extends LightningElement {
         let quote = this.quoteForm;
         // omit the dof addition 
         quote.dof = 0;
-        this.quoteForm.dof = CalHelper.getNetRealtimeDOF(quote);
+        this.quoteForm.dof = CalHelper.getDOF(quote);
         this.quoteForm.maxDof = this.quoteForm.dof;
     }
 
@@ -134,6 +134,7 @@ export default class QuoteLatitudePLCalc extends LightningElement {
     }
 
     get netRealtimeNaf() {
+        console.log('netRealtimeNaf:::', CalHelper.getNetRealtimeNaf(this.quoteForm))
         return CalHelper.getNetRealtimeNaf(this.quoteForm);
     }
 

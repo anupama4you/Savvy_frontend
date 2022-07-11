@@ -87,17 +87,16 @@ const calculate = (quote) =>
     if (res.messages && res.messages.errors.length > 0) {
       reject(res);
     } else {
+      console.log('quote::', quote)
       // Prepare params
       const profile = quote.securedUnsecured === "Secured" ? "Secured" : "Unsecured";
+      const totalAmount = calcNetRealtimeNaf(quote);
       const p = {
         lender: LENDER_QUOTING,
         productLoanType: quote.loanProduct,
         customerProfile: profile,
-        clientTier: quote.clientTier,
-        vehicleYear: quote.assetAge,
-        goodsType: quote.assetType,
         privateSales: quote.privateSales,
-        totalAmount: QuoteCommons.calcTotalAmount(quote),
+        totalAmount: totalAmount,
         totalInsurance: QuoteCommons.calcTotalInsuranceType(quote),
         clientRate: quote.clientRate,
         baseRate: quote.baseRate,
@@ -108,6 +107,7 @@ const calculate = (quote) =>
         residualValue: quote.residual,
         registrationFee: quote.registrationFee,
         loanTypeDetail: quote.loanTypeDetail,
+        carPrice: quote.price
       };
 
       // Calculate
@@ -117,8 +117,25 @@ const calculate = (quote) =>
       })
         .then((data) => {
           console.log(`@@SF:`, JSON.stringify(data, null, 2));
+          console.log('done>>');
+
+          // Custom calculations
+          let calculatedObj = data;
+          // const baseComm = totalAmount;
+          const commissionRate = 2.25;
+          calculatedObj.Estimated_Commission__c = commissionRate/100 * totalAmount;
+          const realRate = p.clientRate / 100;
+          console.log('done>>', realRate);
+          const futureValue = fu.fv(realRate / 12, 12, 1000);
+          console.log('done>>', futureValue);
+          const rate = fu.rate(1000, 12, 0, futureValue, realRate/12, false);
+          console.log('done>>', rate);
+          calculatedObj.Rental__c = fu.pmt(totalAmount, rate, p.term, p.residualValue, p.paymentType);
+          // calculatedObj.Monthly_Payment__c = (calculatedObj.Rental__c + p.monthlyFee).toFixed(2);
+
+
           // Mapping
-          res.commissions = QuoteCommons.mapCommissionSObjectToLwc(data);
+          res.commissions = QuoteCommons.mapCommissionSObjectToLwc(calculatedObj);
           console.log(JSON.stringify(res.commissions, null, 2));
           // Validate the result of commissions
           res.messages = Validations.validatePostCalculation(res.commissions, res.messages);
@@ -292,10 +309,10 @@ const calcNetRealtimeNaf = (quote) => {
   return r;
 }
 
-const calcNetRealtimeDOF = (quote) => {
-  let netRealtimeNaf = QuoteCommons.calcNetRealtimeNaf(quote);
-  let r = quote.registrationFee + netRealtimeNaf;
-  console.log('calcNetRealtimeDOF', r)
+const calcDOF = (quote) => {
+  let naf = QuoteCommons.calcNetRealtimeNaf(quote);
+  let r = quote.registrationFee + naf;
+  console.log('calcDOF', r)
   if (r > 20000) {
     r = 1650.00;
   } else if (r > 0) {
@@ -324,6 +341,6 @@ export const CalHelper = {
   getNetDeposit: QuoteCommons.calcNetDeposit,
   getQuoteFees: getQuoteFees,
   getRiskGradeOptions: getRiskGradeOptions,
-  getNetRealtimeDOF: calcNetRealtimeDOF,
+  getDOF: calcDOF,
   DOF_CALC_FIELDS: DOF_CALC_FIELDS
 };
