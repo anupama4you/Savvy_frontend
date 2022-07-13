@@ -7,7 +7,7 @@ import { CalHelper } from "./quoteLatitudePLCalcHelper";
  * @param {Object} messages - old messages object
  * @returns
  */
-const validate = (quote, messages) => {
+const validate = (quote, messages, isApproval) => {
   const r =
     typeof messages == "undefined" || messages == null
       ? QuoteCommons.resetMessage()
@@ -16,7 +16,6 @@ const validate = (quote, messages) => {
   let warningList = r.warnings;
 
   const baseRate = quote["baseRate"];
-  const maxRate = quote["maxRate"];
   const maxDofRate = CalHelper.getDOF(quote);
 
   console.log(`@@validation:`, JSON.stringify(quote, null, 2));
@@ -63,7 +62,7 @@ const validate = (quote, messages) => {
     "🚀 ~ file: quoteValidations.js ~ line 19 ~ validate ~ quote.ppsr",
     quote.ppsr
   );
-  if (quote.ppsr === null || quote.ppsr === 0) {
+  if (quote.ppsr === null) {
     errorList.push({
       field: "ppsr",
       message: "PPSR should not be null."
@@ -76,8 +75,8 @@ const validate = (quote, messages) => {
   );
   if (quote.registrationFee === null || quote.registrationFee === 0 ) {
     errorList.push({
-      field: "ppsr",
-      message: "PPSR should not be null."
+      field: "registrationFee",
+      message: "Registration Fee should not be null."
     });
   }
 
@@ -93,7 +92,7 @@ const validate = (quote, messages) => {
   } else if (quote.baseRate > quote.clientRate) {
     errorList.push({
       field: "clientRate",
-      message: `The Base Rate is below than the Client Rate: ${quote.clientRate}%`
+      message: `Client Rate should not be below base rate`
     });
   }
 
@@ -105,6 +104,19 @@ const validate = (quote, messages) => {
     errorList.push({
       field: "residual",
       message: "You should not have a balloon or residual payment when the loan term is > 5 years"
+    });
+  }
+
+  console.log(
+    "🚀 ~ file: quoteValidations.js ~ line 19 ~ validate ~ quote.loanPurpose",
+    quote.loanPurpose
+  );
+  if (!quote.loanPurpose) {
+    const msg = isApproval ? 'The Loan Purpose needs to be inserted into the quoting tool' 
+    : 'The Loan Purpose is neccessary for any approval';
+    warningList.push({
+      field: "loanPurpose",
+      message: msg
     });
   }
 

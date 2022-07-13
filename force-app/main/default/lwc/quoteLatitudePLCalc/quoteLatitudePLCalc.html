@@ -193,7 +193,6 @@
                 </lightning-input>
             </div>
         </div>
-
         <!-- DOF -->
         <div class="c-row-details">
             <div class="c-detail-labels"><span class="c-label">DOF</span></div>
@@ -222,7 +221,6 @@
                 </span>
             </div>
         </div>
-
         <!-- PPSR -->
         <div class="c-row-details">
             <div class="c-detail-labels"><span class="c-label">PPSR</span></div>
@@ -241,7 +239,6 @@
                     onchange={handleFieldChange}></lightning-input>
             </div>
         </div>
-
         <!-- Registration/Research Fee -->
         <div class="c-row-details">
             <div class="c-detail-labels"><span class="c-label">Registration/Research
@@ -261,7 +258,6 @@
                     onchange={handleFieldChange}></lightning-input>
             </div>
         </div>
-
         <!-- Residual -->
         <div class="c-row-details">
             <div class="c-detail-labels"><span class="c-label">Residual</span></div>
@@ -280,7 +276,6 @@
                     onchange={handleFieldChange}></lightning-input>
             </div>
         </div>
-
         <!-- Monthly Fee -->
         <div class="c-row-details">
             <div class="c-detail-labels">
@@ -301,7 +296,6 @@
                     onchange={handleFieldChange}></lightning-input>
             </div>
         </div>
-
         <!-- Additional Details -->
         <div class="c-row-details">
             <span class="c-detail-subtitle">Loan Details</span>
@@ -313,17 +307,17 @@
                 <span class="c-label">Term (months)</span>
             </div>
             <div class="c-detail-fields">
-                <lightning-combobox
+                <lightning-input
                     name="term"
+                    type="number"
                     label="Term (months)"
                     data-id="term-field"
                     value={quoteForm.term}
                     placeholder="Select a value"
-                    options={termOptions}
                     onchange={handleFieldChange}
                     class="slds-form__item"
                     variant="label-hidden"
-                    required></lightning-combobox>
+                    required></lightning-input>
             </div>
         </div>
 
@@ -441,7 +435,7 @@
         </div>
         <!-- end -->
 
-        <!-- Additional Content -->
+        <!-- Loan Prupose -->
         <div slot="more">
             <div class="slds-p-around_small">
                 <div class="slds-m-bottom_x-small"><span
@@ -455,7 +449,7 @@
             </div>
         </div>
 
-        <!-- Table Rates -->
+        <!-- Latitude Personal Rate Table -->
         <div slot="table-rates">
             <div class="c-rates-section-title">Latitude Personal Rate Table</div>
             <div class="slds-grid slds-gutters">

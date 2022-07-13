@@ -82,7 +82,7 @@ const calculate = (quote) =>
     };
     console.log(`Calculating repayments...`, JSON.stringify(res, null, 2));
     // Validate quote
-    res.messages = Validations.validate(quote, res.messages);
+    res.messages = Validations.validate(quote, res.messages, false);
     console.log(`Calculating repayments...`, JSON.stringify(res, null, 2));
     if (res.messages && res.messages.errors.length > 0) {
       reject(res);
@@ -90,7 +90,10 @@ const calculate = (quote) =>
       console.log('quote::', quote)
       // Prepare params
       const profile = quote.securedUnsecured === "Secured" ? "Secured" : "Unsecured";
+      // new total calculated amount
       const totalAmount = calcNetRealtimeNaf(quote);
+      // commRate is constant for eastimated Commission
+      const commR = 2.25;
       const p = {
         lender: LENDER_QUOTING,
         productLoanType: quote.loanProduct,
@@ -107,7 +110,8 @@ const calculate = (quote) =>
         residualValue: quote.residual,
         registrationFee: quote.registrationFee,
         loanTypeDetail: quote.loanTypeDetail,
-        carPrice: quote.price
+        carPrice: quote.price,
+        commRate : commR
       };
 
       // Calculate
@@ -119,23 +123,8 @@ const calculate = (quote) =>
           console.log(`@@SF:`, JSON.stringify(data, null, 2));
           console.log('done>>');
 
-          // Custom calculations
-          let calculatedObj = data;
-          // const baseComm = totalAmount;
-          const commissionRate = 2.25;
-          calculatedObj.Estimated_Commission__c = commissionRate/100 * totalAmount;
-          const realRate = p.clientRate / 100;
-          console.log('done>>', realRate);
-          const futureValue = fu.fv(realRate / 12, 12, 1000);
-          console.log('done>>', futureValue);
-          const rate = fu.rate(1000, 12, 0, futureValue, realRate/12, false);
-          console.log('done>>', rate);
-          calculatedObj.Rental__c = fu.pmt(totalAmount, rate, p.term, p.residualValue, p.paymentType);
-          // calculatedObj.Monthly_Payment__c = (calculatedObj.Rental__c + p.monthlyFee).toFixed(2);
-
-
           // Mapping
-          res.commissions = QuoteCommons.mapCommissionSObjectToLwc(calculatedObj);
+          res.commissions = QuoteCommons.mapCommissionSObjectToLwc(data);
           console.log(JSON.stringify(res.commissions, null, 2));
           // Validate the result of commissions
           res.messages = Validations.validatePostCalculation(res.commissions, res.messages);
@@ -246,7 +235,7 @@ const loadData = (recordId) =>
         if (quoteData.rateSettings) {
           tableRatesData = quoteData.rateSettings[`${RATE_SETTING_NAMES[0]}`];
         }
-        // console.log(`@@data:`, JSON.stringify(data, null, 2));
+        console.log(`@@data:`, JSON.stringify(data, null, 2));
         resolve(data);
       })
       .catch((error) => reject(error));

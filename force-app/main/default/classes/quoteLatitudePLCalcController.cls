@@ -23,17 +23,4 @@ public with sharing class quoteLatitudePLCalcController {
         return rates;
     }
 
-    @AuraEnabled
-    public Map<String, String> getRiskGradeOptions() {
-
-      List<SelectOption> r = new List<SelectOption>();
-      for (LatitudePersonalRates__c a: rates) {
-          r.add(new SelectOption(a.Risk_Grade__c, a.Risk_Grade__c));
-      }
-      for (SelectOption o : ra) {
-        r.put(o.getValue(), o.getLabel());
-    }
-  
-      return r;
-  }
 }
