@@ -98,17 +98,6 @@ const validate = (quote, messages) => {
   }
 
   console.log(
-    "🚀 ~ file: quoteValidations.js ~ line 19 ~ validate ~ quote.term",
-    quote.term
-  );
-  if (quote.term === null || quote.term === 0) {
-    errorList.push({
-      field: "term",
-      message: "Please choose an appropriate term"
-    });
-  }
-
-  console.log(
     "🚀 ~ file: quoteValidations.js ~ line 19 ~ validate ~ quote.residual",
     quote.residual
   );
