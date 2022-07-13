@@ -37,6 +37,7 @@ export default class QuoteLatitudePLCalc extends LightningElement {
             .finally(() => {
                 this.isBusy = false;
                 this.baseRateCalc();
+                this.dofCalc();
             });
 
         console.log('recordID::', this.recordId)
@@ -62,12 +63,21 @@ export default class QuoteLatitudePLCalc extends LightningElement {
     }
 
     // DOF calculation
-    dofCalc() {
-        let quote = this.quoteForm;
-        // omit the dof addition 
-        quote.dof = 0;
-        this.quoteForm.dof = CalHelper.getDOF(quote);
-        this.quoteForm.maxDof = this.quoteForm.dof;
+    dofCalc(fieldChange) {
+
+        console.log('dofCalc:::', this.quoteForm.dof, this.quoteForm.maxDof );
+        if(!fieldChange){
+            if(this.quoteForm.dof){
+                this.quoteForm.maxDof = this.quoteForm.dof;    
+            }
+        }else{
+            let quote = this.quoteForm;
+            // omit the dof addition 
+            quote.dof = 0;
+            this.quoteForm.dof = CalHelper.getDOF(quote);
+            this.quoteForm.maxDof = this.quoteForm.dof;
+        }
+
     }
 
     // Quote Fee calculation
@@ -97,6 +107,10 @@ export default class QuoteLatitudePLCalc extends LightningElement {
 
     get securedUnsecuredOptions() {
         return CalHelper.options.securedUnsecured;
+    }
+
+    get termOptions() {
+        return CalHelper.options.terms;
     }
 
     get logoUrl() {
@@ -203,7 +217,7 @@ export default class QuoteLatitudePLCalc extends LightningElement {
 
         // DOF calculation
         if (CalHelper.DOF_CALC_FIELDS.includes(fldName)) {
-            this.dofCalc();
+            this.dofCalc(true);
         }
 
         // --------------

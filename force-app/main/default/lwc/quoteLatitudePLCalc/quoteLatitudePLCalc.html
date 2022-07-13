@@ -304,20 +304,21 @@
         <!-- Term -->
         <div class="c-row-details">
             <div class="c-detail-labels">
-                <span class="c-label">Term (months)</span>
+            <span class="c-label">Term (months)</span>
             </div>
             <div class="c-detail-fields">
-                <lightning-input
-                    name="term"
-                    type="number"
-                    label="Term (months)"
-                    data-id="term-field"
-                    value={quoteForm.term}
-                    placeholder="Select a value"
-                    onchange={handleFieldChange}
-                    class="slds-form__item"
-                    variant="label-hidden"
-                    required></lightning-input>
+            <lightning-combobox
+                name="term"
+                label="Term (months)"
+                data-id="term-field"
+                value={quoteForm.term}
+                placeholder="Select a value"
+                options={termOptions}
+                onchange={handleFieldChange}
+                class="slds-form__item"
+                variant="label-hidden"
+                required
+            ></lightning-combobox>
             </div>
         </div>
 
@@ -453,7 +454,7 @@
         <div slot="table-rates">
             <div class="c-rates-section-title">Latitude Personal Rate Table</div>
             <div class="slds-grid slds-gutters">
-                <div class="slds-col slds-size_12-of-12">
+                <div class="slds-col slds-size_8-of-12">
                     <lightning-datatable
                         key-field="Id"
                         data={tableRates}

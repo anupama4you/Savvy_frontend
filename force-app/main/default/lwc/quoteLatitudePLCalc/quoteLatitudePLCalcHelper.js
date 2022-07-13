@@ -121,7 +121,6 @@ const calculate = (quote) =>
       })
         .then((data) => {
           console.log(`@@SF:`, JSON.stringify(data, null, 2));
-          console.log('done>>');
 
           // Mapping
           res.commissions = QuoteCommons.mapCommissionSObjectToLwc(data);
