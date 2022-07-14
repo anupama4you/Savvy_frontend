@@ -1,4 +1,4 @@
-import getQuotingData from "@salesforce/apex/quoteLatitudePLCalcController.getQuotingData";
+import getQuotingData from "@salesforce/apex/quoteLatitudeCalcController.getQuotingData";
 import getBaseRates from "@salesforce/apex/QuoteController.getBaseRates";
 import calculateRepayments from "@salesforce/apex/QuoteController.calculateRepayments";
 import {
@@ -26,12 +26,14 @@ let tableRateDataColumns = [
   },
 ];
 
-const LENDER_QUOTING = "Latitude Personal Loan";
+const LENDER_QUOTING = "Latitude";
 
 const QUOTING_FIELDS = new Map([
   ["loanType", "Loan_Type__c"],
   ["loanProduct", "Loan_Product__c"],
   ["price", "Vehicle_Price__c"],
+  ["vehicleType", "Goods_type__c"],
+  ["vehCon", "Vehicle_Condition__c"],
   ["deposit", "Deposit__c"],
   ["tradeIn", "Trade_In__c"],
   ["payoutOn", "Payout_On__c"],
@@ -52,11 +54,9 @@ const QUOTING_FIELDS = new Map([
 const RATE_SETTING_NAMES = ["LatitudePersonalRates__c"];
 
 const SETTING_FIELDS = new Map([
-  ["applicationFee", "Application_Fee__c"],
-  ["maxApplicationFee", "Application_Fee__c"],
-  ["maxDof", "Max_DOF__c"],
-  ["ppsr", "PPSR__c"],
   ["monthlyFee", "Monthly_Fee__c"],
+  ["ppsr", "PPSR__c"],
+  ["applicationFee", "Application_Fee__c"],
   ["registrationFee", "Registration_Fee__c"]
 ]);
 
@@ -160,6 +160,32 @@ const calcOptions = {
     { label: "Secured", value: "Secured" },
     { label: "Unsecured", value: "Unsecured" }
   ],
+  vehicleTypes: [
+    { label: "--None--", value: "--" },
+    { label: "Car", value: "CAR" },
+    { label: "Car (Van Light Commercial)", value: "VAN_LIGHT_COMMERCIAL" },
+    { label: "Car (Minibus)", value: "MINIBUS" },
+    { label: "Car (Utility)", value: "UTILITY" },
+    { label: "Car (Station Wagon or 4WD)", value: "STATION_WAGON_OR_4WD" },
+    { label: "Motorbike", value: "MOTORBIKE" },
+    { label: "Boats (or Personal Watercraft)", value: "BOAT" },
+    { label: "Caravan", value: "CARAVAN" },
+    { label: "Motorhome", value: "MOTORHOME" },
+    { label: "Camper Trailer", value: "TRAILER" }
+  ],
+  classes: [
+    { label: "Diamond Plus", value: "Diamond Plus" },
+    { label: "Diamond", value: "Diamond" },
+    { label: "Sapphire", value: "Sapphire" },
+    { label: "Ruby", value: "Ruby" },
+    { label: "Emerald", value: "Emerald" }
+  ],
+  vehicleConditions: [
+    { label: "--None--", value: "" },
+    { label: "New", value: "NEW" },
+    { label: "Demo", value: "DEMO" },
+    { label: "Used", value: "USED" }
+  ],
   terms: CommonOptions.terms(12, 84)
 };
 
@@ -170,27 +196,30 @@ const reset = (recordId) => {
     quoteName: LENDER_QUOTING,
     loanType: calcOptions.loanTypes[0].value,
     loanProduct: calcOptions.loanProducts[0].value,
+    category: null,
+    vehicleType: calcOptions.vehicleTypes[0].value,
+    carAge: calcOptions.vehicleAges[0].value,
+    vehCon: '',
+    monthlyFee: null,
+    ppsr: null,
+    applicationFee: null,
+    registrationFee: null,
+    baseRate: 0.0,
+    maxRate: 0.0,
     price: null,
     deposit: null,
     tradeIn: null,
     payoutOn: null,
-    applicationFee: null,
     maxApplicationFee: null,
     dof: null,
     maxDof: null,
-    ppsr: null,
     residual: null,
-    term: 60,
-    monthlyFee: null,
-    baseRate: 0.0,
-    maxRate: 0.0,
-    clientRate: null,
-    privateSales: "N",
-    paymentType: "Arrears",
+    term: calcOptions.terms[0].value,
+    privateSales: calcOptions.privateSales[1].value,
+    paymentType: calcOptions.paymentTypes[0].value,
+    loanTypeDetail: calcOptions.classes[0].value,
     commissions: QuoteCommons.resetResults(),
-    registrationFee: 3.40,
-    loanTypeDetail: "AAA",
-    securedUnsecured: "Secured"
+    registrationFee: 3.40
   };
   r = QuoteCommons.mapDataToLwc(r, lenderSettings, SETTING_FIELDS);
   return r;
@@ -298,6 +327,7 @@ const calcNetRealtimeNaf = (quote) => {
 }
 
 const calcDOF = (quote) => {
+  quote.dof = 0;
   let naf = QuoteCommons.calcNetRealtimeNaf(quote);
   let r = quote.registrationFee + naf;
   console.log('calcDOF', r)

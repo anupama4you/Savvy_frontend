@@ -1,6 +1,6 @@
 <template>
     <c-quote-container
-        title="Latitude Personal Loan"
+        title="Latitude"
         is-busy={isBusy}
         commissions={quoteForm.commissions}
         messages={messageObj}>
@@ -92,7 +92,7 @@
                 <lightning-combobox
                     name="vehicleType"
                     label="Vehicle Type"
-                    data-id="loanProduct-field"
+                    data-id="vehicleType-field"
                     value={quoteForm.vehicleType}
                     placeholder="Select a value"
                     options={vehicleTypes}
@@ -112,7 +112,7 @@
                     step="0.01"
                     name="price"
                     data-id="price-field"
-                    value={quoteForm.carPrice}
+                    value={quoteForm.price}
                     label="Vehicle Price"
                     placeholder="$"
                     class="slds-form__item"
@@ -352,7 +352,7 @@
                     data-id="term-field"
                     value={quoteForm.loanTypeDetail}
                     placeholder="Select a value"
-                    options={riskGradeOptions}
+                    options={classOptions}
                     onchange={handleFieldChange}
                     class="slds-form__item"
                     variant="label-hidden"
@@ -369,7 +369,7 @@
                 <lightning-combobox
                     name="carAge"
                     label="Client Tier"
-                    data-id="term-field"
+                    data-id="carAge-field"
                     value={quoteForm.carAge}
                     placeholder="Select a value"
                     options={carAgeOptions}
@@ -389,10 +389,10 @@
                 <lightning-combobox
                     name="vehCon"
                     label="Vehicle Condition"
-                    data-id="term-field"
+                    data-id="vehCon-field"
                     value={quoteForm.vehCon}
                     placeholder="Select a value"
-                    options={vehConOptions}
+                    options={vehicleConditionOptions}
                     onchange={handleFieldChange}
                     class="slds-form__item"
                     variant="label-hidden"

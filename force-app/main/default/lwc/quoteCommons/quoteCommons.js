@@ -170,7 +170,7 @@ const calcTotalAmount = (quote) => {
     r += quote.price > 0 ? quote.price : 0.0;
     r -= calcNetDeposit(quote);
 
-    r += quote.applicationFee > 0 ? quote.applicationFee : r;
+    r += quote.applicationFee > 0 ? quote.applicationFee : 0.0;
     r += quote.dof > 0 ? quote.dof : 0.0;
     r += quote.ppsr > 0 ? quote.ppsr : 0.0;
   }

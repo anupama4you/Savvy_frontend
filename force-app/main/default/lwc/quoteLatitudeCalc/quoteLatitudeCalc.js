@@ -4,6 +4,7 @@ import { QuoteCommons } from "c/quoteCommons";
 import { CalHelper } from "./quoteLatitudeCalcHelper";
 import { getRecord } from 'lightning/uiRecordApi';
 import { displayToast } from "c/partnerJsUtils";
+import getDiamondPlusRates from "@salesforce/apex/quoteLatitudeCalcController.getDiamondPlusRates";
 
 export default class QuoteLatitudeCalc extends LightningElement {
     tableRatesCols = CalHelper.tableRateDataColumns;
@@ -26,8 +27,8 @@ export default class QuoteLatitudeCalc extends LightningElement {
             .then((data) => {
                 console.log(`Data loaded!`);
                 this.quoteForm = data;
-                console.log(`Data loaded!`, JSON.stringify(this.quoteForm) );
-                this.tableRates = CalHelper.getTableRatesData();
+                // console.log(`Data loaded!`, JSON.stringify(this.quoteForm) );
+                // this.tableRates = CalHelper.getTableRatesData();
             })
             .catch((error) => {
                 console.error(JSON.stringify(error, null, 2));
@@ -37,9 +38,24 @@ export default class QuoteLatitudeCalc extends LightningElement {
                 this.isBusy = false;
                 this.baseRateCalc();
                 this.dofCalc();
+                this.testMethod();
             });
 
         console.log('recordID::', this.recordId)
+    }
+
+    testMethod(quote) {
+            console.log(`testMethod...`, JSON.stringify(quote, null, 2));
+            getDiamondPlusRates({
+                category: 'Car/Motorbike'
+            })
+                .then((rates) => {
+                    console.log(`@@SF:`, JSON.stringify(rates, null, 2));
+                    return rates;
+                })
+                .catch((error)=> {
+                    return error;
+                });
     }
 
     // Base Rate
@@ -63,17 +79,12 @@ export default class QuoteLatitudeCalc extends LightningElement {
 
     // DOF calculation
     dofCalc(fieldChange) {
-
-        console.log('dofCalc:::', this.quoteForm.dof, this.quoteForm.maxDof );
-        if(!fieldChange){
-            if(this.quoteForm.dof){
-                this.quoteForm.maxDof = this.quoteForm.dof;    
+        if (!fieldChange) {
+            if (this.quoteForm.dof) {
+                this.quoteForm.maxDof = this.quoteForm.dof;
             }
-        }else{
-            let quote = this.quoteForm;
-            // omit the dof addition 
-            quote.dof = 0;
-            this.quoteForm.dof = CalHelper.getDOF(quote);
+        } else {
+            this.quoteForm.dof = CalHelper.getDOF(this.quoteForm);
             this.quoteForm.maxDof = this.quoteForm.dof;
         }
 
@@ -110,6 +121,26 @@ export default class QuoteLatitudeCalc extends LightningElement {
 
     get termOptions() {
         return CalHelper.options.terms;
+    }
+
+    get classOptions() {
+        return CalHelper.options.classes;
+    }
+
+    get carAgeOptions() {
+        return CalHelper.options.vehicleAges;
+    }
+
+    get vehicleTypes() {
+        return CalHelper.options.vehicleTypes;
+    }
+
+    get privateSalesOptions() {
+        return CalHelper.options.privateSales;
+    }
+
+    get vehicleConditionOptions() {
+        return CalHelper.options.vehicleConditions;
     }
 
     get logoUrl() {
