@@ -268,7 +268,7 @@
                     formatter="currency"
                     step="0.01"
                     name="registrationFee"
-                    data-id="ppsr-field"
+                    data-id="registrationFee-field"
                     value={quoteForm.registrationFee}
                     label="Registration/Research"
                     placeholder="$"
@@ -349,7 +349,7 @@
                 <lightning-combobox
                     name="loanTypeDetail"
                     label="Client Tier"
-                    data-id="term-field"
+                    data-id="loanTypeDetail-field"
                     value={quoteForm.loanTypeDetail}
                     placeholder="Select a value"
                     options={classOptions}
@@ -522,22 +522,77 @@
             <div class="slds-p-around_small">
                 <div class="slds-m-bottom_x-small"><span
                         class="c-detail-subtitle">Read to Customer Verbatim</span></div>
-                        <p>By requesting a rate band offer from Latitude for consumer or commercial credit, you are requesting Latitude to provide you with a personalized rate band using your credit score obtained from a Credit Reporting Body. Obtaining this score for a tailored rate band will not impact your credit score. This is an indicative rate band subject to you completing a full application and acceptance by Latitude. You can choose not to proceed at any time.</p>
+                <p>By requesting a rate band offer from Latitude for consumer or
+                    commercial credit, you are requesting Latitude to provide
+                    you with a personalized rate band using your credit score
+                    obtained from a Credit Reporting Body. Obtaining this score
+                    for a tailored rate band will not impact your credit score.
+                    This is an indicative rate band subject to you completing a
+                    full application and acceptance by Latitude. You can choose
+                    not to proceed at any time.</p>
             </div>
         </div>
 
         <!-- Latitude Personal Rate Table -->
         <div slot="table-rates">
-            <div class="c-rates-section-title">Latitude Personal Rate Table</div>
+            <div class="c-rates-section-title">Latitude Personal Rate
+                Table&nbsp;
+                <template if:true={category}>
+                    for {category}
+                </template>
+                <template if:false={category}>
+                    [Plsease select a category]
+                </template>
+            </div>
             <div class="slds-grid slds-gutters">
-                <div class="slds-col slds-size_8-of-12">
-                    <lightning-datatable
-                        key-field="Id"
-                        data={tableRates}
-                        columns={tableRatesCols}
-                        hide-checkbox-column>
-                    </lightning-datatable>
-                </div>
+
+                <template if:true={tableRates}>
+                    <template for:each={tableRates} for:item="d">
+                        <div class="slds-col slds-p-horizontal_xxx-small" style="width: 20%;" key={d}>
+                            <p class="c-sub-title slds-align_absolute-center">{d.colName}</p>
+                            <table class="slds-border_left slds-border_right">
+                                <tr>
+                                    <th class="ratesTh">0 - 3 years</th>
+                                    <th class="ratesTh">% NAF</th>
+                                    <th class="ratesTh">4 - 7 years</th>
+                                    <th class="ratesTh">% NAF</th>
+                                    <th class="ratesTh">&gt; 7 years</th>
+                                    <th class="ratesTh">% NAF</th>
+                                </tr>
+                                <template for:each={d.data} for:item="r">
+                                    <tr key={r}>
+                                        <td align="center">
+                                            {r.comm1}
+                                        </td>
+                                        <td align="center">
+                                            {r.comm2}
+                                        </td>
+                                        <td align="center">
+                                            {r.comm3}
+                                        </td>
+                                        <td align="center">
+                                            {r.rate1}
+                                        </td>
+                                        <td align="center">
+                                            {r.rate2}
+                                        </td>
+                                        <td align="center">
+                                            {r.rate3}
+                                        </td>
+                                    </tr>
+                                </template>
+                            </table>
+
+                            <!-- <lightning-datatable
+                                key-field="Id"
+                                data={d.data}
+                                columns={tableRatesCols}
+                                hide-checkbox-column>
+                            </lightning-datatable> -->
+                        </div>
+                    </template>
+                </template>
+
             </div>
         </div>
 

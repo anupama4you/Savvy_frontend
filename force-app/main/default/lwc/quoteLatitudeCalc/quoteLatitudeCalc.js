@@ -4,19 +4,19 @@ import { QuoteCommons } from "c/quoteCommons";
 import { CalHelper } from "./quoteLatitudeCalcHelper";
 import { getRecord } from 'lightning/uiRecordApi';
 import { displayToast } from "c/partnerJsUtils";
-import getDiamondPlusRates from "@salesforce/apex/quoteLatitudeCalcController.getDiamondPlusRates";
 
 export default class QuoteLatitudeCalc extends LightningElement {
-    tableRatesCols = CalHelper.tableRateDataColumns;
+    tableRatesCols = CalHelper.TABLE_DATA_COLUMNS;
     isBusy;
     isBaseRateBusy;
     isCalculated = false;
+    category;
 
     @api recordId;
     @track messageObj = QuoteCommons.resetMessage();
     @track quoteForm;
 
-    // Rate Settings
+    // table data
     @track tableRates;
 
     connectedCallback() {
@@ -27,8 +27,7 @@ export default class QuoteLatitudeCalc extends LightningElement {
             .then((data) => {
                 console.log(`Data loaded!`);
                 this.quoteForm = data;
-                // console.log(`Data loaded!`, JSON.stringify(this.quoteForm) );
-                // this.tableRates = CalHelper.getTableRatesData();
+                console.log(`Data loaded!`, JSON.stringify(this.quoteForm) );
             })
             .catch((error) => {
                 console.error(JSON.stringify(error, null, 2));
@@ -36,31 +35,19 @@ export default class QuoteLatitudeCalc extends LightningElement {
             })
             .finally(() => {
                 this.isBusy = false;
+                this.vehicleCategory();
                 this.baseRateCalc();
                 this.dofCalc();
-                this.testMethod();
             });
 
         console.log('recordID::', this.recordId)
     }
 
-    testMethod(quote) {
-            console.log(`testMethod...`, JSON.stringify(quote, null, 2));
-            getDiamondPlusRates({
-                category: 'Car/Motorbike'
-            })
-                .then((rates) => {
-                    console.log(`@@SF:`, JSON.stringify(rates, null, 2));
-                    return rates;
-                })
-                .catch((error)=> {
-                    return error;
-                });
-    }
-
     // Base Rate
     baseRateCalc() {
         this.isBaseRateBusy = true;
+        
+        console.log('baseRateCalc::', this.quoteForm.goodsType, this.quoteForm.loanTypeDetail, this.quoteForm.carAge);
         console.log('quote form::', JSON.stringify(this.quoteForm, null, 2));
         CalHelper.baseRates(this.quoteForm)
             .then((data) => {
@@ -73,7 +60,7 @@ export default class QuoteLatitudeCalc extends LightningElement {
                 displayToast(this, "Base Rate...", error, "error");
             })
             .finally(() => {
-                this.calcFees();
+                this.isBaseRateBusy = false;
             });
     }
 
@@ -87,7 +74,22 @@ export default class QuoteLatitudeCalc extends LightningElement {
             this.quoteForm.dof = CalHelper.getDOF(this.quoteForm);
             this.quoteForm.maxDof = this.quoteForm.dof;
         }
+    }
 
+    // Category generation
+    vehicleCategory(){
+        console.log('vehicle type:::', this.quoteForm.vehicleType)
+        if(this.quoteForm.vehicleType){
+            this.category = 'Car/Motorbike';
+            if('BOAT' === this.quoteForm.vehicleType || 'CARAVAN' === this.quoteForm.vehicleType || 'MOTORHOME' === this.quoteForm.vehicleType || 'TRAILER' === this.quoteForm.vehicleType){
+                this.category = 'Boats, Personal Watercraft, Caravans, Camper Trailers, Motorhomes';
+            }
+            this.quoteForm.category = this.category;
+        }else{
+            this.category = '';
+        }
+        this.quoteForm.goodsType = this.category;
+        this.tableRates = CalHelper.getAllTableData(this.category);
     }
 
     // Quote Fee calculation
@@ -109,10 +111,6 @@ export default class QuoteLatitudeCalc extends LightningElement {
 
     get paymentTypeOptions() {
         return CalHelper.options.paymentTypes;
-    }
-
-    get riskGradeOptions() {
-        return CalHelper.getRiskGradeOptions();
     }
 
     get securedUnsecuredOptions() {
@@ -141,6 +139,10 @@ export default class QuoteLatitudeCalc extends LightningElement {
 
     get vehicleConditionOptions() {
         return CalHelper.options.vehicleConditions;
+    }
+
+    get tableHeadings() {
+        return CalHelper.options.classes;
     }
 
     get logoUrl() {
@@ -239,6 +241,11 @@ export default class QuoteLatitudeCalc extends LightningElement {
         // --------------
         // Trigger events
         // --------------
+
+        // Vehicle category generation
+        if (fldName === 'vehicleType') {
+            this.vehicleCategory();
+        }
 
         // Base Rate Calculation
         if (CalHelper.BASE_RATE_FIELDS.includes(fldName)) {
