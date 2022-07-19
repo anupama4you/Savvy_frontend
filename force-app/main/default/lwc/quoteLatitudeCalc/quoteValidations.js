@@ -15,35 +15,43 @@ const validate = (quote, messages, isApproval) => {
   let errorList = r.errors;
   let warningList = r.warnings;
 
-  const baseRate = quote["baseRate"];
-  const maxDofRate = CalHelper.getDOF(quote);
-
   console.log(`@@validation:`, JSON.stringify(quote, null, 2));
 
   console.log(
-    "🚀 ~ file: quoteValidations.js ~ line 17 ~ validate ~ quote.price",
+    "🚀 ~ file: quoteValidations.js ~ line 24 ~ validate ~ quote.vehCon",
+    quote.vehCon
+  );
+  if (!quote.vehCon) {
+    errorList.push({
+      field: "vehCon",
+      message: "Please select Vehicle Condition."
+    });
+  }
+
+  console.log(
+    "🚀 ~ file: quoteValidations.js ~ line 35 ~ validate ~ quote.price",
     quote.price
   );
   if (quote.price === null || quote.price === 0) {
     errorList.push({
       field: "price",
-      message: "Finance amount should not be Zero."
+      message: "Vehicle Price cannot be Zero."
     });
   }
 
   console.log(
-    "🚀 ~ file: quoteValidations.js ~ line 19 ~ validate ~ quote.applicationFee",
+    "🚀 ~ file: quoteValidations.js ~ line 46 ~ validate ~ quote.applicationFee",
     quote.applicationFee
   );
   if (quote.applicationFee === null || quote.applicationFee === 0) {
     errorList.push({
       field: "applicationFee",
-      message: "Application Fee should not be Zero."
+      message: "Application Fee cannot be Zero."
     });
   }
 
   console.log(
-    "🚀 ~ file: quoteValidations.js ~ line 20 ~ validate ~ quote.dof",
+    "🚀 ~ file: quoteValidations.js ~ line 57 ~ validate ~ quote.dof",
     quote.dof
   );
   if (quote.dof === null || quote.dof === 0) {
@@ -54,34 +62,23 @@ const validate = (quote, messages, isApproval) => {
   } else if (quote.dof > quote.maxDof) {
     errorList.push({
       field: "DOF",
-      message: `Max DOF exceeded: ${quote.maxDof}%`
+      message: `Max DOF exceeded: ${quote.maxDof === null? 0: quote.maxDof }`
     });
   }
 
   console.log(
-    "🚀 ~ file: quoteValidations.js ~ line 19 ~ validate ~ quote.ppsr",
+    "🚀 ~ file: quoteValidations.js ~ line 73 ~ validate ~ quote.ppsr",
     quote.ppsr
   );
-  if (quote.ppsr === null) {
+  if (quote.ppsr === null || quote.ppsr == 0.0) {
     errorList.push({
       field: "ppsr",
-      message: "PPSR should not be null."
+      message: "PPSR should not be Zero."
     });
   }
 
   console.log(
-    "🚀 ~ file: quoteValidations.js ~ line 19 ~ validate ~ quote.registrationFee",
-    quote.registrationFee
-  );
-  if (quote.registrationFee === null || quote.registrationFee === 0 ) {
-    errorList.push({
-      field: "registrationFee",
-      message: "Registration Fee should not be null."
-    });
-  }
-
-  console.log(
-    "🚀 ~ file: quoteValidations.js ~ line 21 ~ validate ~ quote.clientRate",
+    "🚀 ~ file: quoteValidations.js ~ line 84 ~ validate ~ quote.clientRate",
     quote.clientRate
   );
   if (quote.clientRate === null || quote.clientRate == 0.0) {
@@ -89,34 +86,46 @@ const validate = (quote, messages, isApproval) => {
       field: "clientRate",
       message: "Client Rate should not be zero."
     });
-  } else if (quote.baseRate > quote.clientRate) {
+  } else if (quote.baseRate > quote.clientRate || quote.clientRate > quote.maxRate) {
     errorList.push({
       field: "clientRate",
-      message: `Client Rate should not be below base rate`
+      message: `Client Rate should be between ${quote.baseRate}% and ${quote.maxRate}%`
     });
   }
 
   console.log(
-    "🚀 ~ file: quoteValidations.js ~ line 19 ~ validate ~ quote.residual",
-    quote.residual
+    "🚀 ~ file: quoteValidations.js ~ line 100 ~ validate ~ quote.term",
+    quote.term
   );
-  if (quote.residual > 0 && quote.term > 60) {
+    if ('MOTORBIKE' === quote.vehicleType) {
+      if (quote.term > 60) {
+        errorList.push({
+          field: "term",
+          message: `Motorbikes max. term is 5 years.`
+        });
+      }
+
+  }
+
+  console.log(
+    "🚀 ~ file: quoteValidations.js ~ line 111 ~ validate ~ quote.residualValue",
+    quote.residualValue
+  );
+  if (quote.residualValue > 0 && quote.term > 60) {
     errorList.push({
-      field: "residual",
-      message: "You should not have a balloon or residual payment when the loan term is > 5 years"
+      field: "residualValue",
+      message: "You cannot have a balloon or residual payment when the loan term is > 5 years."
     });
   }
 
   console.log(
-    "🚀 ~ file: quoteValidations.js ~ line 19 ~ validate ~ quote.loanPurpose",
-    quote.loanPurpose
+    "🚀 ~ file: quoteValidations.js ~ line 122 ~ validate ~ quote.vehicleType",
+    quote.vehicleType
   );
-  if (!quote.loanPurpose) {
-    const msg = isApproval ? 'The Loan Purpose needs to be inserted into the quoting tool' 
-    : 'The Loan Purpose is neccessary for any approval';
-    warningList.push({
-      field: "loanPurpose",
-      message: msg
+  if (!quote.vehicleType) {
+    errorList.push({
+      field: "vehicleType",
+      message: "Please select Vehicle Type."
     });
   }
 

@@ -41,10 +41,6 @@
             label="Send quote"
             slot="actions"
             disabled={disableAction}></lightning-button>
-        <lightning-button
-            label="Test Button"
-            slot="actions"
-            onclick={triggerOptions}></lightning-button>
 
         <!-- Finance Details -->
         <!-- Loan Type -->
@@ -548,9 +544,10 @@
 
                 <template if:true={tableRates}>
                     <template for:each={tableRates} for:item="d">
-                        <div class="slds-col slds-p-horizontal_xxx-small" style="width: 20%;" key={d}>
+                        <div class="slds-col slds-p-horizontal_xxx-small"
+                            style="width: 20%;" key={d}>
                             <p class="c-sub-title slds-align_absolute-center">{d.colName}</p>
-                            <table class="slds-border_left slds-border_right">
+                            <table>
                                 <tr>
                                     <th class="ratesTh">0 - 3 years</th>
                                     <th class="ratesTh">% NAF</th>
@@ -562,22 +559,40 @@
                                 <template for:each={d.data} for:item="r">
                                     <tr key={r}>
                                         <td align="center">
-                                            {r.comm1}
+                                            <lightning-formatted-number
+                                                value={r.comm1}
+                                                format-style="decimal"
+                                                minimum-fraction-digits="1"></lightning-formatted-number>
                                         </td>
                                         <td align="center">
-                                            {r.comm2}
+                                            <lightning-formatted-number
+                                                value={r.comm2}
+                                                format-style="decimal"
+                                                minimum-fraction-digits="1"></lightning-formatted-number>
                                         </td>
                                         <td align="center">
-                                            {r.comm3}
+                                            <lightning-formatted-number
+                                                value={r.comm3}
+                                                format-style="decimal"
+                                                minimum-fraction-digits="1"></lightning-formatted-number>
                                         </td>
                                         <td align="center">
-                                            {r.rate1}
+                                            <lightning-formatted-number
+                                                value={r.rate1}
+                                                format-style="decimal"
+                                                minimum-fraction-digits="1"></lightning-formatted-number>
                                         </td>
                                         <td align="center">
-                                            {r.rate2}
+                                            <lightning-formatted-number
+                                                value={r.rate2}
+                                                format-style="decimal"
+                                                minimum-fraction-digits="1"></lightning-formatted-number>
                                         </td>
                                         <td align="center">
-                                            {r.rate3}
+                                            <lightning-formatted-number
+                                                value={r.rate3}
+                                                format-style="decimal"
+                                                minimum-fraction-digits="1"></lightning-formatted-number>
                                         </td>
                                     </tr>
                                 </template>

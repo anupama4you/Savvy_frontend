@@ -220,6 +220,7 @@ const reset = (recordId) => {
     registrationFee: null,
     baseRate: 0.0,
     maxRate: 0.0,
+    clientRate: 0.0,
     price: null,
     deposit: null,
     tradeIn: null,
@@ -348,9 +349,11 @@ const getSingleTable = (category, class_) => {
       }
     });
 
+    console.log(`fieldsList...`, JSON.stringify(fieldsList, null, 2));
+
     const singleTable = [];
 
-    for (let j = 0; j < Object.keys(fieldsList).length; j++) {
+    for (let j = 0; j < 9; j++) {
 
       const row = {
         "comm1": Object.values(fieldsList)[0][j],
@@ -409,7 +412,7 @@ const calcDOF = (quote) => {
     r = 0;
   }
   console.log('calcNetRealtimeDOF', r)
-  return r;
+  return r.toFixed(2);
 }
 
 export const CalHelper = {

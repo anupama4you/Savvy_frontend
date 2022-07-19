@@ -27,7 +27,7 @@ export default class QuoteLatitudeCalc extends LightningElement {
             .then((data) => {
                 console.log(`Data loaded!`);
                 this.quoteForm = data;
-                console.log(`Data loaded!`, JSON.stringify(this.quoteForm) );
+                console.log(`Data loaded!`, JSON.stringify(this.quoteForm));
             })
             .catch((error) => {
                 console.error(JSON.stringify(error, null, 2));
@@ -37,16 +37,20 @@ export default class QuoteLatitudeCalc extends LightningElement {
                 this.isBusy = false;
                 this.vehicleCategory();
                 this.baseRateCalc();
-                this.dofCalc();
             });
 
         console.log('recordID::', this.recordId)
     }
 
+    // lifecycle hook - after rendering all components(child+parent), will triggered
+    renderedCallback() {
+        QuoteCommons.resetValidateFields(this);
+    }
+
     // Base Rate
     baseRateCalc() {
         this.isBaseRateBusy = true;
-        
+
         console.log('baseRateCalc::', this.quoteForm.goodsType, this.quoteForm.loanTypeDetail, this.quoteForm.carAge);
         console.log('quote form::', JSON.stringify(this.quoteForm, null, 2));
         CalHelper.baseRates(this.quoteForm)
@@ -65,27 +69,21 @@ export default class QuoteLatitudeCalc extends LightningElement {
     }
 
     // DOF calculation
-    dofCalc(fieldChange) {
-        if (!fieldChange) {
-            if (this.quoteForm.dof) {
-                this.quoteForm.maxDof = this.quoteForm.dof;
-            }
-        } else {
+    dofCalc() {
             this.quoteForm.dof = CalHelper.getDOF(this.quoteForm);
             this.quoteForm.maxDof = this.quoteForm.dof;
-        }
     }
 
     // Category generation
-    vehicleCategory(){
+    vehicleCategory() {
         console.log('vehicle type:::', this.quoteForm.vehicleType)
-        if(this.quoteForm.vehicleType){
+        if (this.quoteForm.vehicleType) {
             this.category = 'Car/Motorbike';
-            if('BOAT' === this.quoteForm.vehicleType || 'CARAVAN' === this.quoteForm.vehicleType || 'MOTORHOME' === this.quoteForm.vehicleType || 'TRAILER' === this.quoteForm.vehicleType){
+            if ('BOAT' === this.quoteForm.vehicleType || 'CARAVAN' === this.quoteForm.vehicleType || 'MOTORHOME' === this.quoteForm.vehicleType || 'TRAILER' === this.quoteForm.vehicleType) {
                 this.category = 'Boats, Personal Watercraft, Caravans, Camper Trailers, Motorhomes';
             }
             this.quoteForm.category = this.category;
-        }else{
+        } else {
             this.category = '';
         }
         this.quoteForm.goodsType = this.category;
@@ -221,6 +219,7 @@ export default class QuoteLatitudeCalc extends LightningElement {
             JSON.stringify(this.quoteForm, null, 2)
         );
         this.baseRateCalc();
+        this.vehicleCategory();
     }
 
     // Events
@@ -254,7 +253,7 @@ export default class QuoteLatitudeCalc extends LightningElement {
 
         // DOF calculation
         if (CalHelper.DOF_CALC_FIELDS.includes(fldName)) {
-            this.dofCalc(true);
+            this.dofCalc();
         }
 
         // --------------

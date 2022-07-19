@@ -1,7 +1,12 @@
 /* Calculators styles */
 @import 'c/quoteCommonsStyles';
 
-/* .ratesTh {
-    font-weight: bold;
+.ratesTh {
+    font-size: 0.7rem;
     text-align: center;
-} */
+}
+
+td {
+    font-size: 0.7rem;
+    text-align: center;
+}
