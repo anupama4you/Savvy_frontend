@@ -103,9 +103,13 @@ const mapSObjectToLwc = ({
   if (quoteData.data) {
     // console.log('@@blahablaha')
     // Validate same calculator
+    r["Id"] = quoteData.data["Id"];
     if (calcName === quoteData.data.Name) {
+<<<<<<< Updated upstream
       console.log('@@blahablaha')
       r["Id"] = quoteData.data["Id"];
+=======
+>>>>>>> Stashed changes
       // Set Finance Detail Values
       quotingFields.forEach((value, key, map) => {
         r[`${key}`] = quoteData.data[`${value}`];
@@ -291,40 +295,35 @@ const uniqueArray = (array) => {
  * @param {Object} quoteForm - quote form DATA
  * @param {Id} oppId - record id
  * @param {String} LENDER_QUOTING - constant value for each calculator
+ * @param {Map} QUOTE_FIELDS_MAPPING - mapping for translate lwc -> apex
  * @returns new Mapping Object for server
  */
-const mapLWCToSObject = (quoteForm, oppId, LENDER_QUOTING) => {
+const mapLWCToSObject = (
+  quoteForm,
+  oppId,
+  LENDER_QUOTING,
+  QUOTE_FIELDS_MAPPING
+) => {
   let obj = { data: {}, results: { commissions: {} } };
+  // data
   console.log(`@@quote form : ${JSON.stringify(quoteForm, null, 2)}`);
-  for (const [key, value] of QUOTE_FIELDS_MAPPING) {
-    obj.data[value] = quoteForm[key];
+  try {
+    for (const [key, value] of QUOTE_FIELDS_MAPPING) {
+      obj.data[value] = quoteForm[key];
+    }
+    obj.data["Opportunity__c"] = oppId;
+    obj.data["Name"] = LENDER_QUOTING;
+    // commissions
+    for (const [key, value] of COMMISSION_FIELDS) {
+      obj.results["commissions"][value] = quoteForm["commissions"][key];
+      obj.data[value] = quoteForm["commissions"][key];
+    }
+  } catch (error) {
+    console.error(error);
   }
-  obj.data["Opportunity__c"] = oppId;
-  obj.data["Name"] = LENDER_QUOTING;
-  for (const [key, value] of COMMISSION_FIELDS) {
-    obj.results["commissions"][value] = quoteForm["commissions"][key];
-    obj.data[value] = quoteForm["commissions"][key];
-  }
-  console.log(`@@obj mapping --- ${JSON.stringify(obj, null, 2)}`);
+  console.log(`@@obj mapping : ${JSON.stringify(obj, null, 2)}`);
   return obj;
 };
-
-// - TODO: need to map more fields
-const QUOTE_FIELDS_MAPPING = new Map([
-  ["loanType", "Loan_Type__c"],
-  ["loanProduct", "Loan_Product__c"],
-  ["price", "Vehicle_Price__c"],
-  ["applicationFee", "Application_Fee__c"],
-  ["dof", "DOF__c"],
-  ["ppsr", "PPSR__c"],
-  ["residual", "Residual_Value__c"],
-  ["term", "Term__c"],
-  ["monthlyFee", "Monthly_Fee__c"],
-  ["clientRate", "Client_Rate__c"],
-  ["paymentType", "Payment__c"],
-  ["loanPurpose", "Loan_Purpose__c"],
-  ["Id", "Id"]
-]);
 
 const QuoteCommons = {
   resetResults: resetResults,

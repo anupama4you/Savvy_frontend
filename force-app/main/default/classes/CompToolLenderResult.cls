@@ -13,6 +13,19 @@ public class CompToolLenderResult {
   @AuraEnabled
   public Decimal surplus {set;get;}
 
+  @AuraEnabled 
+  public String customLabel1 {set;get;}
+  @AuraEnabled 
+  public String customValue1 {set;get;}
+  @AuraEnabled 
+  public String customLabel2 {set;get;}
+  @AuraEnabled 
+  public String customValue2 {set;get;}
+  @AuraEnabled 
+  public List<String> customValue1Options {set;get;}
+  @AuraEnabled 
+  public List<String> customValue2Options {set;get;}
+
   // Quoting
   @AuraEnabled
   public Decimal commission {

@@ -26,12 +26,24 @@ public class CompToolFirstmacCalc extends CompToolLenderCalcAbstract {
       this.quoteParam.loanTypeDetail = 'Used 8-12 years';
     }
     
+    // Custom Value 1
+    if (String.isNotBlank(this.param.customValue1)) {
+      this.quoteParam.interestType = this.param.customValue1;
+    }
+
     // - get base rates
     this.baseRateCalc(null);    
 
     // Calculation    
     CompToolLenderResult r = this.calculateRepayments();
     r.details = 'Interest Type: ' + this.quoteParam.interestType;
+
+    // Custom Options
+    r.customValue1 = this.quoteParam.interestType;
+    r.customLabel1 = 'Interest Type';
+    r.customValue1Options = new List<String>{
+      'Variable', 'Fixed'
+    };
     return r;
   }
   

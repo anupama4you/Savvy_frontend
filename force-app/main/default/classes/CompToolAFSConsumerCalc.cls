@@ -15,10 +15,7 @@ public class CompToolAFSConsumerCalc extends CompToolLenderCalcAbstract {
     this.quoteParam.assetType = param.assetType;
     if ('Property Owner'.equals(param.residentialStatus)) {
       this.quoteParam.residency = 'Property Owner';
-    } else if (
-      'Renting Real Estate'.equals(param.residentialStatus) ||
-      'Renting Other'.equals(param.residentialStatus)
-    ) {
+    } else if ('Renting'.equals(param.residentialStatus)) {
       this.quoteParam.residency = 'Renting';
     } else if ('Boarding'.equals(param.residentialStatus)) {
       this.quoteParam.residency = 'Boarding/Other';
@@ -39,7 +36,7 @@ public class CompToolAFSConsumerCalc extends CompToolLenderCalcAbstract {
       this.quoteParam.vehicleYear = '30+ years';
     }
 
-    this.quoteParam.bankrupt = param.creditHistory.containsIgnoreCase('Defaults')
+    this.quoteParam.bankrupt = param.creditHistory.containsIgnoreCase('Issues')
       ? 'Y' : 'N';
     // this.quoteParam.riskGrade = this.payDayEnquiries;
     // this.quoteParam.hasImports = this.hasImports;

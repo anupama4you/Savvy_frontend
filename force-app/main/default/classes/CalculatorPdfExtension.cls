@@ -798,7 +798,7 @@ public class CalculatorPdfExtension {
     
     public Boolean getIsMoneyPlace() {
         Boolean r = false;
-        if (!String.isBlank(lender) && lender.containsIgnoreCase('MONEY PLACE CALCULATION')) {
+        if (!String.isBlank(lender) && lender.containsIgnoreCase('MONEY PLACE')) {
             r = true;
         }
         return r;

@@ -27,16 +27,15 @@ export const ComparisonOptions = {
 
   loanTypes: [
     { label: "Personal", value: "Personal" },
-    { label: "Business", value: "Business" },
+    { label: "Business", value: "Business" }
   ],
 
   employmentTypes: [
-    { label: "Casual < 12 months", value: "Casual < 12 months" },
-    { label: "Casual > 12 months", value: "Casual > 12 months" },
     { label: "Full-Time", value: "Full-Time" },
     { label: "Permanent Part-Time", value: "Permanent Part-Time" },
-    { label: "Self employed (Full-Doc)", value: "Self employed (Full-Doc)" },
-    { label: "Self employed (Low-Doc)", value: "Self employed (Low-Doc)" }
+    { label: "Casual > 12 months", value: "Casual > 12 months" },
+    { label: "Casual < 12 months", value: "Casual < 12 months" },
+    { label: "Casual < 6 months", value: "Casual < 6 months" },
   ],
 
   purchaseTypes: [
@@ -46,13 +45,10 @@ export const ComparisonOptions = {
   ],
 
   creditHistories: [
-    { label: "Excellent - 750+", value: "Excellent" },
-    { label: "600", value: "600" },
-    { label: "524", value: "524" },
-    { label: "400", value: "400" },
+    { label: "Good", value: "Good" },
     {
-      label: "Defaults & or Previous Bankrupt",
-      value: "Defaults & or Previous Bankrupt"
+      label: "Credit Issues (defaults/bankruptcy)",
+      value: "Credit Issues"
     }
   ],
 
@@ -69,17 +65,16 @@ export const ComparisonOptions = {
 
   residentialStatus: [
     { label: "Property Owner", value: "Property Owner" },
-    { label: "Renting Real Estate", value: "Renting Real Estate" },
-    { label: "Renting Other", value: "Renting Other" },
+    { label: "Renting", value: "Renting" },
     { label: "Boarding", value: "Boarding" }
   ],
 
   creditScores: [
-    { label: "399", value: "<400" },
-    { label: "524", value: "400 - 524" },
-    { label: "599", value: "525 - 599" },
-    { label: "749", value: "600 - 749" },
-    { label: "750", value: "750+" }
+    { label: "853 - 1200 (Excellent)", value: "853 - 1200" },
+    { label: "735 - 852 (Very Good)", value: "735 - 852" },
+    { label: "661 - 734 (Good)", value: "661 - 734" },
+    { label: "500 - 660 (Average)", value: "500 - 660" },
+    { label: "0 - 499", value: "0 - 499" }
   ],
 
   savings: [

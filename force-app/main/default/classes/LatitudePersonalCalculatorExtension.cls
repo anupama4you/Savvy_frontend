@@ -129,7 +129,7 @@ public with sharing class LatitudePersonalCalculatorExtension {
         if (!isValidationOk()) {
             return;
         }
-        
+        System.debug('Testing values:::'+ dto);
         // determine the loan type - consumer or commercial
         Boolean type = false;
         if (dto.paymentType == 'Advance') {

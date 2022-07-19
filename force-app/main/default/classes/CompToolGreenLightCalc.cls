@@ -12,9 +12,9 @@ public class CompToolGreenLightCalc extends CompToolLenderCalcAbstract {
     this.quoteParam.ltv = '>90-100%';
     
     // - Prepare parameters
-    if ('Excellent'.equals(param.creditHistory)) {
+    if ('Good'.equals(param.creditHistory)) {
       this.quoteParam.clientTier = 'Platinum';
-    } else if (param.creditHistory.containsIgnoreCase('Defaults')) {
+    } else if (param.creditHistory.containsIgnoreCase('Issues')) {
       this.quoteParam.clientTier = 'Bronze';
     } else {
       this.quoteParam.clientTier = 'Gold';
@@ -26,6 +26,11 @@ public class CompToolGreenLightCalc extends CompToolLenderCalcAbstract {
 
     this.quoteParam.privateSales = 'Private'.equals(param.purchaseType)? 'Y' : 'N';
 
+    // Custom Value 1
+    if (String.isNotBlank(this.param.customValue1)) {
+      this.quoteParam.clientTier = this.param.customValue1;
+    }
+    
     // - get base rates
     this.baseRateCalc(null);
 
@@ -34,6 +39,12 @@ public class CompToolGreenLightCalc extends CompToolLenderCalcAbstract {
     // Calculation    
     CompToolLenderResult r = this.calculateRepayments();
     r.details = this.quoteParam.clientTier;
+    // Custom Options
+    r.customValue1 = this.quoteParam.clientTier;
+    r.customLabel1 = 'Client Tier';
+    r.customValue1Options = new List<String>{
+      'Platinum', 'Gold', 'Silver', 'Bronze','Budget Loan'
+    };
     return r;
   }
 

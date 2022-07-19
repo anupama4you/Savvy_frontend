@@ -30,6 +30,11 @@ public class CompToolMetroCalc extends CompToolLenderCalcAbstract {
     this.quoteParam.condition = this.param.assetAge > 0? 'Used' : 'New/Demo';
     this.quoteParam.greenCar = 'N';
     
+    // Custom Value 1
+    if (String.isNotBlank(this.param.customValue1)) {
+      this.quoteParam.clientTier = this.param.customValue1;
+    }
+
     // - get base rates
     this.baseRateCalc(null);    
 
@@ -42,6 +47,12 @@ public class CompToolMetroCalc extends CompToolLenderCalcAbstract {
     // Calculation    
     CompToolLenderResult r = this.calculateRepayments();
     r.details = 'Plan Options: ' + this.quoteParam.clientTier;
+    // Custom Options
+    r.customValue1 = this.quoteParam.clientTier;
+    r.customLabel1 = 'Plan Options';
+    r.customValue1Options = new List<String>{
+      'Option 1', 'Option 2', 'Option 3'
+    };
     return r;
   }
   

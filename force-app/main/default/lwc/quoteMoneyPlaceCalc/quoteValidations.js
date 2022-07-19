@@ -11,9 +11,9 @@ const validate = (quote, messages) => {
     typeof messages == "undefined" || messages == null
       ? QuoteCommons.resetMessage()
       : messages;
-  console.log("1111", JSON.stringify(r, null, 2));
   let errorList = r.errors;
   let warningList = r.warnings;
+
   for (const fieldName in quote) {
     const element = quote[fieldName];
     switch (fieldName) {
@@ -64,7 +64,10 @@ const validate = (quote, messages) => {
           });
         break;
       case "loanPurpose":
-        if (element.length === 0 || element == "" || element === null) {
+        console.log(
+          `loanPurpose is : ${element}, the type is : ${typeof element}`
+        );
+        if (element == "" || element === null || element.length === 0) {
           warningList.push({
             field: "loanPurpose",
             message: "The Loan Purpose is neccessary for any approval"

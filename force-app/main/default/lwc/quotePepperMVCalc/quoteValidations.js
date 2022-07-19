@@ -47,6 +47,16 @@ const validate = (quote, messages) => {
       field: "clientRate",
       message: `Client Rate should not be below base rate`
     });
+  } else if (quote.applicationFee === null || quote.applicationFee === 0) {
+    warningList.push({
+      field: "applicationFee",
+      message: `Application Fee is not updated as the calculator does not contain relevant info.`
+    });
+  } else if (quote.ppsr === null || quote.ppsr === 0) {
+    warningList.push({
+      field: "ppsr",
+      message: `PPSR is not updated as the calculator does not contain relevant info.`
+    });
   }
 
   // const baseRate = quote["baseRate"];
@@ -104,6 +114,20 @@ const validatePostCalculation = (quote, messages) => {
     warningList.push({
       field: "Commissions and Repayments",
       message: `The commission is below zero. Please make adjustment to make sure commission is above zero.`
+    });
+  }
+
+  if (quote.monthlyPayment === null || quote.monthlyPayment === 0) {
+    warningList.push({
+      field: "monthlyPayment",
+      message: `Payment is not updated as the calculator does not contain relevant info.`
+    });
+  }
+
+  if (quote.commission === null || quote.commission === 0) {
+    warningList.push({
+      field: "commission",
+      message: `Estimated Commission is not updated as the calculator does not contain relevant info.`
     });
   }
 

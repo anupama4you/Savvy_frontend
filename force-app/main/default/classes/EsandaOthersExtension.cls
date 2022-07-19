@@ -388,23 +388,33 @@ public class EsandaOthersExtension {
         QuotingCalculation.CalcParam param = new QuotingCalculation.CalcParam(LENDER_QUOTING);
         param.goodsType = goodsType;
         param.vehiclesProfile = vehiclesProfile;
+        param.brokeragePer = brokeragePercentage;
+        // myRate = QuotingCalculation.getANZOthersRate(param);
+        
+        // Decimal decimalRate = 0.00;
+        // recommendedRate = '0.00%';
+        // clientRate = 0.0;
+        // if (myRate != null) {
+        //     decimalRate = myRate.Rate__c;
+        // }
 
-        myRate = QuotingCalculation.getANZOthersRate(param);
-        
-        Decimal decimalRate = 0.00;
-        recommendedRate = '0.00%';
+        Decimal decimalRate = QuotingCalculation.getBaseRate(param);
         clientRate = 0.0;
-        if (myRate != null) {
-            decimalRate = myRate.Rate__c;
-        }
+        recommendedRate = '0.00%';
         
-        if (brokeragePercentage == null || brokeragePercentage <= 3.5) {
-            recommendedRate = String.valueOf(decimalRate) + '%';
-        } else if (brokeragePercentage >= 3.51 && brokeragePercentage <= 4.4) {
-            decimalRate += 0.5;
-            recommendedRate = String.valueOf(decimalRate) + '%';
+        // if (brokeragePercentage == null || brokeragePercentage <= 3.5) {
+        //     recommendedRate = String.valueOf(decimalRate) + '%';
+        // } else if (brokeragePercentage >= 3.51 && brokeragePercentage <= 4.4) {
+        //     decimalRate += 0.5;
+        //     recommendedRate = String.valueOf(decimalRate) + '%';
+        // } else {
+        //     recommendedRate = 'Call for Negotiation';
+        // }
+
+        if (brokeragePercentage > 4.4) {
+          recommendedRate = 'Call for Negotiation';
         } else {
-            recommendedRate = 'Call for Negotiation';
+          recommendedRate = String.valueOf(decimalRate) + '%';
         }
 
         if (baseRate != null) {

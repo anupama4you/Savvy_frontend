@@ -214,9 +214,9 @@ public class PepperCalculatorLeisureExtension extends QuotingExtension {
 
   public void applicationFeefCalc() {
     if ('Y'.equals(privateSales)) {
-      applicationFee = 600;
+      applicationFee = lenderSettings.Application_Fee_Private__c;
     } else {
-      applicationFee = 449;
+      applicationFee = lenderSettings.Application_Fee__c;
     }
     realtimeNafCalc();
   }
@@ -387,6 +387,7 @@ public class PepperCalculatorLeisureExtension extends QuotingExtension {
     this.productLoanType = productLoanTypes.get(0).getValue();
 
     this.applicationFee = lenderSettings.Application_Fee__c;
+    System.debug('@@this.applicationFee: ' + this.applicationFee);
     this.dof = lenderSettings.DOF__c;
     this.ppsr = lenderSettings.PPSR__c; //Lelo              2016-09-20      //Original value: 6.80 --> 8.9 (2017-12-29) + 3.4
     this.monthlyFee = lenderSettings.Monthly_Fee__c;

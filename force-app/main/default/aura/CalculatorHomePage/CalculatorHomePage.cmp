@@ -354,6 +354,25 @@
                 </a>
               </div>
             </lightning:layoutItem>
+            <lightning:layoutItem
+              size="6"
+              smallDeviceSize="6"
+              largeDeviceSize="6"
+              mediumDeviceSize="6"
+              padding="around-medium"
+            >
+              <div style="text-align: center">
+                <a href="{!v.redirectUrlWrapper.General}" target="_parent">
+                  <strong>General</strong>
+                  <br />
+                  <img
+                    src="{!$Resource.GeneralLogo}"
+                    onclick="{!c.handleClick}"
+                    style="height: 60px; max-width: 80%"
+                  />
+                </a>
+              </div>
+            </lightning:layoutItem>
           </lightning:layout>
         </lightning:layoutItem>
         <lightning:layoutItem

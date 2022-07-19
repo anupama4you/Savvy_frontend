@@ -13,29 +13,32 @@ public class CompToolLibertyCommCalc extends CompToolLenderCalcAbstract {
     
     // Client Tier
     if ('Property Owner'.equals(this.param.residentialStatus)) {
-      if ('Excellent'.equals(param.creditHistory)) {
+      if ('Good'.equals(param.creditHistory)) {
         this.quoteParam.clientTier = 'AAA';
-      } else if ('600'.equals(param.creditHistory)) {
-        this.quoteParam.clientTier = 'AA';
-      } else if ('524'.equals(param.creditHistory)) {
-        this.quoteParam.clientTier = 'A';
-      } else if ('400'.equals(param.creditHistory)) {
-        this.quoteParam.clientTier = 'B';
+      } else {
+        // TODO: set condition using credit score
+        if ('600'.equals(param.creditHistory)) {
+          this.quoteParam.clientTier = 'AA';
+        } else if ('524'.equals(param.creditHistory)) {
+          this.quoteParam.clientTier = 'A';
+        } else if ('400'.equals(param.creditHistory)) {
+          this.quoteParam.clientTier = 'B';
+        }
       }
     } else {
-      if (
-        'Excellent'.equals(param.creditHistory) ||
-        '600'.equals(param.creditHistory)
-      ) {
+      if ('Good'.equals(param.creditHistory)) {
         this.quoteParam.clientTier = 'A';
-      } else if ('524'.equals(param.creditHistory)) {
-        this.quoteParam.clientTier = 'B';
-      } else if ('400'.equals(param.creditHistory)) {
-        this.quoteParam.clientTier = 'C';
-      }      
+      } else {
+        // TODO: set condition using credit score
+        if ('524'.equals(param.creditHistory)) {
+          this.quoteParam.clientTier = 'B';
+        } else if ('400'.equals(param.creditHistory)) {
+          this.quoteParam.clientTier = 'C';
+        }
+      } 
     }
     if (
-      param.creditHistory.containsIgnoreCase('Defaults')
+      param.creditHistory.containsIgnoreCase('Issues')
     ) {
       this.quoteParam.clientTier = 'C';
     }
@@ -52,12 +55,25 @@ public class CompToolLibertyCommCalc extends CompToolLenderCalcAbstract {
 
     this.quoteParam.residualValue = this.param.residual;
 
+    // Custom Value 1
+    if (String.isNotBlank(this.param.customValue1)) {
+      this.quoteParam.clientTier = this.param.customValue1;
+    }
+
     // - get base rates
     this.baseRateCalc(null);    
 
     // Calculation    
     CompToolLenderResult r = this.calculateRepayments();
     r.details = 'Risk Grade ' + this.quoteParam.clientTier;
+
+    // Custom Options
+    r.customValue1 = this.quoteParam.clientTier;
+    r.customLabel1 = 'Risk Grade';
+    r.customValue1Options = new List<String>{
+      'AAA', 'AA', 'A', 'B', 'C'
+    };
+
     return r;
   }
   

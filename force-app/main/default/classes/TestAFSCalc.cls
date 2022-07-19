@@ -491,7 +491,7 @@ private class TestAFSCalc {
     //ctr.productLoanType = 'Passenger and Commercial Vehicles';
     ctr.carPrice = 60000.00;
     ctr.term = 60;
-    ctr.clientRate = 8;
+    ctr.clientRate = 10;
     ctr.residency = 'Property Owner';
     ctr.quoting.GST__c = 'Registered';
     ctr.calculate();

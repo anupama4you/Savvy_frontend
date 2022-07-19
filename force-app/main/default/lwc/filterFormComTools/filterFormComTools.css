@@ -24,3 +24,8 @@
 .x-large {
   /* height: 300px; */
 }
+
+.c-actions {
+  text-align: end;
+  padding-top: 15px;
+}

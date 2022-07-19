@@ -162,9 +162,9 @@ public class PepperCalculatorMVExtension extends QuotingExtension {
 
   public void applicationFeefCalc() {
     if ('Y'.equals(privateSales)) {
-      this.applicationFee = 600;
+      applicationFee = lenderSettings.Application_Fee_Private__c;
     } else {
-      this.applicationFee = 449;
+      applicationFee = lenderSettings.Application_Fee__c;
     }
     this.realtimeNafCalc();
   }

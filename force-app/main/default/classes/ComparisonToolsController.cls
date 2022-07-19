@@ -46,13 +46,16 @@ public without sharing class ComparisonToolsController {
       soql += ' AND Purchase_Type__c includes (\'' + params.purchaseType + '\')';
     }
     if (String.isNotBlank(params.employmentType)) {
-      soql += ' AND Employment_Type__c includes (\'' + params.employmentType + '\')';
+      soql += ' AND (Employment_Type__c = null OR Employment_Type__c includes (\'' + params.employmentType + '\'))';
     }
     if (String.isNotBlank(params.creditHistory)) {
       soql += ' AND Credit_History__c includes (\'' + params.creditHistory + '\')';
     }
     if (String.isNotBlank(params.residentialStatus)) {
       soql += ' AND (Residential_Status__c = null OR Residential_Status__c includes (\'' + params.residentialStatus + '\'))';
+    }
+    if (String.isNotBlank(params.creditScore)) {
+      soql += ' AND (Credit_Score__c = null OR Credit_Score__c includes (\'' + params.creditScore + '\'))';
     }
     
     soql += ' AND (Loan_Term__c = null OR Loan_Term__c includes (\'' + params.term + '\'))';
@@ -80,6 +83,8 @@ public without sharing class ComparisonToolsController {
     }
     if (yet <= 20) {
       ageTerms.add('20 Years');
+    } else {
+      ageTerms.add('20+');
     }
 
     if (!ageTerms.isEmpty()) {
@@ -120,13 +125,21 @@ public without sharing class ComparisonToolsController {
     CompToolLenderCalcAbstract.FilterParams params
   ) {
     if (calc != null && params != null) {
-      if ('AMMF'.equals(calc.Name)) {
-        calc.Name = 'Yamaha Marine';
+      if ('AMMF'.equals(calc.Name) || 'Yamaha Marine'.equals(calc.Name)) {
+        // calc.Name = 'Yamaha Marine';
         return new CompToolAmmfCalc(calc, params);
       } else if ('AFS Commercial'.equals(calc.Name)) {
         return new CompToolAFSCommercialCalc(calc, params);
       } else if ('AFS Consumer'.equals(calc.Name)) {
         return new CompToolAFSConsumerCalc(calc, params);
+      } else if ('ANZ Commercial'.equals(calc.Name)) {
+        return new CompToolAnzCommCalc(calc, params);
+      } else if ('ANZ Others'.equals(calc.Name)) {
+        return new CompToolAnzOthersCalc(calc, params);
+      } else if ('BOQ'.equals(calc.Name)) {
+        return new CompToolBoqCalc(calc, params);
+      } else if ('BOQ Commercial'.equals(calc.Name)) {
+        return new CompToolBoqCommCalc(calc, params);
       } else if ('Finance One'.equals(calc.Name)) {
         return new CompToolFinanceOneCalc(calc, params);
       } else if ('Finance One Commercial'.equals(calc.Name)) {
@@ -137,11 +150,16 @@ public without sharing class ComparisonToolsController {
         return new CompToolGreenLightCalc(calc, params);
       } else if ('Latitude'.equals(calc.Name)) {
         return new CompToolLatitudeCalc(calc, params);
-      } else if ('Liberty'.equals(calc.Name)) {
+      } else if ('Latitude PL'.equals(calc.Name) || 'Latitude Personal Loan'.equals(calc.Name)) {
+        calc.Name = 'Latitude Personal Loan';
+        return new CompToolLatitudePLCalc(calc, params);
+      } else if ('Liberty'.equals(calc.Name) || 'Liberty Drive'.equals(calc.Name)) {
         calc.Name = 'Liberty Drive';
         return new CompToolLibertyCalc(calc, params);
       } else if ('Liberty Commercial'.equals(calc.Name)) {
         return new CompToolLibertyCommCalc(calc, params);
+      } else if ('Liberty Leisure'.equals(calc.Name)) {
+        return new CompToolLibertyLeisureCalc(calc, params);
       } else if ('Macquarie Commercial'.equals(calc.Name)) {
         return new CompToolMacquarieCommercialCalc(calc, params);
       } else if ('Macquarie Consumer'.equals(calc.Name)) {
@@ -150,6 +168,10 @@ public without sharing class ComparisonToolsController {
         return new CompToolMetroCalc(calc, params);
       } else if ('Money3'.equals(calc.Name)) {
         return new CompToolMoney3Calc(calc, params);
+      } else if ('Money Place'.equals(calc.Name)) {
+        return new CompToolMoneyPlaceCalc(calc, params);
+      } else if ('Now Finance'.equals(calc.Name)) {
+        return new CompToolNowFinanceCalc(calc, params);
       } else if ('Pepper Commercial'.equals(calc.Name)) {
         return new CompToolPepperCommCalc(calc, params);
       } else if ('Pepper Leisure'.equals(calc.Name)) {
@@ -162,6 +184,10 @@ public without sharing class ComparisonToolsController {
         return new CompToolPlentiCalc(calc, params);
       } else if ('Plenti Commercial'.equals(calc.Name)) {
         return new CompToolPlentiCommCalc(calc, params);
+      } else if ('Plenti PL'.equals(calc.Name)) {
+        return new CompToolPlentiPLCalc(calc, params);
+      } else if ('Wisr PL'.equals(calc.Name)) {
+        return new CompToolWisrPLCalc(calc, params);
       } else if ('Wisr VL'.equals(calc.Name)) {
         return new CompToolWisrVLCalc(calc, params);
       }

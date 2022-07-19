@@ -19,7 +19,7 @@ public class CompToolPepperMVCalc extends CompToolLenderCalcAbstract {
     // Client Tier
     if (
       'Property Owner'.equals(param.residentialStatus) &&
-      'Excellent'.equals(param.creditHistory) &&
+      'Good'.equals(param.creditHistory) &&
       !param.employmentType.containsIgnoreCase('casual') &&
       !param.employmentType.containsIgnoreCase('Part-Time')
     ) {
@@ -28,8 +28,7 @@ public class CompToolPepperMVCalc extends CompToolLenderCalcAbstract {
       this.quoteParam.clientTier = 'B';
       if (
         param.employmentType.containsIgnoreCase('casual') ||
-        param.creditHistory.containsIgnoreCase('Defaults') ||
-        param.creditHistory.containsIgnoreCase('400')
+        param.creditHistory.containsIgnoreCase('Issues')
       ) {
         this.quoteParam.clientTier = 'C';
       }
@@ -48,12 +47,25 @@ public class CompToolPepperMVCalc extends CompToolLenderCalcAbstract {
     this.quoteParam.goodsType = param.assetType;
     this.quoteParam.privateSales = 'Private'.equals(param.purchaseType)? 'Y' : 'N';
     
+    // Custom Value 1
+    if (String.isNotBlank(this.param.customValue1)) {
+      this.quoteParam.clientTier = this.param.customValue1;
+    }
+
     // - get base rates
     this.baseRateCalc(null);    
 
     // Calculation    
     CompToolLenderResult r = this.calculateRepayments();
     r.details = 'Tier ' + this.quoteParam.clientTier;
+
+    // Custom Options
+    r.customValue1 = this.quoteParam.clientTier;
+    r.customLabel1 = 'Tier';
+    r.customValue1Options = new List<String>{
+      'A', 'B', 'C'
+    };
+
     return r;
   }
   

@@ -149,7 +149,7 @@ public class CalculaterHomePageController {
 
         wrap.BOQCommercial = !wrap.IsBrokerPartnerUser
           ? Page.BOQCommercial.getUrl() + '?id=' + opportunityId
-          : '/partner/s/sales-tools/quoting-tools/boq?recordId='+opportunityId+'&oppName='+opp.Name; //Bank Of Queensland
+          : '/partner/s/sales-tools/quoting-tools/boq-commercial?recordId='+opportunityId+'&oppName='+opp.Name; //Bank Of Queensland
 
         wrap.Affordable = !wrap.IsBrokerPartnerUser
           ? Page.ACLCalculator.getUrl() + '?id=' + opportunityId
@@ -227,6 +227,10 @@ public class CalculaterHomePageController {
           ? Page.APF.getUrl() + '?id=' + opportunityId
           : '/partner/s/sales-tools/quoting-tools/apf?recordId='+opportunityId+'&oppName='+opp.Name;
         
+        wrap.General = !wrap.IsBrokerPartnerUser
+          ? Page.GeneralCalculator.getUrl() + '?id=' + opportunityId
+          : '/partner/s/sales-tools/quoting-tools/general?recordId='+opportunityId+'&oppName='+opp.Name;
+
         wrap.oppName = opp.Name;
 
 

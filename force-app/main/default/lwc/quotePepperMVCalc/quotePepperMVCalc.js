@@ -1,6 +1,7 @@
 import { LightningElement, api, track, wire } from "lwc";
 import { displayToast } from "c/partnerJsUtils";
 import { QuoteCommons } from "c/quoteCommons";
+import { Validations } from "./quoteValidations";
 import { CalHelper } from "./quotePepperMVCalcHelper";
 import LENDER_LOGO from "@salesforce/resourceUrl/PepperLogo";
 import FNAME_FIELD from "@salesforce/schema/Custom_Opportunity__c.Account_First_Name__c";
@@ -97,7 +98,10 @@ export default class QuotePepperMVCalc extends LightningElement {
       v = Number(v);
     }
     this.quoteForm[fldName] = v;
-    console.log(`this.quoteForm:`, JSON.stringify(this.quoteForm, null, 2));
+    this.quoteForm["netDeposit"] = this.netDeposit;
+    fldName === "term"
+      ? (this.quoteForm[fldName] = parseInt(v))
+      : (this.quoteForm[fldName] = v);
     // --------------
     // Trigger events
     // --------------
@@ -157,11 +161,11 @@ export default class QuotePepperMVCalc extends LightningElement {
   // Calculate
   handleCalculate(event) {
     this.isBusy = true;
+    this.messageObj = QuoteCommons.resetMessage();
     CalHelper.calculate(this.quoteForm)
       .then((data) => {
         console.log("@@data:", JSON.stringify(data, null, 2));
         this.quoteForm.commissions = data.commissions;
-        // displayToast(this, "Calculate", "Done!", "info");
         this.messageObj = data.messages;
         QuoteCommons.handleHasErrorClassClear(this);
         if (this.quoteForm.commissions) this.isCalculated = true;
@@ -186,14 +190,85 @@ export default class QuotePepperMVCalc extends LightningElement {
 
   // Reset
   handleReset(event) {
+    const appQuoteId = this.quoteForm["Id"];
     this.reset();
-    this.messageObj = QuoteCommons.resetMessage();
+    this.quoteForm["Id"] = appQuoteId;
     this.isCalculated = false;
+    this.messageObj = QuoteCommons.resetMessage();
     QuoteCommons.handleHasErrorClassClear(this);
     console.log(
       "🚀 ~ file: QuotePepperMVCalc.js ~ line 172 ~ QuotePepperMVCalc ~ reset ~ this.quoteForm",
       JSON.stringify(this.quoteForm, null, 2)
     );
     this.baseRateCalc();
+  }
+
+  // all Save Buttons actions
+  handleSave(event) {
+    console.log(`event detail : ${event.target.value.toUpperCase()}`);
+    const isNONE = event.target.value.toUpperCase() === "NONE";
+    this.isBusy = true;
+    const loanType = event.target.value.toUpperCase();
+    if (!this.messageObj.errors.length > 0) {
+      this.messageObj = QuoteCommons.resetMessage();
+      CalHelper.saveQuote(loanType, this.quoteForm, this.recordId)
+        .then((data) => {
+          console.log("@@data in handleSave:", JSON.stringify(data, null, 2));
+          !isNONE
+            ? this.messageObj.confirms.push(
+                {
+                  field: "confirms",
+                  message: "Calculation saved successfully."
+                },
+                {
+                  fields: "confirms",
+                  message: "Product updated successfully."
+                }
+              )
+            : this.messageObj.confirms.push({
+                field: "confirms",
+                message: "Calculation saved successfully."
+              });
+          // passing data to update quoteform
+          this.quoteForm["Id"] = data["Id"];
+        })
+        .catch((error) => {
+          console.error("handleSave : ", error);
+        })
+        .finally(() => {
+          this.isBusy = false;
+        });
+    } else {
+      QuoteCommons.fieldErrorHandler(this, this.messageObj.errors);
+      this.isCalculated = true;
+    }
+  }
+
+  // Send Email
+  handleSendQuote() {
+    this.isBusy = true;
+    if (!this.messageObj.errors.length > 0) {
+      this.messageObj = QuoteCommons.resetMessage();
+      CalHelper.sendEmail(this.quoteForm, this.recordId)
+        .then((data) => {
+          console.log(
+            "@@data in handle send quote :",
+            JSON.stringify(data, null, 2)
+          );
+          this.messageObj.infos.push({
+            field: "infos",
+            message: "Email has been sent to customer."
+          });
+        })
+        .catch((error) => {
+          console.error("handleSendQuote: ", error);
+        })
+        .finally(() => {
+          this.isBusy = false;
+        });
+    } else {
+      QuoteCommons.fieldErrorHandler(this, this.messageObj.errors);
+      this.isCalculated = true;
+    }
   }
 }

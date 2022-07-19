@@ -14,34 +14,33 @@ public class FinancialUtilities {
         decimal error = 0.000001;
         decimal rate = interest;
         decimal bigRate = Math.pow((double)(1+rate), (double)term);
-        
-        if (type == true) {
-            decimal temp = amount * bigRate - payment * (bigRate -1) * (1 + rate) / rate;
-            
-            while (temp < residual) {
-                rate = rate + error;
-                bigRate = Math.pow((double)(1+rate), (double)term);
-                temp = amount * bigRate - payment * (bigRate -1) * (1 + rate) / rate;
-            }
-            
-            return rate;
-        } else {
-            decimal temp = amount * bigRate - payment * (bigRate -1) / rate;
-            
-            while (temp < residual) {
-                rate = rate + error;
-                bigRate = Math.pow((double)(1+rate), (double)term);
-                temp = amount * bigRate - payment * (bigRate -1) / rate;
-            }
-            
-            return rate;
+        if (rate > 0.00) {
+          if (type == true) {
+              decimal temp = amount * bigRate - payment * (bigRate -1) * (1 + rate) / rate;
+              
+              while (temp < residual) {
+                  rate = rate + error;
+                  bigRate = Math.pow((double)(1+rate), (double)term);
+                  temp = amount * bigRate - payment * (bigRate -1) * (1 + rate) / rate;
+              }
+          } else {
+              decimal temp = amount * bigRate - payment * (bigRate -1) / rate;
+              
+              while (temp < residual) {
+                  rate = rate + error;
+                  bigRate = Math.pow((double)(1+rate), (double)term);
+                  temp = amount * bigRate - payment * (bigRate -1) / rate;
+              }
+          }
         }
+      return rate;
     }
     
     public static decimal pmt (decimal amount, decimal rate, decimal term, decimal residual, boolean type) {
-        if (residual == null) {
-            residual = 0;
-        }
+      if (residual == null) {
+          residual = 0;
+      }
+      if (rate > 0.00) {
         if (type == true) {
             decimal r = math.pow((double)(1+rate), (double)term);
             decimal pmt = ((amount*r-residual)*rate/((r-1)*(1+rate)));
@@ -51,6 +50,8 @@ public class FinancialUtilities {
             decimal pmt = ((amount*r-residual)*rate/(r-1));
             return pmt;
         }
+      }
+      return 0.00;
     }
     
     public static decimal taxCalculate (decimal income) {

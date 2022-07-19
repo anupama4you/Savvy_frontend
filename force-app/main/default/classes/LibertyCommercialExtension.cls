@@ -702,12 +702,12 @@ public class LibertyCommercialExtension extends QuotingExtension {
               comp = comp.setScale(2);
                 ApexPages.addMessage(
                   new ApexPages.Message(
-                    ApexPages.Severity.ERROR,
+                    ApexPages.Severity.WARNING,
                     'Maximum balloon or residual value should be $' + 
                     comp.format()
                   )
                 );
-                r = false;
+                // r = false;
             }
           }
           Integer totalAge = (term / 12) + Date.Today().year() - 

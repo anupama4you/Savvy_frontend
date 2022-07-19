@@ -1,15 +1,13 @@
 import getQuotingData from "@salesforce/apex/QuoteController.getQuotingData";
-import getBaseRates from "@salesforce/apex/QuoteController.getBaseRates";
+import save from "@salesforce/apex/QuoteMoneyPlaceController.save";
 import calculateRepayments from "@salesforce/apex/QuoteController.calculateRepayments";
+import sendQuote from "@salesforce/apex/QuoteController.sendQuote";
 import {
   QuoteCommons,
   CommonOptions,
   FinancialUtilities as fu
 } from "c/quoteCommons";
 import { Validations } from "./quoteValidations";
-
-let lenderSettings = {};
-// data table
 
 // only hard code in Money Place
 let tableRatesData = [];
@@ -23,6 +21,7 @@ const tableRateDataColumns = [
 ];
 
 const LENDER_QUOTING = "Money Place";
+
 const QUOTING_FIELDS = new Map([
   ["loanType", "Loan_Type__c"],
   ["loanProduct", "Loan_Product__c"],
@@ -33,18 +32,23 @@ const QUOTING_FIELDS = new Map([
   ["monthlyFee", "Monthly_Fee__c"],
   ["term", "Term__c"],
   ["paymentType", "Payment__c"],
-  ["clientRate", "Client_Rate__c"]
+  ["clientRate", "Client_Rate__c"],
+  ["loanPurpose", "Loan_Purpose__c"],
+  ["applicationId", "Application__c"]
 ]);
+
+// - TODO: need to map more fields
+const FIELDS_MAPPING_FOR_APEX = new Map([["Id", "Id"], ...QUOTING_FIELDS]);
+
 // setting fields refer to the DEFAULT VALUES that showing on th page you open
 const SETTING_FIELDS = new Map([
   ["applicationFee", "Application_Fee__c"],
   ["maxApplicationFee", "Application_Fee__c"],
   ["dof", "DOF__c"],
   ["maxDof", "DOF__c"],
-  ["ppsr", "PPSR__c"],
   ["monthlyFee", "Monthly_Fee__c"]
 ]);
-const RATE_SETTING_NAMES = [""]; // ---> need to be modified to related sObject
+
 const calcOptions = {
   loanTypes: CommonOptions.loanTypes,
   paymentTypes: CommonOptions.paymentTypes,
@@ -64,7 +68,17 @@ const calculate = (quote) =>
       messages: QuoteCommons.resetMessage()
     };
     // Validate quote
-    res.messages = Validations.validate(quote);
+    console.log(
+      `!@@ quote form in calculateHelper ${JSON.stringify(quote, null, 2)}`
+    );
+    res.messages = Validations.validate(quote, res.messages);
+    console.log(
+      `!@@ res.message in calculateHelper ${JSON.stringify(
+        res.messages.errors,
+        null,
+        2
+      )}`
+    );
     if (res.messages && res.messages.errors.length > 0) {
       reject(res);
     } else {
@@ -93,7 +107,8 @@ const calculate = (quote) =>
           console.log(`@@SF:`, JSON.stringify(data, null, 2));
           // Mapping
           res.commissions = QuoteCommons.mapCommissionSObjectToLwc(data);
-          res.messages = Validations.validate(res.commissions);
+          // Validate for results
+          res.messages = Validations.validate(res.commissions, res.messages);
           resolve(res);
         })
         .catch((error) => {
@@ -109,15 +124,17 @@ const calculate = (quote) =>
   });
 
 // Reset the values to default
-const reset = () => {
+const reset = (recordId, appQuoteId = null) => {
   return {
+    oppId: recordId,
+    Id: appQuoteId,
+    quoteName: LENDER_QUOTING,
     loanType: "Purchase",
     loanProduct: "Consumer Loan",
     price: null,
     applicationFee: null,
     maxDof: 0.0,
     dof: 0.0,
-    ppsr: 0.0,
     residual: 0.0,
     term: 60,
     monthlyFee: 0.0,
@@ -141,18 +158,22 @@ const loadData = (recordId) =>
       param: { oppId: recordId, fields: fields, calcName: LENDER_QUOTING }
     })
       .then((quoteData) => {
-        console.log(`@@SF:`, JSON.stringify(quoteData, null, 2));
+        console.log(
+          `@@ quoteData in loadData function: ${JSON.stringify(
+            quoteData,
+            null,
+            2
+          )}`
+        );
         // Mapping Quote's fields
         let data = QuoteCommons.mapSObjectToLwc({
           calcName: LENDER_QUOTING,
-          defaultData: reset(),
+          defaultData: reset(recordId),
           quoteData: quoteData,
           settingFields: SETTING_FIELDS,
           quotingFields: QUOTING_FIELDS
         });
 
-        // Settings
-        lenderSettings = quoteData.settings;
         // Rate Setting
         tableRatesData = [
           {
@@ -171,7 +192,7 @@ const loadData = (recordId) =>
             feeCap: "$1,990"
           }
         ];
-        console.log(`@@data:`, JSON.stringify(data, null, 2));
+        console.log(`@@data in loadData:`, JSON.stringify(data, null, 2));
         resolve(data);
       })
       .catch((error) => reject(error));
@@ -200,19 +221,72 @@ const getTableRatesData = () => {
   return tableRatesData;
 };
 
-const saveQuoting = () => {
-  console.log("save quoting");
-};
+/**
+ * -- Lee
+ * @param {String} approvalType - string and what type of the button
+ * @param {Object} param - quote form
+ * @param {Id} recordId - recordId
+ */
+const saveQuote = (approvalType, param, recordId) =>
+  new Promise((resolve, reject) => {
+    if (approvalType && param && recordId) {
+      save({
+        param: QuoteCommons.mapLWCToSObject(
+          param,
+          recordId,
+          LENDER_QUOTING,
+          FIELDS_MAPPING_FOR_APEX
+        ),
+        approvalType: approvalType
+      })
+        .then((data) => {
+          resolve(data);
+        })
+        .catch((error) => {
+          reject(`error in saveApproval ${approvalType}: `, error.messages);
+        });
+    } else {
+      reject(
+        new Error(
+          `Something Wrong, appType: ${approvalType}, param: ${JSON.stringify(
+            param,
+            null,
+            2
+          )}, param: ${recordId}`
+        )
+      );
+    }
+  });
 
-const savePreApproval = () => {
-  console.log("savePreApproval");
-};
-const saveAmendment = () => {
-  console.log("saveAmendment");
-};
-const saveFormalApproval = () => {
-  console.log("saveFormalApproval");
-};
+/**
+ *  -- Lee
+ * @param {Object} param - quote form
+ * @param {Id}  recordId - record id
+ * @returns
+ */
+const sendEmail = (param, recordId) =>
+  new Promise((resolve, reject) => {
+    if (param) {
+      console.log(`@@param in sendEmail ${JSON.stringify(param, null, 2)}`);
+      sendQuote({
+        param: QuoteCommons.mapLWCToSObject(
+          param,
+          recordId,
+          LENDER_QUOTING,
+          FIELDS_MAPPING_FOR_APEX
+        )
+      })
+        .then((data) => {
+          resolve(data);
+        })
+        .catch((error) => {
+          reject(error);
+        });
+    } else {
+      reject(new Error(`Something wrong in sendEmail : param: ${param}`));
+    }
+  });
+
 export const CalHelper = {
   options: calcOptions,
   tableRateDataColumns: tableRateDataColumns,
@@ -222,5 +296,6 @@ export const CalHelper = {
   reset: reset,
   handleMaxDOF: handleMaxDOF,
   getTableRatesData: getTableRatesData,
-  saveQuoting: saveQuoting
+  saveQuote: saveQuote,
+  sendEmail: sendEmail
 };

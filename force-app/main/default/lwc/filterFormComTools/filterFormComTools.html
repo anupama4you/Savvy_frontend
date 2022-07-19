@@ -1,9 +1,8 @@
 <template>
-  <div class="c-container">
+  <div class="slds-grid slds-wrap slds-gutters_xx-small c-container">
     <!-- First row -->
-    <lightning-layout horizontal-align="space">
-      <lightning-layout-item flexibility="auto" padding="horizontal-small">
-        <lightning-combobox
+    <div class="slds-col slds-medium-size_2-of-12 slds-large-size_2-of-12">
+      <lightning-combobox
           name="assetType"
           label="Asset Type"
           data-id="assetType-field"
@@ -11,13 +10,13 @@
           placeholder="Select a value"
           options={assetTypeOptions}
           onchange={handleFieldChange}
-          class="slds-form__item"
+          class=""
           variant="label-stacked"
           required
         ></lightning-combobox>
-      </lightning-layout-item>
-      <lightning-layout-item flexibility="auto" padding="horizontal-small">
-        <lightning-combobox
+    </div>
+    <div class="slds-col slds-medium-size_2-of-12 slds-large-size_2-of-12">
+      <lightning-combobox
           name="assetAge"
           label="Asset Age"
           data-id="assetAge-field"
@@ -25,27 +24,27 @@
           placeholder="Select a value"
           options={assetAgeOptions}
           onchange={handleFieldChange}
-          class="slds-form__item"
+          class=""
           variant="label-stacked"
           required          
         ></lightning-combobox>
-      </lightning-layout-item>
-      <lightning-layout-item flexibility="auto" padding="horizontal-small">
-        <lightning-combobox
+    </div>
+    <div class="slds-col slds-medium-size_2-of-12 slds-large-size_1-of-12">
+      <lightning-combobox
           name="term"
-          label="Loan Term (months)"
+          label="Term (months)"
           data-id="term-field"
           value={params.term}
           placeholder="Select a value"
           options={loanTermOptions}
           onchange={handleFieldChange}
-          class="slds-form__item"
+          class=""
           variant="label-stacked"
           required
         ></lightning-combobox>
-      </lightning-layout-item>
-      <lightning-layout-item flexibility="auto" padding="horizontal-small">
-        <lightning-input 
+    </div>
+    <div class="slds-col slds-medium-size_2-of-12 slds-large-size_1-of-12">
+      <lightning-input 
           type="number" 
           formatter="currency" 
           step="0.01"
@@ -54,14 +53,14 @@
           value={params.price}
           label="Price" 
           placeholder="$"
-          class="slds-form__item"
+          class=""
           variant="label-stacked"
           onchange={handleFieldChange}
           required
         ></lightning-input>
-      </lightning-layout-item>
-      <lightning-layout-item flexibility="auto" padding="horizontal-small">
-        <lightning-input 
+    </div>
+    <div class="slds-col slds-medium-size_2-of-12 slds-large-size_1-of-12">
+      <lightning-input 
           type="number" 
           formatter="currency" 
           step="0.01"
@@ -70,13 +69,13 @@
           value={params.deposit}
           label="Deposit" 
           placeholder="$"
-          class="slds-form__item"
+          class=""
           variant="label-stacked"
           onchange={handleFieldChange}
         ></lightning-input>
-      </lightning-layout-item>
-      <lightning-layout-item flexibility="auto" padding="horizontal-small">
-        <lightning-input 
+    </div>
+    <div class="slds-col slds-medium-size_2-of-12 slds-large-size_1-of-12">
+      <lightning-input 
           type="number" 
           formatter="currency" 
           step="0.01"
@@ -85,16 +84,13 @@
           value={params.residual}
           label="Residual" 
           placeholder="$"
-          class="slds-form__item"
+          class=""
           variant="label-stacked"
           onchange={handleFieldChange}
         ></lightning-input>
-      </lightning-layout-item>
-    </lightning-layout>
-    <!-- Second row -->
-    <lightning-layout horizontal-align="space">
-      <lightning-layout-item flexibility="auto" padding="horizontal-small">
-        <lightning-combobox
+    </div>
+    <div class="slds-col slds-size_12-of-12 slds-large-size_2-of-12">
+      <lightning-combobox
           name="loanType"
           label="Loan Purpose"
           data-id="loanType-field"
@@ -102,27 +98,13 @@
           placeholder="Select a value"
           options={loanTypeOptions}
           onchange={handleFieldChange}
-          class="slds-form__item"
+          class=""
           variant="label-stacked"
           required
         ></lightning-combobox>
-      </lightning-layout-item>
-      <lightning-layout-item flexibility="auto" padding="horizontal-small">
-        <lightning-combobox
-          name="employmentType"
-          label="Employment Type"
-          data-id="employmentType-field"
-          value={params.employmentType}
-          placeholder="Select a value"
-          options={employmentTypeOptions}
-          onchange={handleFieldChange}
-          class="slds-form__item"
-          variant="label-stacked"
-          required
-        ></lightning-combobox>
-      </lightning-layout-item>
-      <lightning-layout-item flexibility="auto" padding="horizontal-small">
-        <lightning-combobox
+    </div>
+    <div class="slds-col slds-size_12-of-12 slds-large-size_2-of-12">
+      <lightning-combobox
           name="purchaseType"
           label="Purchase Type"
           data-id="purchaseType-field"
@@ -130,13 +112,14 @@
           placeholder="Select a value"
           options={purchaseTypeOptions}
           onchange={handleFieldChange}
-          class="slds-form__item"
+          class=""
           variant="label-stacked"
           required
         ></lightning-combobox>
-      </lightning-layout-item>
-      <lightning-layout-item flexibility="auto" padding="horizontal-small">
-        <lightning-combobox
+    </div>
+    <!-- Second row -->
+    <div class="slds-col slds-size_12-of-12 slds-large-size_2-of-12">
+      <lightning-combobox
           name="creditHistory"
           label="Credit History"
           data-id="creditHistory-field"
@@ -144,13 +127,27 @@
           placeholder="Select a value"
           options={creditHistoryOptions}
           onchange={handleFieldChange}
-          class="slds-form__item"
+          class=""
           variant="label-stacked"
           required
         ></lightning-combobox>
-      </lightning-layout-item>
-      <lightning-layout-item flexibility="auto" padding="horizontal-small">
-        <lightning-combobox
+    </div>
+    <div class="slds-col slds-size_12-of-12 slds-large-size_2-of-12">
+      <lightning-combobox
+          name="creditScore"
+          label="Credit Score"
+          data-id="creditScore-field"
+          value={params.creditScore}
+          placeholder="Select a value"
+          options={creditScoreOptions}
+          onchange={handleFieldChange}
+          class=""
+          variant="label-stacked"
+          required
+        ></lightning-combobox>
+    </div>
+    <div class="slds-col slds-size_12-of-12 slds-large-size_2-of-12">
+      <lightning-combobox
           name="residentialStatus"
           label="Residential Status"
           data-id="residentialStatus-field"
@@ -158,13 +155,27 @@
           placeholder="Select a value"
           options={residentialStatusOptions}
           onchange={handleFieldChange}
-          class="slds-form__item"
+          class=""
           variant="label-stacked"
           required
         ></lightning-combobox>
-      </lightning-layout-item>
-      <lightning-layout-item flexibility="auto" padding="horizontal-small">
-        <lightning-combobox
+    </div>
+    <div class="slds-col slds-size_12-of-12 slds-large-size_2-of-12">
+      <lightning-combobox
+          name="employmentType"
+          label="Employment Type"
+          data-id="employmentType-field"
+          value={params.employmentType}
+          placeholder="Select a value"
+          options={employmentTypeOptions}
+          onchange={handleFieldChange}
+          class=""
+          variant="label-stacked"
+          required
+        ></lightning-combobox>
+    </div>
+    <div class="slds-col slds-size_12-of-12 slds-large-size_2-of-12">
+      <lightning-combobox
           name="hasVerifiableCredit"
           label="Any current verifiable credit?"
           data-id="hasVerifiableCredit-field"
@@ -172,111 +183,11 @@
           placeholder="Select a value"
           options={yesNoOptions}
           onchange={handleFieldChange}
-          class="slds-form__item"
+          class=""
           variant="label-stacked"
         ></lightning-combobox>
-      </lightning-layout-item>
-    </lightning-layout>
-    <!-- Third row -->
-    <!-- <lightning-layout horizontal-align="space">
-      <lightning-layout-item flexibility="auto" padding="horizontal-small">
-        <lightning-combobox
-          name="ltv"
-          label="What is your LTV?"
-          data-id="ltv-field"
-          value={params.ltv}
-          placeholder="Select a value"
-          options={ltvOptions}
-          onchange={handleFieldChange}
-          class="slds-form__item"
-          variant="label-stacked"
-        ></lightning-combobox>
-      </lightning-layout-item>
-      <lightning-layout-item flexibility="auto" padding="horizontal-small">
-        <lightning-combobox
-          name="hasPayday"
-          label="Current payday loan in the last 6 months?"
-          data-id="hasPayday-field"
-          value={params.hasPayday}
-          placeholder="Select a value"
-          options={yesNoOptions}
-          onchange={handleFieldChange}
-          class="slds-form__item"
-          variant="label-stacked"
-        ></lightning-combobox>
-      </lightning-layout-item>
-      <lightning-layout-item flexibility="auto" padding="horizontal-small">
-        <lightning-combobox
-          name="jobsLast3Years"
-          label="Jobs in the last 3 years?"
-          data-id="jobsLast3Years-field"
-          value={params.jobsLast3Years}
-          placeholder="Select a value"
-          options={jobOptions}
-          onchange={handleFieldChange}
-          class="slds-form__item"
-          variant="label-stacked"
-        ></lightning-combobox>
-      </lightning-layout-item>
-      <lightning-layout-item flexibility="auto" padding="horizontal-small">
-        <lightning-combobox
-          name="hasEnquiries"
-          label="More than 3 credit enquiries in 6 months?"
-          data-id="hasEnquiries-field"
-          value={params.hasEnquiries}
-          placeholder="Select a value"
-          options={yesNoOptions}
-          onchange={handleFieldChange}
-          class="slds-form__item"
-          variant="label-stacked"
-        ></lightning-combobox>
-      </lightning-layout-item>
-      <lightning-layout-item flexibility="auto" padding="horizontal-small">
-        <lightning-combobox
-          name="creditScore"
-          label="Credit score?"
-          data-id="creditScore-field"
-          value={params.creditScore}
-          placeholder="Select a value"
-          options={creditScoreOptions}
-          onchange={handleFieldChange}
-          class="slds-form__item"
-          variant="label-stacked"
-        ></lightning-combobox>
-      </lightning-layout-item>
-      <lightning-layout-item flexibility="auto" padding="horizontal-small">
-        <lightning-combobox
-          name="verifiableSavings"
-          label="Verifiable Savings?"
-          data-id="verifiableSavings-field"
-          value={params.verifiableSavings}
-          placeholder="Select a value"
-          options={yesNoOptions}
-          onchange={handleFieldChange}
-          class="slds-form__item"
-          variant="label-stacked"
-        ></lightning-combobox>
-      </lightning-layout-item>
-    </lightning-layout> -->
-    <!-- Old structure - please remove that -->
-    <div class="slds-form" role="list">
-      <!-- <div
-        class="slds-modal__content slds-p-around_medium"
-        id="modal-content-id-1"
-      >
-        <lightning-layout>
-          <lightning-messages> </lightning-messages>
-        </lightning-layout>
-        <p>&nbsp;</p>
-      </div> -->
-      <footer class="slds-modal__footer">
-        <lightning-button
-          class="slds-button slds-m-left_x-small"
-          type="button"
-          label="Reset"
-          onclick={resetFormData}
-        >
-        </lightning-button>
+    </div>
+    <div class="slds-col c-actions slds-size_12-of-12 slds-large-size_2-of-12">
         <lightning-button
           variant="brand"
           type="button"
@@ -285,7 +196,13 @@
           onclick={handleSearch}
         >
         </lightning-button>
-      </footer>
+        <lightning-button
+          class="slds-button slds-m-left_x-small"
+          type="button"
+          label="Reset"
+          onclick={resetFormData}
+        >
+        </lightning-button>
     </div>
   </div>
 </template>

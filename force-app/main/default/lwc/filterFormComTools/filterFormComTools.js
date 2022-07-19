@@ -18,7 +18,7 @@ export default class FilterFormComTools extends LightningElement {
       loanType: "Personal",
       employmentType: "Full-Time",
       purchaseType: "Dealer",
-      creditHistory: "Excellent",
+      creditHistory: "Good",
       assetAge: "0",
       term: "60",
       residentialStatus: "Property Owner",
@@ -29,7 +29,7 @@ export default class FilterFormComTools extends LightningElement {
       hasVerifiableCredit: "",
       jobsLast3Years: "",
       hasEnquiries: "",
-      creditScore: "",
+      creditScore: "853 - 1200",
       verifiableSavings: "",
       ltv: ""
     };

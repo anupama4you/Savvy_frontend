@@ -33,7 +33,7 @@ import LOGO_UME_LOANS from "@salesforce/resourceUrl/UMELoansLogo";
 import LOGO_WESTPAC from "@salesforce/resourceUrl/WestpacLogo";
 import LOGO_WISR from "@salesforce/resourceUrl/WisrLogo";
 
-const INTEGER_PARAMS = ["term", "assetAge", "jobsLast3Years", "creditScore"];
+const INTEGER_PARAMS = ["term", "assetAge", "jobsLast3Years"];
 const DECIMAL_PARAMS = ["price", "deposit", "residual"];
 
 const convertNumbers = (params) => {

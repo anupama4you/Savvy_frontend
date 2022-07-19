@@ -636,7 +636,7 @@ public class ApprovalValidations {
 
     // Setlement rules
     if (
-      MANUAL_SETTLEMENT.equals(typeApp) ||
+      // MANUAL_SETTLEMENT.equals(typeApp) ||
       SETTLEMENT.equals(typeApp)
     ) {
       docs.add('Approval/Assessment Advice');
@@ -648,56 +648,54 @@ public class ApprovalValidations {
 
     // Manual Settlement
     if (MANUAL_SETTLEMENT.equals(typeApp)) {
-      if (p != null) {
-        // Partner Evidence of Income
-        if (srv != null && srv.Is_Splitting_Expenses__c) {
-          docs.add('Partner Evidence of Income');
-        }
-        // insurance product is created and saved, please create validation in required docs for Insurance Policy/s
-        if (PreApprovalValidatorHelper.isInsuranceProducts(opp.Id)) {
-          docs.add('Insurance Policies');
-        }
+      // if (p != null) {
+      //   // Partner Evidence of Income
+      //   if (srv != null && srv.Is_Splitting_Expenses__c) {
+      //     docs.add('Partner Evidence of Income');
+      //   }
+      //   // insurance product is created and saved, please create validation in required docs for Insurance Policy/s
+      //   if (PreApprovalValidatorHelper.isInsuranceProducts(opp.Id)) {
+      //     docs.add('Insurance Policies');
+      //   }
 
-        if (hasAssetDetails) {
-          if (
-            'Car'.equalsIgnoreCase(app.Type_of_Asset__c) &&
-            'Refinance'.equals(quoting.Loan_Type__c)
-          ) {
-            docs.add('PPSR Form completed – Private');
-            if (
-              !RateSetterCalculatorExtension.LENDER_QUOTING.equals(
-                quotingCalc
-              ) &&
-              String.isNotBlank(opp.Purchase_Type__c) &&
-              opp.Purchase_Type__c.contains('Private')
-            ) {
-              docs.add('Vehicle Inspection/Roadworthy');
-            }
-          }
+      //   if (hasAssetDetails) {
+      //     if (
+      //       'Car'.equalsIgnoreCase(app.Type_of_Asset__c) &&
+      //       'Refinance'.equals(quoting.Loan_Type__c)
+      //     ) {
+      //       docs.add('PPSR Form completed – Private');
+      //       if (
+      //         !RateSetterCalculatorExtension.LENDER_QUOTING.equals(
+      //           quotingCalc
+      //         ) &&
+      //         String.isNotBlank(opp.Purchase_Type__c) &&
+      //         opp.Purchase_Type__c.contains('Private')
+      //       ) {
+      //         docs.add('Vehicle Inspection/Roadworthy');
+      //       }
+      //     }
 
-          //Worksheet Details - Validation
-          if (String.isBlank(opp.Purchase_Type__c)) {
-            addMessage(ASSETDET_MSG, 'Purchase Type is required');
-          } else {
-            if (
-              opp.Purchase_Type__c.contains('Private')
-            ) {
-              if ('Private Sale - Verimoto'.equals(opp.Purchase_Type__c)) {
-                docs.add('Verimoto Report');
-              }
-            } else if ('Dealer'.equalsIgnoreCase(opp.Purchase_Type__c)) {
-              docs.add('Tax Invoice/COS/ Rego Papers');
-            }
-          }
-        }
-      }
+      //     //Worksheet Details - Validation
+      //     if (String.isBlank(opp.Purchase_Type__c)) {
+      //       addMessage(ASSETDET_MSG, 'Purchase Type is required');
+      //     } else {
+      //       if (
+      //         opp.Purchase_Type__c.contains('Private')
+      //       ) {
+      //         if ('Private Sale - Verimoto'.equals(opp.Purchase_Type__c)) {
+      //           docs.add('Verimoto Report');
+      //         }
+      //       } else if ('Dealer'.equalsIgnoreCase(opp.Purchase_Type__c)) {
+      //         docs.add('Tax Invoice/COS/ Rego Papers');
+      //       }
+      //     }
+      //   }
+      // }
 
       docs.add('Final Signed Documents');
+      docs.add('Tax Invoice/COS/ Rego Papers');
       // TODO: autogenerate Broker Invoice document
-      docs.add('Lender Settlement Confirmation');
-      docs.add('Final Signed Documents');
-      docs.add('Final Signed Documents');
-
+      // docs.add('Lender Settlement Confirmation');
     }
 
     // Verify listed documents

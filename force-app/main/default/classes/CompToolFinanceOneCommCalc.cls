@@ -26,6 +26,11 @@ public class CompToolFinanceOneCommCalc extends CompToolLenderCalcAbstract {
       this.quoteParam.brokeragePer = this.lenderSettings.Brokerage_Base__c;
     }
 
+    // Custom Value 1
+    if (String.isNotBlank(this.param.customValue1)) {
+      this.quoteParam.loanTypeDetail = this.param.customValue1;
+    }
+
     // - get base rates
     this.baseRateCalc(null);    
 
@@ -39,6 +44,12 @@ public class CompToolFinanceOneCommCalc extends CompToolLenderCalcAbstract {
     // Calculation    
     CompToolLenderResult r = this.calculateRepayments();
     r.details = this.quoteParam.loanTypeDetail;
+    // Custom Options
+    r.customValue1 = this.quoteParam.loanTypeDetail;
+    r.customLabel1 = 'Loan Type (Detail)';
+    r.customValue1Options = new List<String>{
+      'Platinum', 'Gold', 'Silver'
+    };
     return r;
   }
   

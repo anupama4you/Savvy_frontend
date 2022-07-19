@@ -79,6 +79,7 @@ public abstract class CompToolLenderCalcAbstract implements CompToolLenderCalc {
 
   public virtual void baseRateCalc(Decimal clientRateFactor) {
     System.debug('calculating base rates...');
+    System.debug('@@baseratecalc:' + JSON.serializePretty(this.quoteParam));
     this.quoteParam.baseRate = QuotingCalculation.getBaseRate(this.quoteParam);
     this.quoteParam.maxRate = QuotingCalculation.getMaximunBaseRate(this.quoteParam);
     if (this.quoteParam.baseRate > 0.00 && clientRateFactor > 0.00) {
@@ -161,12 +162,19 @@ public abstract class CompToolLenderCalcAbstract implements CompToolLenderCalc {
     @AuraEnabled
     public String hasEnquiries { get; set; }
     @AuraEnabled
-    public Integer creditScore { get; set; }
+    public String creditScore { get; set; }
     @AuraEnabled
     public String verifiableSavings { get; set; }
     @AuraEnabled
     public String ltv { get; set; }
-
+    @AuraEnabled 
+    public String customValue1 {set;get;}
+    @AuraEnabled 
+    public String customValue2 {set;get;}
+    @AuraEnabled
+    public Decimal customClientRate { get; set; }
+    @AuraEnabled
+    public Decimal customDof { get; set; }
     // Lelo                 2018-05-29
     // public Integer applicantAge {set;get;}
     // public Decimal annualIncome {set;get;}
@@ -177,22 +185,22 @@ public abstract class CompToolLenderCalcAbstract implements CompToolLenderCalc {
     public FilterParams() {
       //Temp
       this.assetType = 'Car';
-      this.loanType = 'Consumer Loan';
+      this.loanType = 'Personal';
       this.employmentType = 'Full-Time';
       this.purchaseType = 'Dealer';
-      this.creditHistory = 'Clean History';
+      this.creditHistory = 'Good';
       this.residentialStatus = 'Property Owner';
       //
       // this.assetCondition = 'New';
       this.assetAge = 0;
       this.term = 60;
       this.price = null;
-      this.deposit = null;
-      this.residual = null;
+      this.deposit = 0.00;
+      this.residual = 0.00;
 
-      this.ltv = '90-99';
-      this.creditScore = 750;
-      this.jobsLast3Years = 0;
+      // this.ltv = '90-99';
+      // this.creditScore = 750;
+      // this.jobsLast3Years = 0;
     }
 
     public String getPrivateSales() {

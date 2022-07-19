@@ -14,18 +14,13 @@ public class CompToolLibertyCalc extends CompToolLenderCalcAbstract {
     // Client Tier
     if ('Property Owner'.equals(param.residentialStatus)) {
       this.quoteParam.clientTier = 'AAA';
-    } else if('Renting Real Estate'.equals(param.residentialStatus)){
+    } else if('Renting'.equals(param.residentialStatus)){
       this.quoteParam.clientTier = 'AA'; 
-    } else if('Renting Other'.equals(param.residentialStatus)){
+    } else{
       this.quoteParam.clientTier = 'A';
-    }else{
-      this.quoteParam.clientTier = 'C';
     }
 
-    if (
-      '400'.equals(param.creditHistory) ||
-      param.creditHistory.containsIgnoreCase('Defaults')
-    ) {
+    if (param.creditHistory.containsIgnoreCase('Issues')) {
       this.quoteParam.clientTier = 'C';
     }
     
@@ -40,6 +35,11 @@ public class CompToolLibertyCalc extends CompToolLenderCalcAbstract {
     }
     
     this.quoteParam.residualValue = param.residual;
+    
+    // Custom Value 1
+    if (String.isNotBlank(this.param.customValue1)) {
+      this.quoteParam.clientTier = this.param.customValue1;
+    }
 
     // - get base rates
     this.baseRateCalc(null);    
@@ -47,6 +47,14 @@ public class CompToolLibertyCalc extends CompToolLenderCalcAbstract {
     // Calculation    
     CompToolLenderResult r = this.calculateRepayments();
     r.details = 'Risk Grade ' + this.quoteParam.clientTier;
+
+    // Custom Options
+    r.customValue1 = this.quoteParam.clientTier;
+    r.customLabel1 = 'Risk Grade';
+    r.customValue1Options = new List<String>{
+      'AAA', 'AA', 'A+', 'A', 'B+', 'B', 'C'
+    };
+
     return r;
   }
   

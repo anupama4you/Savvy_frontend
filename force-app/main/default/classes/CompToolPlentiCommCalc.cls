@@ -19,6 +19,11 @@ public class CompToolPlentiCommCalc extends CompToolLenderCalcAbstract {
     if (this.lenderSettings != null && this.lenderSettings.Brokerage_Base__c > 0.00) {
       this.quoteParam.brokeragePer = this.lenderSettings.Brokerage_Base__c;
     }
+    
+    // Custom Value 1
+    if (String.isNotBlank(this.param.customValue1)) {
+      this.quoteParam.clientTier = this.param.customValue1;
+    }
 
     // - get base rates
     this.baseRateCalc(null);   
@@ -44,6 +49,12 @@ public class CompToolPlentiCommCalc extends CompToolLenderCalcAbstract {
     // Calculation    
     CompToolLenderResult r = this.calculateRepayments();
     r.details = this.quoteParam.clientTier;
+    // Custom Options
+    r.customValue1 = this.quoteParam.clientTier;
+    r.customLabel1 = 'Client Tier';
+    r.customValue1Options = new List<String>{
+      'Tier 1', 'Tier 2', 'Tier 3'
+    };
     return r;
   }
   

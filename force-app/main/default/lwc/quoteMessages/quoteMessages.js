@@ -7,13 +7,6 @@ export default class QuoteMessages extends LightningElement {
     this.dispatchEvent(new CustomEvent("close"));
   }
 
-  renderedCallback() {
-    console.log(
-      "--------render call back QuoteMessages -----------",
-      JSON.stringify(this.results, null, 2)
-    );
-  }
-
   // get displayAssetMessages() {
   //   return this.results && this.results.ASD && this.results.ASD.length > 0;
   // }

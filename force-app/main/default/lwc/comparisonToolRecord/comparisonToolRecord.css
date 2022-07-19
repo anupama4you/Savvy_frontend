@@ -31,3 +31,7 @@
 .c-record-card .slds-card__header {
   padding: 0px;
 }
+
+.c-custom-options {
+  margin-top: -8px;
+}

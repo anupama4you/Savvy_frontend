@@ -180,51 +180,14 @@ private class BOQCommercialCalculatorTest {
         // ctr.saveAmendment();
         ctr.saveFormalApproval();
 
-        ctr.acceptQuoteMV();
-        ctr.acceptQuoteGAP();
-        ctr.acceptQuoteTAS();
-        //ctr.acceptQuoteLTI();
-        ctr.acceptQuoteWRR();
-        ctr.acceptQuoteNWC();
-        ctr.acceptQuoteCCI();
-
         ctr.savePreApproval();
 
-        ctr.declineQuoteMV();
-        ctr.declineQuoteGAP();
-        ctr.declineQuoteTAS();
-        //ctr.declineQuoteLTI();
-        ctr.declineQuoteWRR();
-        ctr.declineQuoteNWC();
-        ctr.declineQuoteCCI();
-        ctr.calculate();
-        ctr.sendPresentationStep1();
-        ctr.calculate();
-        ctr.sendPresentationStep2();
-        // ctr.sendPresentationStep3();
-        ctr.previewPresentation();
-        ctr.isValidPresentation();
-        ctr.getPresentationUrlCode();
-
-        ctr.getHasCustomerEmailSent();
-        ctr.getCustomerPresentationStatusStyle();
-        ctr.getInsuranceFailureReasons();
-
-        ctr.createQuote();
-
-        ctr.buyPolicy();
-        ctr.isAnInsuranceProductAccepted();
         ctr.getLenderQuoting();
         ctr.getSimpleResult();
         ctr.getProFullyResult();
         ctr.getProStandardResult();
         ctr.getProBasicResult();
-        ctr.getDisplayCCIInsurance();
-
-        ctr.getQuoteNumberOptions();
-        ctr.importQuote();
         ctr.getHasUserMessages();
-        ctr.getDisplayNwcInsurance();
         ctr.hasCalculationDone();
         ctr.sendCustomerEmail1();
         ctr.sendCustomerEmail2();
@@ -236,10 +199,8 @@ private class BOQCommercialCalculatorTest {
         ctr.applicationFeefCalc();
         ctr.mcqUser = 'eee';
 
-        //NWCCalculator HJ - I - 12-07-2018 - Car
-        ctr.calculateNWC();
-        ctr.checkManuallyNWCPrice();
-        ctr.calculateNWC();
+        ctr.getOptions();
+        ctr.getIsBrokerPartnerUser();
     }
     @isTest
     static void testCalculatorAA() {

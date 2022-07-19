@@ -16,13 +16,8 @@ public class CompToolMoney3Calc extends CompToolLenderCalcAbstract {
     // - Prepare parameters
 
     this.quoteParam.riskGrade = String.valueOf(param.getAssetYear());
-    if ('Excellent'.equals(param.creditHistory)) {
+    if ('Good'.equals(param.creditHistory)) {
       this.quoteParam.riskGrade = 'Platinum';
-    } else if (
-      '600'.equals(param.creditHistory) ||
-      '524'.equals(param.creditHistory)
-    ) {
-      this.quoteParam.riskGrade = 'Silver';
     } else {
       this.quoteParam.riskGrade = 'Bronze';
     }
@@ -37,6 +32,11 @@ public class CompToolMoney3Calc extends CompToolLenderCalcAbstract {
     this.quoteParam.totalAmount = this.getTotalAmount();
     this.quoteParam.amountBaseComm = param.getNetVehiclePrice();
 
+    // Custom Value 1
+    if (String.isNotBlank(this.param.customValue1)) {
+      this.quoteParam.riskGrade = this.param.customValue1;
+    }
+
     // - get base rates
     this.baseRateCalc(null);   
     
@@ -49,6 +49,12 @@ public class CompToolMoney3Calc extends CompToolLenderCalcAbstract {
     // Calculation    
     CompToolLenderResult r = this.calculateRepayments();
     r.details = this.quoteParam.riskGrade;
+
+    // Custom Options
+    r.customValue1 = this.quoteParam.riskGrade;
+    r.customLabel1 = 'Customer Grading';
+    r.customValue1Options = this.getCustomerGrading(this.quoteParam.customerProfile);
+
     return r;
   }
 
@@ -60,4 +66,12 @@ public class CompToolMoney3Calc extends CompToolLenderCalcAbstract {
     return r;
   }
   
+  public List<String> getCustomerGrading(String profile) {
+    List<String> r = new List<String>{
+      'Platinum', 'Gold', 'Silver', 'Bronze'
+    };
+    r.add('Asset Finance'.equals(profile)? 'Micro Motor' : 'Mini PL');
+    return r;
+  }
+
 }

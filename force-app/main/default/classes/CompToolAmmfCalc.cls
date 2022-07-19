@@ -9,29 +9,33 @@ public class CompToolAmmfCalc extends CompToolLenderCalcAbstract {
     // ---------------
     // Find base rates
     // - Constant parameters
-    this.quoteParam.customerProfile = 'Standard';
-    this.quoteParam.interestType = 'Variable';
+    this.quoteParam.loanTypeDetail = 'Prime Plus';
+    this.quoteParam.customerProfile = this.param.assetAge == 0
+      ? 'New' : 'Used';
+    this.quoteParam.privateSales = 'Private'.equals(param.purchaseType)? 'Y' : 'N';
+    this.quoteParam.totalAmount = this.getTotalAmount();
     
-    // - Prepare parameters
-    this.quoteParam.residency = 
-      'Property Owner'.equals(this.param.residentialStatus)? 'Y' : 'N';
-    
-    if ('Y'.equals(this.quoteParam.residency) && this.param.assetAge == 0) {
-      this.quoteParam.loanTypeDetail = 'Prime Special Rate';
-    } else if (this.param.assetAge <= 0) {
-      this.quoteParam.loanTypeDetail = 'New and used < 5 years';
-    } else if (this.param.assetAge <= 7) {
-      this.quoteParam.loanTypeDetail = 'Used 6-7 years';
-    } else {
-      this.quoteParam.loanTypeDetail = 'Used 8-12 years';
+    // Custom Value 1
+    if (String.isNotBlank(this.param.customValue1)) {
+      this.quoteParam.loanTypeDetail = this.param.customValue1;
     }
-    
+
     // - get base rates
     this.baseRateCalc(null);    
 
+    // Commission rate
+    this.quoteParam.commRate = QuotingCalculation.getYamahaCommission(this.quoteParam);
+
+
     // Calculation    
     CompToolLenderResult r = this.calculateRepayments();
-    r.details = 'Interest Type: ' + this.quoteParam.interestType;
+    r.details = 'Profile: ' + this.quoteParam.loanTypeDetail;
+    // Custom Options
+    r.customValue1 = this.quoteParam.loanTypeDetail;
+    r.customLabel1 = 'Profile';
+    r.customValue1Options = new List<String>{
+      'Prime Plus', 'Prime', 'Standard', 'Limited'
+    };
     return r;
   }
   
