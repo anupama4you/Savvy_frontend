@@ -101,15 +101,10 @@ const mapSObjectToLwc = ({
     console.log(`{${key}: ${value}} | `, quoteData.settings[`${value}`]);
   });
   if (quoteData.data) {
-    // console.log('@@blahablaha')
     // Validate same calculator
     r["Id"] = quoteData.data["Id"];
     if (calcName === quoteData.data.Name) {
-<<<<<<< Updated upstream
-      console.log('@@blahablaha')
       r["Id"] = quoteData.data["Id"];
-=======
->>>>>>> Stashed changes
       // Set Finance Detail Values
       quotingFields.forEach((value, key, map) => {
         r[`${key}`] = quoteData.data[`${value}`];
@@ -174,7 +169,7 @@ const calcTotalAmount = (quote) => {
     r += quote.price > 0 ? quote.price : 0.0;
     r -= calcNetDeposit(quote);
 
-    r += quote.applicationFee > 0 ? quote.applicationFee : r;
+    r += quote.applicationFee > 0 ? quote.applicationFee : 0.0;
     r += quote.dof > 0 ? quote.dof : 0.0;
     r += quote.ppsr > 0 ? quote.ppsr : 0.0;
   }
