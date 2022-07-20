@@ -104,7 +104,6 @@ const mapSObjectToLwc = ({
     // Validate same calculator
     r["Id"] = quoteData.data["Id"];
     if (calcName === quoteData.data.Name) {
-      r["Id"] = quoteData.data["Id"];
       // Set Finance Detail Values
       quotingFields.forEach((value, key, map) => {
         r[`${key}`] = quoteData.data[`${value}`];

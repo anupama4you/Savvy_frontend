@@ -1,4 +1,4 @@
-import getQuotingData from "@salesforce/apex/quoteLatitudeCalcController.getQuotingData";
+import getQuotingData from "@salesforce/apex/QuoteLibertyCalcController.getQuotingData";
 import getBaseRates from "@salesforce/apex/QuoteController.getBaseRates";
 import calculateRepayments from "@salesforce/apex/QuoteController.calculateRepayments";
 import {
@@ -11,61 +11,63 @@ import { Validations } from "./quoteValidations";
 // Default settings
 let lenderSettings = {};
 let tableRatesData = [];
-let allTableRatesData = { 'Diamond Plus': null, 'Diamond': null, 'Sapphire': null, 'Ruby': null, 'Emerald': null };
-let rates3List = [];
 let riskGradeOptionsData = [];
-// all table types defined
-let formattedTableData = [];
-
-const TABLE_DATA_COLUMNS = [
-  { label: "0 - 3 years", fieldName: "comm1" },
-  { label: "% NAF", fieldName: "comm2" },
-  { label: "4 - 7 years", fieldName: "comm3" },
-  { label: "% NAF", fieldName: "rate1" },
-  { label: "7 years", fieldName: "rate2" },
-  { label: "% NAF", fieldName: "rate3" },
+let tableRateDataColumns = [
+  { label: "Risk Grade", fieldName: "Risk_Grade__c" },
+  {
+    label: "Secured", fieldName: "Secured__c", cellAttributes: {
+      alignment: 'left'
+    }
+  },
+  {
+    label: "Unsecured", fieldName: "Unsecured__c", cellAttributes: {
+      alignment: 'left'
+    }
+  },
 ];
 
-const LENDER_QUOTING = "Latitude";
+const LENDER_QUOTING = "Liberty Drive";
 
 const QUOTING_FIELDS = new Map([
   ["loanType", "Loan_Type__c"],
   ["loanProduct", "Loan_Product__c"],
+  ["productGoodsType", "Goods_type__c"],
   ["price", "Vehicle_Price__c"],
-  ["vehicleType", "Goods_type__c"],
-  ["carAge", "Vehicle_Age__c"],
-  ["vehCon", "Vehicle_Condition__c"],
   ["deposit", "Deposit__c"],
   ["tradeIn", "Trade_In__c"],
   ["payoutOn", "Payout_On__c"],
   ["applicationFee", "Application_Fee__c"],
   ["dof", "DOF__c"],
   ["ppsr", "PPSR__c"],
+  ["eqfee", "Risk_Fee__c"],
   ["residual", "Residual_Value__c"],
-  ["clientRate", "Client_Rate__c"],
-  ["monthlyFee", "Monthly_Fee__c"],
   ["term", "Term__c"],
+  ["propertyOwner", "Customer_Profile__c"],
+  ["clientTier", "Client_Tier__c"],
+  ["vehicleAge", "Vehicle_Age__c"],
+  ["creditScore", "Vedascore__c"],
+  ["enquiries", "Enquiries__c"],
+  ["ltv", "LTV__c"],
   ["paymentType", "Payment__c"],
-  ["registrationFee", "Registration_Fee__c"],
-  ["loanTypeDetail", "Loan_Facility_Type__c"],
-  ["securedUnsecured", "Category_Type__c"],
-  ["loanPurpose", "Loan_Purpose__c"],
+  ["monthlyFee", "Monthly_Fee__c"],
+  ["clientRate", "Client_Rate__c"],
 ]);
 
-const RATE_SETTING_NAMES = ["LatitudeRatesv3__c"];
+const RATE_SETTING_NAMES = ["LibertyDrive__c"];
 
 const SETTING_FIELDS = new Map([
-  ["monthlyFee", "Monthly_Fee__c"],
-  ["ppsr", "PPSR__c"],
   ["applicationFee", "Application_Fee__c"],
+  ["maxApplicationFee", "Application_Fee__c"],
+  ["maxDof", "Max_DOF__c"],
+  ["ppsr", "PPSR__c"],
+  ["monthlyFee", "Monthly_Fee__c"],
   ["registrationFee", "Registration_Fee__c"]
 ]);
 
 const BASE_RATE_FIELDS = [
   "customerProfile",
   "loanTypeDetail",
-  "carAge",
-  "vehicleType"
+  "securedUnsecured"
 ];
 
 const DOF_CALC_FIELDS = [
@@ -142,54 +144,39 @@ const calcOptions = {
   loanTypes: CommonOptions.loanTypes,
   paymentTypes: CommonOptions.paymentTypes,
   loanProducts: CommonOptions.fullLoanProducts,
-  privateSales: CommonOptions.yesNo,
+  propertyOwners: CommonOptions.yesNo,
+  riskGrades: [
+    { label: "AAA", value: "AAA" },
+    { label: "AA", value: "AA" },
+    { label: "A+", value: "A+" },
+    { label: "A", value: "A" },
+    { label: "B+", value: "B+" },
+    { label: "B", value: "B" },
+    { label: "C", value: "C" },
+  ],
+  clientTiers: [
+    { label: "A", value: "A" },
+    { label: "B", value: "B" },
+    { label: "C", value: "C" }
+  ],
   vehicleAges: [
-    { label: "0", value: "0" },
-    { label: "1", value: "1" },
-    { label: "2", value: "2" },
-    { label: "3", value: "3" },
-    { label: "4", value: "4" },
-    { label: "5", value: "5" },
-    { label: "6", value: "6" },
-    { label: "7", value: "7" },
-    { label: "8", value: "8" },
-    { label: "9", value: "9" },
-    { label: "10", value: "10" },
-    { label: "11", value: "11" },
-    { label: "12", value: "12" },
-    { label: "13", value: "13" },
-    { label: "14", value: "14" },
-    { label: "15+", value: "15" }
+    { label: "New", value: "New" },
+    { label: "Used 0-4 years", value: "Used 0-4 years" },
+    { label: "Used 5-9 years", value: "Used 5-9 years" },
+    { label: "Used 10+ years", value: "Used 10+ years" }
+  ],
+  vehicleTypes: [
+    { label: "--None--", value: "" },
+    { label: "Car", value: "Car" },
+    { label: "Motorbike", value: "Motorbike" },
+    { label: "Boat", value: "Boat" },
+    { label: "Caravan", value: "Caravan" },
+    { label: "Truck", value: "Truck" },
+    { label: "Equipment", value: "Equipment" }
   ],
   securedUnsecured: [
     { label: "Secured", value: "Secured" },
     { label: "Unsecured", value: "Unsecured" }
-  ],
-  vehicleTypes: [
-    { label: "--None--", value: "" },
-    { label: "Car", value: "CAR" },
-    { label: "Car (Van Light Commercial)", value: "VAN_LIGHT_COMMERCIAL" },
-    { label: "Car (Minibus)", value: "MINIBUS" },
-    { label: "Car (Utility)", value: "UTILITY" },
-    { label: "Car (Station Wagon or 4WD)", value: "STATION_WAGON_OR_4WD" },
-    { label: "Motorbike", value: "MOTORBIKE" },
-    { label: "Boats (or Personal Watercraft)", value: "BOAT" },
-    { label: "Caravan", value: "CARAVAN" },
-    { label: "Motorhome", value: "MOTORHOME" },
-    { label: "Camper Trailer", value: "TRAILER" }
-  ],
-  classes: [
-    { label: "Diamond Plus", value: "Diamond Plus" },
-    { label: "Diamond", value: "Diamond" },
-    { label: "Sapphire", value: "Sapphire" },
-    { label: "Ruby", value: "Ruby" },
-    { label: "Emerald", value: "Emerald" }
-  ],
-  vehicleConditions: [
-    { label: "--None--", value: "" },
-    { label: "New", value: "NEW" },
-    { label: "Demo", value: "DEMO" },
-    { label: "Used", value: "USED" }
   ],
   terms: CommonOptions.terms(12, 84)
 };
@@ -201,31 +188,27 @@ const reset = (recordId) => {
     quoteName: LENDER_QUOTING,
     loanType: calcOptions.loanTypes[0].value,
     loanProduct: calcOptions.loanProducts[0].value,
-    category: null,
-    vehicleType: calcOptions.vehicleTypes[0].value,
-    carAge: calcOptions.vehicleAges[0].value,
-    vehCon: '',
-    monthlyFee: null,
-    ppsr: null,
-    applicationFee: null,
-    registrationFee: null,
-    baseRate: 0.0,
-    maxRate: 0.0,
-    clientRate: 0.0,
     price: null,
     deposit: null,
     tradeIn: null,
     payoutOn: null,
+    applicationFee: null,
     maxApplicationFee: null,
     dof: null,
     maxDof: null,
+    ppsr: null,
     residual: null,
-    term: calcOptions.terms[0].value,
-    privateSales: calcOptions.privateSales[1].value,
-    paymentType: calcOptions.paymentTypes[0].value,
-    loanTypeDetail: calcOptions.classes[0].value,
+    term: 60,
+    monthlyFee: null,
+    baseRate: 0.0,
+    maxRate: 0.0,
+    clientRate: null,
+    privateSales: "N",
+    paymentType: "Arrears",
     commissions: QuoteCommons.resetResults(),
-    registrationFee: 3.40
+    registrationFee: 3.40,
+    loanTypeDetail: "AAA",
+    securedUnsecured: "Secured"
   };
   r = QuoteCommons.mapDataToLwc(r, lenderSettings, SETTING_FIELDS);
   return r;
@@ -264,12 +247,10 @@ const loadData = (recordId) =>
 
         console.log('lenderSettings:::', JSON.stringify(lenderSettings, null, 2))
 
+
         // Rate Settings
         if (quoteData.rateSettings) {
           tableRatesData = quoteData.rateSettings[`${RATE_SETTING_NAMES[0]}`];
-
-          // console.log(`@@tableData:`, JSON.stringify(tableRatesData, null, 2));
-
         }
         console.log(`@@data:`, JSON.stringify(data, null, 2));
         resolve(data);
@@ -277,17 +258,27 @@ const loadData = (recordId) =>
       .catch((error) => reject(error));
   });
 
+const getRiskGradeOptions = () => {
+  let riskGradeOptions = []
+  if (tableRatesData) {
+    for (const [key, obj] of Object.entries(tableRatesData)) {
+      riskGradeOptions.push({ label: obj['Risk_Grade__c'], value: obj['Risk_Grade__c'] });
+    }
+  }
+  return riskGradeOptions;
+};
+
 // Get Base Rates
 const getMyBaseRates = (quote) =>
   new Promise((resolve, reject) => {
     console.log(`quote inserted...`, JSON.stringify(quote, null, 2));
-    const profile = quote.category;
     const p = {
       lender: LENDER_QUOTING,
-      customerProfile: profile,
-      loanTypeDetail: quote.loanTypeDetail,
-      goodsType: quote.category,
-      carAge: quote.carAge,
+      productLoanType: quote.loanType,
+      clientTier: quote.clientTier,
+      vehicleYear: quote.vehicleAge,
+      goodsType: quote.productGoodsType,
+      residualValue: quote.residual,
       hasMaxRate: true
     };
     console.log(`getMyBaseRates...`, JSON.stringify(p, null, 2));
@@ -295,7 +286,7 @@ const getMyBaseRates = (quote) =>
       param: p
     })
       .then((rates) => {
-        console.log(`@@SF:`, JSON.stringify(rates, null, 2));
+        console.log(`@@BaseRate:`, JSON.stringify(rates, null, 2));
         resolve(rates);
       })
       .catch((error) => reject(error));
@@ -313,82 +304,62 @@ const getQuoteFees = (quote) => {
   return quote;
 }
 
-// Get Single table out using #category and #class
-const getSingleTable = (category, class_) => {
+const getTableRatesData = () => {
+  console.log('table Data::', tableRatesData)
 
-  let fieldsList = { "comm1": [], "comm2": [], "comm3": [], "rate1": [], "rate2": [], "rate3": [] }
-
-  if (category) {
-    // devide the data into categories
-    tableRatesData.forEach((obj, key, map) => {
-
-      if (obj.Category__c === category) {
-        if (obj.Class__c === class_) {
-          console.log(`getSingleTable...`, JSON.stringify(obj, null, 2));
-
-          if (obj.Asset_Age__c == '0 - 3 years') {
-            fieldsList.comm1.push(obj.Rate__c);
-            fieldsList.comm2.push(obj.Comm__c);
-          } else if (obj.Asset_Age__c == '4 - 7 years') {
-            fieldsList.comm3.push(obj.Rate__c);
-            fieldsList.rate1.push(obj.Comm__c);
-          } else if (obj.Asset_Age__c == '> 7 years') {
-            fieldsList.rate2.push(obj.Rate__c);
-            fieldsList.rate3.push(obj.Comm__c);
-          }
-        }
-      }
-    });
-
-    console.log(`fieldsList...`, JSON.stringify(fieldsList, null, 2));
-
-    const singleTable = [];
-
-    for (let j = 0; j < 9; j++) {
-
-      const row = {
-        "comm1": Object.values(fieldsList)[0][j],
-        "comm2": Object.values(fieldsList)[1][j],
-        "comm3": Object.values(fieldsList)[2][j],
-        "rate1": Object.values(fieldsList)[3][j],
-        "rate2": Object.values(fieldsList)[4][j],
-        "rate3": Object.values(fieldsList)[5][j],
-      }
-      singleTable.push(row);
-    }
-    return singleTable;
-  } else {
-    return [];
-  }
-};
-
-// Get all tables data
-const getAllTableData = (category) => {
-  // empty the array
-  formattedTableData.splice(0, formattedTableData.length);
-  // diamond plus
-  formattedTableData.push({ data: getSingleTable(category, calcOptions.classes[0].value), colName: calcOptions.classes[0].value });
-  // diamond 
-  formattedTableData.push({ data: getSingleTable(category, calcOptions.classes[1].value), colName: calcOptions.classes[1].value });
-  // Sapphire
-  formattedTableData.push({ data: getSingleTable(category, calcOptions.classes[2].value), colName: calcOptions.classes[2].value });
-  // Ruby
-  formattedTableData.push({ data: getSingleTable(category, calcOptions.classes[3].value), colName: calcOptions.classes[3].value });
-  // Emerald
-  formattedTableData.push({ data: getSingleTable(category, calcOptions.classes[4].value), colName: calcOptions.classes[4].value });
-  return formattedTableData;
+  return tableRatesData;
 };
 
 // custom calculations for NAF generations
 const calcNetRealtimeNaf = (quote) => {
   let netRealtimeNaf = QuoteCommons.calcNetRealtimeNaf(quote);
-  console.log('realtimeNAF::', netRealtimeNaf);
-  let r = quote.registrationFee + netRealtimeNaf;
+  let eqFee = calculateEQFee(quote, false);
+  return netRealtimeNaf + eqFee;
+}
+
+// custom calculations for eqFee generations
+const calcEqFee = (quote) => {
+  let eqFee = calculateEQFee('Q', false);
+  return eqFee;
+}
+
+const calculateEQFee = (quote, excInsurances) => {
+  let r = 0.0;
+  let baseEqFee = getTotalAmountExcFees('Q', quote);
+  if (!excInsurances) {
+    // if ('A'.equals(warrantyAcceptance)) {
+    //   if (warranty != null) baseEqFee += warranty;
+    // } else if ('A'.equals(nwcAcceptance)) {
+    //   if (nwc != null) baseEqFee += nwc;
+    // }
+  }
+  if ('A+' === quote.clientTier) {
+    r = baseEqFee * 0.01;
+  } else if ('A' === quote.clientTier) {
+    r = baseEqFee * 0.02;
+  } else if ('B+' === quote.clientTier) {
+    r = baseEqFee * 0.03;
+  } else if ('B' === quote.clientTier) {
+    r = baseEqFee * 0.09;
+  } else if ('C' === quote.clientTier) {
+    r = baseEqFee * 0.1;
+  }
+  return r ;
+}
+
+const getTotalAmountExcFees = (calcType, quote) => {
+  let r = 0.0;
+
+  if ('PPY' === calcType) {
+    // if (quote.price != null) r += quote.price + (quote.price * QuotingCalculation.getProtectedPercentaje(quote.price));
+  } else {
+    if (quote.price != null) r += quote.price;
+  }
+  if (quote.deposit != null) r -= quote.deposit;
   return r;
 }
 
 const calcDOF = (quote) => {
-  quote.dof = 0;
   let naf = QuoteCommons.calcNetRealtimeNaf(quote);
   let r = quote.registrationFee + naf;
   console.log('calcDOF', r)
@@ -403,7 +374,7 @@ const calcDOF = (quote) => {
     r = 0;
   }
   console.log('calcNetRealtimeDOF', r)
-  return r.toFixed(2);
+  return r;
 }
 
 export const CalHelper = {
@@ -414,12 +385,13 @@ export const CalHelper = {
   baseRates: getMyBaseRates,
   BASE_RATE_FIELDS: BASE_RATE_FIELDS,
   lenderSettings: lenderSettings,
-  getSingleTable: getSingleTable,
-  TABLE_DATA_COLUMNS: TABLE_DATA_COLUMNS,
+  getTableRatesData: getTableRatesData,
+  tableRateDataColumns: tableRateDataColumns,
   getNetRealtimeNaf: calcNetRealtimeNaf,
   getNetDeposit: QuoteCommons.calcNetDeposit,
   getQuoteFees: getQuoteFees,
+  getRiskGradeOptions: getRiskGradeOptions,
   getDOF: calcDOF,
-  DOF_CALC_FIELDS: DOF_CALC_FIELDS,
-  getAllTableData: getAllTableData
+  getRealtimeEqFee: calcEqFee,
+  DOF_CALC_FIELDS: DOF_CALC_FIELDS
 };
