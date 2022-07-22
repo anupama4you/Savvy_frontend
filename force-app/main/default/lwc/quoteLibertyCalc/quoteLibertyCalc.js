@@ -7,12 +7,10 @@ import { getRecord } from 'lightning/uiRecordApi';
 import { displayToast } from "c/partnerJsUtils";
 
 export default class QuoteLibertyCalc extends LightningElement {
-    tableRatesCols = CalHelper.TABLE_DATA_COLUMNS;
     isBusy;
     isBaseRateBusy;
     isCalculated = false;
     category;
-
     @api recordId;
     @track messageObj = QuoteCommons.resetMessage();
     @track quoteForm;
@@ -28,6 +26,8 @@ export default class QuoteLibertyCalc extends LightningElement {
             .then((data) => {
                 console.log(`Data loaded!`);
                 this.quoteForm = data;
+                console.log(`DOF>>>`, this.quoteForm.dof, `--`, this.quoteForm.maxDof);
+                // this.quoteForm.dof = data.maxDof;
                 console.log(`Data loaded!`, JSON.stringify(this.quoteForm));
             })
             .catch((error) => {
@@ -37,6 +37,7 @@ export default class QuoteLibertyCalc extends LightningElement {
             .finally(() => {
                 this.isBusy = false;
                 this.baseRateCalc();
+
             });
 
         console.log('recordID::', this.recordId)
@@ -50,8 +51,6 @@ export default class QuoteLibertyCalc extends LightningElement {
     // Base Rate
     baseRateCalc() {
         this.isBaseRateBusy = true;
-
-        console.log('baseRateCalc::', this.quoteForm.goodsType, this.quoteForm.loanTypeDetail, this.quoteForm.carAge);
         console.log('quote form::', JSON.stringify(this.quoteForm, null, 2));
         CalHelper.baseRates(this.quoteForm)
             .then((data) => {
@@ -70,8 +69,8 @@ export default class QuoteLibertyCalc extends LightningElement {
 
     // DOF calculation
     dofCalc() {
-            this.quoteForm.dof = CalHelper.getDOF(this.quoteForm);
-            this.quoteForm.maxDof = this.quoteForm.dof;
+        this.quoteForm.dof = CalHelper.getDOF(this.quoteForm);
+        this.quoteForm.maxDof = this.quoteForm.dof;
     }
 
     // Quote Fee calculation
@@ -105,10 +104,6 @@ export default class QuoteLibertyCalc extends LightningElement {
 
     get classOptions() {
         return CalHelper.options.classes;
-    }
-
-    get carAgeOptions() {
-        return CalHelper.options.vehicleAges;
     }
 
     get vehicleTypes() {
@@ -145,12 +140,10 @@ export default class QuoteLibertyCalc extends LightningElement {
     }
 
     get netRealtimeNaf() {
-        console.log('netRealtimeNaf:::', CalHelper.getNetRealtimeNaf(this.quoteForm))
         return CalHelper.getNetRealtimeNaf(this.quoteForm);
     }
 
     get realtimeEqFee() {
-        console.log('realtimeEqFee:::', CalHelper.getRealtimeEqFee(this.quoteForm))
         return CalHelper.getRealtimeEqFee(this.quoteForm);
     }
 
@@ -216,7 +209,6 @@ export default class QuoteLibertyCalc extends LightningElement {
             JSON.stringify(this.quoteForm, null, 2)
         );
         this.baseRateCalc();
-        this.vehicleCategory();
     }
 
     // Events
@@ -244,9 +236,7 @@ export default class QuoteLibertyCalc extends LightningElement {
         }
 
         // DOF calculation
-        // if (CalHelper.DOF_CALC_FIELDS.includes(fldName)) {
-        //     this.dofCalc();
-        // }
+        if (fldName === "applicationFee") this.dofCalc();
 
         // --------------
     }

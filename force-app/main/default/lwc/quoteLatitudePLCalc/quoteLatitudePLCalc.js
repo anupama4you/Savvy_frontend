@@ -27,7 +27,7 @@ export default class QuoteLatitudePLCalc extends LightningElement {
             .then((data) => {
                 console.log(`Data loaded!`);
                 this.quoteForm = data;
-                console.log(`Data loaded!`, JSON.stringify(this.quoteForm) );
+                console.log(`Data loaded!`, JSON.stringify(this.quoteForm));
                 this.tableRates = CalHelper.getTableRatesData();
             })
             .catch((error) => {
@@ -41,6 +41,11 @@ export default class QuoteLatitudePLCalc extends LightningElement {
             });
 
         console.log('recordID::', this.recordId)
+    }
+
+    // lifecycle hook - after rendering all components(child+parent), will triggered
+    renderedCallback() {
+        QuoteCommons.resetValidateFields(this);
     }
 
     // Base Rate
@@ -65,12 +70,12 @@ export default class QuoteLatitudePLCalc extends LightningElement {
     // DOF calculation
     dofCalc(fieldChange) {
 
-        console.log('dofCalc:::', this.quoteForm.dof, this.quoteForm.maxDof );
-        if(!fieldChange){
-            if(this.quoteForm.dof){
-                this.quoteForm.maxDof = this.quoteForm.dof;    
+        console.log('dofCalc:::', this.quoteForm.dof, this.quoteForm.maxDof);
+        if (!fieldChange) {
+            if (this.quoteForm.dof) {
+                this.quoteForm.maxDof = this.quoteForm.dof;
             }
-        }else{
+        } else {
             let quote = this.quoteForm;
             // omit the dof addition 
             quote.dof = 0;

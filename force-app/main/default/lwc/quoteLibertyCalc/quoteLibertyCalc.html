@@ -86,14 +86,14 @@
         <!-- Vehicle Type -->
         <div class="c-row-details">
             <div class="c-detail-labels">
-                <span class="c-label">Vehicle Type</span>
+                <span class="c-label">Asset Type</span>
             </div>
             <div class="c-detail-fields">
                 <lightning-combobox
-                    name="productGoodsType"
-                    label="Vehicle Type"
-                    data-id="productGoodsType-field"
-                    value={quoteForm.productGoodsType}
+                    name="assetType"
+                    label="Asset Type"
+                    data-id="assetType-field"
+                    value={quoteForm.assetType}
                     placeholder="Select a value"
                     options={vehicleTypes}
                     onchange={handleFieldChange}
@@ -102,9 +102,9 @@
                 </lightning-combobox>
             </div>
         </div>
-        <!-- Vehicle Price -->
+        <!-- Price -->
         <div class="c-row-details">
-            <div class="c-detail-labels"><span class="c-label">Vehicle Price</span></div>
+            <div class="c-detail-labels"><span class="c-label">Price</span></div>
             <div class="c-detail-fields">
                 <lightning-input
                     type="number"
@@ -113,7 +113,7 @@
                     name="price"
                     data-id="price-field"
                     value={quoteForm.price}
-                    label="Vehicle Price"
+                    label="Price"
                     placeholder="$"
                     class="slds-form__item"
                     variant="label-hidden"
@@ -252,7 +252,7 @@
                     class="c-read-only-field"></lightning-formatted-number>
             </div>
         </div>
-        <!-- Residual -->
+        <!-- residual Value -->
         <div class="c-row-details">
             <div class="c-detail-labels"><span class="c-label">Residual value</span></div>
             <div class="c-detail-fields">
@@ -260,17 +260,17 @@
                     type="number"
                     formatter="currency"
                     step="0.01"
-                    name="residual"
-                    data-id="residual-field"
-                    value={quoteForm.residual}
-                    label="Residual"
+                    name="residualValue"
+                    data-id="residualValue-field"
+                    value={quoteForm.residualValue}
+                    label="residualValue"
                     placeholder="$"
                     class="slds-form__item"
                     variant="label-hidden"
                     onchange={handleFieldChange}></lightning-input>
             </div>
         </div>
-    
+
         <!-- Additional Details -->
         <div class="c-row-details">
             <span class="c-detail-subtitle">Loan Details</span>
@@ -296,7 +296,7 @@
             </div>
         </div>
 
-        
+
         <!-- Property Owner -->
         <div class="c-row-details">
             <div class="c-detail-labels">
@@ -324,10 +324,10 @@
             </div>
             <div class="c-detail-fields">
                 <lightning-combobox
-                    name="clientTier"
-                    label="Private Sales"
-                    data-id="clientTier-field"
-                    value={quoteForm.clientTier}
+                    name="riskGrade"
+                    label="Risk Grades"
+                    data-id="riskGrade-field"
+                    value={quoteForm.riskGrade}
                     placeholder="Select a value"
                     options={riskGrades}
                     onchange={handleFieldChange}
@@ -345,7 +345,7 @@
             <div class="c-detail-fields">
                 <lightning-combobox
                     name="vehicleAge"
-                    label="Client Tier"
+                    label="Vehicle Age"
                     data-id="vehicleAge-field"
                     value={quoteForm.vehicleAge}
                     placeholder="Select a value"
@@ -357,8 +357,8 @@
             </div>
         </div>
 
-          <!-- Credit Score -->
-          <div class="c-row-details">
+        <!-- Credit Score -->
+        <div class="c-row-details">
             <div class="c-detail-labels"><span class="c-label">Credit Score</span></div>
             <div class="c-detail-fields">
                 <lightning-input
@@ -375,7 +375,8 @@
 
         <!-- # of enquiries (last 6 months) -->
         <div class="c-row-details">
-            <div class="c-detail-labels"><span class="c-label"># of enquiries (last 6 months)</span></div>
+            <div class="c-detail-labels"><span class="c-label"># of enquiries
+                    (last 6 months)</span></div>
             <div class="c-detail-fields">
                 <lightning-input
                     type="number"
@@ -391,17 +392,24 @@
 
         <!-- LTV -->
         <div class="c-row-details">
-            <div class="c-detail-labels"><span class="c-label">LTV</span></div>
+            <div class="c-detail-labels">
+                <span class="c-label">LTV</span>
+            </div>
             <div class="c-detail-fields">
                 <lightning-input
                     type="number"
+                    formatter="percent-fixed"
+                    step="0.01"
                     name="ltv"
                     data-id="ltv-field"
                     value={quoteForm.ltv}
                     label="LTV"
+                    placeholder="0.00%"
                     class="slds-form__item"
                     variant="label-hidden"
-                    onchange={handleFieldChange}></lightning-input>
+                    onchange={handleFieldChange}
+                    required>
+                </lightning-input>
             </div>
         </div>
 
@@ -443,44 +451,26 @@
         </div>
 
         <!-- Rates -->
-        <!-- Max Rate -->
-        <div class="c-row-details">
-            <div class="c-detail-labels"><span class="c-label">Max Rate</span></div>
-            <div class="slds-col slds-size_8-of-12 c-base-rate">
-                <lightning-formatted-number
-                    value={quoteForm.maxRate}
-                    format-style="percent-fixed"
-                    minimum-fraction-digits="2"
-                    class="c-read-only-field"></lightning-formatted-number>
-                <template if:true={isBaseRateBusy}>
-                    <span class="c-status-icon">
-                        <lightning-dynamic-icon
-                            type="eq"
-                            option="play"
-                            alternative-text="Recording in progress">
-                        </lightning-dynamic-icon>
-                    </span>
-                </template>
-            </div>
-        </div>
         <!-- Base Rate -->
         <div class="c-row-details">
             <div class="c-detail-labels"><span class="c-label">Base Rate</span></div>
             <div class="slds-col slds-size_8-of-12 c-base-rate">
-                <lightning-formatted-number
-                    value={quoteForm.baseRate}
-                    format-style="percent-fixed"
-                    minimum-fraction-digits="2"
+                <lightning-formatted-number value={quoteForm.baseRate}
+                    format-style="percent-fixed" minimum-fraction-digits="2"
                     class="c-read-only-field"></lightning-formatted-number>
                 <template if:true={isBaseRateBusy}>
                     <span class="c-status-icon">
-                        <lightning-dynamic-icon
-                            type="eq"
-                            option="play"
+                        <lightning-dynamic-icon type="eq" option="play"
                             alternative-text="Recording in progress">
                         </lightning-dynamic-icon>
                     </span>
                 </template>
+                <span class="c-max-rate">
+                    Max.
+                    <lightning-formatted-number value={quoteForm.maxRate}
+                        format-style="percent-fixed" minimum-fraction-digits="2"
+                        class="c-read-only-field"></lightning-formatted-number>
+                </span>
             </div>
         </div>
         <!-- Client Rate -->
@@ -521,28 +511,12 @@
         <!-- Insurances -->
         <c-quote-insurance-form slot="insurances"></c-quote-insurance-form>
 
-        <!-- Verbatim Text -->
-        <div slot="more">
-            <div class="slds-p-around_small">
-                <div class="slds-m-bottom_x-small"><span
-                        class="c-detail-subtitle">Read to Customer Verbatim</span></div>
-                <p>By requesting a rate band offer from Latitude for consumer or
-                    commercial credit, you are requesting Latitude to provide
-                    you with a personalized rate band using your credit score
-                    obtained from a Credit Reporting Body. Obtaining this score
-                    for a tailored rate band will not impact your credit score.
-                    This is an indicative rate band subject to you completing a
-                    full application and acceptance by Latitude. You can choose
-                    not to proceed at any time.</p>
-            </div>
-        </div>
-
         <!-- Latitude Personal Rate Table -->
         <div slot="table-rates">
             <img
-            src={bottomImageURL}
-            title="Liberty"
-            />
+                src={bottomImageURL}
+                title="Liberty"
+                />
         </div>
 
     </c-quote-container>
