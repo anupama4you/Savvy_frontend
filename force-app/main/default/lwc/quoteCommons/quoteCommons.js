@@ -246,7 +246,7 @@ const fieldErrorHandler = (obj, messages) => {
   let inputFields = [];
   for (const msg of messages) {
     const field = obj.template.querySelector(`[data-id="${msg.field}-field"]`);
-    inputFields.push(field);
+    if (field) inputFields.push(field);
   }
   inputFields.forEach((field) => {
     field.setCustomValidity(" ");

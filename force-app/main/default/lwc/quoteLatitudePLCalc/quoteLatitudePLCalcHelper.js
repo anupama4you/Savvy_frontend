@@ -111,7 +111,7 @@ const calculate = (quote) =>
         registrationFee: quote.registrationFee,
         loanTypeDetail: quote.loanTypeDetail,
         carPrice: quote.price,
-        commRate : commR
+        commRate: commR
       };
 
       // Calculate
@@ -306,7 +306,7 @@ const calcDOF = (quote) => {
   } else if (r > 0) {
     r = r * 0.15;
     if (r >= 990) {
-        r = 990.0;
+      r = 990.0;
     }
   } else {
     r = 0;
@@ -314,6 +314,73 @@ const calcDOF = (quote) => {
   console.log('calcNetRealtimeDOF', r)
   return r;
 }
+
+/**
+ * -- Lee
+ * @param {String} approvalType - string and what type of the button
+ * @param {Object} param - quote form
+ * @param {Id} recordId - recordId
+ */
+const saveQuote = (approvalType, param, recordId) =>
+  new Promise((resolve, reject) => {
+    if (approvalType && param && recordId) {
+      save({
+        param: QuoteCommons.mapLWCToSObject(
+          param,
+          recordId,
+          LENDER_QUOTING,
+          FIELDS_MAPPING_FOR_APEX
+        ),
+        approvalType: approvalType
+      })
+        .then((data) => {
+          resolve(data);
+        })
+        .catch((error) => {
+          reject(`error in saveApproval ${approvalType}: `, error.messages);
+        });
+    } else {
+      reject(
+        new Error(
+          `Something Wrong, appType: ${approvalType}, param: ${JSON.stringify(
+            param,
+            null,
+            2
+          )}, param: ${recordId}`
+        )
+      );
+    }
+  });
+
+/**
+*  -- Lee
+* @param {Object} param - quote form
+* @param {Id}  recordId - record id
+* @returns
+*/
+const sendEmail = (param, recordId) =>
+  new Promise((resolve, reject) => {
+    if (param) {
+      console.log(`@@param in sendEmail ${JSON.stringify(param, null, 2)}`);
+      sendQuote({
+        param: QuoteCommons.mapLWCToSObject(
+          param,
+          recordId,
+          LENDER_QUOTING,
+          FIELDS_MAPPING_FOR_APEX
+        )
+      })
+        .then((data) => {
+          resolve(data);
+        })
+        .catch((error) => {
+          reject(error);
+        });
+    } else {
+      reject(new Error(`Something wrong in sendEmail : param: ${param}`));
+    }
+  });
+
 
 export const CalHelper = {
   options: calcOptions,
@@ -330,5 +397,7 @@ export const CalHelper = {
   getQuoteFees: getQuoteFees,
   getRiskGradeOptions: getRiskGradeOptions,
   getDOF: calcDOF,
-  DOF_CALC_FIELDS: DOF_CALC_FIELDS
+  DOF_CALC_FIELDS: DOF_CALC_FIELDS,
+  saveQuote: saveQuote,
+  sendEmail: sendEmail
 };

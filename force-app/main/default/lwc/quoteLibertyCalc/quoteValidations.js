@@ -177,21 +177,18 @@ const validate = (quote, settings, messages, isApproval) => {
     });
   }
 
-  console.log('line---0')
-
   let vehicleAgeYear = 0;
-  const percentageResidual = 0.0;
-
-  console.log('line---0')
+  let percentageResidual = 0.0;
 
   vehicleAgeYear = getVehicleAgeToYear();
-  console.log('line---0')
   if (vehicleAgeYear != null) {
-    console.log('line---0|1')
       vehicleAgeYear = Date.Today().year() - vehicleAgeYear;
   }
 
-  console.log('line---1')
+  console.log(
+    "🚀 ~ file: quoteValidations.js ~ line 24 ~ validate ~ testttt",
+    quote.riskGrade, quote.residualValue, quote.netDeposit
+  );
 
   if (!('AAA' === quote.riskGrade) || ('AA' === quote.riskGrade) && (quote.residualValue != null && quote.residualValue > 0)) {
     warningList.push({

@@ -1,6 +1,8 @@
 import getQuotingData from "@salesforce/apex/QuoteLibertyCalcController.getQuotingData";
 import getBaseRates from "@salesforce/apex/QuoteController.getBaseRates";
 import calculateRepayments from "@salesforce/apex/QuoteController.calculateRepayments";
+import save from "@salesforce/apex/QuoteLibertyCalcController.save";
+import sendQuote from "@salesforce/apex/QuoteController.sendQuote";
 import {
   QuoteCommons,
   CommonOptions,
@@ -52,7 +54,14 @@ const QUOTING_FIELDS = new Map([
   ["paymentType", "Payment__c"],
   ["monthlyFee", "Monthly_Fee__c"],
   ["clientRate", "Client_Rate__c"],
+  ["loanPurpose", "Loan_Purpose__c"],
+  ["applicationId", "Application__c"],
+  ["netDeposit", "Net_Deposit__c"],
+  ["baseRate", "Base_Rate__c"],
 ]);
+
+// - TODO: need to map more fields
+const FIELDS_MAPPING_FOR_APEX = new Map([...QUOTING_FIELDS, ["Id", "Id"]]);
 
 const RATE_SETTING_NAMES = ["LibertyDrive__c"];
 
@@ -89,10 +98,7 @@ const calculate = (quote) =>
     // Validate quote
     // Additional variables needed for validations
     const settings = lenderSettings;
-    quote.netDepsoit = QuoteCommons.calcNetDeposit(quote);
-    quote.realtimeNaf = calcNetRealtimeNaf(quote);
-
-    res.messages = Validations.validate(quote, settings , res.messages, false);
+    res.messages = Validations.validate(quote, settings, res.messages, false);
     console.log(`Calculating repayments...`, JSON.stringify(res, null, 2));
     if (res.messages && res.messages.errors.length > 0) {
       reject(res);
@@ -183,9 +189,10 @@ const calcOptions = {
 };
 
 // Reset
-const reset = (recordId) => {
+const reset = (recordId, appQuoteId = null) => {
   let r = {
     oppId: recordId,
+    Id: appQuoteId,
     loanType: calcOptions.loanTypes[0].value,
     loanProduct: calcOptions.loanProducts[0].value,
     assetType: calcOptions.vehicleTypes[0].value,
@@ -201,7 +208,7 @@ const reset = (recordId) => {
     dof: null,
     maxDof: null,
     ppsr: null,
-    eqFee: 0,
+    eqfee: 0.0,
     residualValue: null,
     term: 60,
     monthlyFee: 0,
@@ -341,6 +348,74 @@ const calcDOF = (quote) => {
     : quote.applicationFee - lenderSettings.Application_Fee__c;
 }
 
+/**
+ * -- Lee
+ * @param {String} approvalType - string and what type of the button
+ * @param {Object} param - quote form
+ * @param {Id} recordId - recordId
+ */
+const saveQuote = (approvalType, param, recordId) =>
+  new Promise((resolve, reject) => {
+    if (approvalType && param && recordId) {
+      save({
+        param: QuoteCommons.mapLWCToSObject(
+          param,
+          recordId,
+          LENDER_QUOTING,
+          FIELDS_MAPPING_FOR_APEX
+        ),
+        approvalType: approvalType
+      })
+        .then((data) => {
+          resolve(data);
+        })
+        .catch((error) => {
+          reject(error);
+          // reject(`error in saveApproval ${approvalType}: `, error.messages);
+        });
+    } else {
+      reject(
+        new Error(
+          `Something Wrong, appType: ${approvalType}, param: ${JSON.stringify(
+            param,
+            null,
+            2
+          )}, param: ${recordId}`
+        )
+      );
+    }
+  });
+
+/**
+*  -- Lee
+* @param {Object} param - quote form
+* @param {Id}  recordId - record id
+* @returns
+*/
+const sendEmail = (param, recordId) =>
+  new Promise((resolve, reject) => {
+    if (param) {
+      console.log(`@@param in sendEmail ${JSON.stringify(param, null, 2)}`);
+      sendQuote({
+        param: QuoteCommons.mapLWCToSObject(
+          param,
+          recordId,
+          LENDER_QUOTING,
+          FIELDS_MAPPING_FOR_APEX
+        )
+      })
+        .then((data) => {
+          resolve(data);
+        })
+        .catch((error) => {
+          reject(error);
+        });
+    } else {
+      reject(new Error(`Something wrong in sendEmail : param: ${param}`));
+    }
+  });
+
+
 export const CalHelper = {
   options: calcOptions,
   calculate: calculate,
@@ -354,5 +429,7 @@ export const CalHelper = {
   getNetDeposit: QuoteCommons.calcNetDeposit,
   getDOF: calcDOF,
   getRealtimeEqFee: calculateEQFee,
-  DOF_CALC_FIELDS: DOF_CALC_FIELDS
+  DOF_CALC_FIELDS: DOF_CALC_FIELDS,
+  saveQuote: saveQuote,
+  sendEmail: sendEmail
 };
