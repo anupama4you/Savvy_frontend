@@ -137,7 +137,7 @@ export default class QuoteLibertyCalc extends LightningElement {
     // Common calculations
     get netDeposit() {
         this.quoteForm.netDeposit = CalHelper.getNetDeposit(this.quoteForm);
-        return CalHelper.getNetDeposit(this.quoteForm);
+        return this.quoteForm.netDeposit;
     }
 
     get netRealtimeNaf() {
@@ -147,7 +147,7 @@ export default class QuoteLibertyCalc extends LightningElement {
 
     get realtimeEqFee() {
         this.quoteForm.eqfee = CalHelper.getRealtimeEqFee(this.quoteForm);
-        return CalHelper.getRealtimeEqFee(this.quoteForm);
+        return this.quoteForm.eqfee;
     }
 
     get disableAction() {
