@@ -21,26 +21,25 @@
             label="Reset"
             slot="actions"
             onclick={handleReset}></lightning-button>
-        <lightning-button
-            label="Save Quoting"
-            slot="actions"
-            disabled={disableAction}></lightning-button>
-        <lightning-button
-            label="Save Pre-approval"
-            slot="actions"
-            disabled={disableAction}></lightning-button>
-        <lightning-button
-            label="Save Amendment"
-            slot="actions"
-            disabled={disableAction}></lightning-button>
-        <lightning-button
-            label="Save Formal Approval"
-            slot="actions"
-            disabled={disableAction}></lightning-button>
-        <lightning-button
-            label="Send quote"
-            slot="actions"
-            disabled={disableAction}></lightning-button>
+        <lightning-button label="Save Quoting" slot="actions"
+            disabled={disableAction} value="None"
+            onclick={handleSave}>
+        </lightning-button>
+        <lightning-button label="Save Pre-approval" value="pre_approval"
+            slot="actions" disabled={disableAction}
+            onclick={handleSave}>
+        </lightning-button>
+        <lightning-button label="Save Amendment" value="pre_approval_amendment"
+            slot="actions" disabled={disableAction}
+            onclick={handleSave}>
+        </lightning-button>
+        <lightning-button label="Save Formal Approval" value="formal_approval"
+            slot="actions" disabled={disableAction}
+            onclick={handleSave}>
+        </lightning-button>
+        <lightning-button label="Send Quote" slot="actions"
+            disabled={disableAction} onclick={handleSendQuote}>
+        </lightning-button>
 
         <!-- Finance Details -->
         <!-- Loan Type -->
@@ -198,7 +197,7 @@
                     formatter="currency"
                     step="0.01"
                     name="dof"
-                    data-id="dof-field" 
+                    data-id="dof-field"
                     value={quoteForm.dof}
                     label="DOF"
                     placeholder="$"
@@ -300,21 +299,20 @@
         <!-- Term -->
         <div class="c-row-details">
             <div class="c-detail-labels">
-            <span class="c-label">Term (months)</span>
+                <span class="c-label">Term (months)</span>
             </div>
             <div class="c-detail-fields">
-            <lightning-combobox
-                name="term"
-                label="Term (months)"
-                data-id="term-field"
-                value={quoteForm.term}
-                placeholder="Select a value"
-                options={termOptions}
-                onchange={handleFieldChange}
-                class="slds-form__item"
-                variant="label-hidden"
-                required
-            ></lightning-combobox>
+                <lightning-combobox
+                    name="term"
+                    label="Term (months)"
+                    data-id="term-field"
+                    value={quoteForm.term}
+                    placeholder="Select a value"
+                    options={termOptions}
+                    onchange={handleFieldChange}
+                    class="slds-form__item"
+                    variant="label-hidden"
+                    required></lightning-combobox>
             </div>
         </div>
 
@@ -327,7 +325,7 @@
                 <lightning-combobox
                     name="loanTypeDetail"
                     label="Client Tier"
-                    data-id="term-field"
+                    data-id="loanTypeDetail-field"
                     value={quoteForm.loanTypeDetail}
                     placeholder="Select a value"
                     options={riskGradeOptions}
@@ -347,7 +345,7 @@
                 <lightning-combobox
                     name="securedUnsecured"
                     label="Secured / Unsecured"
-                    data-id="term-field"
+                    data-id="securedUnsecured-field"
                     value={quoteForm.securedUnsecured}
                     placeholder="Select a value"
                     options={securedUnsecuredOptions}
@@ -437,7 +435,8 @@
             <div class="slds-p-around_small">
                 <div class="slds-m-bottom_x-small"><span
                         class="c-detail-subtitle">Loan Purpose</span></div>
-                <lightning-textarea onchange={handleFieldChange} value={quoteForm.loanPurpose}
+                <lightning-textarea onchange={handleFieldChange}
+                    value={quoteForm.loanPurpose}
                     name="loanPurpose"
                     data-id="loanPurpose-field" label="Loan Purpose"
                     variant="label-hidden"

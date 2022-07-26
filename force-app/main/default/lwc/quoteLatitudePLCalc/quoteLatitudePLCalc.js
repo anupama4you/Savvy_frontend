@@ -124,11 +124,11 @@ export default class QuoteLatitudePLCalc extends LightningElement {
 
     // Common calculations
     get netDeposit() {
-        return CalHelper.getNetDeposit(this.quoteForm);
+        this.quoteForm.netDeposit = CalHelper.getNetDeposit(this.quoteForm);
+        return this.quoteForm.netDeposit;
     }
 
     get netRealtimeNaf() {
-        console.log('netRealtimeNaf:::', CalHelper.getNetRealtimeNaf(this.quoteForm))
         return CalHelper.getNetRealtimeNaf(this.quoteForm);
     }
 

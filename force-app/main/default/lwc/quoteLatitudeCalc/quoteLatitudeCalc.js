@@ -37,6 +37,7 @@ export default class QuoteLatitudeCalc extends LightningElement {
                 this.isBusy = false;
                 this.vehicleCategory();
                 this.baseRateCalc();
+                this.dofCalc();
             });
 
         console.log('recordID::', this.recordId)
@@ -70,8 +71,8 @@ export default class QuoteLatitudeCalc extends LightningElement {
 
     // DOF calculation
     dofCalc() {
-            this.quoteForm.dof = CalHelper.getDOF(this.quoteForm);
-            this.quoteForm.maxDof = this.quoteForm.dof;
+        this.quoteForm.dof = CalHelper.getDOF(this.quoteForm);
+        this.quoteForm.maxDof = this.quoteForm.dof;
     }
 
     // Category generation
@@ -149,7 +150,8 @@ export default class QuoteLatitudeCalc extends LightningElement {
 
     // Common calculations
     get netDeposit() {
-        return CalHelper.getNetDeposit(this.quoteForm);
+        this.quoteForm.netDeposit = CalHelper.getNetDeposit(this.quoteForm);
+        return this.quoteForm.netDeposit;
     }
 
     get netRealtimeNaf() {
@@ -257,5 +259,81 @@ export default class QuoteLatitudeCalc extends LightningElement {
         }
 
         // --------------
+    }
+
+    // all Save Buttons actions
+    handleSave(event) {
+        console.log(`event detail : ${event.target.value.toUpperCase()}`);
+        const isNONE = event.target.value.toUpperCase() === "NONE";
+        this.isBusy = true;
+        const loanType = event.target.value.toUpperCase();
+        try {
+            if (!this.messageObj.errors.length > 0) {
+                this.messageObj = QuoteCommons.resetMessage();
+                CalHelper.saveQuote(loanType, this.quoteForm, this.recordId)
+                    .then((data) => {
+                        console.log(
+                            "@@data in handle save quote:",
+                            JSON.stringify(data, null, 2)
+                        );
+                        !isNONE
+                            ? this.messageObj.confirms.push(
+                                {
+                                    field: "confirms",
+                                    message: "Calculation saved successfully."
+                                },
+                                {
+                                    fields: "confirms",
+                                    message: "Product updated successfully."
+                                }
+                            )
+                            : this.messageObj.confirms.push({
+                                field: "confirms",
+                                message: "Calculation saved successfully."
+                            });
+                        // passing data to update quoteform
+                        this.quoteForm["Id"] = data["Id"];
+                    })
+                    .catch((error) => {
+                        console.error("handlePreApproval : ", error);
+                    })
+                    .finally(() => {
+                        this.isBusy = false;
+                    });
+            } else {
+                QuoteCommons.fieldErrorHandler(this, this.messageObj.errors);
+                this.isCalculated = true;
+            }
+        } catch (error) {
+            console.error(error);
+        }
+    }
+
+    // Send Email
+    handleSendQuote() {
+        this.isBusy = true;
+        if (!this.messageObj.errors.length > 0) {
+            this.messageObj = QuoteCommons.resetMessage();
+            CalHelper.sendEmail(this.quoteForm, this.recordId)
+                .then((data) => {
+                    console.log(
+                        "@@data in handle send quote :",
+                        JSON.stringify(data, null, 2)
+                    );
+                    this.messageObj.infos.push({
+                        field: "infos",
+                        message: "Email has been sent to customer."
+                    });
+                })
+                .catch((error) => {
+                    console.error("handleSendQuote: ", error);
+                })
+                .finally(() => {
+                    this.isBusy = false;
+                });
+        } else {
+            QuoteCommons.fieldErrorHandler(this, this.messageObj.errors);
+            this.isCalculated = true;
+        }
     }
 }

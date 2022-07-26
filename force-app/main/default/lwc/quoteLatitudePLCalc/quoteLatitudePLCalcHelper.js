@@ -1,6 +1,8 @@
 import getQuotingData from "@salesforce/apex/quoteLatitudePLCalcController.getQuotingData";
 import getBaseRates from "@salesforce/apex/QuoteController.getBaseRates";
 import calculateRepayments from "@salesforce/apex/QuoteController.calculateRepayments";
+import save from "@salesforce/apex/quoteLatitudePLCalcController.save";
+import sendQuote from "@salesforce/apex/QuoteController.sendQuote";
 import {
   QuoteCommons,
   CommonOptions,
@@ -47,7 +49,13 @@ const QUOTING_FIELDS = new Map([
   ["loanTypeDetail", "Loan_Facility_Type__c"],
   ["securedUnsecured", "Category_Type__c"],
   ["loanPurpose", "Loan_Purpose__c"],
+  ["applicationId", "Application__c"],
+  ["netDeposit", "Net_Deposit__c"],
+  ["baseRate", "Base_Rate__c"],
 ]);
+
+// - TODO: need to map more fields
+const FIELDS_MAPPING_FOR_APEX = new Map([["Id", "Id"], ...QUOTING_FIELDS]);
 
 const RATE_SETTING_NAMES = ["LatitudePersonalRates__c"];
 
@@ -253,7 +261,6 @@ const getRiskGradeOptions = () => {
 // Get Base Rates
 const getMyBaseRates = (quote) =>
   new Promise((resolve, reject) => {
-    console.log(`quote inserted...`, JSON.stringify(quote, null, 2));
     const profile = quote.securedUnsecured === "Secured" ? "Secured" : "Unsecured";
     const p = {
       lender: LENDER_QUOTING,
@@ -324,6 +331,12 @@ const calcDOF = (quote) => {
 const saveQuote = (approvalType, param, recordId) =>
   new Promise((resolve, reject) => {
     if (approvalType && param && recordId) {
+      console.log('test before save:::', QuoteCommons.mapLWCToSObject(
+        param,
+        recordId,
+        LENDER_QUOTING,
+        FIELDS_MAPPING_FOR_APEX
+      ));
       save({
         param: QuoteCommons.mapLWCToSObject(
           param,

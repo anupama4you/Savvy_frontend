@@ -1,6 +1,8 @@
 import getQuotingData from "@salesforce/apex/quoteLatitudeCalcController.getQuotingData";
 import getBaseRates from "@salesforce/apex/QuoteController.getBaseRates";
 import calculateRepayments from "@salesforce/apex/QuoteController.calculateRepayments";
+import save from "@salesforce/apex/quoteLatitudeCalcController.save";
+import sendQuote from "@salesforce/apex/QuoteController.sendQuote";
 import {
   QuoteCommons,
   CommonOptions,
@@ -50,7 +52,16 @@ const QUOTING_FIELDS = new Map([
   ["loanTypeDetail", "Loan_Facility_Type__c"],
   ["securedUnsecured", "Category_Type__c"],
   ["loanPurpose", "Loan_Purpose__c"],
+  ["applicationId", "Application__c"],
+  ["privateSales", "Private_Sales__c"],
+  ["category", "Category_Type__c"],
+  ["applicationId", "Application__c"],
+  ["netDeposit", "Net_Deposit__c"],
+  ["baseRate", "Base_Rate__c"],
 ]);
+
+// - TODO: need to map more fields
+const FIELDS_MAPPING_FOR_APEX = new Map([["Id", "Id"], ...QUOTING_FIELDS]);
 
 const RATE_SETTING_NAMES = ["LatitudeRatesv3__c"];
 
@@ -381,8 +392,9 @@ const getAllTableData = (category) => {
 
 // custom calculations for NAF generations
 const calcNetRealtimeNaf = (quote) => {
+  console.log('variables', quote.price, quote.applicationFee, quote.dof, quote.ppsr, quote.registrationFee)
   let netRealtimeNaf = QuoteCommons.calcNetRealtimeNaf(quote);
-  console.log('realtimeNAF::', netRealtimeNaf);
+  console.log('variables', netRealtimeNaf);
   let r = quote.registrationFee + netRealtimeNaf;
   return r;
 }
@@ -390,6 +402,7 @@ const calcNetRealtimeNaf = (quote) => {
 const calcDOF = (quote) => {
   quote.dof = 0;
   let naf = QuoteCommons.calcNetRealtimeNaf(quote);
+  console.log('CalcDOF::', QuoteCommons.calcNetRealtimeNaf(quote), quote.dof )
   let r = quote.registrationFee + naf;
   console.log('calcDOF', r)
   if (r > 20000) {
@@ -403,8 +416,75 @@ const calcDOF = (quote) => {
     r = 0;
   }
   console.log('calcNetRealtimeDOF', r)
-  return r.toFixed(2);
+  return r;
 }
+
+/**
+ * -- Lee
+ * @param {String} approvalType - string and what type of the button
+ * @param {Object} param - quote form
+ * @param {Id} recordId - recordId
+ */
+const saveQuote = (approvalType, param, recordId) =>
+  new Promise((resolve, reject) => {
+    if (approvalType && param && recordId) {
+      save({
+        param: QuoteCommons.mapLWCToSObject(
+          param,
+          recordId,
+          LENDER_QUOTING,
+          FIELDS_MAPPING_FOR_APEX
+        ),
+        approvalType: approvalType
+      })
+        .then((data) => {
+          resolve(data);
+        })
+        .catch((error) => {
+          reject(`error in saveApproval ${approvalType}: `, error.messages);
+        });
+    } else {
+      reject(
+        new Error(
+          `Something Wrong, appType: ${approvalType}, param: ${JSON.stringify(
+            param,
+            null,
+            2
+          )}, param: ${recordId}`
+        )
+      );
+    }
+  });
+
+/**
+*  -- Lee
+* @param {Object} param - quote form
+* @param {Id}  recordId - record id
+* @returns
+*/
+const sendEmail = (param, recordId) =>
+  new Promise((resolve, reject) => {
+    if (param) {
+      console.log(`@@param in sendEmail ${JSON.stringify(param, null, 2)}`);
+      sendQuote({
+        param: QuoteCommons.mapLWCToSObject(
+          param,
+          recordId,
+          LENDER_QUOTING,
+          FIELDS_MAPPING_FOR_APEX
+        )
+      })
+        .then((data) => {
+          resolve(data);
+        })
+        .catch((error) => {
+          reject(error);
+        });
+    } else {
+      reject(new Error(`Something wrong in sendEmail : param: ${param}`));
+    }
+  });
+
 
 export const CalHelper = {
   options: calcOptions,
@@ -421,5 +501,7 @@ export const CalHelper = {
   getQuoteFees: getQuoteFees,
   getDOF: calcDOF,
   DOF_CALC_FIELDS: DOF_CALC_FIELDS,
-  getAllTableData: getAllTableData
+  getAllTableData: getAllTableData,
+  saveQuote: saveQuote,
+  sendEmail: sendEmail
 };
