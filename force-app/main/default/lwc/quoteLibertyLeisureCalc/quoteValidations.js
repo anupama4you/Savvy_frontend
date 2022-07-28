@@ -151,7 +151,7 @@ const validate = (quote, settings, messages, isApproval) => {
       message: "LTV value is required."
     });
   } else {
-    const ltvLimit = 150;
+    let ltvLimit = 150;
     if (quote.realtimeNaf < 10000) {
       if ('AA' === quote.riskGrade) {
         ltvLimit = 120;
@@ -159,7 +159,7 @@ const validate = (quote, settings, messages, isApproval) => {
         ltvLimit = 90;
       }
     }
-    if (this.ltv > ltvLimit) {
+    if (quote.ltv > ltvLimit) {
       warningList.push({
         field: "ltvLimit",
         message: `Maximum value for LTV is ${ltvLimit}%.`

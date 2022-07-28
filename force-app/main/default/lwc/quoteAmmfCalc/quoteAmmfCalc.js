@@ -1,17 +1,17 @@
 import { api, LightningElement, track, wire } from 'lwc';
-import LENDER_LOGO from "@salesforce/resourceUrl/LibertyLogo";
-import BOTTOM_IMAGE from "@salesforce/resourceUrl/LibertyConsumerRates";
+import LENDER_LOGO from "@salesforce/resourceUrl/YamahaLogo";
 import { QuoteCommons } from "c/quoteCommons";
-import { CalHelper } from "./quoteLibertyLeisureCalcHelper";
+import { CalHelper } from "./quoteAmmfCalcHelper";
 import { getRecord } from 'lightning/uiRecordApi';
 import { displayToast } from "c/partnerJsUtils";
 
-export default class QuoteLibertyLeisureCalc extends LightningElement {
-    tableRatesCols = CalHelper.tableRateDataColumns;
+export default class QuoteAmmfCalc extends LightningElement {
+    tableRatesCols = CalHelper.TABLE_DATA_COLUMNS;
     isBusy;
     isBaseRateBusy;
     isCalculated = false;
     category;
+
     @api recordId;
     @track messageObj = QuoteCommons.resetMessage();
     @track quoteForm;
@@ -28,7 +28,7 @@ export default class QuoteLibertyLeisureCalc extends LightningElement {
                 console.log(`Data loaded!`);
                 this.quoteForm = data;
                 console.log(`Data loaded!`, JSON.stringify(this.quoteForm));
-                this.tableRates = CalHelper.getTableRatesData();
+                this.tableRates = CalHelper.getAllTableData();
             })
             .catch((error) => {
                 console.error(JSON.stringify(error, null, 2));
@@ -36,8 +36,9 @@ export default class QuoteLibertyLeisureCalc extends LightningElement {
             })
             .finally(() => {
                 this.isBusy = false;
-                this.baseRateCalc();
-
+                // this.vehicleCategory();
+                // this.baseRateCalc();
+                // this.dofCalc();
             });
 
         console.log('recordID::', this.recordId)
@@ -51,6 +52,8 @@ export default class QuoteLibertyLeisureCalc extends LightningElement {
     // Base Rate
     baseRateCalc() {
         this.isBaseRateBusy = true;
+
+        console.log('baseRateCalc::', this.quoteForm.goodsType, this.quoteForm.loanTypeDetail, this.quoteForm.carAge);
         console.log('quote form::', JSON.stringify(this.quoteForm, null, 2));
         CalHelper.baseRates(this.quoteForm)
             .then((data) => {
@@ -90,48 +93,32 @@ export default class QuoteLibertyLeisureCalc extends LightningElement {
         return CalHelper.options.loanProducts;
     }
 
-    get paymentTypeOptions() {
-        return CalHelper.options.paymentTypes;
+    get loanTypeDetailOptions() {
+        return CalHelper.options.loanTypeDetails;
     }
 
-    get securedUnsecuredOptions() {
-        return CalHelper.options.securedUnsecured;
+    get assetTypeOptions() {
+        return CalHelper.options.assetTypes;
     }
 
     get termOptions() {
         return CalHelper.options.terms;
     }
 
-    get classOptions() {
-        return CalHelper.options.classes;
+    get privateSalesOptions() {
+        return CalHelper.options.privateSales;
     }
 
-    get vehicleTypes() {
-        return CalHelper.options.vehicleTypes;
-    }
-
-    get propertyOwners() {
-        return CalHelper.options.propertyOwners;
-    }
-
-    get vehicleConditionOptions() {
-        return CalHelper.options.vehicleConditions;
-    }
-
-    get vehicleAges() {
+    get assetAgeOptions() {
         return CalHelper.options.vehicleAges;
     }
 
-    get riskGrades() {
-        return CalHelper.options.riskGrades;
+    get paymentTypeOptions() {
+        return CalHelper.options.paymentTypes;
     }
 
     get logoUrl() {
         return LENDER_LOGO;
-    }
-
-    get bottomImageURL() {
-        return BOTTOM_IMAGE;
     }
 
     // Common calculations
@@ -141,13 +128,8 @@ export default class QuoteLibertyLeisureCalc extends LightningElement {
     }
 
     get netRealtimeNaf() {
-        this.quoteForm.realtimeNaf = CalHelper.getNetRealtimeNaf(this.quoteForm);
-        return this.quoteForm.realtimeNaf;
-    }
-
-    get realtimeEqFee() {
-        this.quoteForm.eqfee = CalHelper.getRealtimeEqFee(this.quoteForm);
-        return this.quoteForm.eqfee;
+        console.log('netRealtimeNaf:::', CalHelper.getNetRealtimeNaf(this.quoteForm))
+        return CalHelper.getNetRealtimeNaf(this.quoteForm);
     }
 
     get disableAction() {
@@ -212,6 +194,7 @@ export default class QuoteLibertyLeisureCalc extends LightningElement {
             JSON.stringify(this.quoteForm, null, 2)
         );
         this.baseRateCalc();
+        this.vehicleCategory();
     }
 
     // Events
@@ -228,13 +211,15 @@ export default class QuoteLibertyLeisureCalc extends LightningElement {
         fldName === "term"
             ? (this.quoteForm[fldName] = parseInt(v))
             : (this.quoteForm[fldName] = v);
-        fldName === "ltv"
-            ? (this.quoteForm[fldName] = v.toString())
-            : (this.quoteForm[fldName] = v);
         console.log(`this.quoteForm:`, JSON.stringify(this.quoteForm, null, 2));
         // --------------
         // Trigger events
         // --------------
+
+        // Vehicle category generation
+        if (fldName === 'vehicleType') {
+            this.vehicleCategory();
+        }
 
         // Base Rate Calculation
         if (CalHelper.BASE_RATE_FIELDS.includes(fldName)) {
@@ -242,7 +227,10 @@ export default class QuoteLibertyLeisureCalc extends LightningElement {
         }
 
         // DOF calculation
-        if (fldName === "applicationFee") this.dofCalc();
+        if (CalHelper.DOF_CALC_FIELDS.includes(fldName)) {
+            this.dofCalc();
+        }
+
         // --------------
     }
 
@@ -255,10 +243,6 @@ export default class QuoteLibertyLeisureCalc extends LightningElement {
         try {
             if (!this.messageObj.errors.length > 0) {
                 this.messageObj = QuoteCommons.resetMessage();
-                console.log(
-                    "@@QuoteForm before saving :",
-                    JSON.stringify(this.quoteForm, null, 2)
-                );
                 CalHelper.saveQuote(loanType, this.quoteForm, this.recordId)
                     .then((data) => {
                         console.log(

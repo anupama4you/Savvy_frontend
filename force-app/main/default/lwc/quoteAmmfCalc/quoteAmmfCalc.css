@@ -1,0 +1,6 @@
+/* Calculators styles */
+@import 'c/quoteCommonsStyles';
+
+.THIS .ratesTable th {
+    text-align: center !important;
+}
