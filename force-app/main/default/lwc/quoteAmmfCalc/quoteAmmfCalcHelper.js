@@ -44,7 +44,7 @@ const QUOTING_FIELDS = new Map([
   ["monthlyFee", "Monthly_Fee__c"],
   ["term", "Term__c"],
   ["privateSales", "Private_Sales__c"],
-  ["assetAge", "Vehicle_Age__c"],
+  ["assetAge", "Customer_Profile__c"],
   ["paymentType", "Payment__c"],
   ["maxRate", "Base_Rate__c"],
   ["baseRate", "Base_Rate__c"],
@@ -73,10 +73,7 @@ const BASE_RATE_FIELDS = [
 ];
 
 const DOF_CALC_FIELDS = [
-  "price",
-  "deposit",
-  "tradeIn",
-  "payoutOn"
+  "dof"
 ];
 
 const calculate = (quote) =>
@@ -103,7 +100,7 @@ const calculate = (quote) =>
       const p = {
         lender: LENDER_QUOTING,
         productLoanType: quote.loanProduct,
-        customerProfile: profile,
+        customerProfile: quote.assetAge,
         privateSales: quote.privateSales,
         totalAmount: totalAmount,
         totalInsurance: QuoteCommons.calcTotalInsuranceType(quote),
@@ -190,10 +187,10 @@ const reset = (recordId) => {
     tradeIn: null,
     payoutOn: null,
     maxApplicationFee: null,
-    dof: null,
+    dof: 0.0,
     maxDof: null,
     residual: null,
-    term: calcOptions.terms[0].value,
+    term: calcOptions.terms[4].value,
     privateSales: calcOptions.privateSales[1].value,
     paymentType: calcOptions.paymentTypes[0].value,
     loanTypeDetail: calcOptions.loanTypeDetails[0].value,
@@ -321,26 +318,6 @@ const calcNetRealtimeNaf = (quote) => {
   return r;
 }
 
-const calcDOF = (quote) => {
-  quote.dof = 0;
-  let naf = QuoteCommons.calcNetRealtimeNaf(quote);
-  console.log('CalcDOF::', QuoteCommons.calcNetRealtimeNaf(quote), quote.dof)
-  let r = quote.registrationFee + naf;
-  console.log('calcDOF', r)
-  if (r > 20000) {
-    r = 1650.00;
-  } else if (r > 0) {
-    r = r * 0.15;
-    if (r >= 990) {
-      r = 990.0;
-    }
-  } else {
-    r = 0;
-  }
-  console.log('calcNetRealtimeDOF', r)
-  return r;
-}
-
 /**
  * -- Lee
  * @param {String} approvalType - string and what type of the button
@@ -420,7 +397,6 @@ export const CalHelper = {
   getNetRealtimeNaf: calcNetRealtimeNaf,
   getNetDeposit: QuoteCommons.calcNetDeposit,
   getQuoteFees: getQuoteFees,
-  getDOF: calcDOF,
   DOF_CALC_FIELDS: DOF_CALC_FIELDS,
   getAllTableData: getAllTableData,
   saveQuote: saveQuote,

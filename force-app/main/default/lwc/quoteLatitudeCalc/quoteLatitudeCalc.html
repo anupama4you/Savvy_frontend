@@ -434,44 +434,26 @@
         </div>
 
         <!-- Rates -->
-        <!-- Max Rate -->
-        <div class="c-row-details">
-            <div class="c-detail-labels"><span class="c-label">Max Rate</span></div>
-            <div class="slds-col slds-size_8-of-12 c-base-rate">
-                <lightning-formatted-number
-                    value={quoteForm.maxRate}
-                    format-style="percent-fixed"
-                    minimum-fraction-digits="2"
-                    class="c-read-only-field"></lightning-formatted-number>
-                <template if:true={isBaseRateBusy}>
-                    <span class="c-status-icon">
-                        <lightning-dynamic-icon
-                            type="eq"
-                            option="play"
-                            alternative-text="Recording in progress">
-                        </lightning-dynamic-icon>
-                    </span>
-                </template>
-            </div>
-        </div>
         <!-- Base Rate -->
         <div class="c-row-details">
             <div class="c-detail-labels"><span class="c-label">Base Rate</span></div>
             <div class="slds-col slds-size_8-of-12 c-base-rate">
-                <lightning-formatted-number
-                    value={quoteForm.baseRate}
-                    format-style="percent-fixed"
-                    minimum-fraction-digits="2"
+                <lightning-formatted-number value={quoteForm.baseRate}
+                    format-style="percent-fixed" minimum-fraction-digits="2"
                     class="c-read-only-field"></lightning-formatted-number>
                 <template if:true={isBaseRateBusy}>
                     <span class="c-status-icon">
-                        <lightning-dynamic-icon
-                            type="eq"
-                            option="play"
+                        <lightning-dynamic-icon type="eq" option="play"
                             alternative-text="Recording in progress">
                         </lightning-dynamic-icon>
                     </span>
                 </template>
+                <span class="c-max-rate">
+                    Max.
+                    <lightning-formatted-number value={quoteForm.maxRate}
+                        format-style="percent-fixed" minimum-fraction-digits="2"
+                        class="c-read-only-field"></lightning-formatted-number>
+                </span>
             </div>
         </div>
         <!-- Client Rate -->

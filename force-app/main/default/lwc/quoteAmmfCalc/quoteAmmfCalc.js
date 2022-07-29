@@ -36,9 +36,7 @@ export default class QuoteAmmfCalc extends LightningElement {
             })
             .finally(() => {
                 this.isBusy = false;
-                // this.vehicleCategory();
-                // this.baseRateCalc();
-                // this.dofCalc();
+                this.baseRateCalc();
             });
 
         console.log('recordID::', this.recordId)
@@ -68,12 +66,6 @@ export default class QuoteAmmfCalc extends LightningElement {
             .finally(() => {
                 this.isBaseRateBusy = false;
             });
-    }
-
-    // DOF calculation
-    dofCalc() {
-        this.quoteForm.dof = CalHelper.getDOF(this.quoteForm);
-        this.quoteForm.maxDof = this.quoteForm.dof;
     }
 
     // Quote Fee calculation
@@ -128,8 +120,8 @@ export default class QuoteAmmfCalc extends LightningElement {
     }
 
     get netRealtimeNaf() {
-        console.log('netRealtimeNaf:::', CalHelper.getNetRealtimeNaf(this.quoteForm))
-        return CalHelper.getNetRealtimeNaf(this.quoteForm);
+        this.quoteForm.realTimeNaf = CalHelper.getNetRealtimeNaf(this.quoteForm);
+        return this.quoteForm.realTimeNaf;
     }
 
     get disableAction() {
@@ -194,7 +186,6 @@ export default class QuoteAmmfCalc extends LightningElement {
             JSON.stringify(this.quoteForm, null, 2)
         );
         this.baseRateCalc();
-        this.vehicleCategory();
     }
 
     // Events
@@ -211,27 +202,37 @@ export default class QuoteAmmfCalc extends LightningElement {
         fldName === "term"
             ? (this.quoteForm[fldName] = parseInt(v))
             : (this.quoteForm[fldName] = v);
+
+        // Asset age is changed according to the Private Sales
+        fldName === "privateSales"
+            ? (v === 'Y') 
+                ? (this.quoteForm.assetAge = 'Used') 
+                : null 
+            : null
+
+        // Loantype is changed according to Customerprofile 
+        fldName === "loanType"
+        ? (v != 'Consumer Loan') 
+            ? (this.quoteForm.loanTypeDetail = 'Commercial') 
+            : (this.quoteForm.loanTypeDetail = '') 
+        : null
+
         console.log(`this.quoteForm:`, JSON.stringify(this.quoteForm, null, 2));
         // --------------
         // Trigger events
         // --------------
 
-        // Vehicle category generation
-        if (fldName === 'vehicleType') {
-            this.vehicleCategory();
-        }
-
         // Base Rate Calculation
         if (CalHelper.BASE_RATE_FIELDS.includes(fldName)) {
             this.baseRateCalc();
         }
+    }
 
-        // DOF calculation
-        if (CalHelper.DOF_CALC_FIELDS.includes(fldName)) {
-            this.dofCalc();
+    handleFieldFocusOut(event) {
+        this.quoteForm.maxDof = CalHelper.lenderSettings.DOF_C;
+        if (this.quoteForm.dof == null || this.quoteForm.dof == 0 || this.quoteForm.dof > this.quoteForm.maxDof) {
+            this.quoteForm.dof = this.quoteForm.maxDof;
         }
-
-        // --------------
     }
 
     // all Save Buttons actions
