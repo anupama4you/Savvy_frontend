@@ -15,6 +15,7 @@ export default class QuoteAmmfCalc extends LightningElement {
     @api recordId;
     @track messageObj = QuoteCommons.resetMessage();
     @track quoteForm;
+    @track customerProfileOptions = [];
 
     // table data
     @track tableRates;
@@ -23,6 +24,7 @@ export default class QuoteAmmfCalc extends LightningElement {
         console.log(`connectedCallback...`);
         this.isBusy = true;
         this.reset();
+        this.loadCustomerProfile();
         CalHelper.load(this.recordId)
             .then((data) => {
                 console.log(`Data loaded!`);
@@ -45,6 +47,16 @@ export default class QuoteAmmfCalc extends LightningElement {
     // lifecycle hook - after rendering all components(child+parent), will triggered
     renderedCallback() {
         QuoteCommons.resetValidateFields(this);
+    }
+
+    loadCustomerProfile() {
+        if(this.quoteForm.loanProduct === "Consumer Loan"){
+            this.customerProfileOptions = CalHelper.options.loanTypeDetails1;
+            this.quoteForm.loanTypeDetail = CalHelper.options.loanTypeDetails1[0].value;
+        }else {
+            this.customerProfileOptions = CalHelper.options.loanTypeDetails2;
+            this.quoteForm.loanTypeDetail = CalHelper.options.loanTypeDetails2[1].value;
+        }
     }
 
     // Base Rate
@@ -86,7 +98,11 @@ export default class QuoteAmmfCalc extends LightningElement {
     }
 
     get loanTypeDetailOptions() {
-        return CalHelper.options.loanTypeDetails;
+        if(this.quoteForm.loanProduct === "Consumer Loan"){
+            return CalHelper.options.loanTypeDetails1;
+        }else{
+            return CalHelper.options.loanTypeDetails2;
+        }
     }
 
     get assetTypeOptions() {
@@ -120,8 +136,8 @@ export default class QuoteAmmfCalc extends LightningElement {
     }
 
     get netRealtimeNaf() {
-        this.quoteForm.realTimeNaf = CalHelper.getNetRealtimeNaf(this.quoteForm);
-        return this.quoteForm.realTimeNaf;
+        this.quoteForm.realtimeNaf = CalHelper.getNetRealtimeNaf(this.quoteForm);
+        return this.quoteForm.realtimeNaf;
     }
 
     get disableAction() {
@@ -211,11 +227,9 @@ export default class QuoteAmmfCalc extends LightningElement {
             : null
 
         // Loantype is changed according to Customerprofile 
-        fldName === "loanType"
-        ? (v != 'Consumer Loan') 
-            ? (this.quoteForm.loanTypeDetail = 'Commercial') 
-            : (this.quoteForm.loanTypeDetail = '') 
-        : null
+        if (fldName === "loanProduct"){
+            this.loadCustomerProfile();
+        }
 
         console.log(`this.quoteForm:`, JSON.stringify(this.quoteForm, null, 2));
         // --------------

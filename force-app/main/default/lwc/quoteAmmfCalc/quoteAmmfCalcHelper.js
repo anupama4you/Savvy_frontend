@@ -13,9 +13,7 @@ import { Validations } from "./quoteValidations";
 // Default settings
 let lenderSettings = {};
 let tableRatesData = [];
-let allTableRatesData = { 'Diamond Plus': null, 'Diamond': null, 'Sapphire': null, 'Ruby': null, 'Emerald': null };
-let rates3List = [];
-let riskGradeOptionsData = [];
+let realtimeNaf = 0.0;
 // all table types defined
 let formattedTableData = [];
 
@@ -49,6 +47,7 @@ const QUOTING_FIELDS = new Map([
   ["maxRate", "Base_Rate__c"],
   ["baseRate", "Base_Rate__c"],
   ["clientRate", "Client_Rate__c"],
+  ["realtimeNaf", "NAF__c"],
   ["netDeposit", "Net_Deposit__c"],
 ]);
 
@@ -66,10 +65,17 @@ const SETTING_FIELDS = new Map([
 ]);
 
 const BASE_RATE_FIELDS = [
-  "customerProfile",
   "loanTypeDetail",
-  "carAge",
-  "vehicleType"
+  "assetAge",
+  "privateSales",
+  "dof",
+  "price",
+  "ppsr",
+  "netDeposit",
+  "applicationFee",
+  "deposit",
+  "tradeIn",
+  "payoutOn"
 ];
 
 const DOF_CALC_FIELDS = [
@@ -91,12 +97,10 @@ const calculate = (quote) =>
       reject(res);
     } else {
       console.log('quote::', quote)
-      // Prepare params
-      const profile = quote.securedUnsecured === "Secured" ? "Secured" : "Unsecured";
       // new total calculated amount
       const totalAmount = calcNetRealtimeNaf(quote);
       // commRate is constant for eastimated Commission
-      const commR = 2.25;
+      const commR = getYamahaCommission(quote);
       const p = {
         lender: LENDER_QUOTING,
         productLoanType: quote.loanProduct,
@@ -106,6 +110,7 @@ const calculate = (quote) =>
         totalInsurance: QuoteCommons.calcTotalInsuranceType(quote),
         clientRate: quote.clientRate,
         baseRate: quote.baseRate,
+        maxRate: quote.maxRate,
         paymentType: quote.paymentType,
         term: quote.term,
         dof: quote.dof,
@@ -143,12 +148,16 @@ const calcOptions = {
   loanTypes: CommonOptions.loanTypes,
   paymentTypes: CommonOptions.paymentTypes,
   loanProducts: CommonOptions.fullLoanProducts,
-  loanTypeDetails: [
+  loanTypeDetails1: [
     { label: "--None--", value: "" },
     { label: "Prime Plus", value: "Prime Plus" },
     { label: "Prime", value: "Prime" },
     { label: "Standard", value: "Standard" },
     { label: "Limited", value: "Limited" }
+  ],
+  loanTypeDetails2: [
+    { label: "--None--", value: "" },
+    { label: "Commercial", value: "Commercial" }
   ],
   privateSales: CommonOptions.yesNo,
   vehicleAges: [
@@ -193,7 +202,7 @@ const reset = (recordId) => {
     term: calcOptions.terms[4].value,
     privateSales: calcOptions.privateSales[1].value,
     paymentType: calcOptions.paymentTypes[0].value,
-    loanTypeDetail: calcOptions.loanTypeDetails[0].value,
+    loanTypeDetail: calcOptions.loanTypeDetails1[0].value,
     commissions: QuoteCommons.resetResults(),
     registrationFee: 3.40
   };
@@ -249,13 +258,12 @@ const loadData = (recordId) =>
 const getMyBaseRates = (quote) =>
   new Promise((resolve, reject) => {
     console.log(`quote inserted...`, JSON.stringify(quote, null, 2));
-    const profile = quote.category;
     const p = {
       lender: LENDER_QUOTING,
-      customerProfile: profile,
+      customerProfile: quote.assetAge,
       loanTypeDetail: quote.loanTypeDetail,
-      goodsType: quote.category,
-      carAge: quote.carAge,
+      totalAmount: calcNetRealtimeNaf(quote),
+      privateSales: quote.privateSales,
       hasMaxRate: true
     };
     console.log(`getMyBaseRates...`, JSON.stringify(p, null, 2));
@@ -287,7 +295,7 @@ const getAllTableData = () => {
   console.log(`@@tableData:`, JSON.stringify(tableRatesData, null, 2));
   let row = [];
   tableRatesData.forEach((obj, index, map) => {
-    calcOptions.loanTypeDetails.forEach((profile, index, map) => {
+    calcOptions.loanTypeDetails1.forEach((profile, index, map) => {
       if (profile.value === obj['Profile__c']) {
         row.push({
           'Profile__c': profile.value,
@@ -311,10 +319,46 @@ const getAllTableData = () => {
 
 // custom calculations for NAF generations
 const calcNetRealtimeNaf = (quote) => {
-  console.log('variables', quote.price, quote.applicationFee, quote.dof, quote.ppsr, quote.registrationFee)
-  let netRealtimeNaf = QuoteCommons.calcNetRealtimeNaf(quote);
-  console.log('variables', netRealtimeNaf);
-  let r = netRealtimeNaf;
+  let realtimeNaf = QuoteCommons.calcNetRealtimeNaf(quote);
+  return realtimeNaf;
+}
+
+// Yamaha Commission Rate 
+const getYamahaCommission = (quote) => {
+  let r = 0.0;
+  if (quote.maxRate != null && quote.baseRate != null && quote.clientRate != null) {
+    if ('Commercial' === quote.loanTypeDetail) {
+      r = 5.0;
+    } else {
+      r = 5.0;
+      let d =
+        (Math.abs(quote.maxRate - quote.baseRate) -
+        Math.abs(quote.clientRate - quote.baseRate)) * 100;
+      let f = 1.0;
+      if (d >= 1 && d <= 20) {
+        f = 0.9;
+      } else if (d >= 21 && d <= 40) {
+        f = 0.8;
+      } else if (d >= 41 && d <= 60) {
+        f = 0.7;
+      } else if (d >= 61 && d <= 80) {
+        f = 0.6;
+      } else if (d >= 81 && d <= 100) {
+        f = 0.5;
+      } else if (d >= 101 && d <= 120) {
+        f = 0.4;
+      } else if (d >= 121 && d <= 140) {
+        f = 0.3;
+      } else if (d >= 141 && d <= 160) {
+        f = 0.2;
+      } else if (d >= 161 && d <= 180) {
+        f = 0.1;
+      } else if (d >= 181) {
+        f = 0.0;
+      }
+      r *= f;
+    }
+  }
   return r;
 }
 

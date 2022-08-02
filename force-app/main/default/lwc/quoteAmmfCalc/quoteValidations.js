@@ -35,7 +35,7 @@ const validate = (quote, messages, isApproval) => {
   if (!quote.price) {
     errorList.push({
       field: "price",
-      message: "Vehicle Price cannot be Zero."
+      message: "Car Price cannot be Zero."
     });
   }
 
@@ -137,8 +137,8 @@ const validate = (quote, messages, isApproval) => {
       "🚀 ~ file: quoteValidations.js ~ line 136 ~ validate ~ quote.privateSales",
       quote.privateSales
     );
-    if (quote.privateSales === 'Y' && quote.assetAge === 'Used') {
-      errorList.push({
+    if (quote.privateSales === 'Y' && quote.assetAge != 'Used') {
+      warningList.push({
         field: "baseRate",
         message: "Asset Age should be \"Used\" for Private Sales"
       });
@@ -153,7 +153,7 @@ const validate = (quote, messages, isApproval) => {
       if (quote.price > 0) {
         const p = quote.netDeposit / quote.price * 100;
         if (p < 10) {
-          errorList.push({
+          warningList.push({
             field: "privateSales",
             message: `10% minimum deposit should be required. Current percentage: ${p.toFixed(2)}%`
           });
