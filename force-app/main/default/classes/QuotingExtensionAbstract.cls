@@ -706,6 +706,7 @@ public abstract class QuotingExtensionAbstract {
   public void calculateGAP() {
     System.debug('calculateGAP...');
     if (this.getIsGAPCalculated()) {
+      System.debug('state:    >>> ' + this.Opp.Application__r.State__c);
       Liberty_VEI_Setting__c a = QuotingToolHelper.getLibertyVEISetting(this.Opp.Application__r.State__c, this.gapLevel);
       //System.debug(this.Opp.Application__r.State__c + '|' + veiLevel + '|' + a);
       this.gap = 0.00;
@@ -731,6 +732,7 @@ public abstract class QuotingExtensionAbstract {
       param.maritalStatus = Opp.Application__r.Marital_Status_1__c;
       param.noOfDependants = Opp.Application__r.No_of_Dependants_1__c;
       param.noOfPeople = Opp.Application__r.No_of_People__c;
+      System.debug('param    >>>> '+JSON.serialize(param));
       try {
         QuotingCalculation.LibertyLPI p = QuotingCalculation.calculateLibertyLPI(param);
         cci = p.premium;

@@ -1,7 +1,7 @@
 @isTest
 public class CloudDocsHelperTest {
   
-  @isTest
+  @isTest(SeeAllData=true)
   static void t1() {
     Custom_Opportunity__c opp = Test_DataGeneratorHelper.buildOpp(true);
     Test.startTest();

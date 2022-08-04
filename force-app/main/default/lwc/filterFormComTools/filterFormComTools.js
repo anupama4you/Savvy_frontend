@@ -99,7 +99,7 @@ export default class FilterFormComTools extends LightningElement {
 
   handleFieldChange(event) {
     this.params[event.target.name] = event.detail ? event.detail.value : "";
-    console.log(`this.params:`, JSON.stringify(this.params));
+    // console.log(`this.params:`, JSON.stringify(this.params));
   }
 
   handleSearch(event) {

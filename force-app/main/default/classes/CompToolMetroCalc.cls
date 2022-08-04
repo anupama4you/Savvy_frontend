@@ -21,10 +21,12 @@ public class CompToolMetroCalc extends CompToolLenderCalcAbstract {
     this.quoteParam.totalAmount = this.getTotalAmount();
     this.quoteParam.term = this.param.term;
     this.quoteParam.carAge = this.param.assetAge;
+
     this.quoteParam.brokeragePer = 0.00;
     if (this.lenderSettings != null && this.lenderSettings.Brokerage_Base__c > 0.00) {
       this.quoteParam.brokeragePer = this.lenderSettings.Brokerage_Base__c;
     }
+    
     this.quoteParam.privateSales = 'Private'.equals(param.purchaseType)? 'Y' : 'N';
     this.quoteParam.saleBacksPurchased = 'N';
     this.quoteParam.condition = this.param.assetAge > 0? 'Used' : 'New/Demo';

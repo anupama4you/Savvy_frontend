@@ -13,6 +13,20 @@ public class CompToolLenderCalcTest {
     'Car', 'Motorbike', 'Boat', 'Caravan', 'Truck', 'Personal'
   };
 
+  public static List<String> creditScoreValues = new List<String>{
+    '853 - 1200', '735 - 852', '661 - 734', '500 - 660', '0 - 499'
+  };
+
+
+  @IsTest
+  static void calculateAffordable() {
+    CompToolLenderCalcAbstract.FilterParams p = buildFilterParameter();
+    Test.startTest();
+    Calculator__c c = getCalculator('Affordable');
+    ComparisonToolsController.calculate(c, p);
+    Test.stopTest();
+  }
+
   @IsTest
   static void calculateAfsCommercial() {
     CompToolLenderCalcAbstract.FilterParams p = buildFilterParameter();
@@ -94,6 +108,15 @@ public class CompToolLenderCalcTest {
   }
 
   @IsTest
+  static void calculateAngle() {
+    CompToolLenderCalcAbstract.FilterParams p = buildFilterParameter();
+    Test.startTest();
+    Calculator__c c = getCalculator('Angle Finance');
+    ComparisonToolsController.calculate(c, p);
+    Test.stopTest();
+  }
+
+  @IsTest
   static void calculateAnzCommercial() {
     CompToolLenderCalcAbstract.FilterParams p = buildFilterParameter();
     Test.startTest();
@@ -114,6 +137,28 @@ public class CompToolLenderCalcTest {
     // Residency
     for (String residency : residencyValues) {
       p.residentialStatus = residency;
+      ComparisonToolsController.calculate(c, p);
+    }
+    Test.stopTest();
+  }
+
+  @IsTest
+  static void calculateApf() {
+    CompToolLenderCalcAbstract.FilterParams p = buildFilterParameter();
+    Test.startTest();
+    Calculator__c c = getCalculator('APF');
+    ComparisonToolsController.calculate(c, p);
+    Test.stopTest();
+  }
+
+  @IsTest
+  static void calculateAzora() {
+    CompToolLenderCalcAbstract.FilterParams p = buildFilterParameter();
+    Test.startTest();
+    Calculator__c c = getCalculator('Azora Consumer');
+    // Credit Score
+    for (String creditScore : creditScoreValues) {
+      p.creditScore = creditScore;
       ComparisonToolsController.calculate(c, p);
     }
     Test.stopTest();
@@ -142,6 +187,24 @@ public class CompToolLenderCalcTest {
       p.residentialStatus = residency;
       ComparisonToolsController.calculate(c, p);
     }
+    Test.stopTest();
+  }
+
+  @IsTest
+  static void calculateCarStart() {
+    CompToolLenderCalcAbstract.FilterParams p = buildFilterParameter();
+    Test.startTest();
+    Calculator__c c = getCalculator('CarStart');
+    ComparisonToolsController.calculate(c, p);
+    Test.stopTest();
+  }
+
+  @IsTest
+  static void calculateCommEquityGroup() {
+    CompToolLenderCalcAbstract.FilterParams p = buildFilterParameter();
+    Test.startTest();
+    Calculator__c c = getCalculator('Commercial Equity Group');
+    ComparisonToolsController.calculate(c, p);
     Test.stopTest();
   }
 
@@ -197,6 +260,40 @@ public class CompToolLenderCalcTest {
       p.creditHistory = ch;
       ComparisonToolsController.calculate(c, p);
     }
+    Test.stopTest();
+  }
+
+  @IsTest
+  static void calculateGroupAndGeneral() {
+    CompToolLenderCalcAbstract.FilterParams p = buildFilterParameter();
+    Test.startTest();
+    Calculator__c c = getCalculator('Group and General');
+    ComparisonToolsController.calculate(c, p);
+    Test.stopTest();
+  }
+
+  @IsTest
+  static void calculateGrowAsset() {
+    CompToolLenderCalcAbstract.FilterParams p = buildFilterParameter();
+    Test.startTest();
+    Calculator__c c = getCalculator('Grow Asset');
+    for (String a : assetTypeValues) {
+      // Credit Score
+      for (String creditScore : creditScoreValues) {
+        p.assetType = a;
+        p.creditScore = creditScore;
+        ComparisonToolsController.calculate(c, p);
+      }
+    }
+    Test.stopTest();
+  }
+
+  @IsTest
+  static void calculateGrowBusiness() {
+    CompToolLenderCalcAbstract.FilterParams p = buildFilterParameter();
+    Test.startTest();
+    Calculator__c c = getCalculator('Grow Business Loan');
+    ComparisonToolsController.calculate(c, p);
     Test.stopTest();
   }
 
@@ -372,6 +469,15 @@ public class CompToolLenderCalcTest {
   }
 
   @IsTest
+  static void calculateMorris() {
+    CompToolLenderCalcAbstract.FilterParams p = buildFilterParameter();
+    Test.startTest();
+    Calculator__c c = getCalculator('Morris');
+    ComparisonToolsController.calculate(c, p);
+    Test.stopTest();
+  }
+
+  @IsTest
   static void calculateNowFinance() {
     CompToolLenderCalcAbstract.FilterParams p = buildFilterParameter();
     Test.startTest();
@@ -532,6 +638,77 @@ public class CompToolLenderCalcTest {
       p.creditHistory = ch;
       ComparisonToolsController.calculate(c, p);
     }
+    Test.stopTest();
+  }
+
+  @IsTest
+  static void calculateSelfco() {
+    CompToolLenderCalcAbstract.FilterParams p = buildFilterParameter();
+    Test.startTest();
+    Calculator__c c = getCalculator('Selfco');
+    ComparisonToolsController.calculate(c, p);
+    Test.stopTest();
+  }
+
+  @IsTest
+  static void calculateShiftAsset() {
+    CompToolLenderCalcAbstract.FilterParams p = buildFilterParameter();
+    Test.startTest();
+    Calculator__c c = getCalculator('Shift Asset');
+    // Asset Age
+    List<Integer> ageValues = new List<Integer>{
+      0, 10, 12, 20
+    };
+    p.purchaseType = 'Refinance';
+    for (Integer age : ageValues) {
+      p.assetAge = age;
+      ComparisonToolsController.calculate(c, p);
+    }    
+    Test.stopTest();
+  }
+
+  @IsTest
+  static void calculateShiftOdr() {
+    CompToolLenderCalcAbstract.FilterParams p = buildFilterParameter();
+    Test.startTest();
+    Calculator__c c = getCalculator('Shift ODR');
+    ComparisonToolsController.calculate(c, p);
+    Test.stopTest();
+  }
+
+  @IsTest
+  static void calculateSilverChef() {
+    CompToolLenderCalcAbstract.FilterParams p = buildFilterParameter();
+    Test.startTest();
+    Calculator__c c = getCalculator('Silver Chef');
+    ComparisonToolsController.calculate(c, p);
+    Test.stopTest();
+  }
+
+  @IsTest
+  static void calculateSocietyOne() {
+    CompToolLenderCalcAbstract.FilterParams p = buildFilterParameter();
+    Test.startTest();
+    Calculator__c c = getCalculator('Society One');
+    ComparisonToolsController.calculate(c, p);
+    Test.stopTest();
+  }
+
+  @IsTest
+  static void calculateUme() {
+    CompToolLenderCalcAbstract.FilterParams p = buildFilterParameter();
+    Test.startTest();
+    Calculator__c c = getCalculator('UME Loans');
+    ComparisonToolsController.calculate(c, p);
+    Test.stopTest();
+  }
+
+  @IsTest
+  static void calculateWestpac() {
+    CompToolLenderCalcAbstract.FilterParams p = buildFilterParameter();
+    Test.startTest();
+    Calculator__c c = getCalculator('Westpac');
+    ComparisonToolsController.calculate(c, p);
     Test.stopTest();
   }
 

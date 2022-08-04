@@ -10,3 +10,12 @@
 .c-slider.slds-form-element.slds-form-element__label.slds-slider-label.slds-slider-label__range {
   display: none;
 }
+
+.c-field.slds-form-element__label {
+  font-weight: 700;
+}
+
+.c-actions {
+  text-align: end;
+  padding-top: 20px;
+}

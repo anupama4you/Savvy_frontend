@@ -1,4 +1,5 @@
 import { QuoteCommons } from "c/quoteCommons";
+import { CalHelper } from "./quoteWisrVLCalcHelper";
 
 // Validation Types: ERROR, WARNING, INFO
 /**
@@ -14,10 +15,8 @@ const validate = (quote, messages) => {
   let errorList = r.errors;
   let warningList = r.warnings;
 
-  const baseRate = quote["baseRate"];
-
   console.log(
-    "🚀 ~ file: quoteValidations.js ~ line 21 ~ validate ~ quote", quote);
+    "🚀 ~ file: quoteValidations.js ~ line 18 ~ validate ~ quote", quote);
 
   if (quote.price === null || !(quote.price > 0.0)) {
     errorList.push({
@@ -25,10 +24,18 @@ const validate = (quote, messages) => {
       message: "Vehicle Price cannot be Zero."
     });
   }
+
+  if (quote.naf === null || quote.naf < 5000 || quote.naf > 8000) {
+    warningList.push({
+      field: "naf",
+      message: "Loan amount should be between $5,000 and $80,000."
+    });
+  }
+
   if (quote.applicationFee === null || !(quote.applicationFee > 0.0)) {
     errorList.push({
       field: "applicationFee",
-      message: "Application Fee cannot be Zero."
+      message: "Application Fee should not be Zero."
     });
   } else if(quote.applicationFee > quote.maxApplicationFee) {
     errorList.push({
@@ -58,18 +65,59 @@ const validate = (quote, messages) => {
       field: "clientRate",
       message: "Client Rate should not be zero."
     });
-  } else if (quote.clientRate < baseRate) {
+  } else if (quote.clientRate < quote.baseRate) {
     warningList.push({
       field: "clientRate",
-      message: `Client Rate should not be below base rate.`
+      message: `Client Rate should not be below base rate: ${quote.baseRate}%.`
     });
-  }
-  if (quote.baseRate === 0.00) {
+  } else if (quote.clientRate > quote.maxRate) {
     warningList.push({
-      field: "baseRate",
-      message: "Base Rate cannot be Zero."
+      field: "clientRate",
+      message: `Client Rate should not be above of max rate: ${quote.maxRate}%.`
     });
   }
+  if (quote.term === 84 && quote.creditScore < 640) {
+    errorList.push({
+      field: "term",
+      message: "7 year terms only for scores >= 640."
+    });
+  }
+  let naf = CalHelper.getNetRealtimeNaf(quote);
+  if (naf < 5000) {
+    warningList.push({
+      field: "naf",
+      message: `Min NAF should be $5,000.`
+    });
+  } else if (naf > 80000) {
+    warningList.push({
+      field: "naf",
+      message: `Max NAF with WISR $80,000.`
+    });
+  }
+  if (quote.creditscore === null || quote.creditscore < 450) {
+    errorList.push({
+      field: "creditScore",
+      message: "Credit score should be >= 450."
+    });
+  }
+  if (quote.vehicleYear === null || quote.vehicleYear === 0) {
+    errorList.push({
+      field: "vehicleYear",
+      message: "Vehicle Year is required."
+    });
+  }
+  if (quote.lvr === null || !(quote.lvr > 0.0)) {
+    errorList.push({
+      field: "lvr",
+      message: "LVR is required."
+    });
+  } else if (quote.lvr >150) {
+    errorList.push({
+      field: "lvr",
+      message: "Max LVR should be 150%."
+    });
+  }
+
   r.warnings = [].concat(QuoteCommons.uniqueArray(warningList));
   r.errors = [].concat(QuoteCommons.uniqueArray(errorList));
   return r;

@@ -14,7 +14,7 @@ const validate = (quote, messages) => {
   let errorList = r.errors;
   let warningList = r.warnings;
 
-  const baseRate = quote["baseRate"];
+  const baseRate = quote.baseRate;
 
   console.log(
     "🚀 ~ file: quoteValidations.js ~ line 21 ~ validate ~ quote", quote);
@@ -58,7 +58,7 @@ const validate = (quote, messages) => {
       field: "clientRate",
       message: "Client Rate should not be zero."
     });
-  } else if (quote.clientRate < baseRate) {
+  } else if (quote.clientRate < quote.baseRate) {
     warningList.push({
       field: "clientRate",
       message: `Client Rate should not be below base rate.`

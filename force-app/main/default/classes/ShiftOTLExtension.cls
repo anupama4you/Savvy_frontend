@@ -833,7 +833,7 @@ public class ShiftOTLExtension {
     public PageReference reset () {
         this.applicationFee = lenderSettings.Application_Fee__c;
         this.privateSales = '';
-        this.brokeragePercentage = 4;
+        this.brokeragePercentage = lenderSettings.Brokerage_Base__c;
         this.equifaxScore = 0;
         this.abnLength = abnLengthOptions.get(0).getValue();
         this.loanType = loanTypeOptions.get(0).getValue();
@@ -849,7 +849,7 @@ public class ShiftOTLExtension {
         this.residualValue = 0.00;
         this.residualValuePercentage = 0.00;
         this.selectedTypeValue = MacquarieConstants.TYPE_VALUE;
-        this.baseRate = 24.95;
+        this.baseRate = lenderSettings.Default_Base_Rate__c;
         this.clientRate = 0.00;
         this.term = 24;
         this.propertyOwner = 'N';

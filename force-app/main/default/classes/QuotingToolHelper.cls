@@ -455,10 +455,11 @@ public class QuotingToolHelper {
             upsert obj;
         } catch (Exception e) {
           String errMsg = e.getMessage();
+          throw new GenericException(errMsg);
           if (errMsg.contains('UNABLE_TO_LOCK_ROW')) {
             ApexPages.addMessage(new ApexPages.Message(ApexPages.Severity.ERROR, 'Quoting tools error. Some data could not be saved properly. Please reload this page and try to save your data again.'));
           }
-          ApexPages.addMessage(new ApexPages.Message(ApexPages.Severity.ERROR, e.getStackTraceString()));
+        //   ApexPages.addMessage(new ApexPages.Message(ApexPages.Severity.ERROR, e.getStackTraceString()));
            
         }
         // if (isUpdateApp && obj.Application__c != null) {

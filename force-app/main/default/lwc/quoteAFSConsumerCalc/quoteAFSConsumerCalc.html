@@ -1,0 +1,446 @@
+<template>
+    <c-quote-container title="AFS Consumer" is-busy={isBusy} 
+    messages={messageObj} >
+        <!-- Logo -->
+        <img src={logoUrl} slot="logo" class="c-lender-logo" title="AFS Consumer" />
+
+        <!-- Buttons -->
+        <lightning-button label="Calculate" slot="actions" onclick={handleCalculate}></lightning-button>
+        <lightning-button label="Reset" slot="actions" onclick={handleReset}></lightning-button>
+        <lightning-button label="Save Quoting" slot="actions" disabled={disableAction} value="None"
+            onclick={handleSave}>
+        </lightning-button>
+        <lightning-button label="Save Pre-approval" value="pre_approval" slot="actions" disabled={disableAction}
+            onclick={handleSave}>
+        </lightning-button>
+        <lightning-button label="Save Amendment" value="pre_approval_amendment" slot="actions" disabled={disableAction}
+            onclick={handleSave}>
+        </lightning-button>
+        <lightning-button label="Save Formal Approval" value="formal_approval" slot="actions" disabled={disableAction}
+            onclick={handleSave}>
+        </lightning-button>
+        <lightning-button label="Send Quote" slot="actions" disabled={disableAction} onclick={handleSendQuote}>
+        </lightning-button>
+
+        <!-- Finance Details -->
+        <!-- Loan Type -->
+        <div class="c-row-details">
+            <div class="c-detail-labels"><span class="c-label">Loan Type</span></div>
+            <div class="c-detail-fields">
+                <lightning-combobox name="loanType" label="Loan Type" data-id="loanType-field" 
+                    placeholder="Select a value" options={loanTypeOptions} onchange={handleFieldChange} class="slds-form__item"
+                    variant="label-hidden"> required
+                </lightning-combobox>
+            </div>
+        </div>
+        <!-- Loan Product -->
+        <div class="c-row-details">
+            <div class="c-detail-labels"><span class="c-label">Loan Product</span></div>
+            <div class="c-detail-fields">
+                <lightning-combobox name="loanProduct" label="Loan Product" data-id="loanProduct-field" 
+                    placeholder="Select a value" options={loanProductOptions}
+                    onchange={handleFieldChange} class="slds-form__item" variant="label-hidden"> required
+                </lightning-combobox>
+            </div>
+        </div>
+        <!-- Asset Type -->
+        <div class="c-row-details">
+            <div class="c-detail-labels"><span class="c-label">Asset Type</span></div>
+            <div class="c-detail-fields">
+                <lightning-combobox name="assetType" label="Asset Type" data-id="assetType-field" 
+                    placeholder="Select a value" options={assetTypeOptions}
+                    onchange={handleFieldChange} class="slds-form__item" variant="label-hidden"> 
+                </lightning-combobox>
+            </div>
+        </div>
+        <!-- Asset Condition -->
+        <div class="c-row-details">
+            <div class="c-detail-labels"><span class="c-label">Asset Condition</span></div>
+            <div class="c-detail-fields">
+                <lightning-combobox name="assetCondition" label="Asset Condition" data-id="assetCondition-field" 
+                    placeholder="Select a value" options={assetConditionOptions}
+                    onchange={handleFieldChange} class="slds-form__item" variant="label-hidden"> 
+                </lightning-combobox>
+            </div>
+        </div>
+        <!-- Vehicle Price -->
+        <div class="c-row-details">
+            <div class="c-detail-labels"><span class="c-label">Vehicle Price</span></div>
+            <div class="c-detail-fields">
+                <lightning-input type="number" formatter="currency" step="0.01" name="price" data-id="price-field" 
+                     label="Vehicle Price" placeholder="$" class="slds-form__item" variant="label-hidden"
+                    onchange={handleFieldChange}>
+                </lightning-input>
+            </div>
+        </div>
+        <!-- Deposit -->
+        <div class="c-row-details">
+            <div class="c-detail-labels"><span class="c-label">Deposit</span></div>
+            <div class="c-detail-fields">
+                <lightning-input type="number" formatter="currency" step="0.01" name="deposit" data-id="deposit-field" 
+                     label="Deposit" placeholder="$" class="slds-form__item" variant="label-hidden"
+                    onchange={handleFieldChange}>
+                </lightning-input>
+            </div>
+        </div>
+        <!-- Trade In -->
+        <div class="c-row-details">
+            <div class="c-detail-labels"><span class="c-label">Trade In</span></div>
+            <div class="c-detail-fields">
+                <lightning-input type="number" formatter="currency" step="0.01" name="tradeIn" data-id="tradeIn-field" 
+                     abel="Trade In" placeholder="$" class="slds-form__item" variant="label-hidden"
+                    onchange={handleFieldChange}>
+                </lightning-input>
+            </div>
+        </div>
+        <!-- Payout On Trade In -->
+        <div class="c-row-details">
+            <div class="c-detail-labels"><span class="c-label">Payout On Trade In</span></div>
+            <div class="c-detail-fields">
+                <lightning-input type="number" formatter="currency" step="0.01" name="payoutOn" data-id="payoutOn-field" 
+                    label="Payout On Trade In" placeholder="$" class="slds-form__item"
+                    variant="label-hidden" onchange={handleFieldChange}>
+                </lightning-input>
+            </div>
+        </div>
+        <!-- Net Deposit -->
+        <div class="c-row-details">
+            <div class="c-detail-labels"><span class="c-label">Net Deposit</span></div>
+            <div class="c-detail-fields">
+                <lightning-formatted-number value={netDeposit} format-style="currency" currency-code="AUD"
+                    class="c-read-only-field">
+                </lightning-formatted-number>
+            </div>
+        </div>
+        <!-- Application Fee -->
+        <div class="c-row-details">
+            <div class="c-detail-labels"><span class="c-label">Application Fee</span></div>
+            <div class="c-detail-fields">
+                <lightning-input type="number" formatter="currency" step="0.01" name="applicationFee" 
+                    data-id="applicationFee-field" label="Application Fee" placeholder="$"
+                    class="slds-form__item" variant="label-hidden" onchange={handleFieldChange}> 
+                </lightning-input>
+            </div>
+        </div>
+        <!-- DOF -->
+        <div class="c-row-details">
+            <div class="c-detail-labels"><span class="c-label">DOF</span></div>
+            <div class="c-detail-fields">
+                <lightning-input type="number" formatter="currency" step="0.01" name="dof" data-id="dof-field" 
+                    label="DOF" placeholder="$" class="slds-form__item"
+                    variant="label-hidden" onchange={handleFieldChange}>
+                </lightning-input>
+            </div>
+        </div>
+        <!-- PPSR -->
+        <div class="c-row-details">
+            <div class="c-detail-labels"><span class="c-label">PPSR</span></div>
+            <div class="c-detail-fields">
+                <lightning-input type="number" formatter="currency" step="0.01" name="ppsr" data-id="ppsr-field" 
+                    label="PPSR" placeholder="$" class="slds-form__item"
+                    variant="label-hidden" onchange={handleFieldChange}>
+                </lightning-input>
+            </div>
+        </div>
+        <!-- Registration/Research Fee -->
+        <div class="c-row-details">
+            <div class="c-detail-labels"><span class="c-label">Registration / Research Fee</span></div>
+            <div class="c-detail-fields">
+                <lightning-input type="number" formatter="currency" step="0.01" name="rrfee" data-id="rrfee-field" 
+                    label="Registration/Research Fee" placeholder="$" class="slds-form__item"
+                    variant="label-hidden" onchange={handleFieldChange}>
+                </lightning-input>
+            </div>
+        </div>
+        <!-- Residual Value -->
+        <div class="c-row-details">
+            <div class="c-detail-labels"><span class="c-label">Residual Value</span></div>
+            <div class="c-detail-fields">
+                <lightning-input type="number" formatter="currency" step="0.01" name="residual" data-id="residual-field" 
+                    label="Residual Value" placeholder="$" class="slds-form__item" variant="label-hidden"
+                    onchange={handleFieldChange}>
+                </lightning-input>
+            </div>
+        </div>
+        
+        <!-- Additional Details -->
+        <div class="c-row-details">
+            <span class="c-detail-subtitle">Loan Details</span>
+        </div>
+        <!-- Term -->
+        <div class="c-row-details">
+            <div class="c-detail-labels"><span class="c-label">Term (months)</span></div>
+            <div class="c-detail-fields">
+                <lightning-combobox name="term" label="Term (months)" data-id="term-field" 
+                    placeholder="Select a value" options={termOptions} onchange={handleFieldChange} class="slds-form__item"
+                    variant="label-hidden">
+                </lightning-combobox>
+            </div>
+        </div>
+        <!-- Residency Status -->
+        <div class="c-row-details">
+            <div class="c-detail-labels"><span class="c-label">Residency Status</span></div>
+            <div class="c-detail-fields">
+                <lightning-combobox name="residency" label="Residency Status" data-id="residency-field" 
+                    placeholder="Select a value" options={residencyOptions} onchange={handleFieldChange} class="slds-form__item"
+                    variant="label-hidden">
+                </lightning-combobox>
+            </div>
+        </div>
+        <!-- Asset Age -->
+        <div class="c-row-details">
+            <div class="c-detail-labels"><span class="c-label">Asset Age</span></div>
+            <div class="c-detail-fields">
+                <lightning-combobox name="assetAge" label="Asset Age " data-id="assetAge-field" 
+                    placeholder="Select a value" options={assetAgeOptions} onchange={handleFieldChange} class="slds-form__item"
+                    variant="label-hidden">
+                </lightning-combobox>
+            </div>
+        </div>
+         <!-- LVR -->
+         <div class="c-row-details">
+            <div class="c-detail-labels"><span class="c-label">LVR</span></div>
+            <div class="c-detail-fields">
+                <lightning-input type="number" step="0.01" name="lvr" data-id="lvr-field" 
+                    label="LVR" placeholder="$" class="slds-form__item" variant="label-hidden"
+                    onchange={handleFieldChange}>
+                </lightning-input>
+            </div>
+        </div>
+        <!-- Casual <12 months or Contract? (Employment Status) -->
+        <div class="c-row-details">
+            <div class="c-detail-labels"><span class="c-label">Casual &#60;12 months or Contract? (Employment status)</span></div>
+            <div class="c-detail-fields">
+                <lightning-combobox name="employmentStats" label="Employment Status" data-id="employmentStats-field" 
+                    placeholder="Select a value" options={employmentStatsOptions} onchange={handleFieldChange} class="slds-form__item"
+                    variant="label-hidden">
+                </lightning-combobox>
+            </div>
+            
+        </div>
+        <!-- Credit Impaired (Any Default,Judgement, Writ, Court Action, or Discharged Bankrupt) -->
+        <div class="c-row-details">
+            <div class="c-detail-labels"><span class="c-label">Credit Impaired (Any Default,Judgement, Writ, Court Action, or Discharged Bankrupt)</span></div>
+            <div class="c-detail-fields">
+                <lightning-combobox name="creditImpaired" label="Credit Impaired" data-id="creditImpaired-field" 
+                    placeholder="Select a value" options={creditImpairedOptions} onchange={handleFieldChange} class="slds-form__item"
+                    variant="label-hidden">
+                </lightning-combobox>
+            </div>
+            
+        </div>
+        <!-- Pay Day Enquiries -->
+        <div class="c-row-details">
+            <div class="c-detail-labels"><span class="c-label">Pay Day Enquiries</span></div>
+            <div class="c-detail-fields">
+            <lightning-combobox name="payDayEnquiries" label="Pay Day Enquiries" data-id="payDayEnquiries-field" 
+                placeholder="Select a value" options={payDayEnquiriesOptions} onchange={handleFieldChange} class="slds-form__item"
+                variant="label-hidden" >
+            </lightning-combobox>
+            </div>
+        </div>
+        <!-- Imports -->
+        <div class="c-row-details">
+            <div class="c-detail-labels"><span class="c-label">Imports</span></div>
+            <div class="c-detail-fields">
+            <lightning-combobox name="imports" label="Imports" data-id="imports-field" 
+                placeholder="Select a value" options={importsOptions} onchange={handleFieldChange} class="slds-form__item"
+                variant="label-hidden" >
+            </lightning-combobox>
+            </div>
+        </div>
+        <!-- Odometer Reading -->
+        <div class="c-row-details">
+            <div class="c-detail-labels"><span class="c-label">Odometer Reading</span></div>
+            <div class="c-detail-fields">
+            <lightning-combobox name="odometerReading" label="Odometer Reading" data-id="odometerReading-field" 
+                placeholder="Select a value" options={odometerOptions} onchange={handleFieldChange} class="slds-form__item"
+                variant="label-hidden" >
+            </lightning-combobox>
+            </div>
+        </div>
+        <!-- Private Sales -->
+        <div class="c-row-details">
+            <div class="c-detail-labels"><span class="c-label">Private Sales</span></div>
+            <div class="c-detail-fields">
+            <lightning-combobox name="privateSales" label="Private Sales" data-id="privateSales-field" 
+                placeholder="Select a value" options={privateSalesOptions} onchange={handleFieldChange} class="slds-form__item"
+                variant="label-hidden" >
+            </lightning-combobox>
+            </div>
+        </div>
+        <!-- Payment -->
+        <div class="c-row-details">
+            <div class="c-detail-labels"><span class="c-label">Payment</span></div>
+            <div class="c-detail-fields">
+            <lightning-combobox name="paymentType" label="Payment" data-id="paymentType-field" 
+                placeholder="Select a value" options={paymentTypeOptions} onchange={handleFieldChange} class="slds-form__item"
+                variant="label-hidden" >
+            </lightning-combobox>
+            </div>
+        </div>
+        <!-- Monthly Fee -->
+        <div class="c-row-details">
+            <div class="c-detail-labels"><span class="c-label">Monthly Fee </span></div>
+            <div class="c-detail-fields">
+                <lightning-formatted-number value={monthlyFee} format-style="currency" currency-code="AUD"
+                    class="c-read-only-field">
+                </lightning-formatted-number>
+            </div>
+        </div>
+        <!-- Rates -->
+        <!-- Max Rate -->
+        <div class="c-row-details">
+            <div class="c-detail-labels"><span class="c-label">Max Rate</span></div>
+            <div class="c-detail-fields">
+                <lightning-formatted-number format-style="percent-fixed" minimum-fraction-digits="2" 
+                    class="c-read-only-field">
+                </lightning-formatted-number> 
+            </div>
+        </div>
+        <!-- Base Rate -->
+        <div class="c-row-details">
+            <div class="c-detail-labels"><span class="c-label">Base Rate</span></div>
+            <div class="c-detail-fields">
+                <lightning-formatted-number format-style="percent-fixed" minimum-fraction-digits="2" 
+                    class="c-read-only-field">
+                </lightning-formatted-number>
+                <template if:true={isBaseRateBusy}>
+                    <span class="c-status-icon">
+                    <lightning-dynamic-icon type="eq" option="play" alternative-text="Recording in progress">
+                    </lightning-dynamic-icon>
+                    </span>
+                </template>
+            </div>
+        </div>
+        <!-- NAF -->
+        <div class="c-row-details">
+            <div class="c-detail-labels"><span class="c-label">NAF</span></div>
+            <div class="c-detail-fields c-naf-division">
+                <lightning-formatted-number value={netRealtimeNaf} format-style="currency" currency-code="AUD"
+                    class="c-read-only-field c-naf-field">
+                </lightning-formatted-number>
+            </div>
+        </div>
+        <!-- end of Finance Details-->
+
+        <!-- Insurances -->
+        <c-quote-insurance-form slot="insurances"></c-quote-insurance-form>
+
+        <!-- Table Rates -->
+        
+        <div slot="table-rates">
+            <div class="c-rates-section-title">AFS Consumer - Table Rates</div>
+            <!-- Table Rates TO DO -->
+            <!-- <div class="slds-grid slds-gutters">
+                <div class="slds-col slds-size_6-of-12">
+                <lightning-datatable key-field="Id" data={tableRates} columns={tableRatesCols} hide-checkbox-column>
+                </lightning-datatable>
+                </div>
+            </div> -->
+            <table width="100%" class="tableDetails">
+                <tr>
+                  <td align="center" class="c-detail-labels">Property Owners</td>
+                  <td align="center" class="c-detail-labels">Non-Property Owners - Renters</td>
+                  <td align="center" class="c-detail-labels">Non-Property Owners - Others</td>
+                </tr>
+                <tr>
+                    <!-- First Column -->
+                    <td>
+                        <table width="100%">
+                          <tr>
+                            <td align="center" >Asset Type</td>
+                            <td align="center" >Condition</td>
+                            <td align="center" >Risk Grade</td>
+                            <td align="center" >&#37;Base Rate</td>
+                            <td align="center" >&#37;Commission</td>
+                          </tr>
+                          <!-- START <apex:repeat value="{!fullRatesPropertyOwners}" var="r">
+                            <tr>
+                              <td align="center" class="otherOtherResult">
+                                <apex:outputText value="{!r.Asset_Type__c}" />
+                              </td>
+                              <td align="center" class="otherOtherResult">
+                                <apex:outputText value="{!r.Condition__c}" />
+                              </td>
+                              <td align="center" class="otherOtherResult">
+                                <apex:outputText value="{!r.Risk_Grade__c}" />
+                              </td>
+                              <td align="center" class="otherOtherResultValue">
+                                <apex:outputText value="{!r.Base_Rate__c}" />
+                              </td>
+                              <td align="center" class="otherOtherResultValue">
+                                <apex:outputText value="{!r.Comm__c}" />
+                              </td>
+                            </tr>
+                          </apex:repeat> END-->
+                        </table>
+                    </td>
+                    <!-- Second Column-->
+                    <td>
+                        <table width="100%">
+                            <tr>
+                                <td align="center" >Asset Type</td>
+                                <td align="center" >Condition</td>
+                                <td align="center" >Risk Grade</td>
+                                <td align="center" >&#37;Base Rate</td>
+                                <td align="center" >&#37;Commission</td>
+                            </tr>
+                          <!-- START <apex:repeat value="{!fullRatesRenting}" var="r">
+                            <tr>
+                              <td align="center" class="otherOtherResult">
+                                <apex:outputText value="{!r.Asset_Type__c}" />
+                              </td>
+                              <td align="center" class="otherOtherResult">
+                                <apex:outputText value="{!r.Condition__c}" />
+                              </td>
+                              <td align="center" class="otherOtherResult">
+                                <apex:outputText value="{!r.Risk_Grade__c}" />
+                              </td>
+                              <td align="center" class="otherOtherResultValue">
+                                <apex:outputText value="{!r.Base_Rate__c}" />
+                              </td>
+                              <td align="center" class="otherOtherResultValue">
+                                <apex:outputText value="{!r.Comm__c}" />
+                              </td>
+                            </tr>
+                          </apex:repeat> END-->
+                        </table>
+                    </td>
+                    <!-- Third Column -->
+                    <td>
+                        <table width="100%">
+                            <tr>
+                                <td align="center" >Asset Type</td>
+                                <td align="center" >Condition</td>
+                                <td align="center" >Risk Grade</td>
+                                <td align="center" >&#37;Base Rate</td>
+                                <td align="center" >&#37;Commission</td>
+                            </tr>
+                          <!-- START <apex:repeat value="{!fullRatesOthers}" var="r">
+                            <tr>
+                              <td align="center" class="otherOtherResult">
+                                <apex:outputText value="{!r.Asset_Type__c}" />
+                              </td>
+                              <td align="center" class="otherOtherResult">
+                                <apex:outputText value="{!r.Condition__c}" />
+                              </td>
+                              <td align="center" class="otherOtherResult">
+                                <apex:outputText value="{!r.Risk_Grade__c}" />
+                              </td>
+                              <td align="center" class="otherOtherResultValue">
+                                <apex:outputText value="{!r.Base_Rate__c}" />
+                              </td>
+                              <td align="center" class="otherOtherResultValue">
+                                <apex:outputText value="{!r.Comm__c}" />
+                              </td>
+                            </tr>
+                          </apex:repeat> END -->
+                        </table>
+                    </td>
+                </tr>
+            </table>
+        </div>
+        
+    </c-quote-container> 
+</template>

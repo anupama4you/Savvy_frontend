@@ -1,12 +1,10 @@
 import getQuotingData from "@salesforce/apex/QuoteWisrPLCalcController.getQuotingData";
 import getBaseRates from "@salesforce/apex/QuoteController.getBaseRates";
 import calculateRepayments from "@salesforce/apex/QuoteController.calculateRepayments";
-import {
-  QuoteCommons,
-  CommonOptions,
-  FinancialUtilities as fu
-} from "c/quoteCommons";
+import { QuoteCommons, CommonOptions } from "c/quoteCommons";
 import { Validations } from "./quoteValidations";
+import sendQuote from "@salesforce/apex/QuoteController.sendQuote";
+import save from "@salesforce/apex/QuoteWisrPLCalcController.save";
 
 // Default settings
 let lenderSettings = {};
@@ -42,6 +40,13 @@ const QUOTING_FIELDS = new Map([
   ["creditScore", "Vedascore__c"],
   ["paymentType", "Payment__c"],
   ["loanPurpose", "Loan_Purpose__c"]
+]);
+
+// - TODO: need to map more fields
+const FIELDS_MAPPING_FOR_APEX = new Map([
+  ...QUOTING_FIELDS,
+  ["Id", "Id"],
+  ["clientRate", "Client_Rate__c"],
 ]);
 
 const RATE_SETTING_NAMES = ["Rate Table", "Fee Table"];
@@ -149,7 +154,8 @@ const reset = (recordId) => {
     maxRate: 0.0,
     clientRate: 0,
     paymentType: "Arrears",
-    loanPurpose: ''
+    loanPurpose: '',
+    commissions: QuoteCommons.resetResults()
   };
   console.log('Helper reset...');
   console.log('obj:::', r, 'lenderSettings:::', lenderSettings, 'SETTING_FIELDS:::', SETTING_FIELDS);
@@ -264,6 +270,65 @@ const getTableFeesData = () => {
   return tableFeesData;
 };
 
+/**
+ * -- Lee
+ * @param {String} approvalType - type of approval
+ * @param {Object} quote - quoting form
+ * @param {Id} recordId - recordId
+ * @returns
+ */
+const saveQuote = (approvalType, param, recordId) =>
+  new Promise((resolve, reject) => {
+    if (approvalType && param && recordId) {
+      save({
+        param: QuoteCommons.mapLWCToSObject(
+          param,
+          recordId,
+          LENDER_QUOTING,
+          FIELDS_MAPPING_FOR_APEX
+        ),
+        approvalType: approvalType
+      })
+        .then((data) => {
+          resolve(data);
+        })
+        .catch((error) => {
+          reject(error);
+        });
+    } else {
+      reject(new Error("QUOTE OR RECORDID EMPTY in SaveQuoting function"));
+    }
+});
+
+/**
+*  -- Lee
+* @param {Object} param - quote form
+* @param {Id}  recordId - record id
+* @returns
+*/
+const sendEmail = (param, recordId) =>
+  new Promise((resolve, reject) => {
+    if (param) {
+      console.log(`@@param in sendEmail ${JSON.stringify(param, null, 2)}`);
+      sendQuote({
+        param: QuoteCommons.mapLWCToSObject(
+          param,
+          recordId,
+          LENDER_QUOTING,
+          FIELDS_MAPPING_FOR_APEX
+        )
+      })
+        .then((data) => {
+          resolve(data);
+        })
+        .catch((error) => {
+          reject(error);
+        });
+    } else {
+      reject(new Error(`Something wrong in sendEmail : param: ${param}`));
+    }
+});
+
 export const CalHelper = {
   options: calcOptions,
   calculate: calculate,
@@ -279,5 +344,7 @@ export const CalHelper = {
   tableRateDataColumns: tableRateDataColumns,
   tableFeeDataColumns: tableFeeDataColumns,
   getNetRealtimeNaf: QuoteCommons.calcNetRealtimeNaf,
-  getNetDeposit: QuoteCommons.calcNetDeposit
+  getNetDeposit: QuoteCommons.calcNetDeposit,
+  saveQuote: saveQuote,
+  sendEmail: sendEmail
 };

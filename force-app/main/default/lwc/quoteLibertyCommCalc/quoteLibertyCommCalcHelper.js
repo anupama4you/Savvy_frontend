@@ -1,8 +1,8 @@
-import getQuotingData from "@salesforce/apex/QuotePepperMVController.getQuotingData";
+import getQuotingData from "@salesforce/apex/QuoteLibertyCommercialController.getQuotingData";
 import getBaseRates from "@salesforce/apex/QuoteController.getBaseRates";
 import calculateRepayments from "@salesforce/apex/QuoteController.calculateRepayments";
 import sendQuote from "@salesforce/apex/QuoteController.sendQuote";
-import save from "@salesforce/apex/QuotePepperMVController.save";
+import save from "@salesforce/apex/QuoteLibertyCommercialController.save";
 import {
   QuoteCommons,
   CommonOptions,
@@ -11,15 +11,16 @@ import {
 import { Validations } from "./quoteValidations";
 
 // Default settings
+let applicationFee = 0.0;
 let lenderSettings = {};
 let tableRatesData = [];
 let tableRateDataColumns = [
-  { label: "Product", fieldName: "Product__c" },
-  { label: "Tier", fieldName: "Tier__c", fixedWidth: 70 },
-  { label: "New", fieldName: "Rate0__c", fixedWidth: 80 },
-  { label: "Used 0-5 years", fieldName: "Rate1__c", fixedWidth: 140 },
-  { label: "Used 6-9 years", fieldName: "Rate2__c", fixedWidth: 140 },
-  { label: "Used 10+ years", fieldName: "Rate3__c", fixedWidth: 140 }
+  { label: "Vehicle Age", fieldName: "Vehicle_Age__c", fixedWidth: 140 },
+  { label: "AAA", fieldName: "AAA", fixedWidth: 80 },
+  { label: "AA", fieldName: "AA", fixedWidth: 80 },
+  { label: "A", fieldName: "A", fixedWidth: 80 },
+  { label: "B", fieldName: "B", fixedWidth: 80 },
+  { label: "C", fieldName: "C", fixedWidth: 80 }
 ];
 
 const LENDER_QUOTING = "Liberty Commercial";
@@ -36,27 +37,27 @@ const QUOTING_FIELDS = new Map([
   ["applicationFee", "Application_Fee__c"],
   ["dof", "DOF__c"],
   ["ppsr", "PPSR__c"],
-  // eq fee
+  ["eqFee", "Risk_Fee__c"],
   ["residual", "Residual_Value__c"],
-  // --- loan details
   ["term", "Term__c"],
-  // property owner
-  // vehicle age
-  // vehicle year
-  // credit score
-  // abn length
-  // gst length
-  // ltv
+  ["propertyOwner", "Customer_Profile__c"],
+  ["assetAge", "Vehicle_Age__c"],
+  ["vehicleYear", "Vehicles_Profile__c"],
+  ["creditScore", "Credit_Score__c"],
+  ["abnLength", "ABN__c"],
+  ["gstLength", "GST__c"],
+  ["ltv", "LTV__c"],
   ["paymentType", "Payment__c"],
   ["monthlyFee", "Monthly_Fee__c"],
-  // risk grade
-  // max rate
-  // base rate
+  ["riskGrade", "Client_Tier__c"],
+  ["baseRate", "Base_Rate__c"],
   ["clientRate", "Client_Rate__c"],
   ["applicationId", "Application__c"]
 ]);
 
-const RATE_SETTING_NAMES = ["PepperRate__c"];
+const FIELDS_MAPPING_FOR_APEX = new Map([...QUOTING_FIELDS, ["Id", "Id"]]);
+
+const RATE_SETTING_NAMES = ["LibertyRates__c"];
 
 const SETTING_FIELDS = new Map([
   ["applicationFee", "Application_Fee__c"],
@@ -69,10 +70,18 @@ const SETTING_FIELDS = new Map([
 
 const BASE_RATE_FIELDS = [
   "customerProfile",
-  "clientTier",
+  "loanProduct",
   "assetAge",
   "assetType",
-  "privateSales"
+  "residual"
+];
+
+const RISK_GRADE_FIELDS = [
+  "abnLength",
+  "gstLength",
+  "propertyOwner",
+  "creditScore",
+  ...BASE_RATE_FIELDS
 ];
 
 const calculate = (quote) =>
@@ -85,19 +94,18 @@ const calculate = (quote) =>
     // Validate quote
     res.messages = Validations.validate(quote, res.messages);
     if (res.messages && res.messages.errors.length > 0) {
+      console.log(`res.message === ${JSON.stringify(res, null, 2)}`);
       reject(res);
     } else {
       // Prepare params
-      const profile = quote.assetType === "Caravan" ? "CARAVAN" : "MV";
       const p = {
         lender: LENDER_QUOTING,
         productLoanType: quote.loanProduct,
-        customerProfile: profile,
-        clientTier: quote.clientTier,
+        clientTier: quote.riskGrade,
         vehicleYear: quote.assetAge,
         goodsType: quote.assetType,
         privateSales: quote.privateSales,
-        totalAmount: QuoteCommons.calcTotalAmount(quote),
+        totalAmount: calcNetRealtimeNaf(quote),
         totalInsurance: QuoteCommons.calcTotalInsuranceType(quote),
         clientRate: quote.clientRate,
         baseRate: quote.baseRate,
@@ -107,7 +115,6 @@ const calculate = (quote) =>
         monthlyFee: quote.monthlyFee,
         residualValue: quote.residual
       };
-
       // Calculate
       console.log(`@@param:`, JSON.stringify(p, null, 2));
       calculateRepayments({
@@ -132,14 +139,76 @@ const calculate = (quote) =>
     }
   });
 
+const createVehicleYearOptions = () => {
+  let opts = [{ label: "-- None --", value: null }];
+  try {
+    let currentYear = new Date().getFullYear();
+    for (let i = currentYear; i >= currentYear - 20; i--) {
+      opts.push({ label: `${i}`, value: `${i}` });
+    }
+  } catch (error) {
+    console.error(error);
+  }
+  return opts;
+};
+
+/**
+ *  Lee - formatting the data for table
+ * @param {Array} ratesData - each element is object
+ * @returns array of usable data
+ */
+const formatTableData = (ratesData) => {
+  try {
+    let rates = [
+      { Vehicle_Age__c: "New" },
+      { Vehicle_Age__c: "0-4 years" },
+      { Vehicle_Age__c: "5-9 years" },
+      { Vehicle_Age__c: "10+ years" }
+    ];
+    ratesData.map((item) => {
+      if (item.Vehicle_Age__c === "New") {
+        let obj = rates.find((o) => o.Vehicle_Age__c === "New");
+        if (item.Tier__c === "AAA") obj.AAA = item.Rate__c;
+        if (item.Tier__c === "AA") obj.AA = item.Rate__c;
+        if (item.Tier__c === "A") obj.A = item.Rate__c;
+        if (item.Tier__c === "B") obj.B = item.Rate__c;
+        if (item.Tier__c === "C") obj.C = item.Rate__c;
+      } else if (item.Vehicle_Age__c === "0-4 years") {
+        let obj = rates.find((o) => o.Vehicle_Age__c === "0-4 years");
+        if (item.Tier__c === "AAA") obj.AAA = item.Rate__c;
+        if (item.Tier__c === "AA") obj.AA = item.Rate__c;
+        if (item.Tier__c === "A") obj.A = item.Rate__c;
+        if (item.Tier__c === "B") obj.B = item.Rate__c;
+        if (item.Tier__c === "C") obj.C = item.Rate__c;
+      } else if (item.Vehicle_Age__c === "5-9 years") {
+        let obj = rates.find((o) => o.Vehicle_Age__c === "5-9 years");
+        if (item.Tier__c === "AAA") obj.AAA = item.Rate__c;
+        if (item.Tier__c === "AA") obj.AA = item.Rate__c;
+        if (item.Tier__c === "A") obj.A = item.Rate__c;
+        if (item.Tier__c === "B") obj.B = item.Rate__c;
+        if (item.Tier__c === "C") obj.C = item.Rate__c;
+      } else {
+        let obj = rates.find((o) => o.Vehicle_Age__c === "10+ years");
+        if (item.Tier__c === "AAA") obj.AAA = item.Rate__c;
+        if (item.Tier__c === "AA") obj.AA = item.Rate__c;
+        if (item.Tier__c === "A") obj.A = item.Rate__c;
+        if (item.Tier__c === "B") obj.B = item.Rate__c;
+        if (item.Tier__c === "C") obj.C = item.Rate__c;
+      }
+    });
+    return rates;
+  } catch (error) {
+    console.error(error);
+  }
+};
+
 const calcOptions = {
   loanTypes: CommonOptions.loanTypes,
   paymentTypes: CommonOptions.paymentTypes,
-  loanProducts: CommonOptions.fullLoanProducts,
-  privateSales: CommonOptions.yesNo,
+  loanProducts: CommonOptions.businessLoanProducts,
+  propertyOwner: CommonOptions.yesNo,
   assetTypes: [
-    { label: "Car", value: "Car" },
-    { label: "Caravan", value: "Caravan" }
+    { label: "Car/Light commercial", value: "Car/Light commercial" }
   ],
   clientTiers: [
     { label: "A", value: "A" },
@@ -148,11 +217,32 @@ const calcOptions = {
   ],
   vehicleAges: [
     { label: "New", value: "New" },
-    { label: "Used 0-5 years", value: "Used 0-5 years" },
-    { label: "Used 6-9 years", value: "Used 6-9 years" },
-    { label: "Used 10+ years", value: "Used 10+ years" }
+    { label: "0-4 years", value: "0-4 years" },
+    { label: "5-9 years", value: "5-9 years" },
+    { label: "10+ years", value: "10+ years" }
   ],
-  terms: CommonOptions.terms(12, 84)
+  creditScore: [
+    { label: "-- None --", value: null },
+    { label: "400+", value: "400+" },
+    { label: "500+", value: "500+" },
+    { label: "600+", value: "600+" },
+    { label: "750+", value: "750+" }
+  ],
+  abnLength: [
+    { label: "-- None --", value: null },
+    { label: ">12 mths", value: ">12 mths" },
+    { label: ">24 mths", value: ">24 mths" },
+    { label: ">36 mths", value: ">36 mths" }
+  ],
+  gstLength: [
+    { label: "-- None --", value: null },
+    { label: "No GST", value: "No GST" },
+    { label: ">12 mths", value: ">12 mths" },
+    { label: ">24 mths", value: ">24 mths" },
+    { label: ">36 mths", value: ">36 mths" }
+  ],
+  terms: CommonOptions.terms(12, 84),
+  vehicleYear: createVehicleYearOptions()
 };
 
 // Reset
@@ -161,42 +251,47 @@ const reset = (recordId) => {
     oppId: recordId,
     loanType: calcOptions.loanTypes[0].value,
     loanProduct: calcOptions.loanProducts[0].value,
-    goodsType: calcOptions.assetTypes[0].value,
+    assetType: calcOptions.assetTypes[0].value,
     price: null,
     deposit: null,
-    netDeposit: 0.0,
     tradeIn: null,
     payoutOn: null,
-    applicationFee: null,
-    maxApplicationFee: null,
-    dof: null,
-    maxDof: null,
+    netDeposit: 0.0,
+    applicationFee: 0.0,
+    maxApplicationFee: 0.0,
+    dof: 0.0,
     ppsr: null,
-    residual: 0.0,
+    residual: null,
     term: 60,
+    propertyOwner: calcOptions.propertyOwner[1].value,
+    assetAge: calcOptions.vehicleAges[0].value,
+    ltv: null,
     monthlyFee: null,
     baseRate: 0.0,
     maxRate: 0.0,
     clientRate: null,
-    privateSales: "N",
+    creditScore: null,
+    abnLength: null,
+    gstLength: null,
+    riskGrade: null,
+    vehicleYear: null,
     paymentType: "Arrears",
-    clientTier: calcOptions.clientTiers[0].value,
-    assetAge: calcOptions.vehicleAges[0].value,
     commissions: QuoteCommons.resetResults()
   };
+  //   console.log("before mapping: " + JSON.stringify(r, null, 2));
   r = QuoteCommons.mapDataToLwc(r, lenderSettings, SETTING_FIELDS);
+  r.applicationFee = r.maxApplicationFee = applicationFee;
   return r;
 };
 
 // Load Data
 const loadData = (recordId) =>
   new Promise((resolve, reject) => {
-    //  const fields = Array.from(QUOTING_FIELDS.values());
     const fields = [
       ...QUOTING_FIELDS.values(),
       ...QuoteCommons.COMMISSION_FIELDS.values()
     ];
-    // console.log(`@@fields:`, JSON.stringify(fields, null, 2));
+    console.log(`@@fields:`, JSON.stringify(fields, null, 2));
     getQuotingData({
       param: {
         oppId: recordId,
@@ -221,9 +316,21 @@ const loadData = (recordId) =>
 
         // Rate Settings
         if (quoteData.rateSettings) {
-          tableRatesData = quoteData.rateSettings[`${RATE_SETTING_NAMES[0]}`];
+          tableRatesData = formatTableData(
+            quoteData.rateSettings[`${RATE_SETTING_NAMES[0]}`]
+          );
         }
-        // console.log(`@@data:`, JSON.stringify(data, null, 2));
+        console.log(
+          `@@tableRatesData ${JSON.stringify(tableRatesData, null, 2)}`
+        );
+        console.log(`@@data:`, JSON.stringify(data, null, 2));
+        applicationFee =
+          lenderSettings.Application_Fee__c + lenderSettings.DOF__c;
+        data["maxApplicationFee"] = applicationFee;
+        if (lenderSettings.Name === LENDER_QUOTING) {
+          data["applicationFee"] = applicationFee;
+        }
+
         resolve(data);
       })
       .catch((error) => reject(error));
@@ -232,15 +339,13 @@ const loadData = (recordId) =>
 // Get Base Rates
 const getMyBaseRates = (quote) =>
   new Promise((resolve, reject) => {
-    const profile = quote.assetType === "Caravan" ? "CARAVAN" : "MV";
     const p = {
       lender: LENDER_QUOTING,
       productLoanType: quote.loanProduct,
-      customerProfile: profile,
-      clientTier: quote.clientTier,
+      clientTier: quote.riskGrade,
       vehicleYear: quote.assetAge,
       goodsType: quote.assetType,
-      privateSales: quote.privateSales,
+      residualValue: quote.residual,
       hasMaxRate: true
     };
     console.log(`getMyBaseRates...`, JSON.stringify(p, null, 2));
@@ -254,10 +359,127 @@ const getMyBaseRates = (quote) =>
       .catch((error) => reject(error));
   });
 
+// custom calculations for NAF generations
+const calcNetRealtimeNaf = (quote) => {
+  let eqFee = 0;
+  try {
+    let netRealtimeNaf = QuoteCommons.calcNetRealtimeNaf(quote) - quote.dof;
+    eqFee = calculateEQFee(quote, false);
+    return netRealtimeNaf + eqFee;
+  } catch (error) {
+    console.error(error);
+  }
+};
+
+const calculateEQFee = (quote, excInsurances) => {
+  try {
+    let r = 0.0;
+    let baseEqFee = getTotalAmountExcFees(quote);
+    if (!excInsurances) {
+      // TODO: pending implmentation
+      // if ('A'.equals(warrantyAcceptance)) {
+      //   if (warranty != null) baseEqFee += warranty;
+      // } else if ('A'.equals(nwcAcceptance)) {
+      //   if (nwc != null) baseEqFee += nwc;
+      // }
+    }
+    if ("A" === quote.riskGrade) {
+      r = baseEqFee * 0.01;
+    } else if ("B" === quote.riskGrade) {
+      r = baseEqFee * 0.03;
+    } else if ("C" === quote.riskGrade) {
+      r = baseEqFee * 0.08;
+    }
+    return r;
+  } catch (error) {
+    console.error(error);
+  }
+};
+
+const getTotalAmountExcFees = (quote) => {
+  let r = 0.0;
+  const netdeposit = QuoteCommons.calcNetDeposit(quote);
+  if (quote.price != null) r += quote.price;
+  if (netdeposit != null) r -= netdeposit;
+  return r;
+};
+
 const getTableRatesData = () => {
   return tableRatesData;
 };
 
+/**
+ * - lee
+ * @param {Object} quote - quote form
+ * @returns
+ */
+const calcDOF = (quote) => {
+  return quote.applicationFee - lenderSettings.Application_Fee__c < 0
+    ? 0.0
+    : quote.applicationFee - lenderSettings.Application_Fee__c;
+};
+
+/**
+ * - lee
+ * calculate the risk grade
+ * @param {String} abn - picklist contains '>'
+ * @param {String} gst - picklist contains '>'
+ * @param {String} creditScore - picklist contains '+'
+ * @param {String} propertyOwner -'N' or 'Y'
+ * @returns
+ */
+const getRiskGrade = (abn, gst, creditScore, propertyOwner) => {
+  let riskGrade = "";
+  try {
+    const abnL = parseStringToNumber(abn);
+    const gstL = parseStringToNumber(gst);
+    const cScore = parseStringToNumber(creditScore);
+    console.log(`abn: ${abnL}, gst:${gstL}, cred: ${cScore}`);
+    if (abnL && (gstL === 0 || gstL) && cScore) {
+      if ("Y" === propertyOwner) {
+        if (abnL == 36 && gstL == 36 && cScore == 750) {
+          riskGrade = "AAA";
+        } else if (abnL >= 12 && gstL >= 12 && cScore >= 600) {
+          riskGrade = "AA";
+        } else if (abnL >= 12 && cScore >= 500) {
+          riskGrade = "A";
+        } else if (abnL >= 24 && cScore >= 400) {
+          riskGrade = "B";
+        } else if (abnL >= 12 && cScore >= 400) {
+          riskGrade = "C";
+        }
+      } else {
+        if (abnL >= 24 && gstL >= 24 && cScore >= 600) {
+          riskGrade = "A";
+        } else if (abnL >= 24 && cScore >= 500) {
+          riskGrade = "B";
+        } else if (abnL >= 12 && cScore >= 400) {
+          riskGrade = "C";
+        }
+      }
+    }
+    return riskGrade;
+  } catch (error) {
+    console.error(error);
+  }
+};
+
+/**
+ * - lee
+ * mapping gst/abn/credit score field
+ * @param {String} str
+ */
+const parseStringToNumber = (str) => {
+  try {
+    if (!str) return;
+    if (str === "No GST") return 0;
+    if (str.includes("+")) return parseInt(str.substring(0, str.length - 1));
+    if (str.includes(">"))
+      return parseInt(str.slice(str.indexOf(">") + 1, str.indexOf(" ")));
+  } catch (error) {
+    console.error(error);
+  }
+};
 /**
  * -- Lee
  * @param {String} approvalType - type of approval
@@ -269,7 +491,12 @@ const saveQuote = (approvalType, param, recordId) =>
   new Promise((resolve, reject) => {
     if (approvalType && param && recordId) {
       save({
-        param: QuoteCommons.mapLWCToSObject(param, recordId, LENDER_QUOTING),
+        param: QuoteCommons.mapLWCToSObject(
+          param,
+          recordId,
+          LENDER_QUOTING,
+          FIELDS_MAPPING_FOR_APEX
+        ),
         approvalType: approvalType
       })
         .then((data) => {
@@ -294,7 +521,12 @@ const sendEmail = (param, recordId) =>
     if (param) {
       console.log(`@@param in sendEmail ${JSON.stringify(param, null, 2)}`);
       sendQuote({
-        param: QuoteCommons.mapLWCToSObject(param, recordId, LENDER_QUOTING)
+        param: QuoteCommons.mapLWCToSObject(
+          param,
+          recordId,
+          LENDER_QUOTING,
+          FIELDS_MAPPING_FOR_APEX
+        )
       })
         .then((data) => {
           resolve(data);
@@ -314,11 +546,15 @@ export const CalHelper = {
   reset: reset,
   baseRates: getMyBaseRates,
   BASE_RATE_FIELDS: BASE_RATE_FIELDS,
+  RISK_GRADE_FIELDS: RISK_GRADE_FIELDS,
   lenderSettings: lenderSettings,
   getTableRatesData: getTableRatesData,
   tableRateDataColumns: tableRateDataColumns,
-  getNetRealtimeNaf: QuoteCommons.calcNetRealtimeNaf,
   getNetDeposit: QuoteCommons.calcNetDeposit,
   saveQuote: saveQuote,
-  sendEmail: sendEmail
+  sendEmail: sendEmail,
+  getRiskGrade: getRiskGrade,
+  getNetRealtimeNaf: calcNetRealtimeNaf,
+  getRealtimeEqFee: calculateEQFee,
+  getDOF: calcDOF
 };

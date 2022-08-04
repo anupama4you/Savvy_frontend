@@ -448,7 +448,7 @@ public without sharing class QuotingCalculation {
     return r;
   }
   //
-  //Lelo 				2017-07-24
+  //Lelo                2017-07-24
   private static Application_Quoting_Result__c calculatePepper(
     CalcParam param
   ) {
@@ -522,7 +522,7 @@ public without sharing class QuotingCalculation {
     return r;
   }
 
-  //Lelo 				2017-07-24
+  //Lelo                2017-07-24
   private static Application_Quoting_Result__c calculateLiberty(
     CalcParam param
   ) {
@@ -669,7 +669,7 @@ public without sharing class QuotingCalculation {
     return r;
   }
 
-  //Lelo 				2017-07-26
+  //Lelo                2017-07-26
   private static Application_Quoting_Result__c calculateMacquarie(
     CalcParam param
   ) {
@@ -817,7 +817,7 @@ public without sharing class QuotingCalculation {
     return r;
   }
 
-  //Lelo 				2017-07-27
+  //Lelo                2017-07-27
   private static Application_Quoting_Result__c calculateFinanceOne(
     CalcParam param
   ) {
@@ -903,7 +903,7 @@ public without sharing class QuotingCalculation {
     return r;
   }
 
-  //Lelo 				2017-07-27
+  //Lelo                2017-07-27
   private static Application_Quoting_Result__c calculateMoney3(
     CalcParam param
   ) {
@@ -1052,7 +1052,7 @@ public without sharing class QuotingCalculation {
     return r;
   }
 
-  //Lelo 				2021-12-13
+  //Lelo                2021-12-13
   private static Application_Quoting_Result__c calculateFirstmac(
     CalcParam param
   ) {
@@ -1141,7 +1141,7 @@ public without sharing class QuotingCalculation {
     return r;
   }
 
-  //Lelo 				2017-07-27
+  //Lelo                2017-07-27
   private static Application_Quoting_Result__c calculateBrokerageGeneric(
     CalcParam param
   ) {
@@ -1197,7 +1197,7 @@ public without sharing class QuotingCalculation {
     return r;
   }
 
-  //Lelo 				2017-07-27
+  //Lelo                2017-07-27
   private static Application_Quoting_Result__c calculateCommRate(
     CalcParam param
   ) {
@@ -1300,7 +1300,7 @@ public without sharing class QuotingCalculation {
     return r;
   }
 
-  //Lelo 				2017-07-27
+  //Lelo                2017-07-27
   private static Application_Quoting_Result__c calculateYamaha(
     CalcParam param
   ) {
@@ -1431,7 +1431,7 @@ public without sharing class QuotingCalculation {
     return r;
   }
 
-  //Lelo 				2017-07-25
+  //Lelo                2017-07-25
   public static Decimal getProtectedPercentaje(Decimal vehiclePrice) {
     Decimal r = 0.0;
     if (protectedRatesList == null) {
@@ -1480,6 +1480,7 @@ public without sharing class QuotingCalculation {
 
   //BaseRateCalc
   public static Decimal getBaseRate(CalcParam param) {
+    System.debug('@@getBaseRate: ' + JSON.serializePretty(param));
     Decimal r = 0.0;
     if (param != null) {
       // System.debug('param.lender' + param.lender);
@@ -1580,8 +1581,13 @@ public without sharing class QuotingCalculation {
         r = getAngleFinanceBaseRate(param);
       } else if ('Capital Finance'.equals(param.lender)) {
         r = getCapitalFinanceBaseRate(param);
+      } else if ('Azora Consumer'.equals(param.lender)) {
+        r = getAzoraBaseRate(param);
+      } else if ('Society One'.equals(param.lender)) {
+        r = getSocietyOneBaseRate(param, false);
       }
     }
+    System.debug('@@baseRateCalculated: ' + r);
     return r;
   }
 
@@ -3161,6 +3167,7 @@ public without sharing class QuotingCalculation {
     List<MetroCalculatorRates__c> rates = MetroCalculatorRates__c.getAll()
       .values();
     rates.sort();
+    System.debug('@@TotalRates: ' + rates.size());
 
     Decimal originalRate = 0.00;
     //decimal totalInsurance = nwc + gap + warranty + lti + truckGap + tai + mv + cci;
@@ -3414,6 +3421,7 @@ public without sharing class QuotingCalculation {
     CalcParam param,
     Integer scale
   ) {
+    System.debug('@@getClientRate: ' + JSON.serializePretty(param));
     Decimal r = 0.0;
     // System.debug('@@Lender >> ' + param.lender);
     // System.debug('amuntPmt >> ' + param.amountBasePmt);
@@ -3570,6 +3578,10 @@ public without sharing class QuotingCalculation {
         r = getWisrVLBaseRate(param, true);
       } else if ('Affordable'.equals(param.lender)) {
         r = getAffordableBaseRate(param, true);
+      } else if ('Azora Consumer'.equals(param.lender)) {
+        r = getAzoraBaseRate(param);
+      } else if ('Society One'.equals(param.lender)) {
+        r = getSocietyOneBaseRate(param, true);
       }
     }
     return r;
@@ -3894,7 +3906,7 @@ public without sharing class QuotingCalculation {
         
         Decimal basePremiumLCIC = 0;
 
-		    if (Date.parse(param.dateofBirth).daysBetween(Date.newInstance(Date.today().year(), Date.today().month(), Date.today().day()))/365 >= 30) {
+            if (Date.parse(param.dateofBirth).daysBetween(Date.newInstance(Date.today().year(), Date.today().month(), Date.today().day()))/365 >= 30) {
           basePremiumLCIC = 10 / 0.8 * (param.term / 12);
         }
         
@@ -3902,8 +3914,8 @@ public without sharing class QuotingCalculation {
         GSTLCICCC = basePremiumLCIC * 0.10;
         
         Decimal premiumDisabilityOnly = basePremiumDisabilityUnemployment + GSTDisabilityUnemployment + sd.Disability__c / 100 * (basePremiumDisabilityUnemployment + basePremiumLCIC + GSTDisabilityUnemployment + GSTLCICCC) + basePremiumLCIC + GSTLCICCC;
-		    
-		    basePremiumDisabilityUnemployment = param.totalAmount * coverRates.get('Disability & Unemployment');
+            
+            basePremiumDisabilityUnemployment = param.totalAmount * coverRates.get('Disability & Unemployment');
         basePremiumHHC = 6.5 / 0.8 * (param.term/12);
         GSTDisabilityUnemployment = basePremiumDisabilityUnemployment * 0.10;
         
@@ -4504,6 +4516,8 @@ public without sharing class QuotingCalculation {
     public Boolean hasMaxRate {set; get;}
     @AuraEnabled
     public Decimal applicationFee {set; get;}
+    @AuraEnabled
+    public Decimal riskFee { get; set; }
 
     public CalcParam() {
       this.totalAmount = 0.0;
@@ -4527,6 +4541,8 @@ public without sharing class QuotingCalculation {
       this.greenCar = 'N';
       this.rental = 0.0;
       this.commBonus = 0.0;
+      this.applicationFee = 0.00;
+      this.riskFee = 0.00;
     }
 
     public CalcParam(String lender) {
@@ -5898,7 +5914,7 @@ public without sharing class QuotingCalculation {
             assetAgeSearch = 'Used';
         }
         
-        List <Grow_Asset_Car_Rates__c> gacTier1 = [select id, name, ABN_length__c, Asset_age__c, Additional_rate__c, Asset_backed__c, Asset_type__c, Condition__c,	Non_Asset_backed__c from Grow_Asset_Car_Rates__c 
+        List <Grow_Asset_Car_Rates__c> gacTier1 = [select id, name, ABN_length__c, Asset_age__c, Additional_rate__c, Asset_backed__c, Asset_type__c, Condition__c,  Non_Asset_backed__c from Grow_Asset_Car_Rates__c 
                                                     where Asset_type__c = 'Tier 1' 
                                                     AND ABN_length__c =:  abnLengthSearch 
                                                     AND Asset_age__c =: assetAgeSearch
@@ -5919,7 +5935,7 @@ public without sharing class QuotingCalculation {
             assetAgeSearch = 'Used (<= 25 years EOT)';
         }
         
-        List <Grow_Asset_Car_Rates__c> gacTier1 = [select id, name, ABN_length__c, Asset_age__c, Additional_rate__c, Asset_backed__c, Asset_type__c, Condition__c,	Non_Asset_backed__c from Grow_Asset_Car_Rates__c 
+        List <Grow_Asset_Car_Rates__c> gacTier1 = [select id, name, ABN_length__c, Asset_age__c, Additional_rate__c, Asset_backed__c, Asset_type__c, Condition__c,  Non_Asset_backed__c from Grow_Asset_Car_Rates__c 
                                                     where Asset_type__c = 'Tier 2' 
                                                     AND Asset_age__c =: assetAgeSearch
                                                     order by name asc];
@@ -5981,7 +5997,7 @@ public without sharing class QuotingCalculation {
       list<Angle_Finance_Rates__c> AFrate = new list<Angle_Finance_Rates__c>();
           
       if(Integer.valueOf(param.assetAge) < 6){
-          AFrate = [select id,Name,	ABN__c,	Asset_age__c,	Asset_type__c,	End_of_Term__c,	Property_Owner__c, Non_Property_Owner__c from Angle_Finance_Rates__c 
+          AFrate = [select id,Name, ABN__c, Asset_age__c,   Asset_type__c,  End_of_Term__c, Property_Owner__c, Non_Property_Owner__c from Angle_Finance_Rates__c 
                                                   where Asset_age__c = 'Age 0-5'
                                                   AND ABN__c =: param.abnLength
                                                   AND Asset_type__c =: param.assetType order by name];
@@ -5992,7 +6008,7 @@ public without sharing class QuotingCalculation {
           }else if(param.endOfTerm <= 20){
               EOT = 'End of Term 20';
           }
-          AFrate = [select id,Name,	ABN__c,	Asset_age__c,	Asset_type__c,	End_of_Term__c,	Property_Owner__c, Non_Property_Owner__c from Angle_Finance_Rates__c 
+          AFrate = [select id,Name, ABN__c, Asset_age__c,   Asset_type__c,  End_of_Term__c, Property_Owner__c, Non_Property_Owner__c from Angle_Finance_Rates__c 
                                                   where Asset_age__c = null
                                                   AND Asset_type__c =: param.assetType
                                       AND ABN__c =: param.abnLength
@@ -6339,10 +6355,41 @@ public without sharing class QuotingCalculation {
     return r;
   }
 
-  public static Decimal getBOQCommBaseRate(CalcParam param, Boolean isMaxRate ) {
+  public static Decimal getBOQCommBaseRate(CalcParam param, Boolean isMaxRate) {
     BOQCalculatorCommercialHelper boqHelper = new BOQCalculatorCommercialHelper();
     return boqHelper.getInterestRates(param.goodsType, param.vehicleYear);
   }
 
+  public static Decimal getAzoraBaseRate(CalcParam param) {
+    Decimal r = 0.00;
+    Azora_Rates__c rateSel = QuotingCalculation.getAzora(param);
+    System.debug(rateSel);
+    if(rateSel != null){
+      r = rateSel.Rate__c;
+    }
+    
+    return r;
+  }
+
+  public static Decimal getSocietyOneBaseRate(CalcParam param, Boolean isMaxRate) {
+    Decimal r = 0.00;
+    Society_One_Rate__mdt rate = getSocietyOneRate(param);
+    if (rate != null) {
+      if (param.term <= 36) {
+        r = isMaxRate ? rate.Rate_1_Max__c : rate.Rate_1__c;
+      } else if (param.term <= 60) {
+        r = isMaxRate ? rate.Rate_2_Max__c : rate.Rate_2__c;
+      } else if ('Secured'.equals(param.customerProfile)) {
+        r = isMaxRate ? rate.Rate_3_Max__c : rate.Rate_3__c;
+      }
+    }
+    return r;
+  }
+
+  public static Society_One_Rate__mdt getSocietyOneRate(CalcParam param) {
+    String name = param.customerProfile + '_' + param.clientTier;
+    name = name.replace(' ', '_');
+    return Society_One_Rate__mdt.getInstance(name);
+  }
 
 }

@@ -1125,7 +1125,12 @@ private class TestQuotingCalculation {
     param.assetAge = '> 6 years';
     QuotingCalculation.getBaseRate(param);
 
-
+    // Society One
+    param = new QuotingCalculation.CalcParam('Society One');
+    param.customerProfile = 'Secured';
+    param.clientTier = 'Tier 1';
+    param.term = 60;
+    QuotingCalculation.getBaseRate(param);
 
   }
 

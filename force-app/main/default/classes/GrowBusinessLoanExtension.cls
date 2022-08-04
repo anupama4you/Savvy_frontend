@@ -22,7 +22,7 @@ public class GrowBusinessLoanExtension {
     
     private String fileGlobalPrefix = 'GrowBusiness';
     
-    public static Decimal MAX_BROKERAGE = 4.0;
+    // public static Decimal MAX_BROKERAGE = 4.0;
   
     // finance calculator input
     public Decimal carPrice {get;set;}
@@ -778,8 +778,8 @@ public class GrowBusinessLoanExtension {
         if (!isInsuranceValidationOK()) {
             r = false;   
         }
-        if (brokeragePercentage > MAX_BROKERAGE) {
-            ApexPages.addMessage(new ApexPages.Message(ApexPages.Severity.ERROR,'Brokerage cannot be greater than ' + MAX_BROKERAGE.format() + '%'));
+        if (brokeragePercentage > lenderSettings.Max_Brokerage__c) {
+            ApexPages.addMessage(new ApexPages.Message(ApexPages.Severity.ERROR,'Brokerage cannot be greater than ' + lenderSettings.Max_Brokerage__c.format() + '%'));
             r = false;
         }
         if((equifaxScore == null || equifaxScore < 600) && realtimeNaf > 4999999){
@@ -854,12 +854,12 @@ public class GrowBusinessLoanExtension {
         this.residualValue = 0.00;
         this.residualValuePercentage = 0.00;
         this.selectedTypeValue = MacquarieConstants.TYPE_VALUE;
-        this.baseRate = 11.95;
+        this.baseRate = lenderSettings.Default_Base_Rate__c;
         this.clientRate = 0.00;
         this.term = 36;
         this.propertyOwner = 'N';
         this.ltv = null;
-        this.brokeragePercentage = MAX_BROKERAGE;
+        this.brokeragePercentage = lenderSettings.Max_Brokerage__c;
         // this.carAge = 0;
         //this.motorCycles = 'N';
         //this.caravanCampervans = 'N';

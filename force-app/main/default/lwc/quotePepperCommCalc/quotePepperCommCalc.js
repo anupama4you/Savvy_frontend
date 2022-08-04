@@ -3,6 +3,7 @@ import { displayToast } from "c/partnerJsUtils";
 import { QuoteCommons } from "c/quoteCommons";
 import { CalHelper } from "./quotePepperCommCalcHelper";
 import LENDER_LOGO from "@salesforce/resourceUrl/PepperLogo";
+import RESIDUAL_GUIDE_LINES from "@salesforce/resourceUrl/PepperCommResidualGuidelines";
 
 import FNAME_FIELD from "@salesforce/schema/Custom_Opportunity__c.Account_First_Name__c";
 import LNAME_FIELD from "@salesforce/schema/Custom_Opportunity__c.Account_Last_Name__c";
@@ -15,7 +16,6 @@ export default class QuotePepperCommCalc extends LightningElement {
     @track tableRatesCols = CalHelper.tableRateDataColumns;
     @track tableRatesCols2 = CalHelper.tableRateDataColumns2;
     @track tableRatesCols3 = CalHelper.tableRateDataColumns3;
-    @track tableRatesCols4 = CalHelper.tableRateDataColumns4;
     @track isBusy;
     @track isBaseRateBusy;
     @track isCalculated = false;
@@ -24,6 +24,8 @@ export default class QuotePepperCommCalc extends LightningElement {
     @track quoteForm;
     // Rate Settings
     @track tableRates;
+    @track tableRates2;
+    @track tableRates3;
     @wire(getRecord, { recordId: "$recordId", fields })
     opp;
 
@@ -36,6 +38,8 @@ export default class QuotePepperCommCalc extends LightningElement {
                 console.log(`Data loaded! ${JSON.stringify(data, null, 2)}`);
                 this.quoteForm = data;
                 this.tableRates = CalHelper.getTableRatesData();
+                this.tableRates2 = CalHelper.getTableRatesData2();
+                this.tableRates3 = CalHelper.getTableRatesData3();
             })
             .catch((error) => {
                 console.error(JSON.stringify(error, null, 2));
@@ -56,6 +60,10 @@ export default class QuotePepperCommCalc extends LightningElement {
         return LENDER_LOGO;
     }
 
+    get residualGuideLines() {
+        return RESIDUAL_GUIDE_LINES;
+    }
+
     // Combobox options
     get loanTypeOptions() {
         return CalHelper.options.loanTypes;
@@ -67,14 +75,6 @@ export default class QuotePepperCommCalc extends LightningElement {
 
     get assetTypeOptions() {
         return CalHelper.options.assetTypes;
-    }
-
-    // get assetSubtypeOptions() {
-    //     return this.subtypeDisabled ? CalHelper.options.assetSubtypeNA : CalHelper.options.assetSubtype;
-    // }
-
-    get subtypeDisabled() {
-        return this.quoteForm.assetType !== 'Motorbike';
     }
 
     get paymentTypeOptions() {
@@ -112,19 +112,11 @@ export default class QuotePepperCommCalc extends LightningElement {
             ? (this.quoteForm[fldName] = parseInt(v))
             : (this.quoteForm[fldName] = v);
         console.log(`this.quoteForm:`, JSON.stringify(this.quoteForm, null, 2));
-        // fldName === "assetType" && this.subtypeDisabled &&
-        //     (this.quoteForm.assetSubtype = this.assetSubtypeOptions[0].value);
-        // --------------
-        // Trigger events
-        // --------------
-
         // Base Rate Calculation
         if (CalHelper.BASE_RATE_FIELDS.includes(fldName)) {
             this.baseRateCalc();
         }
-        // --------------
     }
-
 
     // Calculations
     get netDeposit() {
@@ -215,5 +207,73 @@ export default class QuotePepperCommCalc extends LightningElement {
         this.baseRateCalc();
     }
 
+    // all Save Buttons actions
+    handleSave(event) {
+        console.log(`event detail : ${event.target.value.toUpperCase()}`);
+        const isNONE = event.target.value.toUpperCase() === "NONE";
+        this.isBusy = true;
+        const loanType = event.target.value.toUpperCase();
+        if (!this.messageObj.errors.length > 0) {
+            this.messageObj = QuoteCommons.resetMessage();
+            CalHelper.saveQuote(loanType, this.quoteForm, this.recordId)
+                .then((data) => {
+                    console.log("@@data in handleSave:", JSON.stringify(data, null, 2));
+                    !isNONE
+                        ? this.messageObj.confirms.push(
+                            {
+                                field: "confirms",
+                                message: "Calculation saved successfully."
+                            },
+                            {
+                                fields: "confirms",
+                                message: "Product updated successfully."
+                            }
+                        )
+                        : this.messageObj.confirms.push({
+                            field: "confirms",
+                            message: "Calculation saved successfully."
+                        });
+                    // passing data to update quoteform
+                    this.quoteForm["Id"] = data["Id"];
+                })
+                .catch((error) => {
+                    console.error("handleSave : ", error);
+                })
+                .finally(() => {
+                    this.isBusy = false;
+                });
+        } else {
+            QuoteCommons.fieldErrorHandler(this, this.messageObj.errors);
+            this.isCalculated = true;
+        }
+    }
+
+    // Send Email
+    handleSendQuote() {
+        this.isBusy = true;
+        if (!this.messageObj.errors.length > 0) {
+            this.messageObj = QuoteCommons.resetMessage();
+            CalHelper.sendEmail(this.quoteForm, this.recordId)
+                .then((data) => {
+                    console.log(
+                        "@@data in handle send quote :",
+                        JSON.stringify(data, null, 2)
+                    );
+                    this.messageObj.infos.push({
+                        field: "infos",
+                        message: "Email has been sent to customer."
+                    });
+                })
+                .catch((error) => {
+                    console.error("handleSendQuote: ", error);
+                })
+                .finally(() => {
+                    this.isBusy = false;
+                });
+        } else {
+            QuoteCommons.fieldErrorHandler(this, this.messageObj.errors);
+            this.isCalculated = true;
+        }
+    }
 
 }

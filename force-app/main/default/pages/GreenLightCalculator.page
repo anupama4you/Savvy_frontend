@@ -409,7 +409,7 @@
             <div class="calculatorInput"  >
               <div class="divTitle"><h3>Input</h3></div>
               <div style="display: flex;">
-                <div id="leftTables">
+                <div id="leftTables" style="padding-right: 250px !important;">
                     <div id="financeTab"><h3>Finance Details</h3></div>
                     <table id="financeDetails">
                         <tr>
@@ -650,14 +650,14 @@
                         </tr>
                     </table>
                 </div>
-                <div id="rightTables">
+                <div id="rightTables" >
                   <c:QuotingCommissionResults qext="{!quotingExt}"/>
                   <c:InsuranceProductForm qext="{!quotingExt}" formId="calcFormData" id="pnlInsProd" />
                   <br/>
                   <c:ProtectionQuestions lead="{!o.Lead__r}"/>
-                  <p>&nbsp;</p>
+                  <p>&nbsp;</p> 
                     <!-- end Insurance Implementation -->
-                </div>
+                </div> 
               </div>
             </div>
         </apex:form>

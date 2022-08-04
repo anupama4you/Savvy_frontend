@@ -1,0 +1,6 @@
+/* Calculators styles */
+@import 'c/quoteCommonsStyles';
+
+.my-radio-group {
+    --sds-c-button-line-width: 20rem;
+}

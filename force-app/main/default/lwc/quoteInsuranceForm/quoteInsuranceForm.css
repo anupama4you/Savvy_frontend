@@ -1,5 +1,5 @@
 /* Calculators styles */
-@import 'c/quoteCommonsStyles';
+@import "c/quoteCommonsStyles";
 
 .c-products {
   padding-right: 25px;
@@ -10,11 +10,13 @@
   font-weight: bold;
   font-size: small;
   padding: 10px;
+  align-content: center;
+  text-align: center;
 }
 
 .inTableText {
   font-size: smaller;
-  padding: 10px;
+  padding: 5px;
 }
 
 .titleTableTab {
@@ -39,7 +41,7 @@
 
 tr {
   border-collapse: collapse;
-  border-bottom:1px solid #ddd;
+  border-bottom: 1px solid #ddd;
 }
 
 .c-card-body {

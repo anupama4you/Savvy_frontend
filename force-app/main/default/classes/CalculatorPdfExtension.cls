@@ -187,6 +187,7 @@ public class CalculatorPdfExtension {
     public String abnLength {set; get;}
     public String gstLength {set; get;}
     public String assetAge {set; get;}
+    public String equifaxScore {set; get;}
     
     public Custom_Opportunity__c opp;
 
@@ -607,6 +608,7 @@ public class CalculatorPdfExtension {
         abnLength = System.currentPageReference().getParameters().get('abnLength');
         gstLength = System.currentPageReference().getParameters().get('gstLength');
         assetAge = System.currentPageReference().getParameters().get('assetAge');
+        equifaxScore = System.currentPageReference().getParameters().get('equifaxScore');
     } // finish the constructor
     
     
@@ -955,7 +957,7 @@ public class CalculatorPdfExtension {
 
     public Boolean getIsGrowAssetCar() {
         Boolean r = false;
-        if (!String.isBlank(lender) && lender.containsIgnoreCase('GROW')) {
+        if (!String.isBlank(lender) && lender.containsIgnoreCase('GROW') && !lender.equalsIgnoreCase('Grow Business Loan CALCULATION')) {
             r = true;
         }
         return r;
@@ -964,4 +966,13 @@ public class CalculatorPdfExtension {
   public Account getAccountVar() {
     return SOQLSingletonQueries.getPartnerAccount(this.opp.OwnerId);
   } 
+
+  public Boolean getIsGrowBusiLoan() {
+    Boolean r = false;
+    if (!String.isBlank(lender) && lender.containsIgnoreCase('Grow Business Loan CALCULATION')) {
+        r = true;
+    }
+    return r;
+  }
+
 }

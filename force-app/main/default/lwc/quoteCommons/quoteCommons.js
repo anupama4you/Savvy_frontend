@@ -36,6 +36,15 @@ const createTermOptions = (min, max) => {
   return r;
 };
 
+const createNumberDESCOptions = (max, min) => {
+  let r = [];
+  for (let i = max; i > min; ) {
+    r.push({ label: i, value: i });
+    i -= 1;
+  }
+  return r;
+};
+
 const CommonOptions = {
   loanTypes: [
     { label: "Purchase", value: "Purchase" },
@@ -67,7 +76,29 @@ const CommonOptions = {
     { label: "Yes", value: "Y" },
     { label: "No", value: "N" }
   ],
-  terms: createTermOptions
+  terms: createTermOptions,
+  profiles : [
+    { label: "Property Owner", value: "Property Owner" },
+    { label: "Non Property Owner", value: "Non Property Owner" }
+  ],
+  clientTiers : [
+    { label: "Tier 1", value: "Tier 1" },
+    { label: "Tier 2", value: "Tier 2" },
+    { label: "Tier 3", value: "Tier 3" }
+  ],
+  assetTypes : [
+    { label: "Car", value: "Car" },
+    { label: "Caravan", value: "Caravan" }
+  ],
+  vehicleConditions : [
+    { label: "New", value: "New" },
+    { label: "Demo", value: "Demo" },
+    { label: "Used", value: "Used" }
+  ],
+  vehicleBuildDates : createNumberDESCOptions,
+  apiUsers: [
+    { label: "Savvy Admin", value: "Savvy Admin" }
+  ]
 };
 
 const resetResults = () => {
@@ -92,33 +123,38 @@ const mapSObjectToLwc = ({
   settingFields,
   quotingFields
 }) => {
-  // Default values
-  let r = defaultData;
-  // Default from Settings
-  console.log(`@@settings...`);
-  settingFields.forEach((value, key, map) => {
-    r[`${key}`] = quoteData.settings[`${value}`];
-    console.log(`{${key}: ${value}} | `, quoteData.settings[`${value}`]);
-  });
-  if (quoteData.data) {
-    // Validate same calculator
-    r["Id"] = quoteData.data["Id"];
-    if (calcName === quoteData.data.Name) {
-      // Set Finance Detail Values
-      quotingFields.forEach((value, key, map) => {
-        r[`${key}`] = quoteData.data[`${value}`];
-        console.log(`{${key}: ${value}} | `, quoteData.data[`${value}`]);
-        if (typeof quoteData.data[`${value}`] == "undefined")
-          r[`${key}`] = null;
-      });
-      // Set Commission Calculations
-      COMMISSION_FIELDS.forEach((value, key, map) => {
-        r.commissions[`${key}`] = quoteData.data[`${value}`];
-        // console.log(`{${key}: ${value}} | `, quoteData[`${value}`]);
-      });
+  try {
+    // Default values
+    let r = defaultData;
+    // Default from Settings
+    console.log(`@@settings...`);
+    settingFields.forEach((value, key, map) => {
+      r[`${key}`] = quoteData.settings[`${value}`];
+      console.log(`{${key}: ${value}} | `, quoteData.settings[`${value}`]);
+    });
+    if (quoteData.data) {
+      // Validate same calculator
+      r["Id"] = quoteData.data["Id"];
+      if (calcName === quoteData.data.Name) {
+        // Set Finance Detail Values
+        quotingFields.forEach((value, key, map) => {
+          r[`${key}`] = quoteData.data[`${value}`];
+          console.log(`{${key}: ${value}} | `, quoteData.data[`${value}`]);
+          if (typeof quoteData.data[`${value}`] == "undefined")
+            r[`${key}`] = null;
+        });
+        // Set Commission Calculations
+        COMMISSION_FIELDS.forEach((value, key, map) => {
+          r.commissions[`${key}`] = quoteData.data[`${value}`];
+          // console.log(`{${key}: ${value}} | `, quoteData[`${value}`]);
+        });
+      }
     }
+    return r;
+    
+  } catch (error) {
+    console.log(error);
   }
-  return r;
 };
 
 const mapDataToLwc = (obj, data, DataFields) => {
@@ -335,7 +371,8 @@ const QuoteCommons = {
   fieldErrorHandler: fieldErrorHandler,
   resetMessage: resetMessage,
   uniqueArray: uniqueArray,
-  mapLWCToSObject: mapLWCToSObject
+  mapLWCToSObject: mapLWCToSObject,
+  createTermOptions: createTermOptions
 };
 
 export { QuoteCommons, CommonOptions, FinancialUtilities, VALIDATION_OPTIONS };

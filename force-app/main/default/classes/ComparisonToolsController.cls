@@ -125,21 +125,33 @@ public without sharing class ComparisonToolsController {
     CompToolLenderCalcAbstract.FilterParams params
   ) {
     if (calc != null && params != null) {
-      if ('AMMF'.equals(calc.Name) || 'Yamaha Marine'.equals(calc.Name)) {
+      if ('Affordable'.equals(calc.Name)) {
+        return new CompToolAffordableCalc(calc, params);
+      } else if ('AMMF'.equals(calc.Name) || 'Yamaha Marine'.equals(calc.Name)) {
         // calc.Name = 'Yamaha Marine';
         return new CompToolAmmfCalc(calc, params);
       } else if ('AFS Commercial'.equals(calc.Name)) {
         return new CompToolAFSCommercialCalc(calc, params);
       } else if ('AFS Consumer'.equals(calc.Name)) {
         return new CompToolAFSConsumerCalc(calc, params);
+      } else if ('Angle Finance'.equals(calc.Name)) {
+        return new CompToolAngleCalc(calc, params);
       } else if ('ANZ Commercial'.equals(calc.Name)) {
         return new CompToolAnzCommCalc(calc, params);
       } else if ('ANZ Others'.equals(calc.Name)) {
         return new CompToolAnzOthersCalc(calc, params);
+      } else if ('APF'.equals(calc.Name)) {
+        return new CompToolApfCalc(calc, params);
+      } else if ('Azora Consumer'.equals(calc.Name)) {
+        return new CompToolAzoraCalc(calc, params);
       } else if ('BOQ'.equals(calc.Name)) {
         return new CompToolBoqCalc(calc, params);
       } else if ('BOQ Commercial'.equals(calc.Name)) {
         return new CompToolBoqCommCalc(calc, params);
+      } else if ('CarStart'.equals(calc.Name)) {
+        return new CompToolCarStartCalc(calc, params);
+      } else if ('Commercial Equity Group'.equals(calc.Name)) {
+        return new CompToolCommEquityGroupCalc(calc, params);
       } else if ('Finance One'.equals(calc.Name)) {
         return new CompToolFinanceOneCalc(calc, params);
       } else if ('Finance One Commercial'.equals(calc.Name)) {
@@ -148,6 +160,12 @@ public without sharing class ComparisonToolsController {
         return new CompToolFirstmacCalc(calc, params);
       } else if ('Green Light'.equals(calc.Name)) {
         return new CompToolGreenLightCalc(calc, params);
+      } else if ('Group and General'.equals(calc.Name)) {
+        return new CompToolGroupAndGeneralCalc(calc, params);
+      } else if ('Grow Asset'.equals(calc.Name)) {
+        return new CompToolGrowAssetCalc(calc, params);
+      } else if ('Grow Business Loan'.equals(calc.Name)) {
+        return new CompToolGrowBusinessCalc(calc, params);
       } else if ('Latitude'.equals(calc.Name)) {
         return new CompToolLatitudeCalc(calc, params);
       } else if ('Latitude PL'.equals(calc.Name) || 'Latitude Personal Loan'.equals(calc.Name)) {
@@ -170,6 +188,8 @@ public without sharing class ComparisonToolsController {
         return new CompToolMoney3Calc(calc, params);
       } else if ('Money Place'.equals(calc.Name)) {
         return new CompToolMoneyPlaceCalc(calc, params);
+      } else if ('Morris'.equals(calc.Name)) {
+        return new CompToolMorrisCalc(calc, params);
       } else if ('Now Finance'.equals(calc.Name)) {
         return new CompToolNowFinanceCalc(calc, params);
       } else if ('Pepper Commercial'.equals(calc.Name)) {
@@ -186,6 +206,20 @@ public without sharing class ComparisonToolsController {
         return new CompToolPlentiCommCalc(calc, params);
       } else if ('Plenti PL'.equals(calc.Name)) {
         return new CompToolPlentiPLCalc(calc, params);
+      } else if ('Selfco'.equals(calc.Name)) {
+        return new CompToolSelfcoCalc(calc, params);
+      } else if ('Shift Asset'.equals(calc.Name)) {
+        return new CompToolShiftAssetCalc(calc, params);
+      } else if ('Shift ODR'.equals(calc.Name)) {
+        return new CompToolShiftOdrCalc(calc, params);
+      } else if ('Silver Chef'.equals(calc.Name)) {
+        return new CompToolSilverChefCalc(calc, params);
+      } else if ('Society One'.equals(calc.Name)) {
+        return new CompToolSocietyOneCalc(calc, params);
+      } else if ('UME Loans'.equals(calc.Name)) {
+        return new CompToolUmeCalc(calc, params);
+      } else if ('Westpac'.equals(calc.Name)) {
+        return new CompToolWestpacCalc(calc, params);
       } else if ('Wisr PL'.equals(calc.Name)) {
         return new CompToolWisrPLCalc(calc, params);
       } else if ('Wisr VL'.equals(calc.Name)) {

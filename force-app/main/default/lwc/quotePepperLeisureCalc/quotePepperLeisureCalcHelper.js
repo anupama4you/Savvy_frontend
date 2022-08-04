@@ -1,6 +1,8 @@
 import getQuotingData from "@salesforce/apex/quotePepperLeisureController.getQuotingData";
 import getBaseRates from "@salesforce/apex/QuoteController.getBaseRates";
 import calculateRepayments from "@salesforce/apex/QuoteController.calculateRepayments";
+import sendQuote from "@salesforce/apex/QuoteController.sendQuote";
+import save from "@salesforce/apex/quotePepperLeisureController.save";
 import {
     QuoteCommons,
     CommonOptions,
@@ -39,6 +41,17 @@ const QUOTING_FIELDS = new Map([
     ["clientRate", "Client_Rate__c"],
     ["paymentType", "Payment__c"]
 ]);
+
+const FIELDS_MAPPING_FOR_APEX = new Map([
+    ...QUOTING_FIELDS,
+    ["Id", "Id"],
+    ["privateSales", "Private_Sales__c"],
+    ["clientTier", "Client_Tier__c"],
+    ["assetAge", "Vehicle_Age__c"],
+    ["baseRate", "Base_Rate__c"],
+    ["maxRate", "Manual_Max_Rate__c"]
+]);
+
 
 const RATE_SETTING_NAMES = ["PepperRate__c"];
 
@@ -160,7 +173,7 @@ const reset = () => {
         applicationFee: null,
         maxApplicationFee: null,
         dof: null,
-        residual: null,
+        residual: 0.0,
         ppsr: null,
         monthlyFee: null,
         maxDof: null,
@@ -243,10 +256,55 @@ const getMyBaseRates = (quote) =>
             .catch((error) => reject(error));
     });
 
-
 const getTableRatesData = () => {
     return tableRatesData;
 };
+
+const saveQuote = (approvalType, param, recordId) =>
+    new Promise((resolve, reject) => {
+        if (approvalType && param && recordId) {
+            save({
+                param: QuoteCommons.mapLWCToSObject(
+                    param,
+                    recordId,
+                    LENDER_QUOTING,
+                    FIELDS_MAPPING_FOR_APEX
+                ),
+                approvalType: approvalType
+            })
+                .then((data) => {
+                    resolve(data);
+                })
+                .catch((error) => {
+                    reject(error);
+                });
+        } else {
+            reject(new Error("QUOTE OR RECORDID EMPTY in SaveQuoting function"));
+        }
+    });
+
+const sendEmail = (param, recordId) =>
+    new Promise((resolve, reject) => {
+        if (param) {
+            console.log(`@@param in sendEmail ${JSON.stringify(param, null, 2)}`);
+            sendQuote({
+                param: QuoteCommons.mapLWCToSObject(
+                    param,
+                    recordId,
+                    LENDER_QUOTING,
+                    FIELDS_MAPPING_FOR_APEX
+                )
+            })
+                .then((data) => {
+                    resolve(data);
+                })
+                .catch((error) => {
+                    reject(error);
+                });
+        } else {
+            reject(new Error(`Something wrong in sendEmail : param: ${param}`));
+        }
+    });
 
 export const CalHelper = {
     options: calcOptions,
@@ -259,5 +317,7 @@ export const CalHelper = {
     getTableRatesData: getTableRatesData,
     tableRateDataColumns: tableRateDataColumns,
     getNetRealtimeNaf: QuoteCommons.calcNetRealtimeNaf,
-    getNetDeposit: QuoteCommons.calcNetDeposit
+    getNetDeposit: QuoteCommons.calcNetDeposit,
+    saveQuote: saveQuote,
+    sendEmail: sendEmail,
 };

@@ -62,18 +62,7 @@ const validate = (quote, messages) => {
     }
 
     console.log(
-        "🚀 ~ file: quoteValidations.js ~ line 64 ~ validate ~ quote.assetSubtype",
-        quote.assetSubtype
-    );
-    if (quote.assetType === 'Motorbike' && quote.assetSubtype === '--N/A--') {
-        errorList.push({
-            field: "assetSubtype",
-            message: 'Please select an Asset Subtype option'
-        });
-    }
-
-    console.log(
-        "🚀 ~ file: quoteValidations.js ~ line 75 ~ validate ~ quote.residual",
+        "🚀 ~ file: quoteValidations.js ~ line 65 ~ validate ~ quote.residual",
         quote.residual
     );
     if (quote.residual > 0 && quote.term > 60) {
@@ -83,49 +72,48 @@ const validate = (quote, messages) => {
         });
     }
 
-    // TODO: PepperCalculatorLeisureExtension.cls => Line:300
-    const NAF = CalHelper.getNetRealtimeNaf(quote);
-    let maxNaf = 50000;
     console.log(
-        "🚀 ~ file: quoteValidations.js ~ line 91 ~ validate ~ NAF",
-        NAF
+        "🚀 ~ file: quoteValidations.js ~ line 76 ~ validate ~ quote.assetAge",
+        quote.assetAge
     );
-    if (quote.clientTier !== 'C') {
-        maxNaf = 100000;
-    }
-    if (quote.assetType === 'Boat' && quote.privateSales === 'Y' && NAF > maxNaf) {
+    if (quote.residual > 0 && !(quote.assetAge === "New" || quote.assetAge === "Used 0-5 years")) {
         warningList.push({
-            field: "NAF",
-            message: `Normally max NAF of $${maxNaf} for Private sale assets - refer to Pepper`
+            field: "assetAge",
+            message: `Residuals may not be available for assets > 5 years old`
         });
     }
 
+    const NAF = CalHelper.getNetRealtimeNaf(quote);
+
     console.log(
-        "🚀 ~ file: quoteValidations.js ~ line 104 ~ validate ~ assetType, clientTier ",
-        quote.assetType, quote.clientTier
+        "🚀 ~ file: quoteValidations.js ~ line 89 ~ validate ~ quote.privateSales ~ quote.clientTier",
+        quote.privateSales, quote.clientTier
     );
-    if (
-        (quote.assetType === 'Boat'
-            || (quote.assetType === 'Motorbike' && (quote.assetSubtype === 'Off-Road' || (quote.assetSubtype === 'ATV')))
-        ) && quote.clientTier === 'C'
-    ) {
-        errorList.push({
-            field: "AssetType && clientTier",
-            message: 'Leisure (except road bikes) not allowed for Tier C'
-        });
+    if (quote.assetType === 'Caravan') {
+        if (quote.privateSales === 'Y' && NAF > 100000) {
+            warningList.push({
+                field: "privateSales",
+                message: 'Normally max NAF of $100,000 for Private sale assets - refer to Pepper'
+            });
+        };
+        if (quote.clientTier === 'C') {
+            warningList.push({
+                field: "clientTier",
+                message: 'Leisure assets not normally available for C risk grade'
+            });
+        }
     }
 
     console.log(
-        "🚀 ~ file: quoteValidations.js ~ line 119 ~ validate ~ privateSales ",
+        "🚀 ~ file: quoteValidations.js ~ line 108 ~ validate ~ quote.privateSales",
         quote.privateSales
     );
-    if (quote.privateSales === 'Y' && NAF > maxNaf) {
+    if (quote.privateSales === 'Y' && NAF > 75000) {
         warningList.push({
             field: "privateSales",
-            message: `Private sales max. NAF should be $${maxNaf}`
+            message: 'Private sales max. NAF should be $75K'
         });
     }
-
 
     r.warnings = [].concat(QuoteCommons.uniqueArray(warningList));
     r.errors = [].concat(QuoteCommons.uniqueArray(errorList));

@@ -1,6 +1,8 @@
 import getQuotingData from "@salesforce/apex/QuotePepperCommController.getQuotingData";
 import getBaseRates from "@salesforce/apex/QuoteController.getBaseRates";
 import calculateRepayments from "@salesforce/apex/QuoteController.calculateRepayments";
+import sendQuote from "@salesforce/apex/QuoteController.sendQuote";
+import save from "@salesforce/apex/QuotePepperCommController.save";
 import {
     QuoteCommons,
     CommonOptions,
@@ -11,42 +13,30 @@ import { Validations } from "./quoteValidations";
 // Default settings
 let lenderSettings = {};
 let tableRatesData = [];
+let tableRatesData2 = [];
+let tableRatesData3 = [];
+
 let tableRateDataColumns = [
     { label: "Tier", fieldName: "Tier__c", fixedWidth: 70 },
     { label: "New", fieldName: "Rate0__c", fixedWidth: 80 },
     { label: "Used 0-5 years", fieldName: "Rate1__c", fixedWidth: 140 },
     { label: "Used 6+ years", fieldName: "Rate2__c", fixedWidth: 140 },
-    // { label: "Used 10+ years", fieldName: "Rate3__c", fixedWidth: 140 }
 ];
 let tableRateDataColumns2 = [
     { label: "Tier", fieldName: "Tier__c", fixedWidth: 70 },
     { label: "New and Demo", fieldName: "Rate0__c", fixedWidth: 140 },
     { label: "Used all ages", fieldName: "Rate1__c", fixedWidth: 140 },
-    // { label: "Used 6-9 years", fieldName: "Rate2__c", fixedWidth: 140 },
-    // { label: "Used 10+ years", fieldName: "Rate3__c", fixedWidth: 140 }
 ];
 let tableRateDataColumns3 = [
     { label: "Tier", fieldName: "Tier__c", fixedWidth: 70 },
     { label: "New and Used all ages", fieldName: "Rate0__c", fixedWidth: 180 },
-    // { label: "Used 0-5 years", fieldName: "Rate1__c", fixedWidth: 140 },
-    // { label: "Used 6-9 years", fieldName: "Rate2__c", fixedWidth: 140 },
-    // { label: "Used 10+ years", fieldName: "Rate3__c", fixedWidth: 140 }
 ];
-let tableRateDataColumns4 = [
-    // { label: "Product", fieldName: "Product__c" },
-    { label: "Tier", fieldName: "Tier__c", fixedWidth: 70 },
-    { label: "New", fieldName: "Rate0__c", fixedWidth: 80 },
-    { label: "Used 0-5 years", fieldName: "Rate1__c", fixedWidth: 140 },
-    { label: "Used 6-9 years", fieldName: "Rate2__c", fixedWidth: 140 },
-    { label: "Used 10+ years", fieldName: "Rate3__c", fixedWidth: 140 }
-];
-const LENDER_QUOTING = "Pepper Leisure";
+const LENDER_QUOTING = "Pepper Commercial";
 
 const QUOTING_FIELDS = new Map([
     ["loanType", "Loan_Type__c"],
     ["loanProduct", "Loan_Product__c"],
     ["assetType", "Goods_type__c"],
-    // ["assetSubtype", "Goods_sub_type__c"],
     ["price", "Vehicle_Price__c"],
     ["deposit", "Deposit__c"],
     ["tradeIn", "Trade_In__c"],
@@ -61,7 +51,18 @@ const QUOTING_FIELDS = new Map([
     ["paymentType", "Payment__c"]
 ]);
 
-const RATE_SETTING_NAMES = ["PepperRate__c"];
+const FIELDS_MAPPING_FOR_APEX = new Map([
+    ...QUOTING_FIELDS,
+    ["Id", "Id"],
+    ["privateSales", "Private_Sales__c"],
+    ["clientTier", "Client_Tier__c"],
+    ["assetAge", "Vehicle_Age__c"],
+    ["baseRate", "Base_Rate__c"],
+    ["maxRate", "Manual_Max_Rate__c"]
+]);
+
+
+const RATE_SETTING_NAMES = ["PepperRate__c", "PepperRate__c_2", "PepperRate__c_3"];
 
 const SETTING_FIELDS = new Map([
     ["applicationFee", "Application_Fee__c"],
@@ -93,7 +94,9 @@ const calculate = (quote) =>
             reject(res);
         } else {
             // Prepare params
-            const profile = "LEISURE";
+            let profile = "COMMERCIAL";
+            Object.is(quote.assetType, "Other-Primary Assets") && (profile = "OTHER - Primary");
+            Object.is(quote.assetType, "Other-Secondary & Tertiary Assets") && (profile = "OTHER - 2nd & 3rd");
             const p = {
                 lender: LENDER_QUOTING,
                 totalAmount: QuoteCommons.calcTotalAmount(quote),
@@ -111,7 +114,6 @@ const calculate = (quote) =>
                 vehicleYear: quote.assetAge,
                 privateSales: quote.privateSales,
                 goodsType: quote.assetType,
-                // goodsSubType: quote.assetSubtype,
             };
 
             // Calculate
@@ -155,8 +157,7 @@ const calcOptions = {
     vehicleAges: [
         { label: "New", value: "New" },
         { label: "Used 0-5 years", value: "Used 0-5 years" },
-        { label: "Used 6-9 years", value: "Used 6-9 years" },
-        { label: "Used 10+ years", value: "Used 10+ years" }
+        { label: "Used 6+ years", value: "Used 6+ years" },
     ],
     terms: CommonOptions.terms(12, 84)
 };
@@ -167,7 +168,6 @@ const reset = () => {
         loanType: calcOptions.loanTypes[0].value,
         loanProduct: calcOptions.loanProducts[0].value,
         assetType: calcOptions.assetTypes[0].value,
-        // assetSubtype: calcOptions.assetSubtypeNA[0].value,
         price: null,
         deposit: null,
         tradeIn: null,
@@ -175,7 +175,7 @@ const reset = () => {
         applicationFee: null,
         maxApplicationFee: null,
         dof: null,
-        residual: null,
+        residual: 0.0,
         ppsr: null,
         monthlyFee: null,
         maxDof: null,
@@ -200,7 +200,6 @@ const loadData = (recordId) =>
             ...QUOTING_FIELDS.values(),
             ...QuoteCommons.COMMISSION_FIELDS.values()
         ];
-        // console.log(`@@fields:`, JSON.stringify(fields, null, 2));
         getQuotingData({
             param: {
                 oppId: recordId,
@@ -226,8 +225,9 @@ const loadData = (recordId) =>
                 // Rate Settings
                 if (quoteData.rateSettings) {
                     tableRatesData = quoteData.rateSettings[`${RATE_SETTING_NAMES[0]}`];
+                    tableRatesData2 = quoteData.rateSettings[`${RATE_SETTING_NAMES[1]}`];
+                    tableRatesData3 = quoteData.rateSettings[`${RATE_SETTING_NAMES[2]}`];
                 }
-                // console.log(`@@data:`, JSON.stringify(data, null, 2));
                 resolve(data);
             })
             .catch((error) => reject(error));
@@ -236,7 +236,9 @@ const loadData = (recordId) =>
 // Get Base Rates
 const getMyBaseRates = (quote) =>
     new Promise((resolve, reject) => {
-        const profile = "LEISURE";
+        let profile = "COMMERCIAL";
+        Object.is(quote.assetType, "Other-Primary Assets") && (profile = "OTHER - Primary");
+        Object.is(quote.assetType, "Other-Secondary & Tertiary Assets") && (profile = "OTHER - 2nd & 3rd");
         const p = {
             lender: LENDER_QUOTING,
             productLoanType: quote.loanProduct,
@@ -258,10 +260,66 @@ const getMyBaseRates = (quote) =>
             .catch((error) => reject(error));
     });
 
-
 const getTableRatesData = () => {
     return tableRatesData;
 };
+
+const getTableRatesData2 = () => {
+    return tableRatesData2;
+};
+
+const getTableRatesData3 = () => {
+    return tableRatesData3;
+};
+
+const saveQuote = (approvalType, param, recordId) =>
+    new Promise((resolve, reject) => {
+        if (approvalType && param && recordId) {
+            save({
+                param: QuoteCommons.mapLWCToSObject(
+                    param,
+                    recordId,
+                    LENDER_QUOTING,
+                    FIELDS_MAPPING_FOR_APEX
+                ),
+                approvalType: approvalType
+            })
+                .then((data) => {
+                    resolve(data);
+                })
+                .catch((error) => {
+                    reject(error);
+                });
+        } else {
+            reject(new Error("QUOTE OR RECORDID EMPTY in SaveQuoting function"));
+        }
+    });
+
+
+const sendEmail = (param, recordId) =>
+    new Promise((resolve, reject) => {
+        if (param) {
+            console.log(`@@param in sendEmail ${JSON.stringify(param, null, 2)}`);
+            sendQuote({
+                param: QuoteCommons.mapLWCToSObject(
+                    param,
+                    recordId,
+                    LENDER_QUOTING,
+                    FIELDS_MAPPING_FOR_APEX
+                )
+            })
+                .then((data) => {
+                    resolve(data);
+                })
+                .catch((error) => {
+                    reject(error);
+                });
+        } else {
+            reject(new Error(`Something wrong in sendEmail : param: ${param}`));
+        }
+    });
+
+
 
 export const CalHelper = {
     options: calcOptions,
@@ -272,10 +330,13 @@ export const CalHelper = {
     BASE_RATE_FIELDS: BASE_RATE_FIELDS,
     lenderSettings: lenderSettings,
     getTableRatesData: getTableRatesData,
+    getTableRatesData2: getTableRatesData2,
+    getTableRatesData3: getTableRatesData3,
     tableRateDataColumns: tableRateDataColumns,
     tableRateDataColumns2: tableRateDataColumns2,
     tableRateDataColumns3: tableRateDataColumns3,
-    tableRateDataColumns4: tableRateDataColumns4,
     getNetRealtimeNaf: QuoteCommons.calcNetRealtimeNaf,
-    getNetDeposit: QuoteCommons.calcNetDeposit
+    getNetDeposit: QuoteCommons.calcNetDeposit,
+    saveQuote: saveQuote,
+    sendEmail: sendEmail,
 };

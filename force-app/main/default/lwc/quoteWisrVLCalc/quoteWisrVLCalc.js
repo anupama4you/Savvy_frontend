@@ -6,7 +6,7 @@ import LENDER_LOGO from "@salesforce/resourceUrl/WisrLogo";
 import FNAME_FIELD from "@salesforce/schema/Custom_Opportunity__c.Account_First_Name__c";
 import LNAME_FIELD from "@salesforce/schema/Custom_Opportunity__c.Account_Last_Name__c";
 import OPPNAME_FIELD from "@salesforce/schema/Custom_Opportunity__c.Name";
-import { getRecord, getFieldValue } from "lightning/uiRecordApi";
+import { getRecord } from "lightning/uiRecordApi";
 
 const fields = [FNAME_FIELD, LNAME_FIELD, OPPNAME_FIELD];
 
@@ -16,6 +16,8 @@ export default class QuoteWisrVLCalc extends LightningElement {
     isBusy;
     isBaseRateBusy;
     isCalculated = false;
+    isDofInputed = false;
+    isApplicationFeeInputed = false;
     @api recordId; // Opportunity Id
     @track messageObj = QuoteCommons.resetMessage();
     @track quoteForm;
@@ -45,7 +47,6 @@ export default class QuoteWisrVLCalc extends LightningElement {
             console.log('is busy', this.isBusy);
             this.baseRateCalc();
             this.maxFeeDofCalc();
-            this.quoteForm.applicationFee = this.quoteForm.maxApplicationFee;
         });
     }
 
@@ -88,7 +89,7 @@ export default class QuoteWisrVLCalc extends LightningElement {
     }
 
     get clientRateOptions() {
-        return CalHelper.options.clientRates;
+        return CalHelper.createClientRateOptions(this.quoteForm);
     }
 
     // Events
@@ -106,10 +107,31 @@ export default class QuoteWisrVLCalc extends LightningElement {
         // --------------
         // Trigger events
         // --------------
-
+        // casting the string to number
+        if (fldName === "term") {
+            this.quoteForm[fldName] = parseInt(v);
+        } else if (fldName === "clientRate") {
+            this.quoteForm[fldName] = parseFloat(v);
+        } else {
+            this.quoteForm[fldName] = v;
+        }
         // Base Rate Calculation
         if (CalHelper.BASE_RATE_FIELDS.includes(fldName)) {
             this.baseRateCalc();
+        }
+        if (fldName === "dof") {
+            if(v !== "" || v !== 0) {
+                this.isDofInputed = true;
+            } else {
+                this.isDofInputed = false;
+            }
+        }
+        if (fldName === "applicationFee") {
+            if(v !== "" || v !== 0) {
+                this.isApplicationFeeInputed = true;
+            } else {
+                this.isApplicationFeeInputed = false;
+            }
         }
         if(CalHelper.APPLICATION_FEE_DOF_FIELDS.includes(fldName)) {
             this.maxFeeDofCalc();
@@ -164,6 +186,12 @@ export default class QuoteWisrVLCalc extends LightningElement {
         let maxValues = CalHelper.maxFees(this.quoteForm);
         this.quoteForm.maxDof = maxValues.maxDof;
         this.quoteForm.maxApplicationFee = maxValues.maxApplicationFee;
+        if(this.quoteForm.dof === "" || this.quoteForm.dof === null || !this.isDofInputed || this.quoteForm.dof === 0) {
+            this.quoteForm.dof = this.quoteForm.maxDof;
+        }
+        if(this.quoteForm.applicationFee === "" || this.quoteForm.applicationFee === null || this.quoteForm.applicationFee === 0 || !this.isApplicationFeeInputed) {
+            this.quoteForm.applicationFee = this.quoteForm.maxApplicationFee;
+        }
     }
 
     // -------------
@@ -206,5 +234,78 @@ export default class QuoteWisrVLCalc extends LightningElement {
         JSON.stringify(this.quoteForm, null, 2)
         );
         this.baseRateCalc();
+    }
+
+    // all Save Buttons actions
+    handleSave(event) {
+        console.log(`event detail : ${event.target.value.toUpperCase()}`);
+        const isNONE = event.target.value.toUpperCase() === "NONE";
+        this.isBusy = true;
+        const loanType = event.target.value.toUpperCase();
+        if (!this.messageObj.errors.length > 0) {
+            this.messageObj = QuoteCommons.resetMessage();
+            let creditScore = this.quoteForm.creditScore;
+            this.quoteForm.creditScore = creditScore.toString();
+            let lvr = this.quoteForm.lvr;
+            this.quoteForm.lvr = lvr.toString();
+            CalHelper.saveQuote(loanType, this.quoteForm, this.recordId)
+            .then((data) => {
+            console.log("@@data in handleSave:", JSON.stringify(data, null, 2));
+            !isNONE
+                ? this.messageObj.confirms.push(
+                    {
+                        field: "confirms",
+                        message: "Calculation saved successfully."
+                    },
+                    {
+                        fields: "confirms",
+                        message: "Product updated successfully."
+                    }
+                )
+                : this.messageObj.confirms.push({
+                    field: "confirms",
+                    message: "Calculation saved successfully."
+                });
+                // passing data to update quoteform
+                this.quoteForm["Id"] = data["Id"];
+            })
+            .catch((error) => {
+                console.error("handleSave : ", error);
+            })
+            .finally(() => {
+                this.isBusy = false;
+            });
+        } else {
+            QuoteCommons.fieldErrorHandler(this, this.messageObj.errors);
+            this.isCalculated = true;
+        }
+    }
+
+    // Send Email
+    handleSendQuote() {
+        this.isBusy = true;
+        if (!this.messageObj.errors.length > 0) {
+            this.messageObj = QuoteCommons.resetMessage();
+            CalHelper.sendEmail(this.quoteForm, this.recordId)
+                .then((data) => {
+                    console.log(
+                        "@@data in handle send quote :",
+                        JSON.stringify(data, null, 2)
+                    );
+                    this.messageObj.infos.push({
+                        field: "infos",
+                        message: "Email has been sent to customer."
+                    });
+                })
+                .catch((error) => {
+                    console.error("handleSendQuote: ", error);
+                })
+                .finally(() => {
+                    this.isBusy = false;
+                });
+        } else {
+            QuoteCommons.fieldErrorHandler(this, this.messageObj.errors);
+            this.isCalculated = true;
+        }
     }
 }

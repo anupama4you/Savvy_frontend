@@ -59,7 +59,7 @@ public without sharing class QuotePepperMVController {
     
     // pass universal variables
     pdf.getParameters().put('id',quote.Opportunity__c);
-    pdf.getParameters().put('lender', quote.Name);
+    pdf.getParameters().put('lender', 'PEPPER MV CALCULATION');
 
     //Financial Details
     pdf.getParameters().put('loanType',  quote.Loan_Type__c+'');

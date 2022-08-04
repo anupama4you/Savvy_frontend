@@ -375,7 +375,8 @@ public class CloudDocsHelper {
       
       req.setMethod('GET');
       // System.debug(CloudDocsHelper.getSignedURL(CloudDocsHelper.getURL(d.Bucket_Name__c, d.Folder_Id__c)));
-      req.setEndpoint(CloudDocsHelper.getSignedURL(CloudDocsHelper.getURL(d.Bucket_Name__c, d.Folder_Id__c)));
+      // req.setEndpoint(CloudDocsHelper.getSignedURL(CloudDocsHelper.getURL(d.Bucket_Name__c, d.Folder_Id__c)));
+      req.setEndpoint(S3Utils.getSignedURL(d.Bucket_Name__c, d.Folder_Id__c));
       
       Http http = new Http();
       HTTPResponse res;
