@@ -1,6 +1,9 @@
 /* Calculators styles */
 @import 'c/quoteCommonsStyles';
 
-.my-radio-group {
-    --sds-c-button-line-width: 20rem;
-}
+.c-rates-section-table {
+    margin: 20px 0px;
+    padding-right: 25px;
+    padding-left: 15px;
+    padding-top: 10px;
+  }

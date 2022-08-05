@@ -3,7 +3,7 @@ import { displayToast } from "c/partnerJsUtils";
 import { QuoteCommons } from "c/quoteCommons";
 import { Validations } from "./quoteValidations";
 import { CalHelper } from "./quoteShiftAssetCalcHelper";
-import LENDER_LOGO from "@salesforce/resourceUrl/PepperLogo";
+import LENDER_LOGO from "@salesforce/resourceUrl/ShiftLogo";
 import FNAME_FIELD from "@salesforce/schema/Custom_Opportunity__c.Account_First_Name__c";
 import LNAME_FIELD from "@salesforce/schema/Custom_Opportunity__c.Account_Last_Name__c";
 import OPPNAME_FIELD from "@salesforce/schema/Custom_Opportunity__c.Name";
@@ -12,7 +12,6 @@ import { getRecord, getFieldValue } from "lightning/uiRecordApi";
 const fields = [FNAME_FIELD, LNAME_FIELD, OPPNAME_FIELD];
 
 export default class QuoteShiftAssetCalc extends LightningElement {
-  tableRatesCols = CalHelper.assetRates1Columns;
   isBusy;
   isBaseRateBusy;
   isCalculated = false;
@@ -20,9 +19,12 @@ export default class QuoteShiftAssetCalc extends LightningElement {
   @track messageObj = QuoteCommons.resetMessage();
   @track quoteForm;
   @track typeValue = "Value";
+  @track disableResidualPercentage = true;
+  @track disableResidualValue = false;
   // Rate Settings
   @track assetRates1;
   @track assetRates2;
+  @track tableData;
   @track addOnsList;
   @track commissionsList;
   @wire(getRecord, { recordId: "$recordId", fields })
@@ -37,11 +39,8 @@ export default class QuoteShiftAssetCalc extends LightningElement {
       .then((data) => {
         console.log(`Data loaded!`);
         this.quoteForm = data;
-        this.assetRates1 = CalHelper.getTableRatesData().table1;
-        this.assetRates2 = CalHelper.getTableRatesData().table2;
-        this.addOnsList = CalHelper.getTableRatesData().table3;
-        this.commissionsList = CalHelper.getTableRatesData().table4;
-        console.error(JSON.stringify(this.tableRates, null, 2));
+        this.tableData = CalHelper.getTableRatesData();
+        console.log('@@tableOutput>>', JSON.stringify(this.tableData, null, 2));
       })
       .catch((error) => {
         console.error(JSON.stringify(error, null, 2));
@@ -87,6 +86,18 @@ export default class QuoteShiftAssetCalc extends LightningElement {
     return CalHelper.options.clientTiers;
   }
 
+  get abnLengthOptions() {
+    return CalHelper.options.AbnLengths;
+  }
+
+  get propertyOwnerOptions() {
+    return CalHelper.options.propertyOwners;
+  }
+
+  get gstLengthOptions() {
+    return CalHelper.options.GstLengths;
+  }
+
   get termOptions() {
     return CalHelper.options.terms;
   }
@@ -110,8 +121,8 @@ export default class QuoteShiftAssetCalc extends LightningElement {
       v = Number(v);
     }
 
-     // Type value
-     if (fldName !== "typeValue") {
+    // Type value
+    if (fldName !== "typeValue") {
       this.quoteForm[fldName] = v;
     } else {
       this.typeValue = v;
@@ -120,7 +131,7 @@ export default class QuoteShiftAssetCalc extends LightningElement {
     this.quoteForm[fldName] = v;
     this.quoteForm["netDeposit"] = this.netDeposit;
     fldName === "term"
-      ? (this.quoteForm[fldName] = parseInt(v))
+      ? (this.quoteForm[fldName] = (v))
       : (this.quoteForm[fldName] = v);
 
     // --------------
@@ -130,6 +141,12 @@ export default class QuoteShiftAssetCalc extends LightningElement {
     // Base Rate Calculation
     if (CalHelper.BASE_RATE_FIELDS.includes(fldName)) {
       this.baseRateCalc();
+    }
+
+    // Residual Value Calculation
+        
+    if (CalHelper.RESIDUAL_VALUE_FIELDS.includes(fldName)) {
+      this.residualCalc();
     }
 
     // --------------
@@ -173,6 +190,24 @@ export default class QuoteShiftAssetCalc extends LightningElement {
       .finally(() => {
         this.isBaseRateBusy = false;
       });
+  }
+
+  residualCalc() {
+    console.log('residualCalc', this.typeValue);
+    if (this.typeValue === "Value") {
+      this.disableResidualValue = false;
+      this.disableResidualPercentage = true;
+      if (this.quoteForm.residualValue > 0) {
+        this.quoteForm.residualValuePercentage = CalHelper.getResidualPercentage(this.quoteForm);
+      }
+    } else {
+      this.disableResidualValue = true;
+      this.disableResidualPercentage = false;
+      if (this.quoteForm.residualValuePercentage > 0) {
+        this.quoteForm.residualValue = CalHelper.getResidualValue(this.quoteForm);
+      }
+
+    }
   }
 
   // -------------

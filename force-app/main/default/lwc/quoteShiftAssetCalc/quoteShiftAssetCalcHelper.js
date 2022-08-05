@@ -12,7 +12,7 @@ import { Validations } from "./quoteValidations";
 
 // Default settings
 let lenderSettings = {};
-let tableRatesData = {'table1':[], 'table2':[], 'table3':[], 'table4':[]}; 
+let tableRatesData = []; 
 let assetRates1Columns = [
   { label: "Type of Asset", fieldName: "Type_of_Asset__c" },
   { label: "Age of Asset", fieldName: "Age_of_Asset__c" },
@@ -48,12 +48,18 @@ const QUOTING_FIELDS = new Map([
   ["applicationFee", "Application_Fee__c"],
   ["dof", "DOF__c"],
   ["ppsr", "PPSR__c"],
-  ["residual", "Residual_Value__c"],
+  ["residualValuePercentage", "Residual_Value_Percentage__c"],
+  ["residualValue", "Residual_Value__c"],
   ["clientRate", "Client_Rate__c"],
   ["monthlyFee", "Monthly_Fee__c"],
   ["term", "Term__c"],
   ["paymentType", "Payment__c"],
-  ["applicationId", "Application__c"]
+  ["applicationId", "Application__c"],
+  ["abnLength", "Extra_Label_1__c"],
+  ["gstLength", "Extra_Label_2__c"],
+  ["brokeragePercentage", "Brokerage__c"],
+  ["creditScore", "Credit_Score__c"],
+  ["customerProfile", "Customer_Profile__c"]
 ]);
 
 // - TODO: need to map more fields
@@ -77,6 +83,16 @@ const SETTING_FIELDS = new Map([
   ["ppsr", "PPSR__c"],
   ["monthlyFee", "Monthly_Fee__c"]
 ]);
+
+const RESIDUAL_VALUE_FIELDS = [
+  "residualValue",
+  "residualValuePercentage",
+  "typeValue",
+  "price",
+  "deposit",
+  "tradeIn",
+  "payoutOn"
+];
 
 const BASE_RATE_FIELDS = [
   "customerProfile",
@@ -144,13 +160,27 @@ const calculate = (quote) =>
   });
 
 const calcOptions = {
-  loanTypes: CommonOptions.loanTypes,
-  paymentTypes: CommonOptions.paymentTypes,
+  loanTypes: [
+    { label: "Purchase", value: "Purchase" },
+    { label: "Refinance", value: "Refinance" },
+    { label: "Sale & Lease Back", value: "Sale & Lease Back" },
+    { label: "Equity Raise", value: "Equity Raise" },
+  ],
+  paymentTypes:  [
+    { label: "Advance", value: "Advance" },
+  ],
   loanProducts: CommonOptions.fullLoanProducts,
-  privateSales: CommonOptions.yesNo,
+  privateSales: [
+    { label: "--None--", value: "" },
+    { label: "Yes", value: "Y" },
+    { label: "No", value: "N" },
+  ],
+  propertyOwners: CommonOptions.yesNo,
   assetTypes: [
-    { label: "Car", value: "Car" },
-    { label: "Caravan", value: "Caravan" }
+    { label: "Primary Assets", value: "Primary Assets" },
+    { label: "Secondary Assets", value: "Secondary Assets" },
+    { label: "Tertiary assets", value: "Tertiary assets" },
+    { label: "Fitout Finance", value: "Fitout Finance" },
   ],
   clientTiers: [
     { label: "A", value: "A" },
@@ -158,16 +188,25 @@ const calcOptions = {
     { label: "C", value: "C" }
   ],
   vehicleAges: [
-    { label: "New", value: "New" },
-    { label: "Used 0-5 years", value: "Used 0-5 years" },
-    { label: "Used 6-9 years", value: "Used 6-9 years" },
-    { label: "Used 10+ years", value: "Used 10+ years" }
+    { label: "New to 4 years", value: "New to 4 years" },
+    { label: "5 - 10 years", value: "5 - 10 years" },
+    { label: "11+ years", value: "11+ years" },
+    { label: "20+ years", value: "20+ years (age and term)" }
   ],
   typeValues: [
     { label: "Percentage", value: "Percentage" },
     { label: "Value", value: "Value" },
   ],
-  terms: CommonOptions.terms(12, 84)
+  AbnLengths: [
+    { label: "< 2 years", value: "< 2 years" },
+    { label: "> 2 years", value: "> 2 years" },
+  ],
+  GstLengths: [
+    { label: "No GST", value: "" },
+    { label: "< 2 years", value: "< 2 years" },
+    { label: "> 2 years", value: "> 2 years" }
+  ],
+  terms: CommonOptions.terms(0, 60).map(({label, value} ) => ({ label : label.toString(), value : value.toString() })),
 };
 
 // Reset
@@ -188,15 +227,20 @@ const reset = (recordId) => {
     maxDof: null,
     ppsr: null,
     residual: 0.0,
-    term: 60,
+    residualValue: 0.0,
+    term: calcOptions.terms[0].value,
     monthlyFee: null,
     baseRate: 0.0,
     maxRate: 0.0,
     clientRate: null,
-    privateSales: "N",
-    paymentType: "Arrears",
+    brokeragePercentage: 6,
+    privateSales: calcOptions.privateSales[0].value,
+    paymentType: calcOptions.paymentTypes[0].value,
     clientTier: calcOptions.clientTiers[0].value,
     assetAge: calcOptions.vehicleAges[0].value,
+    abnLength: calcOptions.AbnLengths[0].value,
+    gstLength: calcOptions.GstLengths[0].value,
+    propertyOwner: calcOptions.propertyOwners[1].value,
     commissions: QuoteCommons.resetResults()
   };
   r = QuoteCommons.mapDataToLwc(r, lenderSettings, SETTING_FIELDS);
@@ -237,10 +281,10 @@ const loadData = (recordId) =>
         // Rate Settings
         // data, column names, table headings
         if (quoteData.rateSettings) {
-          tableRatesData.table1 = quoteData.rateSettings[`${RATE_SETTING_NAMES[0]}`];
-          tableRatesData.table2 = quoteData.rateSettings[`${RATE_SETTING_NAMES[1]}`];
-          tableRatesData.table3 = quoteData.rateSettings[`${RATE_SETTING_NAMES[2]}`];
-          tableRatesData.table4 = quoteData.rateSettings[`${RATE_SETTING_NAMES[3]}`];
+          tableRatesData.push({ data: quoteData.rateSettings[`${RATE_SETTING_NAMES[0]}`], col: assetRates1Columns, name: 'Pricing, fees, and commission. Up to $250,000'});
+          tableRatesData.push({ data: quoteData.rateSettings[`${RATE_SETTING_NAMES[1]}`], col: assetRates2Columns, name: 'Pricing, fees, and commission. Over $250,000'});
+          tableRatesData.push({ data: quoteData.rateSettings[`${RATE_SETTING_NAMES[2]}`], col: addOnsListColumns, name: 'Add-Ons'});
+          tableRatesData.push({ data: quoteData.rateSettings[`${RATE_SETTING_NAMES[3]}`], col: commissionListColumns, name: 'Commission (Inc GST)'});
           console.log(`@@data:`, JSON.stringify(tableRatesData, null, 2));
         }
         // console.log(`@@data:`, JSON.stringify(data, null, 2));
@@ -344,6 +388,7 @@ export const CalHelper = {
   reset: reset,
   baseRates: getMyBaseRates,
   BASE_RATE_FIELDS: BASE_RATE_FIELDS,
+  RESIDUAL_VALUE_FIELDS: RESIDUAL_VALUE_FIELDS,
   lenderSettings: lenderSettings,
   getTableRatesData: getTableRatesData,
   getNetRealtimeNaf: QuoteCommons.calcNetRealtimeNaf,

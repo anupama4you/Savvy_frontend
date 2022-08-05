@@ -10,8 +10,7 @@ import { getRecord } from "lightning/uiRecordApi";
 
 const fields = [FNAME_FIELD, LNAME_FIELD, OPPNAME_FIELD];
 
-export default class QuoteAffordableCLCalc extends LightningElement {
-    tableRatesCols = CalHelper.tableRateDataColumns;
+export default class QuoteAngleFinanceCalc extends LightningElement {
     isBusy;
     isBaseRateBusy;
     isCalculated = false;
@@ -63,10 +62,6 @@ export default class QuoteAffordableCLCalc extends LightningElement {
 
     get logoUrl() {
         return LENDER_LOGO;
-    }
-
-    get tableUrl() {
-        return AFFORDABLE_TABLE;
     }
 
     // Combobox options
