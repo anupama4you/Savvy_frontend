@@ -76,12 +76,13 @@ const FIELDS_MAPPING_FOR_APEX = new Map([
 const RATE_SETTING_NAMES = ["ASSET_RATE_1", "ASSET_RATE_2", "ADD_ONS_LIST", "COMMISSION_LIST"];
 
 const SETTING_FIELDS = new Map([
-  ["applicationFee", "Application_Fee__c"],
-  ["maxApplicationFee", "Application_Fee__c"],
+  ["price", "Vehicle_Price__c"],
   ["dof", "DOF__c"],
-  ["maxDof", "DOF__c"],
+  ["applicationFee", "Application_Fee__c"],
+  ["applicationFeePrivate", "Application_Fee_Private__c"],
   ["ppsr", "PPSR__c"],
-  ["monthlyFee", "Monthly_Fee__c"]
+  ["residualValue", "Residual_Value__c"],
+  ["monthlyFee", "Monthly_Fee__c"],
 ]);
 
 const RESIDUAL_VALUE_FIELDS = [
@@ -95,11 +96,10 @@ const RESIDUAL_VALUE_FIELDS = [
 ];
 
 const BASE_RATE_FIELDS = [
-  "customerProfile",
-  "clientTier",
   "assetAge",
+  "abnLength",
   "assetType",
-  "privateSales"
+  "customerProfile",
 ];
 
 const calculate = (quote) =>

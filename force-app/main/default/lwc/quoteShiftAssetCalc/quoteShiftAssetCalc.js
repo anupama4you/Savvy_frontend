@@ -144,7 +144,7 @@ export default class QuoteShiftAssetCalc extends LightningElement {
     }
 
     // Residual Value Calculation
-        
+
     if (CalHelper.RESIDUAL_VALUE_FIELDS.includes(fldName)) {
       this.residualCalc();
     }
@@ -186,10 +186,18 @@ export default class QuoteShiftAssetCalc extends LightningElement {
       .catch((error) => {
         console.error(JSON.stringify(error, null, 2));
         displayToast(this, "Base Rate...", error, "error");
+        this.clientRateCalc();
       })
       .finally(() => {
         this.isBaseRateBusy = false;
       });
+  }
+
+  // Client Rate() 
+  clientRateCalc() {
+    let brokeragePercentage = this.quoteForm.brokeragePercentage > 0 ? this.quoteForm.brokeragePercentage : 0;
+    let baseRate = this.quoteForm.baseRate > 0 ? this.quoteForm.baseRate : 0;
+    this.quoteForm.clientRate = (brokeragePercentage * 0.5) + baseRate;
   }
 
   residualCalc() {
