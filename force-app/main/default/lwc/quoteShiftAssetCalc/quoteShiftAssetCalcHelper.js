@@ -12,18 +12,18 @@ import { Validations } from "./quoteValidations";
 
 // Default settings
 let lenderSettings = {};
-let tableRatesData = []; 
+let tableRatesData = [];
 let assetRates1Columns = [
   { label: "Type of Asset", fieldName: "Type_of_Asset__c" },
   { label: "Age of Asset", fieldName: "Age_of_Asset__c" },
   { label: "Property Backed", fieldName: "Property_Backed__c" },
-  { label: "Non Property Backed", fieldName: "Non_Property_Backed__c"}
+  { label: "Non Property Backed", fieldName: "Non_Property_Backed__c" }
 ];
 let assetRates2Columns = [
   { label: "Type of Asset", fieldName: "Type_of_Asset__c" },
   { label: "Age of Asset", fieldName: "Age_of_Asset__c" },
   { label: "Property Backed", fieldName: "Property_Backed__c" },
-  { label: "Non Property Backed", fieldName: "Non_Property_Backed__c"}
+  { label: "Non Property Backed", fieldName: "Non_Property_Backed__c" }
 ];
 let addOnsListColumns = [
   { label: "Add-ons", fieldName: "Add_ons__c" },
@@ -58,7 +58,7 @@ const QUOTING_FIELDS = new Map([
   ["abnLength", "Extra_Label_1__c"],
   ["gstLength", "Extra_Label_2__c"],
   ["brokeragePercentage", "Brokerage__c"],
-  ["creditScore", "Credit_Score__c"],
+  ["equifaxScore", "Credit_Score__c"],
   ["customerProfile", "Customer_Profile__c"]
 ]);
 
@@ -95,12 +95,34 @@ const RESIDUAL_VALUE_FIELDS = [
   "payoutOn"
 ];
 
+const CLIENT_RATE_FIELDS = [
+  "brokeragePercentage",
+];
+
 const BASE_RATE_FIELDS = [
+  "price",
+  "deposit",
+  "tradeIn",
+  "payoutOn",
   "assetAge",
   "abnLength",
   "assetType",
   "customerProfile",
+  "abnLength",
+  "assetType",
+  "assetAge",
+  "propertyOwner",
+  "brokeragePercentage",
+  "privateSales",
+  "loanType"
 ];
+
+const getBaseAmountPmtInclBrokerageCalc = (quote) => {
+  let naf = QuoteCommons.calcNetRealtimeNaf(quote);
+  let brokerage = quote.brokeragePercentage > 0 ? quote.brokeragePercentage : 0;
+  console.log('get PMT...', naf + naf * brokerage / 100);
+  return naf + (naf * brokerage) / 100;
+}
 
 const calculate = (quote) =>
   new Promise((resolve, reject) => {
@@ -115,24 +137,20 @@ const calculate = (quote) =>
       reject(res);
     } else {
       // Prepare params
-      const profile = quote.assetType === "Caravan" ? "CARAVAN" : "MV";
       const p = {
         lender: LENDER_QUOTING,
-        productLoanType: quote.loanProduct,
-        customerProfile: profile,
-        clientTier: quote.clientTier,
-        vehicleYear: quote.assetAge,
-        goodsType: quote.assetType,
-        privateSales: quote.privateSales,
+        amountBasePmt: getBaseAmountPmtInclBrokerageCalc(quote),
+        term: quote.term,
+        residualValue: quote.residualValue,
         totalAmount: QuoteCommons.calcTotalAmount(quote),
         totalInsurance: QuoteCommons.calcTotalInsuranceType(quote),
-        clientRate: quote.clientRate,
-        baseRate: quote.baseRate,
+        totalInsuranceIncome: QuoteCommons.calcTotalInsuranceType(quote),
         paymentType: quote.paymentType,
-        term: quote.term,
-        dof: quote.dof,
+        brokeragePer: quote.brokeragePercentage,
+        amountBaseComm: quote.price - QuoteCommons.calcNetDeposit(quote),
+        dof: lenderSettings.DOF_C,
         monthlyFee: quote.monthlyFee,
-        residualValue: quote.residual
+        baseRate: quote.baseRate,
       };
 
       // Calculate
@@ -166,7 +184,7 @@ const calcOptions = {
     { label: "Sale & Lease Back", value: "Sale & Lease Back" },
     { label: "Equity Raise", value: "Equity Raise" },
   ],
-  paymentTypes:  [
+  paymentTypes: [
     { label: "Advance", value: "Advance" },
   ],
   loanProducts: CommonOptions.fullLoanProducts,
@@ -206,7 +224,7 @@ const calcOptions = {
     { label: "< 2 years", value: "< 2 years" },
     { label: "> 2 years", value: "> 2 years" }
   ],
-  terms: CommonOptions.terms(0, 60).map(({label, value} ) => ({ label : label.toString(), value : value.toString() })),
+  terms: CommonOptions.terms(0, 60).map(({ label, value }) => ({ label: label.toString(), value: value.toString() })),
 };
 
 // Reset
@@ -281,10 +299,10 @@ const loadData = (recordId) =>
         // Rate Settings
         // data, column names, table headings
         if (quoteData.rateSettings) {
-          tableRatesData.push({ data: quoteData.rateSettings[`${RATE_SETTING_NAMES[0]}`], col: assetRates1Columns, name: 'Pricing, fees, and commission. Up to $250,000'});
-          tableRatesData.push({ data: quoteData.rateSettings[`${RATE_SETTING_NAMES[1]}`], col: assetRates2Columns, name: 'Pricing, fees, and commission. Over $250,000'});
-          tableRatesData.push({ data: quoteData.rateSettings[`${RATE_SETTING_NAMES[2]}`], col: addOnsListColumns, name: 'Add-Ons'});
-          tableRatesData.push({ data: quoteData.rateSettings[`${RATE_SETTING_NAMES[3]}`], col: commissionListColumns, name: 'Commission (Inc GST)'});
+          tableRatesData.push({ data: quoteData.rateSettings[`${RATE_SETTING_NAMES[0]}`], col: assetRates1Columns, name: 'Pricing, fees, and commission. Up to $250,000' });
+          tableRatesData.push({ data: quoteData.rateSettings[`${RATE_SETTING_NAMES[1]}`], col: assetRates2Columns, name: 'Pricing, fees, and commission. Over $250,000' });
+          tableRatesData.push({ data: quoteData.rateSettings[`${RATE_SETTING_NAMES[2]}`], col: addOnsListColumns, name: 'Add-Ons' });
+          tableRatesData.push({ data: quoteData.rateSettings[`${RATE_SETTING_NAMES[3]}`], col: commissionListColumns, name: 'Commission (Inc GST)' });
           console.log(`@@data:`, JSON.stringify(tableRatesData, null, 2));
         }
         // console.log(`@@data:`, JSON.stringify(data, null, 2));
@@ -293,19 +311,29 @@ const loadData = (recordId) =>
       .catch((error) => reject(error));
   });
 
+const getResidualValue = (quote) => {
+  return ((quote.price - QuoteCommons.calcNetDeposit(quote)) * quote.residualValuePercentage) / 100;
+}
+
+const getResidualPercentage = (quote) => {
+  return (quote.residualValue / (quote.price - QuoteCommons.calcNetDeposit(quote))) * 100;
+}
+
 // Get Base Rates
 const getMyBaseRates = (quote) =>
   new Promise((resolve, reject) => {
-    const profile = quote.assetType === "Caravan" ? "CARAVAN" : "MV";
     const p = {
       lender: LENDER_QUOTING,
-      productLoanType: quote.loanProduct,
-      customerProfile: profile,
-      clientTier: quote.clientTier,
-      vehicleYear: quote.assetAge,
-      goodsType: quote.assetType,
+      abnLength: quote.abnLength,
+      assetType: quote.assetType,
+      assetAge: quote.assetAge,
+      endOfTerm: quote.endOfTerm,
+      totalAmount: QuoteCommons.calcNetRealtimeNaf(quote),
+      customerProfile: quote.propertyOwner,
+      brokeragePer: quote.brokeragePercentage,
       privateSales: quote.privateSales,
-      hasMaxRate: true
+      loanType: quote.loanType,
+      hasMaxRate: false
     };
     console.log(`getMyBaseRates...`, JSON.stringify(p, null, 2));
     getBaseRates({
@@ -389,6 +417,7 @@ export const CalHelper = {
   baseRates: getMyBaseRates,
   BASE_RATE_FIELDS: BASE_RATE_FIELDS,
   RESIDUAL_VALUE_FIELDS: RESIDUAL_VALUE_FIELDS,
+  CLIENT_RATE_FIELDS: CLIENT_RATE_FIELDS,
   lenderSettings: lenderSettings,
   getTableRatesData: getTableRatesData,
   getNetRealtimeNaf: QuoteCommons.calcNetRealtimeNaf,
@@ -398,5 +427,7 @@ export const CalHelper = {
   assetRates1Columns: assetRates1Columns,
   assetRates2Columns: assetRates2Columns,
   addOnsListColumns: addOnsListColumns,
-  commissionListColumns: commissionListColumns
+  commissionListColumns: commissionListColumns,
+  getResidualValue: getResidualValue,
+  getResidualPercentage: getResidualPercentage,
 };

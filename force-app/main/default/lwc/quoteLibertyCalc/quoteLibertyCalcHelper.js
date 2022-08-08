@@ -175,11 +175,7 @@ const calcOptions = {
   vehicleTypes: [
     { label: "--None--", value: "" },
     { label: "Car", value: "Car" },
-    { label: "Motorbike", value: "Motorbike" },
-    { label: "Boat", value: "Boat" },
-    { label: "Caravan", value: "Caravan" },
-    { label: "Truck", value: "Truck" },
-    { label: "Equipment", value: "Equipment" }
+    { label: "Truck", value: "Truck" }
   ],
   securedUnsecured: [
     { label: "Secured", value: "Secured" },

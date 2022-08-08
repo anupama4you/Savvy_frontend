@@ -128,6 +128,11 @@ export default class QuoteShiftAssetCalc extends LightningElement {
       this.typeValue = v;
     }
 
+    // if (fldName == "typeValue") {
+    //   this.quoteForm['residualValuePercentage'] = 0.0;
+    //   this.quoteForm['residualValue'] = 0.0;
+    // }
+
     this.quoteForm[fldName] = v;
     this.quoteForm["netDeposit"] = this.netDeposit;
     fldName === "term"
@@ -138,15 +143,17 @@ export default class QuoteShiftAssetCalc extends LightningElement {
     // Trigger events
     // --------------
 
+    // Residual Value Calculation
+    if (CalHelper.RESIDUAL_VALUE_FIELDS.includes(fldName)) {
+      this.residualCalc();
+    }
     // Base Rate Calculation
     if (CalHelper.BASE_RATE_FIELDS.includes(fldName)) {
       this.baseRateCalc();
     }
-
-    // Residual Value Calculation
-
-    if (CalHelper.RESIDUAL_VALUE_FIELDS.includes(fldName)) {
-      this.residualCalc();
+    // Client Rate Calculation
+    if (CalHelper.CLIENT_RATE_FIELDS.includes(fldName)) {
+      this.clientRateCalc();
     }
 
     // --------------
@@ -158,7 +165,8 @@ export default class QuoteShiftAssetCalc extends LightningElement {
   }
 
   get netRealtimeNaf() {
-    return CalHelper.getNetRealtimeNaf(this.quoteForm);
+    this.quoteForm.realtimeNaf = CalHelper.getNetRealtimeNaf(this.quoteForm);
+    return this.quoteForm.realtimeNaf;
   }
 
   get disableAction() {
@@ -177,16 +185,17 @@ export default class QuoteShiftAssetCalc extends LightningElement {
   // Base Rate
   baseRateCalc() {
     this.isBaseRateBusy = true;
+    this.quoteForm.endOfTerm = Number(this.quoteForm.assetAge) + Number(this.quoteForm.term) / 12;
+    console.log('line 173 end of term', this.quoteForm.endOfTerm, this.quoteForm.assetAge, this.quoteForm.term);
     CalHelper.baseRates(this.quoteForm)
       .then((data) => {
-        console.log(`Data loaded!`);
+        console.log(`baseRateCalc Data loaded!`);
         this.quoteForm.baseRate = data.baseRate;
-        this.quoteForm.maxRate = data.maxRate;
+        this.clientRateCalc();
       })
       .catch((error) => {
         console.error(JSON.stringify(error, null, 2));
-        displayToast(this, "Base Rate...", error, "error");
-        this.clientRateCalc();
+        displayToast(this, "Base Rate Calculate...", error, "error");
       })
       .finally(() => {
         this.isBaseRateBusy = false;
@@ -201,7 +210,6 @@ export default class QuoteShiftAssetCalc extends LightningElement {
   }
 
   residualCalc() {
-    console.log('residualCalc', this.typeValue);
     if (this.typeValue === "Value") {
       this.disableResidualValue = false;
       this.disableResidualPercentage = true;
