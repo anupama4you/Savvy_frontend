@@ -114,7 +114,8 @@ export default class QuoteGreenLightCalc extends LightningElement {
 
         // Base Rate Calculation
         if (CalHelper.BASE_RATE_FIELDS.includes(fldName)) {
-        this.baseRateCalc();
+            console.log('==> SHOOT HERE Base Rate Calculation handlefieldchange');
+            this.baseRateCalc();
         }
 
         // --------------

@@ -195,7 +195,7 @@ const loadData = (recordId) =>
       ...QUOTING_FIELDS.values(),
       ...QuoteCommons.COMMISSION_FIELDS.values()
     ];
-    // console.log(`@@fields:`, JSON.stringify(fields, null, 2));
+    console.log(`@@fields:`, JSON.stringify(fields, null, 2));
     getQuotingData({
       param: {
         oppId: recordId,
@@ -260,7 +260,7 @@ const getTableRatesData = () => {
 /**
  * -- Lee
  * @param {String} approvalType - type of approval
- * @param {Object} quote - quoting form
+ * @param {Object} param - quoting form
  * @param {Id} recordId - recordId
  * @returns
  */

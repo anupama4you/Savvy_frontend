@@ -21,6 +21,8 @@ export default class QuoteGrowAssetCarCalc extends LightningElement {
     // Rate Settings
     @track tableRates1;
     @track tableRates2;
+    @track tableRates3;
+    @track tableRates4;
     @track tableRatesCols1 = CalHelper.tableRateDataColumns1;
     @track tableRatesCols2 = CalHelper.tableRateDataColumns2;
     @track typeValue = "Value";
@@ -38,10 +40,13 @@ export default class QuoteGrowAssetCarCalc extends LightningElement {
         .then((data) => {
             console.log(`CalHelper: Data loaded!`, data);
             this.quoteForm = data;
+            this.quoteForm.term = this.quoteForm.term.toString();
             this.applicationFee = this.quoteForm.applicationFee;
             this.tableRates1 = CalHelper.getTableRatesData1();
             this.tableRates2 = CalHelper.getTableRatesData2();
-            console.log('@@tableRates', JSON.stringify(this.tableRates1));
+            this.tableRates3 = CalHelper.getTableRatesData3();
+            this.tableRates4 = CalHelper.getTableRatesData4();
+            console.log('@@tableRates', JSON.stringify(this.tableRates4));
         })
         .catch((error) => {
             console.error(JSON.stringify(error, null, 2));
@@ -49,7 +54,7 @@ export default class QuoteGrowAssetCarCalc extends LightningElement {
         })
         .finally(() => {
             this.isBusy = false;
-            console.log('is busy', this.isBusy);
+            console.log('is busy line 56', this.isBusy, this.tableRates4);
             this.quoteForm.assetAge = this.quoteForm.assetAge? this.quoteForm.assetAge : 1;
             this.baseRateCalc();
         });
@@ -62,10 +67,6 @@ export default class QuoteGrowAssetCarCalc extends LightningElement {
 
     get logoUrl() {
         return LENDER_LOGO;
-    }
-
-    get tableUrl() {
-        return AFFORDABLE_TABLE;
     }
 
     // Combobox options
@@ -105,6 +106,30 @@ export default class QuoteGrowAssetCarCalc extends LightningElement {
         return CalHelper.options.privateSales;
     }
 
+    get creditScoreOptions() {
+        return CalHelper.options.creditScores;
+    }
+
+    get directorSoleTraderScoreOptions() {
+        return CalHelper.options.directorSoleTraderScores;
+    }
+
+    get paidDefaultOptions() {
+        return CalHelper.options.paidDefaults;
+    }
+
+    get conditionOptions() {
+        return CalHelper.options.conditions;
+    }
+
+    get adverseCreditOptions() {
+        return CalHelper.options.adverseCredits;
+    }
+
+    get gstLengthOptions() {
+        return CalHelper.options.gstLengths;
+    }
+
     // Events
     handleFieldChange(event) {
         console.log(`Changing value for: ${event.target.name}...`);
@@ -128,16 +153,7 @@ export default class QuoteGrowAssetCarCalc extends LightningElement {
             }
         }
         console.log(`this.quoteForm:`, JSON.stringify(this.quoteForm, null, 2));
-        // --------------
-        // Trigger events
-        // --------------
-        // casting the string to number
-        if (fldName === "term" && v !== "") {
-            this.quoteForm[fldName] = parseInt(v);
-        } else {
-            this.quoteForm[fldName] = v;
-        }
-
+    
         // Residual Value Calculation
         
         if (CalHelper.RESIDUAL_VALUE_FIELDS.includes(fldName)) {
@@ -146,10 +162,6 @@ export default class QuoteGrowAssetCarCalc extends LightningElement {
         // Base Rate Calculation
         if (CalHelper.BASE_RATE_FIELDS.includes(fldName)) {
             this.baseRateCalc();
-        }
-        // Client Rate Calculation
-        if(CalHelper.CLIENT_RATE_FIELDS.includes(fldName)) {
-            this.clientRateCalc();
         }
     }
 
@@ -175,23 +187,15 @@ export default class QuoteGrowAssetCarCalc extends LightningElement {
         );
     }
 
-    // Client Rate() 
-    clientRateCalc() {
-        let brokeragePercentage = this.quoteForm.brokeragePercentage > 0? this.quoteForm.brokeragePercentage : 0;
-        let baseRate = this.quoteForm.baseRate > 0? this.quoteForm.baseRate : 0;
-        this.quoteForm.clientRate = (brokeragePercentage * 0.5) + baseRate;
-    }
-
     // Base Rate
     baseRateCalc() {
         this.isBaseRateBusy = true;
-        this.quoteForm.endOfTerm = Number(this.quoteForm.assetAge) + Number(this.quoteForm.term)/12;
-        console.log('line 173 end of term', this.quoteForm.assetAge, this.quoteForm.term);
+        console.log('line 208', this.quoteForm.assetAge, this.quoteForm.term);
         CalHelper.baseRates(this.quoteForm)
         .then((data) => {
             console.log(`baseRateCalc Data loaded!`);
             this.quoteForm.baseRate = data.baseRate;
-            this.clientRateCalc();
+            this.quoteForm.clientRate = data.clientRate;
         })
         .catch((error) => {
             console.error(JSON.stringify(error, null, 2));
@@ -270,8 +274,7 @@ export default class QuoteGrowAssetCarCalc extends LightningElement {
         const loanType = event.target.value.toUpperCase();
         if (!this.messageObj.errors.length > 0) {
             this.messageObj = QuoteCommons.resetMessage();
-            let creditScore = this.quoteForm.creditScore;
-            this.quoteForm.creditScore = creditScore.toString();
+            this.quoteForm.naf = CalHelper.getNetRealtimeNaf(this.quoteForm);
             
             CalHelper.saveQuote(loanType, this.quoteForm, this.recordId)
             .then((data) => {

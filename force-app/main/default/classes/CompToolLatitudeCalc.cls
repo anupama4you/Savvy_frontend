@@ -21,7 +21,7 @@ public class CompToolLatitudeCalc extends CompToolLenderCalcAbstract {
     ) {
       this.quoteParam.loanTypeDetail = 'Diamond Plus';
     } else if (
-      'Renting Real Estate'.equals(this.param.residentialStatus) && 
+      'Renting'.equals(this.param.residentialStatus) && 
       'Good'.equals(param.creditHistory)
     ) {
       this.quoteParam.loanTypeDetail = 'Diamond';

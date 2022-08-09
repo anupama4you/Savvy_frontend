@@ -59,14 +59,14 @@ const QUOTING_FIELDS = new Map([
   ["gstLength", "Extra_Label_2__c"],
   ["brokeragePercentage", "Brokerage__c"],
   ["equifaxScore", "Credit_Score__c"],
-  ["customerProfile", "Customer_Profile__c"]
+  ["propertyOwner", "Customer_Profile__c"],
+  ["privateSales", "Private_Sales__c"],
 ]);
 
 // - TODO: need to map more fields
 const FIELDS_MAPPING_FOR_APEX = new Map([
   ...QUOTING_FIELDS,
   ["Id", "Id"],
-  ["privateSales", "Private_Sales__c"],
   ["clientTier", "Client_Tier__c"],
   ["assetAge", "Vehicle_Age__c"],
   ["baseRate", "Base_Rate__c"],
@@ -283,7 +283,9 @@ const loadData = (recordId) =>
       }
     })
       .then((quoteData) => {
+        // quoteData.Term__c = quoteData.Term__c.toString();
         console.log(`@@SF:`, JSON.stringify(quoteData, null, 2));
+        
         // Mapping Quote's fields
         let data = QuoteCommons.mapSObjectToLwc({
           calcName: LENDER_QUOTING,
@@ -327,7 +329,6 @@ const getMyBaseRates = (quote) =>
       abnLength: quote.abnLength,
       assetType: quote.assetType,
       assetAge: quote.assetAge,
-      endOfTerm: quote.endOfTerm,
       totalAmount: QuoteCommons.calcNetRealtimeNaf(quote),
       customerProfile: quote.propertyOwner,
       brokeragePer: quote.brokeragePercentage,

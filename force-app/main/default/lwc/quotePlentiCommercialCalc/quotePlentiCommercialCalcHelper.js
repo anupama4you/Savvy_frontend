@@ -51,10 +51,18 @@ const SETTING_FIELDS = new Map([
 ]);
 
 const calcOptions = {
-  loanTypes: CommonOptions.loanTypes,
+  loanTypes: [
+    { label: "Purchase", value: "Purchase" },
+    { label: "Refinance", value: "Refinance" }
+  ],
   paymentTypes: CommonOptions.paymentTypes,
-  loanProducts: CommonOptions.fullLoanProducts,
-  terms: CommonOptions.terms(12, 84),
+  loanProducts: [
+    { label: "Chattel Mortgage-Full-Doc", value: "Chattel Mortgage-Full-Doc" },
+    { label: "Chattel Mortgage-Low-Doc", value: "Chattel Mortgage-Low-Doc" },
+    { label: "Car Lease-Full-Doc", value: "Car Lease-Full-Doc" },
+    { label: "Car Lease-Low-Doc", value: "Car Lease-Low-Doc" },
+  ],
+  terms: [{ label: 36, value: 36 },{ label: 60, value: 60 },{ label: 84, value: 84 },],
   assetTypes: CommonOptions.assetTypes,
   profiles: CommonOptions.profiles,
   clientTiers: CommonOptions.clientTiers,
@@ -63,6 +71,11 @@ const calcOptions = {
   vehicleBuildDates: CommonOptions.vehicleBuildDates(2022, 2009),
   leaseAgreements: CommonOptions.yesNo,
   privateSales: CommonOptions.yesNo,
+  abnGSTs: [
+    { label: "ABN/GST > 2 years", value: "> 2 years" },
+    { label: "ABN >2 yrs />1 year", value: "> 2 yrs / >1 year" },
+    { label: "ABN >1 yr/Unreg >1 yr", value: "> 1 yr / Unreg > 1 yr" },
+  ],
   plentiAPIUsers: CommonOptions.apiUsers
 };
 
@@ -143,16 +156,19 @@ const reset = (recordId, appQuoteId = null) => {
     loanProduct: calcOptions.loanProducts[0].value,
     price: null,
     applicationFee: null,
-    maxDof: 0.0,
+    maxApplicationFee: 499,
+    maxDof: 2500.00,
     dof: 0.0,
     residual: 0.0,
     term: 60,
+    brokerage: "",
     monthlyFee: 0.0,
     clientRate: 0.0,
     paymentType: calcOptions.paymentTypes[0].value,
     commissions: QuoteCommons.resetResults(),
     loanPurpose: "",
     assetType: calcOptions.assetTypes[0].value,
+    abnGST:"",
     profile: "",
     clientTier: "",
     vehicleCondition: "",

@@ -1,5 +1,5 @@
 import getQuotingData from "@salesforce/apex/QuoteGrowAssetCarCalcController.getQuotingData";
-import getBaseRates from "@salesforce/apex/QuoteController.getBaseRates";
+import getBaseRates from "@salesforce/apex/QuoteGrowAssetCarCalcController.getBaseRates";
 import calculateRepayments from "@salesforce/apex/QuoteController.calculateRepayments";
 import { QuoteCommons, CommonOptions } from "c/quoteCommons";
 import { Validations } from "./quoteValidations";
@@ -8,20 +8,16 @@ import save from "@salesforce/apex/QuoteGrowAssetCarCalcController.save";
 
 // Default settings
 let lenderSettings = {};
-let AFRate1 = [], AFRate2 = [];
-let AFRateCols1 = [
-  { label: "Asset Type", fieldName: "Asset_type__c", fixedWidth: 300 },
-  { label: "ABN", fieldName: "ABN__c", fixedWidth: 300 },
-  { label: "Property Owner", fieldName: "Property_Owner__c", fixedWidth: 300 },
-  { label: "Non Property Owner", fieldName: "Non_Property_Owner__c", fixedWidth: 300 },
+let gacTier1 = [], gacTier2 = [], gacTier3 = [], gacAdd = [];
+let tableRateDataColumns1 = [
+  { label: "Asset age", fieldName: "Asset_age__c", fixedWidth: 300 },
+  { label: "Asset backed", fieldName: "Asset_backed__c", fixedWidth: 300 },
+  { label: "Non Asset backed", fieldName: "Non_Asset_backed__c", fixedWidth: 300 },
 ];
 
-let AFRateCols2 = [
-  { label: "Asset Type", fieldName: "Asset_type__c", fixedWidth: 300 },
-  { label: "ABN", fieldName: "ABN__c", fixedWidth: 300 },
-  { label: "End of Term", fieldName: "End_of_Term__c", fixedWidth: 300 },
-  { label: "Property Owner", fieldName: "Property_Owner__c", fixedWidth: 300 },
-  { label: "Non Property Owner", fieldName: "Non_Property_Owner__c", fixedWidth: 300 },
+let tableRateDataColumns2 = [
+  { label: "Additional rate", fieldName: "Additional_rate__c", fixedWidth: 300 },
+  { label: "Condition", fieldName: "Condition__c", fixedWidth: 400 },
 ];
 
 const LENDER_QUOTING = "Grow Asset";
@@ -36,13 +32,18 @@ const QUOTING_FIELDS = new Map([
   ["applicationFee", "Application_Fee__c"],
   ["dof", "DOF__c"],
   ["ppsr", "PPSR__c"],
-  ["residualValue", "Residual_Value__c"],
   ["term", "Term__c"],
   ["paymentType", "Payment__c"],
   ["monthlyFee", "Monthly_Fee__c"],
   ["creditScore", "Credit_Score__c"],
-  ["assetAge", "Vehicle_Age__c"],
+  ["directorSoleTraderScore", "Extra_Label_3__c"],
+  ["paidDefault", "Extra_Label_4__c"],
+  ["condition", "Condition__c"],
+  ["residualValue", "Residual_Value__c"],
+  ["adverseCredit", "Adverse_Credit_File__c"],
   ["abnLength", "Extra_Label_1__c"],
+  ["gstLength", "Extra_Label_2__c"],
+  ["assetAge", "Vehicle_Age__c"],
   ["customerProfile", "Customer_Profile__c"],
   ["privateSales", "Private_Sales__c"],
   ["brokeragePercentage", "Brokerage__c"],
@@ -54,10 +55,10 @@ const QUOTING_FIELDS = new Map([
 const FIELDS_MAPPING_FOR_APEX = new Map([
   ...QUOTING_FIELDS,
   ["Id", "Id"],
-  ["vehicleYear", "Vehicle_Age__c"],
+  ["naf", "NAF__c"]
 ]);
 
-const RATE_SETTING_NAMES = ["AFRate1", "AFRate2"];
+const RATE_SETTING_NAMES = ["gacTier1", "gacTier2", "gacTier3", "gacAdd"];
 
 const SETTING_FIELDS = new Map([
   ["price", "Vehicle_Price__c"],
@@ -67,6 +68,9 @@ const SETTING_FIELDS = new Map([
   ["ppsr", "PPSR__c"],
   ["residualValue", "Residual_Value__c"],
   ["monthlyFee", "Monthly_Fee__c"],
+  ["maxBrokerage", "Max_Brokerage__c"],
+  ["assetAge", "Vehicle_Age__c"],
+  ["term", "Term__c"],
 ]);
 
 const RESIDUAL_VALUE_FIELDS = [
@@ -84,10 +88,28 @@ const CLIENT_RATE_FIELDS = [
 ];
 
 const BASE_RATE_FIELDS = [
-  "assetAge",
-  "abnLength",
+  "assetAge", 
+  "term",
   "assetType",
+  "condition",
   "customerProfile",
+  "creditScore",
+  "directorSoleTraderScore",
+  "privateSales",
+  "abnLength",
+  "gstLength",
+  "paidDefault",
+  "brokeragePercentage",
+  "price",
+  "deposit",
+  "tradeIn",
+  "payoutOn",
+  "applicationFee",
+  "dof",
+  "ppsr",
+  "residualValue",
+  "residualValuePercentage",
+  "paymentType"
 ];
 
 const getBaseAmountPmtInclBrokerageCalc = (quote) => {
@@ -106,27 +128,27 @@ const calculate = (quote) =>
     };
     // Validate quote
     res.messages = Validations.validate(quote, res.messages);
-    console.log('ling 73', res.messages);
+    console.log('ling 130', res.messages);
     if (res.messages && res.messages.errors.length > 0) {
       reject(res);
-      console.log('ling 76', res);
+      console.log('ling 133', res);
     } else {
       // Prepare params
       const p = {
         lender: LENDER_QUOTING,
-        clientRate: quote.clientRate,
+        baseRate: quote.baseRate,
         amountBasePmt: getBaseAmountPmtInclBrokerageCalc(quote),
-        term: quote.term,
-        residualValue: quote.residualValue,
         totalAmount: QuoteCommons.calcTotalAmount(quote),
         totalInsurance: QuoteCommons.calcTotalInsuranceType(quote),
         totalInsuranceIncome: QuoteCommons.calcTotalInsuranceType(quote),
+        term: quote.term,
+        residualValue: quote.residualValue,
         paymentType: quote.paymentType,
         brokeragePer: quote.brokeragePercentage,
         amountBaseComm: quote.price - QuoteCommons.calcNetDeposit(quote),
+        totalInsuranceIncome: QuoteCommons.calcTotalInsuranceType(quote),
         dof: quote.dof,
         monthlyFee: quote.monthlyFee,
-        baseRate: quote.baseRate,
       };
 
       // Calculate
@@ -135,7 +157,7 @@ const calculate = (quote) =>
         param: p
       })
         .then((data) => {
-          console.log(`@@SF:`, JSON.stringify(data, null, 2));
+          console.log(`@@SF...calculate line 159:`, JSON.stringify(data, null, 2));
           // Mapping
           res.commissions = QuoteCommons.mapCommissionSObjectToLwc(data);
           console.log(JSON.stringify(res.commissions, null, 2));
@@ -158,25 +180,33 @@ const calculate = (quote) =>
     return r;
   };
 
+  const createTerms = () => {
+    let r = [];
+    for (let i = 0; i <= 84; i+=12) {
+      r.push({ label: i.toString(), value: i.toString() });
+    }
+    return r;
+  };
+  
+
   const calcOptions = {
-    loanTypes: CommonOptions.loanTypes,
+    loanTypes: [
+      { label: "Full Doc", value: "Full Doc" },
+      { label: "Low Doc", value: "Low Doc" },
+      { label: "Easy Doc", value: "Easy Doc" },
+    ],
     paymentTypes: CommonOptions.paymentTypes,
     propertyOwnerTypes: CommonOptions.yesNo, 
     assetTypes: [
-      { label: "MV & Primary", value: "MV & Primary" },
-      { label: "Secondary", value: "Secondary" },
-      { label: "Tertiary", value: "Tertiary" },
+      { label: "Tier 1 - Cars", value: "Tier 1 - Cars" },
+      { label: "Tier 2 - Trucks yellow goods", value: "Tier 2 - Trucks yellow goods" },
+      { label: "Tier 3 - Specialised", value: "Tier 3 - Specialised" },
     ],
-    terms: [
-      { label: 36, value: 36 },
-      { label: 48, value: 48 },
-      { label: 60, value: 60 },
-    ],
+    terms: createTerms(),
     assetAges: createAssetAges(),
     abnTypes: [
-      { label: "ABN 0-2", value: "ABN 0-2" },
-      { label: "ABN 2+", value: "ABN 2+" },
-      { label: "ABN no GST", value: "ABN no GST" },
+      { label: "> 12 months", value: "> 12 months" },
+      { label: "> 24 months", value: "> 24 months" },
     ],
     privateSales: [
       { label: "--None--", value: "" },
@@ -186,6 +216,36 @@ const calculate = (quote) =>
     typeValues: [
       { label: "Percentage", value: "Percentage" },
       { label: "Value", value: "Value" },
+    ],
+    creditScores: [
+      { label: "--None--", value: "" },
+      { label: "> 500", value: "> 500" },
+      { label: "< 500", value: "< 500" }
+    ],
+    directorSoleTraderScores: [
+      { label: "--None--", value: "" },
+      { label: "> 600", value: "> 600" },
+      { label: "< 600", value: "< 600" }
+    ],
+    paidDefaults: [
+      { label: "--None--", value: "" },
+      { label: "Pd Telco <$1K", value: "Pd Telco <$1K" },
+      { label: "Oth Default <$5K", value: "Oth Default <$5K" }
+    ],
+    conditions: [
+      { label: "--None--", value: "" },
+      { label: "New", value: "New" },
+      { label: "Used", value: "Used" }
+    ],
+    adverseCredits: [
+      { label: "--None--", value: "" },
+      { label: "Yes", value: "Y" },
+      { label: "No", value: "N" }
+    ],
+    gstLengths: [
+      { label: "No GST", value: "" },
+      { label: "< 2 years", value: "< 2 years" },
+      { label: "> 2 years", value: "> 2 years" }
     ]
   };
 
@@ -203,18 +263,23 @@ const reset = (recordId) => {
     applicationFee: 0,
     dof: 0,
     ppsr: 0,
-    residualValue: 0,
-    term: 36,
+    term: calcOptions.terms[0].value,
     paymentType: "Advance",
     monthlyFee: 0,
     creditScore: "",
+    directorSoleTraderScore: "",
+    paidDefault: "",
+    condition: "",
+    residualValue: 0,
+    adverseCredit: "",
+    abnLength: calcOptions.abnTypes[0].value,
+    gstLength: calcOptions.gstLengths[0].value,
     assetAge: calcOptions.assetAges[0].value,
     customerProfile: calcOptions.propertyOwnerTypes[1].value,
     privateSales: "",
-    brokeragePercentage: 6,
+    brokeragePercentage: 0,
     baseRate: 0.0,
-    abnLength: calcOptions.abnTypes[0].value,
-    clientRate: "",
+    clientRate: 0,
     commissions: QuoteCommons.resetResults()
   };
   console.log('Helper reset...');
@@ -245,7 +310,7 @@ const loadData = (recordId) =>
       }
     })
       .then((quoteData) => {
-        console.log(`@@SF:`, JSON.stringify(quoteData, null, 2));
+        console.log(`Helper line 308...@@SF:`, JSON.stringify(quoteData, null, 2));
         // Mapping Quote's fields
         let data = QuoteCommons.mapSObjectToLwc({
           calcName: LENDER_QUOTING,
@@ -260,9 +325,10 @@ const loadData = (recordId) =>
 
         // Rate Settings
         if (quoteData.rateSettings) {
-          AFRate1 = quoteData.rateSettings[`${RATE_SETTING_NAMES[0]}`];
-          AFRate2 = quoteData.rateSettings[`${RATE_SETTING_NAMES[1]}`];
-          console.log('Helper line 269...', quoteData.rateSettings);
+          gacTier1 = quoteData.rateSettings[`${RATE_SETTING_NAMES[0]}`];
+          gacTier2 = quoteData.rateSettings[`${RATE_SETTING_NAMES[1]}`];
+          gacTier3 = quoteData.rateSettings[`${RATE_SETTING_NAMES[2]}`];
+          gacAdd = quoteData.rateSettings[`${RATE_SETTING_NAMES[3]}`];
         }
         resolve(data);
       })
@@ -270,11 +336,19 @@ const loadData = (recordId) =>
   });
 
 const getTableRatesData1 = () => {
-  return AFRate1;
+  return gacTier1;
 }
 
 const getTableRatesData2 = () => {
-  return AFRate2;
+  return gacTier2;
+}
+
+const getTableRatesData3 = () => {
+  return gacTier3;
+}
+
+const getTableRatesData4 = () => {
+  return gacAdd;
 }
 
 const getResidualValue = (quote) => {
@@ -290,12 +364,31 @@ const getMyBaseRates = (quote) =>
   new Promise((resolve, reject) => {
     const p = {
       lender: LENDER_QUOTING,
-      abnLength: quote.abnLength,
-      assetType: quote.assetType,
       assetAge: quote.assetAge,
-      endOfTerm: quote.endOfTerm,
+      term: parseInt(quote.term),
+      assetType: quote.assetType,
+      condition: quote.condition,
       customerProfile: quote.customerProfile,
-      hasMaxRate: false
+      companyScore: quote.creditScore,
+      directorSoleTraderScore: quote.directorSoleTraderScore,
+      privateSales: quote.privateSales,
+      abnLength: quote.abnLength,
+      gstLength: quote.gstLength,
+      paidDefault: quote.paidDefault,
+      brokeragePer: quote.brokeragePercentage,
+      hasMaxRate: false,
+      residualValue: quote.residualValue? quote.residualValue : 0,
+      amountBasePmt: getBaseAmountPmtInclBrokerageCalc(quote),
+      paymentType: quote.paymentType,
+      price: quote.price,
+      deposit: quote.deposit,
+      tradeIn: quote.tradeIn,
+      payoutOn: quote.payoutOn,
+      applicationFee: quote.applicationFee,
+      dof: quote.dof,
+      ppsr: quote.ppsr,
+      totalAmount: QuoteCommons.calcTotalAmount(quote),
+      totalInsurance: QuoteCommons.calcTotalInsuranceType(quote),
     };
     console.log(`getMyBaseRates...`, JSON.stringify(p, null, 2));
     getBaseRates({
@@ -305,6 +398,7 @@ const getMyBaseRates = (quote) =>
         console.log(`@@SF:`, JSON.stringify(rates, null, 2));
         resolve({
           baseRate: rates.baseRate,
+          clientRate: rates.clientRate
         });
       })
       .catch((error) => reject(error));
@@ -382,8 +476,10 @@ export const CalHelper = {
   lenderSettings: lenderSettings,
   getTableRatesData1: getTableRatesData1,
   getTableRatesData2: getTableRatesData2,
-  tableRateDataColumns1: AFRateCols1,
-  tableRateDataColumns2: AFRateCols2,
+  getTableRatesData3: getTableRatesData3,
+  getTableRatesData4: getTableRatesData4,
+  tableRateDataColumns1: tableRateDataColumns1,
+  tableRateDataColumns2: tableRateDataColumns2,
   getNetRealtimeNaf: QuoteCommons.calcNetRealtimeNaf,
   getNetDeposit: QuoteCommons.calcNetDeposit,
   saveQuote: saveQuote,

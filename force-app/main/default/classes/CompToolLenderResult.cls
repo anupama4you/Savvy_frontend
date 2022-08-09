@@ -38,7 +38,7 @@ public class CompToolLenderResult {
   @AuraEnabled
   public Decimal dof {
     get {
-      return this.quote != null? this.quote.DOF__c : 0.00;
+      return this.quote != null && this.quote.DOF__c > 0? this.quote.DOF__c * 1.1 : 0.00;
     }
   }
   @AuraEnabled

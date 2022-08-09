@@ -9,10 +9,19 @@ public class CompToolAngleCalc extends CompToolLenderCalcAbstract {
     // ---------------
     // Find base rates
     this.quoteParam.assetType = 'MV & Primary';
+    this.quoteParam.assetType = 'S'.equals(this.getBusinessAssetCategory()) ? 'Secondary' : this.quoteParam.assetType;
+    this.quoteParam.assetType = 'T'.equals(this.getBusinessAssetCategory()) ? 'Tertiary' : this.quoteParam.assetType;
+
     this.quoteParam.assetAge = String.valueOf(this.param.assetAge);
     this.quoteParam.endOfTerm = this.param.getAssetYearsAfterTerm();
     this.quoteParam.abnLength = 'ABN 2+';
-
+    if (this.param.getAbnLengthValue() <= 2) {
+      this.quoteParam.abnLength = 'ABN 0-2';
+    }
+    if ('N'.equals(this.param.gstRegistered)) {
+      this.quoteParam.abnLength = 'ABN no GST';
+    }
+    
     // Custom Value 1
     if (String.isNotBlank(this.param.customValue1)) {
       this.quoteParam.assetType = this.param.customValue1;

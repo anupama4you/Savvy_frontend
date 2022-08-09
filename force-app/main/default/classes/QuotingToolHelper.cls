@@ -57,7 +57,11 @@ public class QuotingToolHelper {
         try {
             body = Test.isRunningTest()? Blob.valueOf('a') : pdf.getContent();
         } catch (VisualforceException e) {
-            body = Blob.valueOf('Error occurred in generating the PDF file.');
+          String msg = 'Error occurred in generating the PDF file. ' + e.getMessage();
+          if (pdf != null) {
+            msg += ' | parameters: ' + pdf.getParameters().toString();
+          }
+          body = Blob.valueOf('Error occurred in generating the PDF file.');
         }   
         attachPdfFile(oppId, prefixName, body, saveInCloud);
     }
@@ -445,22 +449,20 @@ public class QuotingToolHelper {
             return null;
         }
     }
-
+    
     public static void saveApplicationQuoting(Application_Quoting__c obj) {
         Boolean isUpdateApp = false;
         if (obj.Id == null) {
           isUpdateApp = true;
         }
         try {
-            upsert obj;
+          upsert obj;
         } catch (Exception e) {
           String errMsg = e.getMessage();
-          throw new GenericException(errMsg);
           if (errMsg.contains('UNABLE_TO_LOCK_ROW')) {
             ApexPages.addMessage(new ApexPages.Message(ApexPages.Severity.ERROR, 'Quoting tools error. Some data could not be saved properly. Please reload this page and try to save your data again.'));
           }
-        //   ApexPages.addMessage(new ApexPages.Message(ApexPages.Severity.ERROR, e.getStackTraceString()));
-           
+          ApexPages.addMessage(new ApexPages.Message(ApexPages.Severity.ERROR, e.getStackTraceString()));
         }
         // if (isUpdateApp && obj.Application__c != null) {
         //     try {

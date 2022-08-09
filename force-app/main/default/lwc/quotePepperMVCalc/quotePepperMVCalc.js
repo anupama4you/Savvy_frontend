@@ -25,8 +25,12 @@ export default class QuotePepperMVCalc extends LightningElement {
   opp;
   // -
 
+  // --- Insurance ---
+  @track insuranceIncome;
+  // --- Insurance: end ---
+
   connectedCallback() {
-    console.log(`connectedCallback...`);
+    console.log(`connectedCallback... ${this.opp.data}`);
     this.isBusy = true;
     this.reset();
     CalHelper.load(this.recordId)
@@ -190,17 +194,18 @@ export default class QuotePepperMVCalc extends LightningElement {
 
   // Reset
   handleReset(event) {
-    const appQuoteId = this.quoteForm["Id"];
-    this.reset();
-    this.quoteForm["Id"] = appQuoteId;
-    this.isCalculated = false;
-    this.messageObj = QuoteCommons.resetMessage();
-    QuoteCommons.handleHasErrorClassClear(this);
-    console.log(
-      "🚀 ~ file: QuotePepperMVCalc.js ~ line 172 ~ QuotePepperMVCalc ~ reset ~ this.quoteForm",
-      JSON.stringify(this.quoteForm, null, 2)
-    );
-    this.baseRateCalc();
+    // const appQuoteId = this.quoteForm["Id"];
+    // this.reset();
+    // this.quoteForm["Id"] = appQuoteId;
+    // this.isCalculated = false;
+    // this.messageObj = QuoteCommons.resetMessage();
+    // QuoteCommons.handleHasErrorClassClear(this);
+    // console.log(
+    //   "🚀 ~ file: QuotePepperMVCalc.js ~ line 172 ~ QuotePepperMVCalc ~ reset ~ this.quoteForm",
+    //   JSON.stringify(this.quoteForm, null, 2)
+    // );
+    // this.baseRateCalc();
+    console.log("test insuranceIncome >>> " + this.insuranceIncome);
   }
 
   // all Save Buttons actions
@@ -270,5 +275,9 @@ export default class QuotePepperMVCalc extends LightningElement {
       QuoteCommons.fieldErrorHandler(this, this.messageObj.errors);
       this.isCalculated = true;
     }
+  }
+
+  handleInsuranceIncome(event) {
+    console.log("  >>>>>  " + event.detail);
   }
 }

@@ -22,25 +22,15 @@ public class CompToolGrowAssetCalc extends CompToolLenderCalcAbstract {
     this.quoteParam.ltv = '100';
     this.quoteParam.privateSales = 'Private'.equals(param.purchaseType)? 'Y' : 'N';
     
-    if ('853 - 1200'.equals(this.param.creditScore)) {
-      this.quoteParam.equifaxScore = 853;
-    } else if ('735 - 852'.equals(this.param.creditScore)) {
-      this.quoteParam.equifaxScore = 735;
-    } else if ('661 - 734'.equals(this.param.creditScore)) {
-      this.quoteParam.equifaxScore = 661;
-    } else if ('500 - 660'.equals(this.param.creditScore)) {
-      this.quoteParam.equifaxScore = 500;
-    } else {
-      this.quoteParam.equifaxScore = 0;
-    }
-
+    this.quoteParam.equifaxScore = this.param.getCreditScoreValue();
+   
     this.quoteParam.assetAge = String.valueOf(this.param.assetAge);
     this.quoteParam.condition = this.param.assetAge > 0 ? 'Used' : 'New';
     
     this.setBrokerageValue();
 
     this.quoteParam.paymentType = 'Advance';
-    this.quoteParam.abnLength = '> 12 months';
+    this.quoteParam.abnLength = this.param.getAbnLengthValue() >= 2? '> 24 months' : '> 12 months';
 
     // Custom Value 1
     if (String.isNotBlank(this.param.customValue1)) {

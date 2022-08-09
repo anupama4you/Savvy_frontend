@@ -1,6 +1,19 @@
 public with sharing class QuoteInsuranceController {
     private static Map<String, Map<String, Liberty_VEI_Setting__c>> libVeiSettings = null; 
     private static Application__c application = null;
+    private static Custom_Opportunity__c opp = null;
+
+    @AuraEnabled
+    public static String loadData(Id oppId){
+        try {
+            opp = getOpp(oppId);
+            application = getApplication(opp.Application__c);
+            return application.Type_of_Asset__c;
+        } catch (Exception e) {
+            throw new AuraHandledException(e.getMessage());
+        }
+    }
+
     @AuraEnabled
     public static Map<String, Decimal> calculateGAP(Id oppId, String option) {
         Map<String, Decimal> gap = new Map<String, Decimal>();
@@ -19,9 +32,37 @@ public with sharing class QuoteInsuranceController {
         return gap;
     }
 
+    // Calculate Retail price and commission for Integrity
+    @AuraEnabled
+    public static Map<String, Decimal> calculateNWC(String category, String term, String type, Application_Quoting__c data){
+        Map<String, Decimal> result = new Map<String, Decimal>();
+        NWCCalc.Parameter nwcParam = new NWCCalc.Parameter();
+        try {
+            Custom_Opportunity__c opp = getOpp(data.Opportunity__c);
+            application = getApplication(opp.Application__c);
+            nwcParam.plan = category;
+            nwcParam.term = term;
+            nwcParam.type_p = type;
+            nwcParam.state = application.State__c;
+            nwcParam.assetType = 'Car'; // hard code here
+            NWCCalc.Result r = NWCCalc.CalculateNWC(nwcParam);
+            if(r != null){
+                result.put('retailPrice', r.retailPrice);
+                result.put('commission', r.commission);
+            }else {
+                result.put('retailPrice', 0.0);
+                result.put('commission', 0.0);
+            }
+            return result;
+        } catch (Exception e) {
+            throw new AuraHandledException(e.getMessage());
+        }
+    }
+
     @AuraEnabled
     public static Map<String, Decimal> calculateLPI(Id oppId, Decimal term, String cciLevel, Application_Quoting__c data){
         try {
+            System.debug('data >> '+JSON.serialize(data));
             Map<String, Decimal> lpi = new Map<String, Decimal>();
             QuotingCalculation.CalcParam param = new QuotingCalculation.CalcParam('Liberty');
             Custom_Opportunity__c opp = getOpp(oppId);
@@ -34,6 +75,7 @@ public with sharing class QuoteInsuranceController {
             param.maritalStatus = application.Marital_Status_1__c;
             param.noOfDependants = application.No_of_Dependants_1__c;
             param.noOfPeople = application.No_of_People__c;
+            System.debug('param in calculateLPI >> '+param);
             QuotingCalculation.LibertyLPI p = QuotingCalculation.calculateLibertyLPI(param);
             if(p != null) {
                 lpi.put('cci', p.premium);
@@ -74,7 +116,7 @@ public with sharing class QuoteInsuranceController {
 
     private static Application__c getApplication(Id appId){
         try {
-            List<Application__c> app = [SELECT State__c, Date_of_Birth_1__c, Marital_Status_1__c, 
+            List<Application__c> app = [SELECT Type_of_Asset__c, State__c, Date_of_Birth_1__c, Marital_Status_1__c, 
             No_of_Dependants_1__c, No_of_People__c
             FROM Application__c WHERE Id = :appId];
            return app[0];

@@ -7,22 +7,59 @@ public class QuoteWrapper {
         @AuraEnabled
         public Decimal Min_Equifax_Score;
         @AuraEnabled
-        public Decimal Overs;
+        public String Overs;
         @AuraEnabled
-        public Decimal Rate0;
+        public String Rate0;
         @AuraEnabled
-        public Decimal Rate1;
+        public String Rate1;
         @AuraEnabled
-        public Decimal Rate2;
+        public String Rate2;
         @AuraEnabled
-        public Decimal Rate3;
+        public String Rate3;
         @AuraEnabled
-        public Decimal Rate4;
+        public String Rate4;
         @AuraEnabled
         public String Name;
         @AuraEnabled
-        public Decimal Rate;
+        public String Rate;
         @AuraEnabled
         public String Type;
+        @AuraEnabled
+        public Decimal Min;
+        @AuraEnabled
+        public Decimal Max;
+        @AuraEnabled
+        public Decimal X6;
+        @AuraEnabled
+        public Decimal X9;
+        @AuraEnabled
+        public Decimal X12;
+        @AuraEnabled
+        public Decimal X18;
+        @AuraEnabled
+        public Decimal X24;
+        @AuraEnabled
+        public Decimal X36;
+        @AuraEnabled
+        public Decimal X48;
+        @AuraEnabled
+        public Decimal X60;
+        @AuraEnabled
+        public String Product;
+        @AuraEnabled
+        public String Year;
+        @AuraEnabled
+        public String R1;
+        @AuraEnabled
+        public String R2;
+        @AuraEnabled
+        public String R3;
     } 
+    
+    public class Picklist {
+        @AuraEnabled
+        public String label;
+        @AuraEnabled
+        public String value;
+    }
 }

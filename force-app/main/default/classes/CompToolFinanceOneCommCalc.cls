@@ -10,7 +10,7 @@ public class CompToolFinanceOneCommCalc extends CompToolLenderCalcAbstract {
     // Find base rates
     // - Constant parameters
     this.quoteParam.productLoanType = 'Commercial';
-    this.quoteParam.loanTypeDetail = 'Gold';
+    this.quoteParam.loanTypeDetail = 'Platinum';
     
     // - Prepare parameters
     

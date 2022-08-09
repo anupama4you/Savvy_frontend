@@ -1,26 +1,29 @@
 :host {
   --slds-c-card-body-spacing-block: 0rem;
   --slds-c-card-header-spacing-block-start: 0rem;
+  --lwc-heightInput: 1.5rem;
 }
 
 .c-lender-logo {
-  width: 140px;
-  height: 50px;
+  width: 120px;
+  height: 35px;
   object-fit: contain;
+  margin-top: 3px;
 }
 
 .c-row {
-  border-bottom: 2px solid #e5e5e5;
+  border-bottom: 2px solid #f1f1f1;
+  padding: 10px 0;
 }
 
 .c-cols .slds-col {
-  border-right: 1px solid #e5e5e5;
-  padding-top: 20px;
+  border-right: 1px solid #f1f1f1;
+  padding-top: 15px;
   text-align: center;
 }
 
 .c-cols .slds-col:last-child {
-  border-right: 0px solid #e5e5e5;
+  border-right: 0px solid #f1f1f1;
   padding-top: 10px;
 }
 
@@ -33,5 +36,13 @@
 }
 
 .c-custom-options {
-  margin-top: -8px;
+  margin-top: 8px;
+}
+
+.c-help-icon {
+  margin-top: -7px;
+}
+
+.c-doc-icon {
+  margin-top: -5px;
 }

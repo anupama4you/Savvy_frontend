@@ -13,7 +13,7 @@ export default class ComparisonToolRecord extends LightningElement {
     console.log(
       "🚀 ~ file: comparisonToolRecord.js ~ line 14 ~ ComparisonToolRecord ~ setoptions ~ value",
       JSON.stringify(value, null, 2)
-    );    
+    );
     this.setAttribute("options", value);
     this.myOptions = value;
     if (this.myOptions && this.myOptions.recalculate === true) {
@@ -110,6 +110,22 @@ export default class ComparisonToolRecord extends LightningElement {
 
   get displayCustomValue1() {
     return this.form.customValue1;
+  }
+
+  get displayBreakCost() {
+    return (
+      this.record &&
+      this.record.Break_Costs__c &&
+      this.record.Break_Costs__c.length > 0
+    );
+  }
+
+  get displayDocIcon() {
+    return (
+      this.record &&
+      this.record.Document_Id__c &&
+      this.record.Document_Id__c.length > 0
+    );
   }
 
   handleFieldChange(event) {

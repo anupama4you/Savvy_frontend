@@ -248,7 +248,7 @@
                 </lightning-combobox>
             </div>
         </div>
-        <!-- Lease Agreement -->
+        <!-- Lease Agreement 
         <div class="c-row-details">
             <div class="c-detail-labels"><span class="c-label">Lease Agreement</span></div>
             <div class="c-detail-fields">
@@ -258,7 +258,7 @@
                 </lightning-combobox>
 
             </div>
-        </div>
+        </div>-->
         <!-- Private Sales -->
         <div class="c-row-details">
             <div class="c-detail-labels"><span class="c-label">Private Sales</span></div>
@@ -306,7 +306,7 @@
         </div>-->
 
         <!-- Rates -->
-        <!-- Max Rate -->
+        <!-- Max Rate 
         <div class="c-row-details">
             <div class="c-detail-labels"><span class="c-label">Max Rate</span></div>
             <div class="c-detail-fields">
@@ -314,7 +314,30 @@
                     class="c-read-only-field">
                 </lightning-formatted-number> 
             </div>
+        </div>-->
+        <!-- ABN/GST -->
+        <div class="c-row-details">
+            <div class="c-detail-labels"><span class="c-label">ABN/GST</span></div>
+            <div class="c-detail-fields">
+                <lightning-combobox name="abnGST" label="ABN/GST" data-id="abnGST-field"
+                    value={quoteForm.abnGST} placeholder="Select a value" options={abnGSTOptions}
+                    onchange={handleFieldChange} class="slds-form__item" variant="label-hidden">
+                </lightning-combobox>
+
+            </div>
         </div>
+        <!-- Brokerage (%) -->
+        <div class="c-row-details">
+            <div class="c-detail-labels">
+              <span class="c-label">Brokerage (%)</span>
+            </div>
+            <div class="c-detail-fields">
+              <lightning-input type="number" formatter="percent-fixed" step="0.01" name="brokerage"
+                data-id="brokerage-field" value={quoteForm.brokerage} label="Brokerage (%)" placeholder="0.00%"
+                class="slds-form__item field-x-small-width" variant="label-hidden" onchange={handleFieldChange} required>
+              </lightning-input>
+            </div>
+          </div>
         <!-- Base Rate -->
         <div class="c-row-details">
             <div class="c-detail-labels"><span class="c-label">Base Rate</span></div>
@@ -373,7 +396,7 @@
         </div>
         
         <!-- Insurances -->
-        <c-quote-insurance-form slot="insurances"></c-quote-insurance-form>
+        <c-quote-insurance-form slot="insurances" opp-id="" quote-form=""></c-quote-insurance-form>
 
          <!-- More -->
         <div slot="more">

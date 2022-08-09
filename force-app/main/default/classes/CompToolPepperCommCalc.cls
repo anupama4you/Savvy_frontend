@@ -15,11 +15,25 @@ public class CompToolPepperCommCalc extends CompToolLenderCalcAbstract {
     
     if (
       'Car'.equals(this.param.assetType) ||
-      'Caravan'.equals(this.param.assetType)
+      'Cars'.equals(this.param.assetType)
+    ) {
+      this.quoteParam.goodsType = 'Car';
+    } else if (
+      'Caravan'.equals(this.param.assetType) ||
+      'Caravans'.equals(this.param.assetType)
     ) {
       this.quoteParam.goodsType = this.param.assetType;
-    } else {
+    } else if (
+      'Truck'.equals(this.param.assetType) ||
+      'Trucks'.equals(this.param.assetType) ||
+      'Buses'.equals(this.param.assetType) ||
+      'Vans'.equals(this.param.assetType)
+    ) {
       this.quoteParam.goodsType = 'Wheels & Tracks';
+    }  else if ('Yellow Goods'.equals(this.param.assetType)) {
+      this.quoteParam.goodsType = 'Other-Primary Assets';
+    } else {
+      this.quoteParam.goodsType = 'Other-Secondary & Tertiary Assets';
     }
 
 

@@ -13,7 +13,7 @@ public with sharing class QuoteAmmfCalcController {
         Map<String, List<YamahaRatesV2__c>> rates = new Map<String, List<YamahaRatesV2__c>>();
         rates.put(rateObjName, getRates());
         r.rateSettings = rates;
-
+        r.settings = QuotingCalculation.getLenderSettings(YamahaMarineCalculatorExtension.LENDER_QUOTING);
         return r;
     }
 

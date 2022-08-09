@@ -36,7 +36,7 @@ const QUOTING_FIELDS = new Map([
   ["loanType", "Loan_Type__c"],
   ["loanProduct", "Loan_Product__c"],
   ["assetType", "Goods_type__c"],
-  //["vehicleYear", "Vehicle_Year__c"], CLA TO DO - Create Field in Application_Quoting__c
+  //["vehicleYear", "Vehicle_Year__c"], 
   ["price", "Vehicle_Price__c"],
   ["deposit", "Deposit__c"],
   ["tradeIn", "Trade_In__c"],
@@ -48,7 +48,7 @@ const QUOTING_FIELDS = new Map([
   ["residual", "Residual_Value__c"],
   ["monthlyFee", "Monthly_Fee__c"],
   ["term", "Term__c"],
-  //["lvr", "LVR"], CLA TO DO - Create Field in Application_Quoting__c
+  ["lvr", "LTV__c"], 
   ["paymentType", "Payment__c"],
   ["clientRate", "Client_Rate__c"],
   ["applicationId", "Application__c"],
@@ -69,21 +69,21 @@ const FIELDS_MAPPING_FOR_APEX = new Map([
 const RATE_SETTING_NAMES = ["GreenLightRates__c"];
 
 const SETTING_FIELDS = new Map([
+  
+  ["monthlyFee", "Monthly_Fee__c"],
+  ["ppsr", "PPSR__c"],
   ["applicationFee", "Application_Fee__c"],
   ["maxApplicationFee", "Application_Fee__c"],
   ["dof", "DOF__c"],
-  ["maxDof", "DOF__c"],
-  ["ppsr", "PPSR__c"],
-  //["brokerage", "Brokerage_Base__c"], 
-  ["monthlyFee", "Monthly_Fee__c"]
+  ["maxDof", "DOF__c"]
+
 ]);
 
 const BASE_RATE_FIELDS = [
-  "customerProfile",
   "clientTier", 
-  "assetAge",
+  "vehicleYear",
   "assetType",
-  "privateSales"
+  "lvr"
 ];
 
 const calculate = (quote) =>
@@ -273,22 +273,22 @@ const loadData = (recordId) =>
 const getMyBaseRates = (quote) =>
   new Promise((resolve, reject) => {
     //const profile = quote.assetType === "Caravan" ? "CARAVAN" : "MV";
+    console.log('==> getMyBaseRates params quote ', JSON.stringify(quote));
     const p = {
       lender: LENDER_QUOTING,
       productLoanType: quote.loanProduct,
-      customerProfile: null,
       clientTier: quote.clientTier,
       vehicleYear: quote.vehicleYear,
-      assetTypes: quote.assetType,
-      privateSales: null,
+      assetType: quote.assetType,
+      ltv: quote.lvr,
       hasMaxRate: true
     };
-    //console.log(`getMyBaseRates...`, JSON.stringify(p, null, 2));
+    console.log('==> getMyBaseRates param ', JSON.stringify(p));
     getBaseRates({
       param: p
     })
       .then((rates) => {
-        //console.log(`@@SF: rates `, JSON.stringify(rates));
+        console.log('==> getMyBaseRates rates ', JSON.stringify(rates));
         resolve(rates);
       })
       .catch((error) => reject(error));

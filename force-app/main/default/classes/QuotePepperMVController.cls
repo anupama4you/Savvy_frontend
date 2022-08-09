@@ -5,7 +5,16 @@ public without sharing class QuotePepperMVController {
     QuoteController.QuotingDataParam param
   ) {
     QuoteController.AppQuotingWraper r = QuoteController.getQuotingData(param); 
-
+    try {
+      
+      // r.data.Application__r.Type_of_Asset__c = 'Car';
+      // String appId = QuoteController.getOpportunityById(param.oppId).Application__c;
+      // List<Application__c> app = [SELECT Type_of_Asset__c FROM Application__c WHERE Id=:appId];
+      // r.data.Application__r.Type_of_Asset__c = app[0].Type_of_Asset__c;
+    }
+    catch (Exception ex) {
+     throw new GenericException(ex.getMessage());
+    }
     // Lender settings
     // Rate Settings
     String rateObjName = param.rateSettings != null && !param.rateSettings.isEmpty() 
@@ -14,7 +23,7 @@ public without sharing class QuotePepperMVController {
     Map<String, List<PepperRate__c>> rates = new Map<String, List<PepperRate__c>>();
     rates.put(rateObjName, getRates());
     r.rateSettings = rates;
-
+    System.debug('rrr   >>>> '+ JSON.serialize(r));
     return r;
   }
 

@@ -5,22 +5,42 @@ public with sharing class QuoteShiftAssetCalcController {
     ) {
         QuoteController.AppQuotingWraper r = QuoteController.getQuotingData(param); 
 
-        // Lender settings
-        // Rate Settings
-        String rateObjName = param.rateSettings != null && !param.rateSettings.isEmpty() 
-        ? param.rateSettings.get(0) : 'YamahaRatesV2__c';
-          
-        Map<String, List<YamahaRatesV2__c>> rates = new Map<String, List<YamahaRatesV2__c>>();
-        rates.put(rateObjName, getRates());
+        String rateObjName1 = param.rateSettings.get(0);
+        String rateObjName2 = param.rateSettings.get(1);
+        String rateObjName3 = param.rateSettings.get(2);
+        String rateObjName4 = param.rateSettings.get(3);
+        Map<String, List<sObject>> rates = new Map<String, List<sObject>>();
+        rates.put(rateObjName1, getAFRate1());
+        rates.put(rateObjName2, getAFRate2());
+        rates.put(rateObjName3, getAFRate3());
+        rates.put(rateObjName4, getAFRate4());
         r.rateSettings = rates;
-
+        r.settings = QuotingCalculation.getLenderSettings(ShiftAssetExtension.LENDER_QUOTING);
         return r;
     }
 
-    private static List<YamahaRatesV2__c> getRates() {
-        List<YamahaRatesV2__c> r = YamahaRatesV2__c.getAll().values();
-        r.sort();
-        return r;
+    private static List <Get_Capital_Rates__c> getAFRate1() {
+        List <Get_Capital_Rates__c> AFRate1 = 
+        [Select Name, Age_of_Asset__c , Non_Property_Backed__c , Property_Backed__c , Type_of_Asset__c from Get_Capital_Rates__c where Princing_fees_and_commission__c = 'Up to $250,000' order by Name asc];
+        return AFRate1;
+    }
+
+    private static List <Get_Capital_Rates__c> getAFRate2() {
+        List <Get_Capital_Rates__c> AFRate1 = 
+        [Select Name, Age_of_Asset__c , Non_Property_Backed__c , Property_Backed__c , Type_of_Asset__c from Get_Capital_Rates__c where Princing_fees_and_commission__c = 'Over $250,000' order by Name asc];
+        return AFRate1;
+    }
+
+    private static List <Get_Capital_Rates__c> getAFRate3() {
+        List <Get_Capital_Rates__c> AFRate1 = 
+        [Select Name, Add_ons__c, Description__c from Get_Capital_Rates__c where Add_ons__c != null AND Description__c != null order by Name asc];
+        return AFRate1;
+    }
+
+    private static List <Get_Capital_Rates__c> getAFRate4() {
+        List <Get_Capital_Rates__c> AFRate1 = 
+        [Select Name, Loan_Amount__c, Maximum_commission_Inc_GST__c from Get_Capital_Rates__c where Maximum_commission_Inc_GST__c != null order by Name asc];
+        return AFRate1;
     }
 
     @AuraEnabled
@@ -51,18 +71,36 @@ public with sharing class QuoteShiftAssetCalcController {
         
         // pass universal variables
         pdf.getParameters().put('id',quote.Opportunity__c);
-        pdf.getParameters().put('lender', 'YAMAHA CALCULATION');
+        pdf.getParameters().put('lender', 'ANGLE FINANCE CALCULATION');
+
+        //Financial Details
+        pdf.getParameters().put('loanType',  quote.Loan_Type__c+'');
+        pdf.getParameters().put('productLoanType',  quote.Loan_Product__c+'');
+        pdf.getParameters().put('assetType', quote.Goods_type__c+'');
         pdf.getParameters().put('carPrice', NumberUtils.format(quote.Vehicle_Price__c));
+        pdf.getParameters().put('deposit', NumberUtils.format(quote.Deposit__c));
+        pdf.getParameters().put('tradeIn', NumberUtils.format(quote.Trade_In__c));
+        pdf.getParameters().put('payoutOn', NumberUtils.format(quote.Payout_On__c));
         pdf.getParameters().put('applicationFee', NumberUtils.format(quote.Application_Fee__c));
         pdf.getParameters().put('dof', NumberUtils.format(quote.DOF__c));
         pdf.getParameters().put('ppsr', NumberUtils.format(quote.PPSR__c));
-        pdf.getParameters().put('netDeposit', NumberUtils.format(quote.Net_Deposit__c));
+        pdf.getParameters().put('privateSales', quote.Private_Sales__c + '');
+        pdf.getParameters().put('vehicleAge', quote.Vehicle_Age__c + '');
         pdf.getParameters().put('residualValue', NumberUtils.format(quote.Residual_Value__c));
-        pdf.getParameters().put('baseRate', NumberUtils.format(quote.Base_Rate__c));
-        pdf.getParameters().put('clientRate', NumberUtils.format(quote.Client_Rate__c));
         pdf.getParameters().put('term', NumberUtils.format(quote.Term__c));
         pdf.getParameters().put('paymentType', quote.Payment__c+'');
         pdf.getParameters().put('monthlyFee', NumberUtils.format(quote.Monthly_Fee__c));
+        pdf.getParameters().put('creditScore', String.valueOf(quote.Credit_Score__c)+'');
+        pdf.getParameters().put('residualValuePercentage', NumberUtils.format(quote.Residual_Value_Percentage__c));
+        pdf.getParameters().put('residualValue', NumberUtils.format(quote.Residual_Value__c));
+        pdf.getParameters().put('brokeragePercentage', NumberUtils.format(quote.Brokerage__c));
+        pdf.getParameters().put('customerProfile', quote.Customer_Profile__c+'');
+        pdf.getParameters().put('productGoodsType', quote.Goods_type__c+'');
+        pdf.getParameters().put('netDeposit', quote.Net_Deposit__c+'');
+
+        pdf.getParameters().put('baseRate', NumberUtils.format(quote.Base_Rate__c));
+        pdf.getParameters().put('clientRate', NumberUtils.format(quote.Client_Rate__c));
+        
         // ---- commissions -----
         pdf.getParameters().put('estimatedCommission', NumberUtils.format(quote.Commission_Estimation__c));
         pdf.getParameters().put('insuranceIncome', NumberUtils.format(quote.Commission_Insurance_Income__c));
@@ -75,21 +113,7 @@ public with sharing class QuoteShiftAssetCalcController {
         pdf.getParameters().put('fortnightlyPayment', NumberUtils.format(quote.Repayment_Fortnightly__c));
         pdf.getParameters().put('weeklyPayment', NumberUtils.format(quote.Repayment_Weekly__c));
         // ---- end commissions -----
-        //pass variables about the product info
-        pdf.getParameters().put('loanType',  quote.Loan_Type__c+'');
-        pdf.getParameters().put('productLoanType', quote.Loan_Product__c+'');
-        pdf.getParameters().put('customerProfile', quote.Customer_Profile__c);
-        pdf.getParameters().put('deposit', NumberUtils.format(quote.Deposit__c));
-        pdf.getParameters().put('tradeIn', NumberUtils.format(quote.Trade_In__c));
-        pdf.getParameters().put('payoutOn', NumberUtils.format(quote.Payout_On__c));
-        if(String.valueOf(quote.Loan_Facility_Type__c).contains('prime') && quote.NAF__c > 35000){
-            pdf.getParameters().put('loanTypeDetail', quote.Loan_Facility_Type__c + ' (over 35K)');
-        } else {
-            pdf.getParameters().put('loanTypeDetail', quote.Loan_Facility_Type__c);
-        }
-        pdf.getParameters().put('privateSales', quote.Private_Sales__c);
-        pdf.getParameters().put('productGoodsType', quote.Loan_Product__c);
-        
+
         return pdf;
 
     }

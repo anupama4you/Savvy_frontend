@@ -20,8 +20,8 @@ public class FirstmacCalculatorExtension extends QuotingExtension {
 
   public static List<String> LOAN_TYPE_OPTIONS = new List<String>{
     'New Green Car',
-    'Prime Special Rate',
-    'New and used < 5 years',
+    'New / Demo',
+    'Used < 5 years',
     'Used 6-7 years',
     'Used 8-12 years'
   };
@@ -266,8 +266,7 @@ public class FirstmacCalculatorExtension extends QuotingExtension {
 
       if (
         'New Green Car'.equals(this.loanTypeDetail) ||
-        'Prime Special Rate'.equals(this.loanTypeDetail) ||
-        ('New and used < 5 years'.equals(this.loanTypeDetail) && isNewUsed)
+        'New / Demo'.equals(this.loanTypeDetail)
       ) {
         //if ('New/Demo'.equals(this.loanTypeDetail) || 'New - 2yrs'.equals(this.loanTypeDetail)) {
         if (this.term == 36) {
@@ -277,7 +276,7 @@ public class FirstmacCalculatorExtension extends QuotingExtension {
         } else {
           comp = 30.0;
         }
-      } else if ('New and used < 5 years'.equals(this.loanTypeDetail) 
+      } else if ('Used < 5 years'.equals(this.loanTypeDetail) 
         && Date.today().year() - vy <= 4
       ) {
         if (this.term == 36) {
@@ -380,7 +379,7 @@ public class FirstmacCalculatorExtension extends QuotingExtension {
     }
 
     if (('New Green Car'.equals(this.loanTypeDetail) || 
-    'Prime Special Rate'.equals(this.loanTypeDetail)) && va >= 1) {
+    'New / Demo'.equals(this.loanTypeDetail)) && va >= 1) {
       ApexPages.addMessage(
         new ApexPages.Message(
           ApexPages.Severity.ERROR,
@@ -394,7 +393,7 @@ public class FirstmacCalculatorExtension extends QuotingExtension {
       );
       r = false;
     } else if (
-      'New and used < 5 years'.equals(this.loanTypeDetail) &&
+      'Used < 5 years'.equals(this.loanTypeDetail) &&
       va > 5
     ) {
       ApexPages.addMessage(

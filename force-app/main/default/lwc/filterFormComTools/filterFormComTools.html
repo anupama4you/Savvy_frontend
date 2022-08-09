@@ -1,6 +1,20 @@
 <template>
   <div class="slds-grid slds-wrap slds-gutters_xx-small c-container">
     <!-- First row -->
+    <div class="slds-col slds-size_12-of-12 slds-large-size_2-of-12">
+      <lightning-combobox
+          name="loanType"
+          label="Loan Purpose"
+          data-id="loanType-field"
+          value={params.loanType}
+          placeholder="Select a value"
+          options={loanTypeOptions}
+          onchange={handleFieldChange}
+          class=""
+          variant="label-stacked"
+          required
+        ></lightning-combobox>
+    </div>
     <div class="slds-col slds-medium-size_2-of-12 slds-large-size_2-of-12">
       <lightning-combobox
           name="assetType"
@@ -91,20 +105,6 @@
     </div>
     <div class="slds-col slds-size_12-of-12 slds-large-size_2-of-12">
       <lightning-combobox
-          name="loanType"
-          label="Loan Purpose"
-          data-id="loanType-field"
-          value={params.loanType}
-          placeholder="Select a value"
-          options={loanTypeOptions}
-          onchange={handleFieldChange}
-          class=""
-          variant="label-stacked"
-          required
-        ></lightning-combobox>
-    </div>
-    <div class="slds-col slds-size_12-of-12 slds-large-size_2-of-12">
-      <lightning-combobox
           name="purchaseType"
           label="Purchase Type"
           data-id="purchaseType-field"
@@ -135,7 +135,7 @@
     <div class="slds-col slds-size_12-of-12 slds-large-size_2-of-12">
       <lightning-combobox
           name="creditScore"
-          label="Credit Score"
+          label={creditScoreLabel}
           data-id="creditScore-field"
           value={params.creditScore}
           placeholder="Select a value"
@@ -144,6 +144,7 @@
           class=""
           variant="label-stacked"
           required
+          disabled={disableCreditScore}
         ></lightning-combobox>
     </div>
     <div class="slds-col slds-size_12-of-12 slds-large-size_2-of-12">
@@ -204,5 +205,35 @@
         >
         </lightning-button>
     </div>
+    <template if:true={isBusiness}>
+      <div class="slds-col slds-medium-size_2-of-12 slds-large-size_1-of-12">
+        <lightning-combobox
+            name="abnLength"
+            label="ABN Length"
+            data-id="abnLength-field"
+            value={params.abnLength}
+            placeholder="Select a value"
+            options={abnLengthOptions}
+            onchange={handleFieldChange}
+            class=""
+            variant="label-stacked"
+            required
+          ></lightning-combobox>
+      </div>
+      <div class="slds-col slds-medium-size_2-of-12 slds-large-size_1-of-12">
+      <lightning-combobox
+          name="gstRegistered"
+          label="GST Registered"
+          data-id="gstRegistered-field"
+          value={params.gstRegistered}
+          placeholder="Select a value"
+          options={gstRegisteredOptions}
+          onchange={handleFieldChange}
+          class=""
+          variant="label-stacked"
+          required
+        ></lightning-combobox>
+    </div>
+    </template>
   </div>
 </template>

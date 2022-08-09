@@ -17,6 +17,20 @@ const tableRateDataColumns = [
   { label: "Type", fieldName: "Type", type: "text" }
 ];
 
+let tableRatesData2 = [];
+const tableRateDataColumns2 = [
+  { label: "Min", fieldName: "Min", type: "currency", typeAttributes: { minimumFractionDigits: 2, maximumFractionDigits: 2 } },
+  { label: "Max", fieldName: "Max", type: "currency", typeAttributes: { minimumFractionDigits: 2, maximumFractionDigits: 2 } },
+  { label: "6", fieldName: "X6", type: "currency", typeAttributes: { minimumFractionDigits: 2, maximumFractionDigits: 2 } },
+  { label: "9", fieldName: "X9", type: "currency", typeAttributes: { minimumFractionDigits: 2, maximumFractionDigits: 2 } },
+  { label: "12", fieldName: "X12", type: "currency", typeAttributes: { minimumFractionDigits: 2, maximumFractionDigits: 2 } },
+  { label: "18", fieldName: "X18", type: "currency", typeAttributes: { minimumFractionDigits: 2, maximumFractionDigits: 2 } },
+  { label: "24", fieldName: "X24", type: "currency", typeAttributes: { minimumFractionDigits: 2, maximumFractionDigits: 2 } },
+  { label: "36", fieldName: "X36", type: "currency", typeAttributes: { minimumFractionDigits: 2, maximumFractionDigits: 2 } },
+  { label: "48", fieldName: "X48", type: "currency", typeAttributes: { minimumFractionDigits: 2, maximumFractionDigits: 2 } },
+  { label: "60", fieldName: "X60", type: "currency", typeAttributes: { minimumFractionDigits: 2, maximumFractionDigits: 2 } }
+];
+
 
 const LENDER_QUOTING = "Money Place";
 
@@ -51,7 +65,11 @@ const calcOptions = {
   loanTypes: CommonOptions.loanTypes,
   paymentTypes: CommonOptions.paymentTypes,
   loanProducts: CommonOptions.fullLoanProducts,
-  terms: CommonOptions.terms(12, 84),
+  terms: [
+    { label: 6, value:  6},{ label: 9, value:  9},{ label: 12, value:  12},{ label: 18, value:  18},
+    { label: 24, value:  24},{ label: 36, value:  36},{ label: 48, value:  48},{ label: 60, value:  60},
+    { label: 72, value:  72},{ label: 84, value:  84}
+  ],
   assetTypes: CommonOptions.assetTypes,
   profiles: CommonOptions.profiles,
   clientTiers: CommonOptions.clientTiers,
@@ -60,7 +78,37 @@ const calcOptions = {
   vehicleBuildDates: CommonOptions.vehicleBuildDates(2022, 2009),
   leaseAgreements: CommonOptions.yesNo,
   privateSales: CommonOptions.yesNo,
-  plentiAPIUsers: CommonOptions.apiUsers
+  plentiAPIUsers: CommonOptions.apiUsers,
+  purposeTypes: [
+    { label: "Debt Consolidation", value: "DebtConsolidation" },
+    { label: "Car", value: "Car" },
+    { label: "Motorbike", value: "Motorbike" },
+    { label: "Boat", value: "Boat" },
+    { label: "Business", value: "Business" },
+    { label: "Funeral Expenses", value: "FuneralExpenses" },
+    { label: "Investment", value: "Investment" },
+    { label: "Home Improvement", value: "HomeImprovement" },
+    { label: "Holiday", value: "Holiday" },
+    { label: "Medical Dental", value: "MedicalDental" },
+    { label: "Moving Costs", value: "MovingCosts" },
+    { label: "Pay Bills", value: "PayBills" },
+    { label: "Payoff Loan", value: "PayoffLoan" },
+    { label: "Professional ServiceFees", value: "ProfessionalServiceFees" },
+    { label: "Rental Bond", value: "RentalBond" },
+    { label: "Repairs", value: "Repairs" },
+    { label: "Solar Battery", value: "SolarBattery" },
+    { label: "Wedding", value: "Wedding" },
+    { label: "Other", value: "Other" }
+  ],
+  securitys:[
+    { label: "Secured", value: "Secured" },
+    { label: "Unsecured", value: "Unsecured" }
+  ],
+  additionalDetails:[
+    { label: "N/A", value: "N/A" },
+    { label: "Self Employed", value: "Self Employed" },
+    { label: "Business Purpose", value: "Business Purpose" }
+  ]
 };
 
 /**
@@ -157,7 +205,12 @@ const reset = (recordId, appQuoteId = null) => {
     vehicleBuildDate: "",
     leaseAgreement: "",
     privateSale: "No",
-    plentiAPIUser: ""
+    plentiAPIUser: "",
+    purposeTypes: "",
+    riskFee: 0.0,
+    additionalDetails: "",
+    security: "",
+    purposeType: ""
   };
 };
 
@@ -295,6 +348,7 @@ const sendEmail = (param, recordId) =>
 export const CalHelper = {
   options: calcOptions,
   tableRateDataColumns: tableRateDataColumns,
+  tableRateDataColumns2: tableRateDataColumns2,
   getNetRealtimeNaf: QuoteCommons.calcNetRealtimeNaf,
   calculate: calculate,
   load: loadData,

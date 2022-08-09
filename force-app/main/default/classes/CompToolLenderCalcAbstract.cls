@@ -224,6 +224,8 @@ public abstract class CompToolLenderCalcAbstract implements CompToolLenderCalc {
     @AuraEnabled
     public String creditScore { get; set; }
     @AuraEnabled
+    public Integer realCreditScore { get; set; }
+    @AuraEnabled
     public String verifiableSavings { get; set; }
     @AuraEnabled
     public String ltv { get; set; }
@@ -311,7 +313,9 @@ public abstract class CompToolLenderCalcAbstract implements CompToolLenderCalc {
 
     public Integer getCreditScoreValue() {
       Integer r = 0;
-      if (String.isNotBlank(this.creditScore)) {
+      if (this.realCreditScore > 0) {
+        r = this.realCreditScore;
+      } else if (String.isNotBlank(this.creditScore)) {
         if ('0 - 499'.equals(this.creditScore)) {
           r = 499;
         } else {

@@ -1,5 +1,11 @@
+:host {
+  --slds-c-card-body-spacing-block: 0rem;
+  --slds-c-card-header-spacing-block-start: 0rem;
+  --slds-c-card-header-spacing-block-end: 0rem;
+}
+
 .c-header {
-  background-color: #000000d0;
+  background-color: #1e214d;
   color: #ffffff;
 }
 
@@ -18,4 +24,12 @@
 .c-actions {
   text-align: end;
   padding-top: 20px;
+}
+
+.c-center {
+  text-align: center;
+}
+
+.c-form {
+  padding: 10px 0px;
 }

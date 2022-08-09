@@ -81,7 +81,7 @@
     <!-- Asset Price -->
     <div class="c-row-details">
       <div class="c-detail-labels">
-        <span class="c-label">Vehicle Price</span>
+        <span class="c-label">Asset Price</span>
       </div>
       <div class="c-detail-fields">
         <lightning-input
@@ -91,7 +91,7 @@
           name="price"
           data-id="price-field"
           value={quoteForm.price}
-          label="Vehicle Price"
+          label="Asset Price"
           placeholder="$"
           class="slds-form__item"
           variant="label-hidden"
@@ -230,71 +230,6 @@
         ></lightning-input>
       </div>
     </div>
-    <!-- Type Value -->
-    <div class="c-row-details">
-      <div class="c-detail-labels">
-        <span class="c-label">Type Value</span>
-      </div>
-      <div class="c-detail-fields">
-        <lightning-radio-group
-          label="Type Value"
-          options={typeValueOptions}
-          name="typeValue"
-          data-id="typeValue-field"
-          value={typeValue}
-          type="button"
-          class="slds-form__item"
-          variant="label-hidden"
-          onchange={handleFieldChange}>
-        </lightning-radio-group>
-      </div>
-    </div>
-    <!-- Residual Value -->
-    <div class="c-row-details">
-      <div class="c-detail-labels">
-        <span class="c-label">Residual Value (%)</span>
-      </div>
-      <lightning-input
-        type="number"
-        formatter="percent-fixed"
-        step="0.01"
-        name="residualValuePercentage"
-        data-id="residualValuePercentage-field"
-        value={quoteForm.residualValuePercentage}
-        label="Residual Value"
-        placeholder="0.00%"
-        class="slds-form__item"
-        variant="label-hidden"
-        disabled={disableResidualPercentage}
-        onchange={handleFieldChange}
-        required
-      >
-      </lightning-input>
-    </div>
-    <!-- Residual Value -->
-    <div class="c-row-details">
-      <div class="c-detail-labels"><span class="c-label">Residual Value</span></div>
-      <div class="c-detail-fields">
-        <lightning-input
-          type="number"
-          formatter="currency"
-          step="0.01"
-          name="residualValue"
-          data-id="residualValue-field"
-          value={quoteForm.residualValue}
-          label="Residual Value"
-          placeholder="$"
-          class="slds-form__item"
-          variant="label-hidden"
-          disabled={disableResidualValue}
-          onchange={handleFieldChange}
-        ></lightning-input>
-      </div>
-    </div>
-    <!-- Loan Details -->
-    <div class="c-row-details">
-      <span class="c-detail-subtitle">Loan Details</span>
-    </div>
     <!-- Term -->
     <div class="c-row-details">
       <div class="c-detail-labels">
@@ -314,6 +249,10 @@
           required
         ></lightning-combobox>
       </div>
+    </div>
+    <!-- Loan Details -->
+    <div class="c-row-details">
+      <span class="c-detail-subtitle">Loan Details</span>
     </div>
     <!-- Payment -->
     <div class="c-row-details">
@@ -356,25 +295,203 @@
         ></lightning-input>
       </div>
     </div>
-    <!-- Equifax Score -->
+    <!-- Company Score -->
     <div class="c-row-details">
       <div class="c-detail-labels">
-        <span class="c-label">Equifax Score</span>
+        <span class="c-label">Company Score</span>
       </div>
+      <div class="c-detail-fields">
+        <lightning-combobox
+          name="creditScore"
+          label="Company Score"
+          data-id="creditScore-field"
+          value={quoteForm.creditScore}
+          placeholder="Select a value"
+          options={creditScoreOptions}
+          onchange={handleFieldChange}
+          class="slds-form__item"
+          variant="label-hidden"
+          required
+        ></lightning-combobox>
+      </div>
+    </div>
+    <!-- Director/Sole Trader Score -->
+    <div class="c-row-details">
+      <div class="c-detail-labels">
+        <span class="c-label">Director/Sole Trader Score</span>
+      </div>
+      <div class="c-detail-fields">
+        <lightning-combobox
+          name="directorSoleTraderScore"
+          label="Director/Sole Trader Score"
+          data-id="directorSoleTraderScore-field"
+          value={quoteForm.directorSoleTraderScore}
+          placeholder="Select a value"
+          options={directorSoleTraderScoreOptions}
+          onchange={handleFieldChange}
+          class="slds-form__item"
+          variant="label-hidden"
+          required
+        ></lightning-combobox>
+      </div>
+    </div>
+    <!-- Default -->
+    <div class="c-row-details">
+      <div class="c-detail-labels">
+        <span class="c-label">Default</span>
+      </div>
+      <div class="c-detail-fields">
+        <lightning-combobox
+          name="paidDefault"
+          label="Default"
+          data-id="paidDefault-field"
+          value={quoteForm.paidDefault}
+          placeholder="Select a value"
+          options={paidDefaultOptions}
+          onchange={handleFieldChange}
+          class="slds-form__item"
+          variant="label-hidden"
+          required
+        ></lightning-combobox>
+      </div>
+    </div>
+    <!-- Condition -->
+    <div class="c-row-details">
+      <div class="c-detail-labels">
+        <span class="c-label">Condition</span>
+      </div>
+      <div class="c-detail-fields">
+        <lightning-combobox
+          name="condition"
+          label="Condition"
+          data-id="condition-field"
+          value={quoteForm.condition}
+          placeholder="Select a value"
+          options={conditionOptions}
+          onchange={handleFieldChange}
+          class="slds-form__item"
+          variant="label-hidden"
+          required
+        ></lightning-combobox>
+      </div>
+    </div>
+    <!-- Type Value -->
+    <div class="c-row-details">
+      <div class="c-detail-labels">
+        <span class="c-label">Type Value</span>
+      </div>
+      <div class="c-detail-fields">
+        <lightning-radio-group
+          label="Type Value"
+          options={typeValueOptions}
+          name="typeValue"
+          data-id="typeValue-field"
+          value={typeValue}
+          type="button"
+          class="slds-form__item"
+          variant="label-hidden"
+          onchange={handleFieldChange}>
+        </lightning-radio-group>
+      </div>
+    </div>
+    <!-- Residual Value % -->
+    <div class="c-row-details">
+      <div class="c-detail-labels">
+        <span class="c-label">Residual Value (%)</span>
+      </div>
+      <lightning-input
+        type="number"
+        formatter="percent-fixed"
+        step="0.01"
+        name="residualValuePercentage"
+        data-id="residualValuePercentage-field"
+        value={quoteForm.residualValuePercentage}
+        label="Residual Value"
+        placeholder="0.00%"
+        class="slds-form__item"
+        variant="label-hidden"
+        disabled={disableResidualPercentage}
+        onchange={handleFieldChange}
+        required
+      >
+      </lightning-input>
+    </div>
+    <!-- Residual Value -->
+    <div class="c-row-details">
+      <div class="c-detail-labels"><span class="c-label">Residual Value</span></div>
       <div class="c-detail-fields">
         <lightning-input
           type="number"
           formatter="currency"
           step="0.01"
-          name="creditScore"
-          data-id="creditScore-field"
-          value={quoteForm.creditScore}
-          label="Equifax Score"
+          name="residualValue"
+          data-id="residualValue-field"
+          value={quoteForm.residualValue}
+          label="Residual Value"
           placeholder="$"
           class="slds-form__item"
           variant="label-hidden"
+          disabled={disableResidualValue}
           onchange={handleFieldChange}
         ></lightning-input>
+      </div>
+    </div>
+    <!-- Adverse Credit File -->
+    <div class="c-row-details">
+      <div class="c-detail-labels">
+        <span class="c-label">Adverse Credit File</span>
+      </div>
+      <div class="c-detail-fields">
+        <lightning-combobox
+          name="adverseCredit"
+          label="Adverse Credit File"
+          data-id="adverseCredit-field"
+          value={quoteForm.adverseCredit}
+          placeholder="Select a value"
+          options={adverseCreditOptions}
+          onchange={handleFieldChange}
+          class="slds-form__item"
+          variant="label-hidden"
+          required
+        ></lightning-combobox>
+      </div>
+    </div>
+    <!-- ABN Length -->
+    <div class="c-row-details">
+      <div class="c-detail-labels">
+        <span class="c-label">ABN Length</span>
+      </div>
+      <div class="c-detail-fields">
+        <lightning-combobox
+          name="abnLength"
+          label="ABN Length"
+          data-id="abnLength-field"
+          value={quoteForm.abnLength}
+          options={abnOptions}
+          onchange={handleFieldChange}
+          class="slds-form__item"
+          variant="label-hidden"
+          required
+        ></lightning-combobox>
+      </div>
+    </div>
+    <!-- GST Length -->
+    <div class="c-row-details">
+      <div class="c-detail-labels">
+        <span class="c-label">GST Length</span>
+      </div>
+      <div class="c-detail-fields">
+        <lightning-combobox
+          name="gstLength"
+          label="GST Length"
+          data-id="gstLength-field"
+          value={quoteForm.gstLength}
+          options={gstLengthOptions}
+          onchange={handleFieldChange}
+          class="slds-form__item"
+          variant="label-hidden"
+          required
+        ></lightning-combobox>
       </div>
     </div>
     <!-- Asset Age -->
@@ -390,39 +507,6 @@
           value={quoteForm.assetAge}
           placeholder="Select a value"
           options={assetAgeOptions}
-          onchange={handleFieldChange}
-          class="slds-form__item"
-          variant="label-hidden"
-          required
-        ></lightning-combobox>
-      </div>
-    </div>
-    <!-- End of Term -->
-    <div class="c-row-details">
-      <div class="c-detail-labels">
-        <span class="c-label">End of Term</span>
-      </div>
-      <div class="slds-col slds-size_8-of-12 c-base-rate">
-        <lightning-formatted-number
-          value={quoteForm.endOfTerm}
-          format-style="decimal"
-          minimum-fraction-digits="2"
-          class="c-read-only-field"
-        ></lightning-formatted-number>
-      </div>
-    </div>
-    <!-- ABN -->
-    <div class="c-row-details">
-      <div class="c-detail-labels">
-        <span class="c-label">ABN</span>
-      </div>
-      <div class="c-detail-fields">
-        <lightning-combobox
-          name="abnLength"
-          label="ABN"
-          data-id="abnLength-field"
-          value={quoteForm.abnLength}
-          options={abnOptions}
           onchange={handleFieldChange}
           class="slds-form__item"
           variant="label-hidden"
@@ -453,7 +537,7 @@
     <!-- Private Sales -->
     <div class="c-row-details">
       <div class="c-detail-labels">
-        <span class="c-label">Private Sales</span>
+        <span class="c-label">Private Sales/SLB</span>
       </div>
       <div class="c-detail-fields">
         <lightning-combobox
@@ -547,8 +631,9 @@
     <!-- end -->
     <!-- Additional Content -->
     <!-- Table Rates -->
+    <div class="c-rates-section-title">Auto and Equipment Commercial Rates</div>
     <div slot="table-rates">
-      <div class="c-rates-section-title">Age 0-5 Pricing Rate</div>
+      <div class="c-rates-section-title">Tier 1 - Cars</div>
       <div class="slds-grid slds-gutters">
         <lightning-datatable
           key-field="Id"
@@ -560,11 +645,35 @@
       </div>
     </div>
     <div slot="table-rates">
-      <div class="c-rates-section-title">End of Term Pricing Rate</div>
+      <div class="c-rates-section-title">Tier 2 - Cars</div>
       <div class="slds-grid slds-gutters">
         <lightning-datatable
           key-field="Id"
           data={tableRates2}
+          columns={tableRatesCols1}
+          hide-checkbox-column
+        >
+        </lightning-datatable>
+      </div>
+    </div>
+    <div slot="table-rates">
+      <div class="c-rates-section-title">Tier 3 - Cars</div>
+      <div class="slds-grid slds-gutters">
+        <lightning-datatable
+          key-field="Id"
+          data={tableRates3}
+          columns={tableRatesCols1}
+          hide-checkbox-column
+        >
+        </lightning-datatable>
+      </div>
+    </div>
+    <div slot="table-rates">
+      <div class="c-rates-section-title">Add to the above rate for each of the following:</div>
+      <div class="slds-grid slds-gutters">
+        <lightning-datatable
+          key-field="Id"
+          data={tableRates4}
           columns={tableRatesCols2}
           hide-checkbox-column
         >

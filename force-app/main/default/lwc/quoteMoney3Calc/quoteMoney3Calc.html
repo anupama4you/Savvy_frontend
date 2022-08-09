@@ -1,0 +1,424 @@
+<template>
+    <!-- <lightning-record-view-form record-id={recordId} object-api-name="Custom_Opportunity__c">
+ -->
+    <c-quote-container title="Money 3" is-busy={isBusy} commissions={quoteForm.commissions} messages={messageObj}>
+        <lightning-button label="Calculate" slot="actions" onclick={handleCalculate}></lightning-button>
+        <lightning-button label="Reset" slot="actions" onclick={handleReset}></lightning-button>
+        <lightning-button label="Save Quoting" slot="actions" disabled={disableAction} value="None"
+            onclick={handleSave}>
+        </lightning-button>
+        <lightning-button label="Save Pre-approval" value="pre_approval" slot="actions" disabled={disableAction}
+            onclick={handleSave}>
+        </lightning-button>
+        <lightning-button label="Save Amendment" value="pre_approval_amendment" slot="actions" disabled={disableAction}
+            onclick={handleSave}>
+        </lightning-button>
+        <lightning-button label="Save Formal Approval" value="formal_approval" slot="actions" disabled={disableAction}
+            onclick={handleSave}>
+        </lightning-button>
+        <lightning-button label="Send Quote" slot="actions" disabled={disableAction} onclick={handleSendQuote}>
+        </lightning-button>
+        <img src={logoUrl} class="c-lender-logo" slot="actions" title="Plenti">
+
+        <!-- Finance Details -->
+
+        <!-- Loan Type -->
+        <div class="c-row-details">
+            <div class="c-detail-labels"><span class="c-label">Loan Type</span></div>
+            <div class="c-detail-fields">
+                <lightning-combobox name="loanType" label="Loan Type" data-id="loanType-field"
+                    value={quoteForm.loanType} placeholder="Select a value" options={loanTypeOptions}
+                    onchange={handleFieldChange} class="slds-form__item" variant="label-hidden" required>
+                </lightning-combobox>
+            </div>
+        </div>
+        <!-- Loan Product -->
+        <div class="c-row-details">
+            <div class="c-detail-labels"><span class="c-label">Loan Product</span></div>
+            <div class="c-detail-fields">
+                <lightning-combobox name="loanProduct" label="Loan Product" data-id="loanProduct-field"
+                    value={quoteForm.loanProduct} placeholder="Select a value" options={loanProductOptions}
+                    onchange={handleFieldChange} class="slds-form__item" variant="label-hidden">
+                </lightning-combobox>
+            </div>
+        </div>
+        <!-- Profile -->
+        <div class="c-row-details">
+            <div class="c-detail-labels"><span class="c-label">Profile</span></div>
+            <div class="c-detail-fields">
+                <lightning-combobox name="profile" label="Profile" data-id="profile-field" value={quoteForm.profile}
+                    placeholder="Select a value" options={profileOptions} onchange={handleFieldChange} class="slds-form__item"
+                    variant="label-hidden">
+                </lightning-combobox>
+            </div>
+        </div>
+        <!-- Customer Grading -->
+        <div class="c-row-details">
+            <div class="c-detail-labels"><span class="c-label">Customer Grading</span></div>
+            <div class="c-detail-fields">
+                <lightning-combobox name="customerGrading" label="Customer Grading" data-id="customerGrading-field" value={quoteForm.customerGrading}
+                    placeholder="Select a value" options={customerGradingOptions} onchange={handleFieldChange} class="slds-form__item"
+                    variant="label-hidden">
+                </lightning-combobox>
+            </div>
+        </div>
+        <!-- Car Price -->
+        <div class="c-row-details">
+            <div class="c-detail-labels"><span class="c-label">Car Price/Loan Amount</span></div>
+            <div class="c-detail-fields">
+                <lightning-input type="number" formatter="currency" step="0.01" name="price" data-id="price-field" value={quoteForm.price}
+                     label="Car Price" placeholder="$" class="slds-form__item" variant="label-hidden"
+                    onchange={handleFieldChange}>
+                </lightning-input>
+            </div>
+        </div>
+        <!-- Deposit -->
+        <div class="c-row-details">
+            <div class="c-detail-labels"><span class="c-label">Deposit</span></div>
+            <div class="c-detail-fields">
+                <lightning-input type="number" formatter="currency" step="0.01" name="deposit" data-id="deposit-field" value={quoteForm.deposit}
+                     label="Deposit" placeholder="$" class="slds-form__item" variant="label-hidden"
+                    onchange={handleFieldChange}>
+                </lightning-input>
+            </div>
+        </div>
+        <!-- Trade In -->
+        <div class="c-row-details">
+            <div class="c-detail-labels"><span class="c-label">Trade In</span></div>
+            <div class="c-detail-fields">
+                <lightning-input type="number" formatter="currency" step="0.01" name="tradeIn" data-id="tradeIn-field" value={quoteForm.tradeIn}
+                     abel="Trade In" placeholder="$" class="slds-form__item" variant="label-hidden"
+                    onchange={handleFieldChange}>
+                </lightning-input>
+            </div>
+        </div>
+        <!-- Payout On Trade In -->
+        <div class="c-row-details">
+            <div class="c-detail-labels"><span class="c-label">Payout On Trade In</span></div>
+            <div class="c-detail-fields">
+                <lightning-input type="number" formatter="currency" step="0.01" name="payoutOn" data-id="payoutOn-field" value={quoteForm.payoutOn}
+                    label="Payout On Trade In" placeholder="$" class="slds-form__item"
+                    variant="label-hidden" onchange={handleFieldChange}>
+                </lightning-input>
+            </div>
+        </div>
+        <!-- Net Deposit -->
+        <div class="c-row-details">
+            <div class="c-detail-labels"><span class="c-label">Net Deposit</span></div>
+            <div class="c-detail-fields">
+                <lightning-formatted-number value={netDeposit} format-style="currency" currency-code="AUD"
+                    class="c-read-only-field">
+                </lightning-formatted-number>
+            </div>
+        </div>
+        <!-- Application Fee -->
+        <div class="c-row-details">
+            <div class="c-detail-labels"><span class="c-label">Application Fee</span></div>
+            <div class="c-detail-fields">
+                <lightning-input type="number" formatter="currency" step="0.01" name="applicationFee" value={quoteForm.applicationFee}
+                    data-id="applicationFee-field" label="Application Fee" placeholder="$"
+                    class="slds-form__item field-x-small-width" variant="label-hidden" onchange={handleFieldChange}> 
+                </lightning-input>
+                <span class="c-max-details">
+                    Max.
+                    <lightning-formatted-number format-style="currency" currency-code="AUD" value={quoteForm.maxApplicationFee}
+                    class="c-read-only-field"></lightning-formatted-number>
+                </span>
+            </div>
+        </div>
+        <!-- Loan Amount 
+        <div class="c-row-details">
+            <div class="c-detail-labels"><span class="c-label">Loan Amount</span></div>
+            <div class="c-detail-fields">
+                <lightning-input type="number" formatter="currency" step="0.01" name="price" data-id="price-field"
+                    value={quoteForm.price} label="Price" placeholder="$" class="slds-form__item" variant="label-hidden"
+                    onchange={handleFieldChange} required></lightning-input>
+            </div>
+        </div>-->
+        <!-- Application Fee 
+        <div class="c-row-details">
+            <div class="c-detail-labels"><span class="c-label">Application Fee</span></div>
+            <div class="c-detail-fields">
+                <lightning-input type="number" formatter="currency" step="0.01" name="applicationFee"
+                    data-id="applicationFee-field" value={quoteForm.applicationFee} label="Application Fee"
+                    placeholder="$" class="slds-form__item field-x-small-width" variant="label-hidden"
+                    onchange={handleFieldChange} required>
+                </lightning-input>
+            </div>
+        </div>-->
+        <!-- DOF -->
+        <div class="c-row-details">
+            <div class="c-detail-labels"><span class="c-label">DOF</span></div>
+            <div class="c-detail-fields">
+                <lightning-input type="number" formatter="currency" step="0.01" name="dof" data-id="dof-field"
+                    value={quoteForm.dof} label="DOF" placeholder="$" class="slds-form__item field-x-small-width"
+                    variant="label-hidden" onchange={handleFieldChange} required>
+                </lightning-input>
+                <span class="c-max-details">
+                    Max.
+                    <lightning-formatted-number value={quoteForm.maxDof} format-style="currency" currency-code="AUD"
+                        class="c-read-only-field"></lightning-formatted-number>
+                </span>
+            </div>
+        </div>
+        <!-- Risk Fee -->
+        <div class="c-row-details">
+            <div class="c-detail-labels"><span class="c-label">Risk Fee</span></div>
+            <div class="c-detail-fields">
+                <lightning-input type="number" formatter="currency" step="0.01" name="riskFee" data-id="riskFee-field"
+                    value={quoteForm.riskFee} label="Risk Fee" placeholder="$" class="slds-form__item"
+                    variant="label-hidden" onchange={handleFieldChange} required>
+                </lightning-input>
+            </div>
+        </div>
+        <!-- PPSR -->
+         <div class="c-row-details">
+            <div class="c-detail-labels"><span class="c-label">PPSR</span></div>
+            <div class="c-detail-fields">
+                <lightning-input type="number" formatter="currency" step="0.01" name="ppsr" data-id="ppsr-field" value={quoteForm.ppsr}
+                    label="PPSR" placeholder="$" class="slds-form__item field-x-small-width"
+                    variant="label-hidden" onchange={handleFieldChange}>
+                </lightning-input>
+            </div>
+        </div>
+        <!-- Residual -->
+        <div class="c-row-details">
+            <div class="c-detail-labels"><span class="c-label">Residual Value</span></div>
+            <div class="c-detail-fields">
+                <lightning-input type="number" formatter="currency" step="0.01" name="residual" data-id="residual-field"
+                    value={quoteForm.residual} label="Residual" placeholder="$" class="slds-form__item"
+                    variant="label-hidden" onchange={handleFieldChange} required>
+                </lightning-input>
+            </div>
+        </div>
+        <!-- Monthly Fee -->
+        <div class="c-row-details">
+            <div class="c-detail-labels"><span class="c-label">Monthly Fee</span></div>
+            <div class="c-detail-fields">
+                <lightning-input type="number" formatter="currency" step="0.01" name="monthlyFee"
+                    data-id="monthlyFee-field" value={quoteForm.monthlyFee} label="Monthly Fee" placeholder="$"
+                    class="slds-form__item field-x-small-width" variant="label-hidden" onchange={handleFieldChange}>
+                </lightning-input>
+            </div>
+        </div>
+        <!-- Additional Details -->
+        <div class="c-row-details">
+            <span class="c-detail-subtitle">Loan Details</span>
+        </div>
+        <!-- Term -->
+        <div class="c-row-details">
+            <div class="c-detail-labels"><span class="c-label">Term (months)</span></div>
+            <div class="c-detail-fields">
+                <lightning-combobox name="term" label="Term (months)" data-id="term-field" value={quoteForm.term}
+                    placeholder="Select a value" options={termOptions} onchange={handleFieldChange}
+                    class="slds-form__item" variant="label-hidden" required>
+                </lightning-combobox>
+            </div>
+        </div>
+        <!-- Payment Type -->
+        <div class="c-row-details">
+            <div class="c-detail-labels"><span class="c-label">Payment</span></div>
+            <div class="c-detail-fields">
+                <lightning-combobox name="paymentType" label="Payment" data-id="paymentType-field"
+                    value={quoteForm.paymentType} placeholder="Select a value" options={paymentTypeOptions}
+                    onchange={handleFieldChange} class="slds-form__item" variant="label-hidden" required>
+                </lightning-combobox>
+
+            </div>
+        </div>
+
+        
+        <!-- Client Rate 
+        <div class="c-row-details">
+            <div class="c-detail-labels"><span class="c-label">Client Rate</span></div>
+            <div class="c-detail-fields">
+                <lightning-input type="number" formatter="percent-fixed" step="0.01" name="clientRate"
+                    data-id="clientRate-field" value={quoteForm.clientRate} label="Client Rate" placeholder="0.00%"
+                    class="slds-form__item field-x-small-width" variant="label-hidden" onchange={handleFieldChange}
+                    required></lightning-input>
+            </div>
+        </div>-->
+
+
+        <!-- NAF 
+        <div class="c-row-details">
+            <div class="c-detail-labels"><span class="c-label">NAF</span></div>
+            <div class="c-detail-fields c-naf-division">
+                <lightning-formatted-number value={netRealtimeNaf} format-style="currency" currency-code="AUD"
+                    class="c-read-only-field c-naf-field"></lightning-formatted-number>
+            </div>
+        </div>-->
+
+        <!-- Rates -->
+        <!-- Standard Rate -->
+        <div class="c-row-details">
+            <div class="c-detail-labels"><span class="c-label">Standard Rate</span></div>
+            <div class="c-detail-fields">
+                <lightning-formatted-number format-style="percent-fixed" minimum-fraction-digits="2" value={quoteForm.standardRate}
+                    class="c-read-only-field">
+                </lightning-formatted-number> 
+            </div>
+        </div>
+        <!-- Client Rate -->
+        <div class="c-row-details">
+            <div class="c-detail-labels"><span class="c-label">Client Rate</span></div>
+            <div class="c-detail-fields">
+                <lightning-input type="number" formatter="percent-fixed" step="0.01" name="clientRate" value={quoteForm.clientRate}
+                    data-id="clientRate-field" label="Client Rate" placeholder="0.00%"
+                    class="slds-form__item field-x-small-width" variant="label-hidden" onchange={handleFieldChange} required>
+                </lightning-input>
+            </div>
+        </div>
+        <!-- NAF -->
+        <div class="c-row-details">
+            <div class="c-detail-labels"><span class="c-label">NAF</span></div>
+            <div class="c-detail-fields c-naf-division">
+                <lightning-formatted-number value={netRealtimeNaf} format-style="currency" currency-code="AUD"
+                    class="c-read-only-field c-naf-field">
+                </lightning-formatted-number>
+            </div>
+        </div>
+
+        <!-- end left column -->
+
+        <!-- Insurances -->
+        <!-- <c-quote-insurance-form slot="insurances"></c-quote-insurance-form> -->
+
+        <!-- Lendi API -->
+        <div slot="lender-api">
+        <lightning-card>
+            <div class="c-card-body">
+              <div class="slds-grid slds-wrap slds-gutters c-header-data">
+                <div class="slds-col c-title-section">
+                  <span class="c-title">Money3 API Details</span>
+                </div>
+              </div>
+            </div>
+            <lightning-combobox name="plentiAPIUser" label="Plenti API user" data-id="plentiAPIUser-field"
+                        value={quoteForm.plentiAPIUser} placeholder="Select a value" options={plentiAPIUserOptions}
+                        onchange={handleFieldChange} class="slds-form__item" variant="label-hidden">
+                </lightning-combobox>
+        </lightning-card>
+        </div>
+        
+        <!-- Insurances -->
+        <c-quote-insurance-form slot="insurances" opp-id="" quote-form=""></c-quote-insurance-form>
+
+         <!-- More -->
+        <div slot="more">
+            <span class="c-title">Protection Questions</span>
+            <div class="slds-m-left_large"><p>Shortfall</p></div>
+            <div class="slds-m-left_large"><p>Warranty</p></div>
+        </div>
+
+        <!-- Table Rates -->
+        <div slot="table-rates">
+            <div class="c-rates-section-title">Money 3: Asset and Personal Loans</div>
+            <!--<div class="slds-grid slds-gutters">
+                <div class="slds-col slds-size_12-of-12">
+                    <lightning-datatable key-field="Id" data={tableRates} columns={tableRatesCols} hide-checkbox-column>
+                    </lightning-datatable>
+                </div>
+            </div>-->
+            <table border="1" cellpadding="2" cellspacing="0">
+                <caption><strong>Customer Grading Rates</strong></caption>
+                <tr>
+                    <td>&nbsp;</td>
+                    <td width="14%" align="center" class="headerTable"><strong>Platinum</strong></td>
+                    <td width="14%" align="center" class="headerTable"><strong>Gold</strong></td>
+                    <td width="14%" align="center" class="headerTable"><strong>Silver</strong></td>
+                    <td width="14%" align="center" class="headerTable"><strong>Bronze</strong></td>
+                    <td width="16%" align="center" class="headerTable"><strong>Micro Motor</strong></td>
+                    <td width="16%" align="center" class="headerTable"><strong>Mini PL</strong></td>
+                </tr>
+                <tr>
+                    <td>Rate</td>
+                    <td align="center">19.95%</td>
+                    <td align="center">22%</td>
+                    <td align="center">25%</td>
+                    <td align="center">28%</td>
+                    <td align="center">24.95%</td>
+                    <td align="center">28%</td>
+                </tr>
+                <tr>
+                    <td>Credit Score</td>
+                    <td align="center">650+</td>
+                    <td align="center">601+</td>
+                    <td align="center">501-600</td>
+                    <td align="center">200-500</td>
+                    <td align="center">N/A</td>
+                    <td align="center">N/A</td>
+                </tr>
+            </table>
+            <br/>
+            <table border="1" cellpadding="2" cellspacing="0">
+                <tr>
+                    <td width="12%" align="center" class="headerTable"><strong>Prod Type</strong></td>
+                    <td width="22%" align="center" class="headerTable"><strong>Asset Finance</strong></td>
+                    <td width="22%" align="center" class="headerTable"><strong>Micro Motor</strong></td>
+                    <td width="22%" align="center" class="headerTable"><strong>Personal Finance</strong></td>
+                    <td width="22%" align="center" class="headerTable"><strong>Mini PL</strong></td>
+                </tr>
+                <tr>
+                    <td valign="top">Loan Amount</td>
+                    <td valign="top" align="center">$8,001 to $50,000</td>
+                    <td valign="top" align="center">$2,000 to $8,000</td>
+                    <td valign="top" align="center">$5,001 to $12,000</td>
+                    <td valign="top" align="center">$2,001 to $5,000</td>
+                </tr>
+                <tr>
+                    <td valign="top">Loan Term</td>
+                    <td valign="top" align="center">36 to 60 months</td>
+                    <td valign="top" align="center">24 to 36 months</td>
+                    <td valign="top" align="center">24 to 36 months</td>
+                    <td valign="top" align="center">12 to 24 months</td>
+                </tr>
+                <tr>
+                    <td valign="top">DOF</td>
+                    <td valign="top" align="center">
+                        $8,000 to $8,999 - $770 GST inc <br/>
+                        $9,000 to $9,999 - $880 GST inc <br/>
+                        $10,000 to $10,999 - $990 GST inc <br/>
+                        $11,000 to $11,999 - $1,100 GST inc <br/>
+                        $12,000 to $15,999 - $1,210 GST inc <br/>
+                        $16,000 plus - $1,320 GST inc
+                    </td>
+                    <td valign="top" align="center">
+                        $2,000 to $2,999 - $220 GST inc <br/>
+                        $3,000 to $4,999 - $330 GST inc <br/>
+                        $5,000 to $5,999 - $440 GST inc <br/>
+                        $6,000 to $6,999 - $550 GST inc <br/>
+                        $7,000 to $8,000 - $660 GST inc
+                    </td>
+                    <td valign="top" align="center">
+                        $5,000 to $5,999 - $440 GST inc <br/>
+                        $6,000 to $6,999 - $550 GST inc <br/>
+                        $7,000 to $8,000 - $660 GST inc <br/>
+                        $8,001 to $8,999 - $770 GST inc <br/>
+                        $9,000 to $9,999 - $880 GST inc <br/>
+                        $10,000 to $10,999 - $990 GST inc <br/>
+                        $11,000 to $11,999 - $1,100 GST inc <br/>
+                        $12,000  - $1,210 GST inc
+                    </td>
+                    <td valign="top" align="center">
+                        $2,000 to $2,999 - $220 GST inc <br/>
+                        $3,000 to $4,999 - $330 GST inc <br/>
+                        $5,000 - $440 GST inc
+                    </td>
+                </tr>
+                <tr>
+                    <td valign="top">Commission</td>
+                    <td valign="top" align="center">
+                        4% of loan amt > $10,000 for Platinum <br/>
+                        3% of loan amt > $10,000 for Gold <br/>
+                        2% of loan amt > $10,000 for silver
+                    </td>
+                    <td valign="top" align="center">N/A</td>
+                    <td valign="top" align="center">N/A</td>
+                    <td valign="top" align="center">N/A</td>
+                </tr>
+            </table>
+        </div>
+    </c-quote-container>
+
+</template>

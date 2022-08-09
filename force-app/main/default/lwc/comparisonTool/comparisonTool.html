@@ -1,12 +1,12 @@
 <template>
-  <lightning-card  title="Comparison Tool">
+  <lightning-card  title={cardTitle}>
     <template if:true={isSearching}>
       <lightning-spinner alternative-text="Loading"></lightning-spinner>
     </template>
     <div class="c-container slds-p-horizontal_small">
       <lightning-layout pull-to-boundary="medium">
         <lightning-layout-item size="12" flexibility="auto" padding="horizontal-medium">
-          <c-filter-form-com-tools onsearch={handleSearch}></c-filter-form-com-tools>
+          <c-filter-form-com-tools onsearch={handleSearch} global-params={globalParams}></c-filter-form-com-tools>
         </lightning-layout-item>
       </lightning-layout>
       <lightning-layout pull-to-boundary="medium">

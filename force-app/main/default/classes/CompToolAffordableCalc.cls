@@ -11,10 +11,22 @@ public class CompToolAffordableCalc extends CompToolLenderCalcAbstract {
     // - Constant parameters
     this.quoteParam.vehicleYear = String.valueOf(this.param.getAssetYear());
     
-    this.quoteParam.creditScore = '0 - 499'.equals(this.param.creditScore) 
-      ? '400-499' : '500+';
-    this.quoteParam.creditScore = param.creditHistory.containsIgnoreCase('Issues') 
-      ? '300-399' : this.quoteParam.creditScore;
+    Integer cs = this.param.getCreditScoreValue();
+
+    if (cs > 0) {
+      if (cs >= 500) {
+        this.quoteParam.creditScore = '500+';
+      } else if (cs >= 400) {
+        this.quoteParam.creditScore = '400-499';
+      } else {
+        this.quoteParam.creditScore = '300-399';
+      }
+    } else {
+      this.quoteParam.creditScore = '0 - 499'.equals(this.param.creditScore) 
+        ? '400-499' : '500+';
+      this.quoteParam.creditScore = param.creditHistory.containsIgnoreCase('Issues') 
+        ? '300-399' : this.quoteParam.creditScore;
+    }
     
     // - get base rates
     this.baseRateCalc(null);    

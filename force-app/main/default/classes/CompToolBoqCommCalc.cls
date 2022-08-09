@@ -9,8 +9,19 @@ public class CompToolBoqCommCalc extends CompToolLenderCalcAbstract {
     // ---------------
     // Find base rates
     this.quoteParam.vehicleYear = this.param.assetAge == 0?  'New' : 'Used';
-    this.quoteParam.goodsType = 'Car'.equals(param.assetType) || 'Truck'.equals(param.assetType) 
-    ? 'Cars/Trucks' : '';
+    
+    if (
+      'Cars'.equals(param.assetType) ||
+      'Trucks'.equals(param.assetType) ||
+      'Vans'.equals(param.assetType) ||
+      'Buses'.equals(param.assetType)
+    ) {
+      this.quoteParam.goodsType = 'Cars/Trucks';
+    } else if ('Yellow Goods'.equals(param.assetType)) {
+      this.quoteParam.goodsType = 'Construction';
+    } else {
+      this.quoteParam.goodsType = 'Industrial Plant and Equipment';
+    }
 
     this.quoteParam.brokeragePer = 0.00;
     if (this.lenderSettings != null && this.lenderSettings.Brokerage_Base__c > 0.00) {

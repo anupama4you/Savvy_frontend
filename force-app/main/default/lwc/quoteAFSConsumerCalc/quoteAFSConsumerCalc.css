@@ -1,2 +1,8 @@
 /* Calculators styles */
 @import 'c/quoteCommonsStyles';
+
+.tableFontSize {
+    zoom: 80%;
+    overflow-y: hidden !important; 
+    overflow-x: hidden !important;
+}

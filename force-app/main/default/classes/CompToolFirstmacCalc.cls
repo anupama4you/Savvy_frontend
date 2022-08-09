@@ -10,16 +10,16 @@ public class CompToolFirstmacCalc extends CompToolLenderCalcAbstract {
     // Find base rates
     // - Constant parameters
     this.quoteParam.customerProfile = 'Standard';
-    this.quoteParam.interestType = 'Variable';
+    this.quoteParam.interestType = 'Fixed';
     
     // - Prepare parameters
     this.quoteParam.residency = 
       'Property Owner'.equals(this.param.residentialStatus)? 'Y' : 'N';
     
     if ('Y'.equals(this.quoteParam.residency) && this.param.assetAge == 0) {
-      this.quoteParam.loanTypeDetail = 'Prime Special Rate';
+      this.quoteParam.loanTypeDetail = 'New / Demo';
     } else if (this.param.assetAge <= 0) {
-      this.quoteParam.loanTypeDetail = 'New and used < 5 years';
+      this.quoteParam.loanTypeDetail = 'Used < 5 years';
     } else if (this.param.assetAge <= 7) {
       this.quoteParam.loanTypeDetail = 'Used 6-7 years';
     } else {

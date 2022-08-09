@@ -1,5 +1,5 @@
 <template>
-    <c-quote-container title="Green Light" is-busy={isBusy} 
+    <c-quote-container title="Green Light" is-busy={isBusy} commissions={quoteForm.commissions}
     messages={messageObj} >
         <!-- Logo -->
         <img src={logoUrl} slot="logo" class="c-lender-logo" title="Green Light" />
@@ -88,7 +88,7 @@
             <div class="c-detail-labels"><span class="c-label">Trade In</span></div>
             <div class="c-detail-fields">
                 <lightning-input type="number" formatter="currency" step="0.01" name="tradeIn" data-id="tradeIn-field" value={quoteForm.tradeIn}
-                     abel="Trade In" placeholder="$" class="slds-form__item" variant="label-hidden"
+                     label="Trade In" placeholder="$" class="slds-form__item" variant="label-hidden"
                     onchange={handleFieldChange}>
                 </lightning-input>
             </div>
@@ -200,7 +200,7 @@
         <div class="c-row-details">
             <div class="c-detail-labels"><span class="c-label">LVR</span></div>
             <div class="c-detail-fields">
-            <lightning-combobox name="lvr" label="LVR" data-id="lvr-field" 
+            <lightning-combobox name="lvr" label="LVR" data-id="lvr-field" value={quoteForm.lvr}
                 placeholder="Select a value" options={lvrOptions}
                 onchange={handleFieldChange} class="slds-form__item" variant="label-hidden" >
             </lightning-combobox>
@@ -218,14 +218,16 @@
         </div>
         <!-- Brokerage (%) -->
         <div class="c-row-details">
-            <div class="c-detail-labels"><span class="c-label">Brokerage (%)</span></div>
-            <div class="c-detail-fields">
-                <lightning-input type="number" formatter="currency" step="0.01" name="brokerage" data-id="brokerage-field" value={quoteForm.brokerage}
-                    label="Brokerage" placeholder="$" class="slds-form__item" variant="label-hidden"
-                    onchange={handleFieldChange}>
-                </lightning-input>
+            <div class="c-detail-labels">
+              <span class="c-label">Brokerage (%)</span>
             </div>
-        </div>
+            <div class="c-detail-fields">
+              <lightning-input type="number" formatter="percent-fixed" step="0.01" name="brokerage"
+                data-id="brokerage-field" value={quoteForm.brokerage} label="Brokerage (%)" placeholder="0.00%"
+                class="slds-form__item field-x-small-width" variant="label-hidden" onchange={handleFieldChange} required>
+              </lightning-input>
+            </div>
+          </div>
         <!-- Rates -->
         <!-- Max Rate -->
         <div class="c-row-details">
@@ -273,16 +275,20 @@
         <!-- end of Finance Details-->
 
         <!-- Insurances -->
-        <c-quote-insurance-form slot="insurances"></c-quote-insurance-form>
+        <c-quote-insurance-form slot="insurances" opp-id={quoteForm.oppId} quote-form={quoteForm}></c-quote-insurance-form>
+
+        <!-- Additional Content -->
+        <div slot="more">Additional content here!</div>
 
         <!-- Table Rates -->
         <div slot="table-rates">
             <div class="c-rates-section-title">Green Light - Table Rates</div>
             <img src={greenLightCarRatesUrl} title="Green Light" />
-            <div class="slds-grid slds-gutters">
-                <div class="slds-col slds-size_6-of-12">
-                <lightning-datatable key-field="Id" data={tableRates} columns={tableRatesCols} hide-checkbox-column>
-                </lightning-datatable>
+            <div class="slds-grid slds-wrap slds-gutters">
+
+                <div class="slds-size_6-of-12">
+                    <lightning-datatable key-field="Id" data={tableRates} columns={tableRatesCols} hide-checkbox-column>
+                    </lightning-datatable>
                 </div>
             </div>
         </div>

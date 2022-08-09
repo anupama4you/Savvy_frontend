@@ -106,12 +106,12 @@ export default class QuoteMoneyPlaceCalc extends LightningElement {
     return CalHelper.options.vehicleBuildDates;
   }
 
-  get leaseAgreementOptions() {
-    return CalHelper.options.leaseAgreements;
-  }
-
   get privateSalesOptions() {
     return CalHelper.options.privateSales;
+  }
+
+  get abnGSTOptions() {
+    return CalHelper.options.abnGSTs;
   }
 
   get plentiAPIUserOptions() {

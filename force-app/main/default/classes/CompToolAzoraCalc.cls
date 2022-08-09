@@ -8,16 +8,21 @@ public class CompToolAzoraCalc extends CompToolLenderCalcAbstract {
 
     // ---------------
     // Find base rates
-    if ('853 - 1200'.equals(this.param.creditScore)) {
+    Integer cs = this.param.getCreditScoreValue();
+
+    
+    if (cs >= 832) {
       this.quoteParam.loanTypeDetail = '832 - 1200';
-    } else if ('735 - 852'.equals(this.param.creditScore)) {
+    } else if (cs >= 725) {
       this.quoteParam.loanTypeDetail = '725 - 832';
-    } else if ('661 - 734'.equals(this.param.creditScore)) {
+    } else if (cs >= 621) {
       this.quoteParam.loanTypeDetail = '621 - 725';
-    } else if ('500 - 660'.equals(this.param.creditScore)) {
+    } else if (cs >= 509) {
       this.quoteParam.loanTypeDetail = '509 - 621';
-    } else {
+    } else if (cs >= 400) {
       this.quoteParam.loanTypeDetail = '400 - 509';
+    } else {
+      this.quoteParam.loanTypeDetail = '0 - 400';
     }
     
     // Custom Value 1

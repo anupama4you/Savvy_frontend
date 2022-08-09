@@ -39,6 +39,7 @@ export default class QuoteShiftAssetCalc extends LightningElement {
       .then((data) => {
         console.log(`Data loaded!`);
         this.quoteForm = data;
+        this.quoteForm.term = this.quoteForm.term.toString();
         this.tableData = CalHelper.getTableRatesData();
         console.log('@@tableOutput>>', JSON.stringify(this.tableData, null, 2));
       })
@@ -128,16 +129,8 @@ export default class QuoteShiftAssetCalc extends LightningElement {
       this.typeValue = v;
     }
 
-    // if (fldName == "typeValue") {
-    //   this.quoteForm['residualValuePercentage'] = 0.0;
-    //   this.quoteForm['residualValue'] = 0.0;
-    // }
-
     this.quoteForm[fldName] = v;
     this.quoteForm["netDeposit"] = this.netDeposit;
-    fldName === "term"
-      ? (this.quoteForm[fldName] = (v))
-      : (this.quoteForm[fldName] = v);
 
     // --------------
     // Trigger events
@@ -185,8 +178,6 @@ export default class QuoteShiftAssetCalc extends LightningElement {
   // Base Rate
   baseRateCalc() {
     this.isBaseRateBusy = true;
-    this.quoteForm.endOfTerm = Number(this.quoteForm.assetAge) + Number(this.quoteForm.term) / 12;
-    console.log('line 173 end of term', this.quoteForm.endOfTerm, this.quoteForm.assetAge, this.quoteForm.term);
     CalHelper.baseRates(this.quoteForm)
       .then((data) => {
         console.log(`baseRateCalc Data loaded!`);

@@ -1,19 +1,34 @@
-import { LightningElement, api } from 'lwc';
+import { LightningElement, api, track } from 'lwc';
 import { ComparisonOptions } from "./filterFormComToolsHelper";
 
 export default class FilterFormComTools extends LightningElement {
   @api recordId;
-  @api params;
+  @api get globalParams() {
+    return this.myGlobalParams;
+  }
+  set globalParams(value) {
+    this.setAttribute("globalParams", value);
+    this.myGlobalParams = value;
+    this.loadGlobalParams();
+  }
+
+  myGlobalParams;
+  @track params = this.resetFormData();
 
   connectedCallback() {
-    console.log(`this.params:`, JSON.stringify(this.params, null, 2));
-    if (!this.params) {
-      this.resetFormData();
-    }
+    console.log(`this.params 1:`, JSON.stringify(this.params, null, 2));
+    console.log(
+      `this.globalParams 1:`,
+      JSON.stringify(this.globalParams, null, 2)
+    );
+    // if (!this.params) {
+    //   this.resetFormData();
+    // }
+    // console.log(`this.params 2:`, JSON.stringify(this.params, null, 2));
   }
 
   resetFormData() {
-    this.params = {
+    return {
       assetType: "Car",
       loanType: "Personal",
       employmentType: "Full-Time",
@@ -30,8 +45,11 @@ export default class FilterFormComTools extends LightningElement {
       jobsLast3Years: "",
       hasEnquiries: "",
       creditScore: "853 - 1200",
+      realCreditScore: null,
       verifiableSavings: "",
-      ltv: ""
+      ltv: "",
+      abnLength: "0",
+      gstRegistered: "Y"
     };
 
     this.template.querySelectorAll("lightning-combobox").forEach((each) => {
@@ -46,7 +64,9 @@ export default class FilterFormComTools extends LightningElement {
   }
 
   get assetTypeOptions() {
-    return ComparisonOptions.assetTypes;
+    return this.isBusiness
+      ? ComparisonOptions.businessAssetTypes
+      : ComparisonOptions.assetTypes;
   }
 
   get loanTypeOptions() {
@@ -54,7 +74,9 @@ export default class FilterFormComTools extends LightningElement {
   }
 
   get employmentTypeOptions() {
-    return ComparisonOptions.employmentTypes;
+    return this.isBusiness
+      ? ComparisonOptions.businessEmploymentTypes
+      : ComparisonOptions.employmentTypes;
   }
 
   get purchaseTypeOptions() {
@@ -97,9 +119,37 @@ export default class FilterFormComTools extends LightningElement {
     return ComparisonOptions.jobs;
   }
 
+  get isBusiness() {
+    return this.params.loanType === "Business";
+  }
+
+  get abnLengthOptions() {
+    return ComparisonOptions.abnLengths;
+  }
+
+  get gstRegisteredOptions() {
+    return ComparisonOptions.gstRegisteredOptions;
+  }
+
   handleFieldChange(event) {
-    this.params[event.target.name] = event.detail ? event.detail.value : "";
-    // console.log(`this.params:`, JSON.stringify(this.params));
+    console.log(
+      `handleFieldChange...`,
+      event.target.name,
+      event.detail.value,
+      this.params[`${event.target.name}`]
+    );
+    this.params[`${event.target.name}`] = event.detail
+      ? event.detail.value
+      : "";
+    if (event.target.name === "loanType") {
+      this.params.assetType =
+        event.detail.value === "Business" ? "Cars" : "Car";
+      this.params.employmentType =
+        event.detail.value === "Business" ? "Self-Employed" : "Full-Time";
+    }
+    console.log(`this.params:`, JSON.stringify(this.params, null, 2));
+
+    // this.params = [...this.params];
   }
 
   handleSearch(event) {
@@ -122,7 +172,34 @@ export default class FilterFormComTools extends LightningElement {
       let fld = this.template.querySelector(`[data-id="price-field"]`);
       fld.reportValidity();
     }
-    
+
     return r;
   }
+
+  loadGlobalParams() {
+    if (this.params && this.myGlobalParams) {
+      if (this.myGlobalParams.creditScore && this.myGlobalParams.creditScore > 0)  {
+        this.params.realCreditScore = this.myGlobalParams.creditScore;
+        this.params.creditScore = ComparisonOptions.getCreditScoreValue(
+          this.params.realCreditScore
+        );
+      }
+    }
+  }
+
+  get creditScoreLabel() {
+    let v = "Credit Score";
+    if (
+      this.myGlobalParams.creditScore &&
+      this.myGlobalParams.creditScore > 0
+    ) {
+      v += " (" + this.myGlobalParams.creditScore + ")"; 
+    }
+    return  v;
+  }
+
+  get disableCreditScore() {
+    return this.params.realCreditScore > 0;
+  }
+  
 }

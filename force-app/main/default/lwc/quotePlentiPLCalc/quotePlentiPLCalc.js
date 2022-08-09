@@ -15,15 +15,18 @@ export default class QuoteMoneyPlaceCalc extends LightningElement {
   isBusy; // loading
   isCalculated = false;
   tableRatesCols = CalHelper.tableRateDataColumns;
+  tableRatesCols2 = CalHelper.tableRateDataColumns2;
   @track messageObj = QuoteCommons.resetMessage();
   @track quoteForm;
   // Rate Settings
   @track tableRates = [];
+  @track tableRates2 = [];
   @api recordId; // Opportunity Id
   @wire(getRecord, { recordId: "$recordId", fields })
   opp;
 
   LENDER_QUOTING = "Plenti PL";
+  LENDER_QUOTING2 = "Plenti PL Fee";
 
   // initial data and configs
   connectedCallback() {
@@ -31,6 +34,16 @@ export default class QuoteMoneyPlaceCalc extends LightningElement {
     .then(result => {
       console.log(result);
         this.tableRates = result;
+    })
+    .catch(error => {
+      console.log(error);
+        this.error = error;
+    });
+
+    getQuotingTable({ LENDER_QUOTING: this.LENDER_QUOTING2 })
+    .then(result => {
+      console.log(result);
+        this.tableRates2 = result;
     })
     .catch(error => {
       console.log(error);
@@ -116,6 +129,18 @@ export default class QuoteMoneyPlaceCalc extends LightningElement {
 
   get plentiAPIUserOptions() {
     return CalHelper.options.plentiAPIUsers;
+  }
+
+  get purposeTypeOptions() {
+    return CalHelper.options.purposeTypes;
+  }
+
+  get securityOptions() {
+    return CalHelper.options.securitys;
+  }
+
+  get additionalDetailsOptions() {
+    return CalHelper.options.additionalDetails;
   }
   
   //clientTierOptions

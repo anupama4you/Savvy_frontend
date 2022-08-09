@@ -21,7 +21,8 @@ public without sharing class ComparisonToolsController {
       if (!calcs.isempty()) {
         r = [
           SELECT 
-            Id, Name, Category__c, Comparison_Status__c, Lender__c
+            Id, Name, Category__c, Comparison_Status__c, 
+            Lender__c, Break_Costs__c, Document_Id__c
           FROM Calculator__c WHERE Id in :calcs
         ];
       }
@@ -51,6 +52,12 @@ public without sharing class ComparisonToolsController {
     if (String.isNotBlank(params.creditHistory)) {
       soql += ' AND Credit_History__c includes (\'' + params.creditHistory + '\')';
     }
+
+    if ('Business'.equals(params.loanType)) {
+      soql += ' AND GST_Registered__c includes (\'' + params.gstRegistered + '\')';
+      soql += ' AND ABN_Length__c includes (\'' + params.abnLength + '\')';
+    }
+
     if (String.isNotBlank(params.residentialStatus)) {
       soql += ' AND (Residential_Status__c = null OR Residential_Status__c includes (\'' + params.residentialStatus + '\'))';
     }
