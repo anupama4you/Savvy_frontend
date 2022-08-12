@@ -130,11 +130,11 @@
             </div>
             <div class="c-detail-fields">
                 <lightning-input type="number" formatter="percent-fixed"
-                    step="0.01"
+                    step="1"
                     name="brokeragePercentage"
                     data-id="brokeragePercentage-field"
                     value={quoteForm.brokeragePercentage}
-                    label="Brokerage (%)" placeholder="0.00%"
+                    label="Brokerage (%)" placeholder="0%"
                     class="slds-form__item" variant="label-hidden"
                     onchange={handleFieldChange} required>
                 </lightning-input>
@@ -143,17 +143,16 @@
         <!-- Base Rate -->
         <div class="c-row-details">
             <div class="c-detail-labels"><span class="c-label">Base Rate</span></div>
-            <div class="slds-col c-base-rate">
-                <lightning-formatted-number value={quoteForm.baseRate}
-                    format-style="percent-fixed" minimum-fraction-digits="2"
-                    class="c-read-only-field"></lightning-formatted-number>
-                <template if:true={isBaseRateBusy}>
-                    <span class="c-status-icon">
-                        <lightning-dynamic-icon type="eq" option="play"
-                            alternative-text="Recording in progress">
-                        </lightning-dynamic-icon>
-                    </span>
-                </template>
+            <div class="c-detail-fields">
+                <lightning-input type="number" formatter="percent-fixed"
+                    step="0.01"
+                    name="baseRate"
+                    data-id="baseRate-field"
+                    value={quoteForm.baseRate}
+                    label="Base Rate" placeholder="0.00%"
+                    class="slds-form__item" variant="label-hidden"
+                    onchange={handleFieldChange} required>
+                </lightning-input>
             </div>
         </div>
         <!-- NAF -->
@@ -173,17 +172,17 @@
         <!-- <div slot="more">Additional content here!</div> -->
 
         <!-- Table Rates -->
-        <!-- <template for:each={tableData} for:item="acc">
+        <template for:each={tableData} for:item="acc">
         <div slot="table-rates" class="c-rates-section-table" key={acc}>
           <div class="c-rates-section-title">{acc.name}</div>
           <div class="slds-grid slds-gutters">
-            <div class="slds-col slds-size_9-of-12">
+            <div class="slds-col">
               <lightning-datatable key-field="Id" data={acc.data}
                 columns={acc.col} hide-checkbox-column>
               </lightning-datatable>
             </div>
           </div>
         </div>
-      </template> -->
+      </template>
     </c-quote-container>
 </template>

@@ -129,7 +129,10 @@ export default class QuoteShiftAssetCalc extends LightningElement {
       this.typeValue = v;
     }
 
-    this.quoteForm[fldName] = v;
+    if(fldName === "equifaxScore"){
+      this.quoteForm[fldName] = v.toString();
+    }
+    
     this.quoteForm["netDeposit"] = this.netDeposit;
 
     // --------------

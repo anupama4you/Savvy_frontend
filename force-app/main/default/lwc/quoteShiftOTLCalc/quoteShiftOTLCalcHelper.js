@@ -13,38 +13,50 @@ import { Validations } from "./quoteValidations";
 // Default settings
 let lenderSettings = {};
 let tableRatesData = [];
-let assetRates1Columns = [
-  { label: "Type of Asset", fieldName: "Type_of_Asset__c" },
-  { label: "Age of Asset", fieldName: "Age_of_Asset__c" },
-  { label: "Property Backed", fieldName: "Property_Backed__c" },
-  { label: "Non Property Backed", fieldName: "Non_Property_Backed__c" }
+let gcOTLPolicy1Columns = [
+  { label: "Annual turnover", fieldName: "Annual_Turnover__c", fixedWidth: 150 },
+  { label: "Minimum guarantor Equifax score", fieldName: "Minimum_guarantor_Equifax_score__c", fixedWidth: 150 },
+  { label: "Credit", fieldName: "Credit__c" },
+  { label: "Time in business", fieldName: "Time_in_business__c", fixedWidth: 150 },
+  { label: "Limits available", fieldName: "Limits_available__c", fixedWidth: 150 },
+  { label: "Maximum term", fieldName: "Maximum_term__c", fixedWidth: 150 },
+  { label: "Repayment frequency", fieldName: "Repayment_frequency__c", fixedWidth: 150 }
 ];
-let assetRates2Columns = [
-  { label: "Type of Asset", fieldName: "Type_of_Asset__c" },
-  { label: "Age of Asset", fieldName: "Age_of_Asset__c" },
-  { label: "Property Backed", fieldName: "Property_Backed__c" },
-  { label: "Non Property Backed", fieldName: "Non_Property_Backed__c" }
+let gcOTLPolicy2Columns = [
+  { label: "Annual turnover", fieldName: "Annual_Turnover__c", fixedWidth: 150 },
+  { label: "Minimum guarantor Equifax score", fieldName: "Minimum_guarantor_Equifax_score__c", fixedWidth: 150 },
+  { label: "Credit", fieldName: "Credit__c" },
+  { label: "Time in business", fieldName: "Time_in_business__c", fixedWidth: 150 },
+  { label: "Limits available", fieldName: "Limits_available__c", fixedWidth: 150 },
+  { label: "Facility term", fieldName: "Facility_term__c", fixedWidth: 150 },
+  { label: "Repayment frequency", fieldName: "Repayment_frequency__c", fixedWidth: 150 }
 ];
-let addOnsListColumns = [
-  { label: "Add-ons", fieldName: "Add_ons__c" },
-  { label: "Description", fieldName: "Description__c" }
+let gcOTLPrice1Columns = [
+  { label: "Annual turnover", fieldName: "Annual_Turnover__c" },
+  { label: "Interest rate (APR)", fieldName: "Interest_rate_APR__c" }
 ];
-let commissionListColumns = [
-  { label: "Loan Amount", fieldName: "Loan_Amount__c" },
-  { label: "Maximum commission (Inc) GST", fieldName: "Maximum_commission_Inc_GST__c" }
+let gcOTLPrice2Columns = [
+  { label: "Annual turnover", fieldName: "Annual_Turnover__c", fixedWidth: 150 },
+  { label: "Interest rate (APR)", fieldName: "Interest_rate_APR__c", fixedWidth: 150 },
+  { label: "Annual fee", fieldName: "Annual_fee__c", fixedWidth: 150 },
+  { label: "Legal fees", fieldName: "Legal_fees__c" },
+  { label: "Commision (Inc GST)", fieldName: "Commision_Inc_GST__c" },
 ];
 
 const LENDER_QUOTING = "Shift ODR";
+
+const CLIENT_RATE_FIELDS = [
+  "brokeragePercentage",
+  "baseRate",
+  "term",
+  "paymentType"
+];
 
 const QUOTING_FIELDS = new Map([
   ["loanType", "Loan_Type__c"],
   ["loanProduct", "Loan_Product__c"],
   ["assetType", "Goods_type__c"],
   ["price", "Vehicle_Price__c"],
-  ["deposit", "Deposit__c"],
-  ["netDeposit", "Net_Deposit__c"],
-  ["tradeIn", "Trade_In__c"],
-  ["payoutOn", "Payout_On__c"],
   ["applicationFee", "Application_Fee__c"],
   ["dof", "DOF__c"],
   ["ppsr", "PPSR__c"],
@@ -56,11 +68,9 @@ const QUOTING_FIELDS = new Map([
   ["paymentType", "Payment__c"],
   ["applicationId", "Application__c"],
   ["abnLength", "Extra_Label_1__c"],
-  ["gstLength", "Extra_Label_2__c"],
   ["brokeragePercentage", "Brokerage__c"],
   ["equifaxScore", "Credit_Score__c"],
-  ["propertyOwner", "Customer_Profile__c"],
-  ["privateSales", "Private_Sales__c"],
+  ["propertyOwner", "Customer_Profile__c"]
 ]);
 
 // - TODO: need to map more fields
@@ -73,7 +83,7 @@ const FIELDS_MAPPING_FOR_APEX = new Map([
   ["maxRate", "Manual_Max_Rate__c"]
 ]);
 
-const RATE_SETTING_NAMES = ["ASSET_RATE_1", "ASSET_RATE_2", "ADD_ONS_LIST", "COMMISSION_LIST"];
+const RATE_SETTING_NAMES = ["gcOTLPolicy1", "gcOTLPolicy2", "gcOTLPrice1", "gcOTLPrice2"];
 
 const SETTING_FIELDS = new Map([
   ["price", "Vehicle_Price__c"],
@@ -83,39 +93,10 @@ const SETTING_FIELDS = new Map([
   ["ppsr", "PPSR__c"],
   ["residualValue", "Residual_Value__c"],
   ["monthlyFee", "Monthly_Fee__c"],
+  ["equifaxScore", "Credit_Score__c"],
+  ["brokeragePercentage", "Brokerage__c"],
+  ["baseRate", "Default_Base_Rate__c"],
 ]);
-
-const RESIDUAL_VALUE_FIELDS = [
-  "residualValue",
-  "residualValuePercentage",
-  "typeValue",
-  "price",
-  "deposit",
-  "tradeIn",
-  "payoutOn"
-];
-
-const CLIENT_RATE_FIELDS = [
-  "brokeragePercentage",
-];
-
-const BASE_RATE_FIELDS = [
-  "price",
-  "deposit",
-  "tradeIn",
-  "payoutOn",
-  "assetAge",
-  "abnLength",
-  "assetType",
-  "customerProfile",
-  "abnLength",
-  "assetType",
-  "assetAge",
-  "propertyOwner",
-  "brokeragePercentage",
-  "privateSales",
-  "loanType"
-];
 
 const getBaseAmountPmtInclBrokerageCalc = (quote) => {
   let naf = QuoteCommons.calcNetRealtimeNaf(quote);
@@ -179,10 +160,7 @@ const calculate = (quote) =>
 
 const calcOptions = {
   loanTypes: [
-    { label: "Purchase", value: "Purchase" },
-    { label: "Refinance", value: "Refinance" },
-    { label: "Sale & Lease Back", value: "Sale & Lease Back" },
-    { label: "Equity Raise", value: "Equity Raise" },
+    { label: "Term Loan", value: "Term Loan" }
   ],
   paymentTypes: [
     { label: "Advance", value: "Advance" },
@@ -224,7 +202,7 @@ const calcOptions = {
     { label: "< 2 years", value: "< 2 years" },
     { label: "> 2 years", value: "> 2 years" }
   ],
-  terms: CommonOptions.terms(0, 60).map(({ label, value }) => ({ label: label.toString(), value: value.toString() })),
+  terms: CommonOptions.terms(0, 36).map(({ label, value }) => ({ label: label.toString(), value: value.toString() })),
 };
 
 // Reset
@@ -285,7 +263,7 @@ const loadData = (recordId) =>
       .then((quoteData) => {
         // quoteData.Term__c = quoteData.Term__c.toString();
         console.log(`@@SF:`, JSON.stringify(quoteData, null, 2));
-        
+
         // Mapping Quote's fields
         let data = QuoteCommons.mapSObjectToLwc({
           calcName: LENDER_QUOTING,
@@ -301,11 +279,11 @@ const loadData = (recordId) =>
         // Rate Settings
         // data, column names, table headings
         if (quoteData.rateSettings) {
-          tableRatesData.push({ data: quoteData.rateSettings[`${RATE_SETTING_NAMES[0]}`], col: assetRates1Columns, name: 'Pricing, fees, and commission. Up to $250,000' });
-          tableRatesData.push({ data: quoteData.rateSettings[`${RATE_SETTING_NAMES[1]}`], col: assetRates2Columns, name: 'Pricing, fees, and commission. Over $250,000' });
-          tableRatesData.push({ data: quoteData.rateSettings[`${RATE_SETTING_NAMES[2]}`], col: addOnsListColumns, name: 'Add-Ons' });
-          tableRatesData.push({ data: quoteData.rateSettings[`${RATE_SETTING_NAMES[3]}`], col: commissionListColumns, name: 'Commission (Inc GST)' });
-          console.log(`@@data:`, JSON.stringify(tableRatesData, null, 2));
+          tableRatesData.push({ data: quoteData.rateSettings[`${RATE_SETTING_NAMES[0]}`], col: gcOTLPolicy1Columns, name: 'Working Capital Facility. Policy overview' });
+          tableRatesData.push({ data: quoteData.rateSettings[`${RATE_SETTING_NAMES[2]}`], col: gcOTLPrice1Columns, name: 'Pricing, fees and commisions' });
+          tableRatesData.push({ data: quoteData.rateSettings[`${RATE_SETTING_NAMES[1]}`], col: gcOTLPolicy2Columns, name: 'Overdraft. Policy overview' });
+          tableRatesData.push({ data: quoteData.rateSettings[`${RATE_SETTING_NAMES[3]}`], col: gcOTLPrice2Columns, name: 'Pricing, fees and commisions' });
+          console.log(`@@dataTable:`, JSON.stringify(tableRatesData, null, 2));
         }
         // console.log(`@@data:`, JSON.stringify(data, null, 2));
         resolve(data);
@@ -349,6 +327,33 @@ const getMyBaseRates = (quote) =>
 
 const getTableRatesData = () => {
   return tableRatesData;
+};
+
+// This method is from
+// QuotingCalculation.cls public static Decimal getClientRateCalculation(CalcParam param, Integer scale)
+const getClientRateCalc = (param) => {
+  const naf = QuoteCommons.calcNetRealtimeNaf(param);
+  const amountBasePmt = getBaseAmountPmtInclBrokerageCalc(param);
+
+  const residualValue = 0;
+  let type = 0;
+  if (param.paymentType === "Advance") {
+    type = 1;
+  }
+  const pmt = fu.pmt2((param.baseRate / 100 / 12),
+    param.term,
+    (amountBasePmt * -1),
+    residualValue,
+    type
+  );
+  let r = fu.rate2(
+    param.term,
+    (pmt * -1.0),
+    naf,
+    (residualValue * -1),
+    type
+  );
+  return (r * 12 * 100).toFixed(2);
 };
 
 /**
@@ -416,8 +421,6 @@ export const CalHelper = {
   load: loadData,
   reset: reset,
   baseRates: getMyBaseRates,
-  BASE_RATE_FIELDS: BASE_RATE_FIELDS,
-  RESIDUAL_VALUE_FIELDS: RESIDUAL_VALUE_FIELDS,
   CLIENT_RATE_FIELDS: CLIENT_RATE_FIELDS,
   lenderSettings: lenderSettings,
   getTableRatesData: getTableRatesData,
@@ -425,10 +428,7 @@ export const CalHelper = {
   getNetDeposit: QuoteCommons.calcNetDeposit,
   saveQuote: saveQuote,
   sendEmail: sendEmail,
-  assetRates1Columns: assetRates1Columns,
-  assetRates2Columns: assetRates2Columns,
-  addOnsListColumns: addOnsListColumns,
-  commissionListColumns: commissionListColumns,
   getResidualValue: getResidualValue,
   getResidualPercentage: getResidualPercentage,
+  getClientRateCalc: getClientRateCalc
 };

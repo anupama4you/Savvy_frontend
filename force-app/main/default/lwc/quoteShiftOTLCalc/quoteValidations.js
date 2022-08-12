@@ -14,22 +14,10 @@ const validate = (quote, messages) => {
   let errorList = r.errors;
   let warningList = r.warnings;
 
-  const baseRate = quote["baseRate"];
-  const maxRate = quote["maxRate"];
+  const MAX_BROKERAGE = 4.0;
 
   console.log(
-    "🚀 ~ file: quoteValidations.js ~ line 21 ~ validate ~ quote.propertyOwner",
-    quote.propertyOwner
-  );
-  if (quote.propertyOwner === 'N' || quote.realtimeNaf > 100000) {
-    errorList.push({
-      field: "propertyOwner",
-      message: "Max $100K for non property owner."
-    });
-  }
-
-  console.log(
-    "🚀 ~ file: quoteValidations.js ~ line 32 ~ validate ~ quote.baseRate",
+    "🚀 ~ file: quoteValidations.js ~ line 21 ~ validate ~ quote.baseRate",
     quote.baseRate
   );
   if (quote.baseRate === null || quote.baseRate === 0.0) {
@@ -40,97 +28,29 @@ const validate = (quote, messages) => {
   }
 
   console.log(
-    "🚀 ~ file: quoteValidations.js ~ line 32 ~ validate ~ quote.term",
-    quote.term
+    "🚀 ~ file: quoteValidations.js ~ line 31 ~ validate ~ quote.brokeragePercentage",
+    quote.brokeragePercentage
   );
-  if (quote.term === null || quote.term == 0) {
+  if (quote.brokeragePercentage > MAX_BROKERAGE) {
     errorList.push({
-      field: "term",
-      message: "Please choose an appropriate term."
+      field: "brokeragePercentage",
+      message: `Brokerage cannot be greater than ${MAX_BROKERAGE.toFixed(2)}%`
     });
   }
 
   console.log(
-    "🚀 ~ file: quoteValidations.js ~ line 32 ~ validate ~ quote.privateSales",
-    quote.privateSales
-  );
-  if (!quote.privateSales) {
-    errorList.push({
-      field: "privateSales",
-      message: "Please choose a Private Sale option."
-    });
-  }
-
-  console.log(
-    "🚀 ~ file: quoteValidations.js ~ line 65 ~ validate ~ quote.equifaxScore",
+    "🚀 ~ file: quoteValidations.js ~ line 42 ~ validate ~ quote.equifaxScore",
     quote.equifaxScore
   );
-  if (quote.equifaxScore === null || quote.equifaxScore < 600) {
+  if (quote.equifaxScore && quote.equifaxScore < 500) {
     errorList.push({
       field: "equifaxScore",
-      message: "Minimum 600 guarantor credit score - check with lender."
+      message: "Score less than 500 does not qualify"
     });
   }
 
   console.log(
-    "🚀 ~ file: quoteValidations.js ~ line 76 ~ validate ~ quote.abnLength",
-    quote.abnLength
-  );
-  if (quote.abnLength === '< 2 years') {
-    errorList.push({
-      field: "abnLength",
-      message: "ABN must be registered for 2 years."
-    });
-  }
-
-  console.log(
-    "🚀 ~ file: quoteValidations.js ~ line 87 ~ validate ~ quote.gstLength",
-    quote.gstLength
-  );
-  if (quote.gstLength != '< 2 years' && quote.gstLength != '> 2 years') {
-    errorList.push({
-      field: "gstLength",
-      message: "Must be GST registered."
-    });
-  }
-
-  console.log(
-    "🚀 ~ file: quoteValidations.js ~ line 87 ~ validate ~ quote.realtimeNaf",
-    quote.realtimeNaf
-  );
-  if (quote.brokeragePercentage > 8 && quote.realtimeNaf <= 25000) {
-    errorList.push({
-      field: "realtimeNaf",
-      message: "Brokerage cannot exceed 8%"
-    });
-  }
-  else if (quote.brokeragePercentage > 7 && quote.realtimeNaf <= 75000 && quote.realtimeNaf >= 25000) {
-    errorList.push({
-      field: "realtimeNaf",
-      message: "Brokerage cannot exceed 7%"
-    });
-  }
-  else if (quote.brokeragePercentage > 6 && quote.realtimeNaf <= 150000 && quote.realtimeNaf >= 75000) {
-    errorList.push({
-      field: "realtimeNaf",
-      message: "Brokerage cannot exceed 6%"
-    });
-  }
-  else if (quote.brokeragePercentage > 5 && quote.realtimeNaf <= 250000 && quote.realtimeNaf >= 150000) {
-    errorList.push({
-      field: "realtimeNaf",
-      message: "Brokerage cannot exceed 5%"
-    });
-  }
-  else if (quote.brokeragePercentage > 4 && quote.realtimeNaf >= 250000) {
-    errorList.push({
-      field: "realtimeNaf",
-      message: "Brokerage cannot exceed 4%"
-    });
-  }
-
-  console.log(
-    "🚀 ~ file: quoteValidations.js ~ line 132 ~ validate ~ quote.residualValue",
+    "🚀 ~ file: quoteValidations.js ~ line 52 ~ validate ~ quote.residualValue",
     quote.residualValue
   );
   if (quote.residualValue > 0 && quote.term > 60) {

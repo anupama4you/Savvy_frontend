@@ -129,21 +129,16 @@ export default class QuoteShiftOTLCalc extends LightningElement {
       this.typeValue = v;
     }
 
-    this.quoteForm[fldName] = v;
+    if (fldName === "equifaxScore") {
+      this.quoteForm[fldName] = v.toString();
+    }
+
     this.quoteForm["netDeposit"] = this.netDeposit;
 
     // --------------
     // Trigger events
     // --------------
 
-    // Residual Value Calculation
-    if (CalHelper.RESIDUAL_VALUE_FIELDS.includes(fldName)) {
-      this.residualCalc();
-    }
-    // Base Rate Calculation
-    if (CalHelper.BASE_RATE_FIELDS.includes(fldName)) {
-      this.baseRateCalc();
-    }
     // Client Rate Calculation
     if (CalHelper.CLIENT_RATE_FIELDS.includes(fldName)) {
       this.clientRateCalc();
@@ -193,11 +188,9 @@ export default class QuoteShiftOTLCalc extends LightningElement {
       });
   }
 
-  // Client Rate() 
+  // Client Rate calculation
   clientRateCalc() {
-    let brokeragePercentage = this.quoteForm.brokeragePercentage > 0 ? this.quoteForm.brokeragePercentage : 0;
-    let baseRate = this.quoteForm.baseRate > 0 ? this.quoteForm.baseRate : 0;
-    this.quoteForm.clientRate = (brokeragePercentage * 0.5) + baseRate;
+    this.quoteForm.clientRate = CalHelper.getClientRateCalc(this.quoteForm);
   }
 
   residualCalc() {
@@ -274,6 +267,8 @@ export default class QuoteShiftOTLCalc extends LightningElement {
     const loanType = event.target.value.toUpperCase();
     if (!this.messageObj.errors.length > 0) {
       this.messageObj = QuoteCommons.resetMessage();
+      console.log('SaveQuoting::', JSON.stringify(this.quoteForm, null, 2));
+      // this.quoteForm.term = parseInt(this.quoteForm.term);
       CalHelper.saveQuote(loanType, this.quoteForm, this.recordId)
         .then((data) => {
           console.log("@@data in handleSave:", JSON.stringify(data, null, 2));
