@@ -27,6 +27,50 @@ const COMMISSION_CALCULATION_FIELDS = new Map([
   ["naf", "NAF__c"]
 ]);
 
+const INSURANCE_FIELDS = new Map([
+  // SHORTFALL
+  ["shortfallProduct", "Insurance_GAP_Type__c"],
+  ["shortfallType", "Insurance_Shortfall_Options__c"],
+  ["shortfallRetailPrice", "Insurance_GAP_Retail_Price__c"],
+  ["shortfallPBM", "Insurance_GAP_PayType__c"],
+  ["shortfallTerm", "Insurance_GAP_Term__c"],
+  ["isshortfallAccept", "Insurance_GAP_Acceptance__c"],
+  ["shortfallCommission", "Insurance_GAP_Income__c"],
+  // LPI
+  ["LPIProduct", "Insurance_AIC_Type__c"],
+  ["LPIRetailPrice", "Insurance_AIC_Retail_Price__c"],
+  ["LPICommission", "Insurance_AIC_Income__c"],
+  ["isLPIAccept", "Insurance_AIC_Acceptance__c"],
+  ["LPITerm", "Insurance_AIC_Term__c"],
+  ["LPIPBM", "Insurance_AIC_PayType__c"],
+  ["LPIType", "Insurance_LPI_Options__c"],
+  // MV
+  ["mvType", "Insurance_MV_Options__c"],
+  ["mvProduct", "Insurance_MV_Type__c"],
+  ["mvRetailPrice", "Insurance_MV_Retail_Price__c"],
+  ["mvCommission", "Insurance_MV_Income__c"],
+  ["ismvAccept", "Insurance_MV_Acceptance__c"],
+  // // INTEGRITY & WARRANTY
+  ["warrantyType", "Insurance_Warranty_Options__c"],
+  ["typeRetail", "Insurance_NWC_Is_Manually_Value__c"],
+  // INTEGRITY
+  ["integrity.warrantyRetailPrice", "Insurance_NWC_Retail_Price__c"],
+  ["integrity.warrantyCommission", "Insurance_NWC_Income__c"],
+  ["integrity.category", "Insurance_NWC_Plan__c"],
+  ["integrity.term", "Insurance_NWC_Term__c"],
+  ["integrity.type", "Insurance_NWC_TypeP__c"],
+  ["warrantyPayment", "Insurance_NWC_Cost__c"],
+  ["isIntegrityAccept", "Insurance_NWC_Acceptance__c"],
+  ["integrity.warrantyPBM", "Insurance_NWC_PayType__c"],
+  //  WARRANTY
+  ["warrantyProduct", "Insurance_Warranty_Type__c"],
+  ["warrantyRetailPrice", "Insurance_Warranty_Retail_Price__c"],
+  ["warrantyCommission", "Insurance_Warranty_Income__c"],
+  ["iswarrantyAccept", "Insurance_Warranty_Acceptance__c"],
+  ["warrantyTerm", "Insurance_Warranty_Term__c"],
+  ["warrantyPBM", "Insurance_Warranty_PayType__c"]
+]);
+
 const createTermOptions = (min, max) => {
   let r = [];
   for (let i = min; i < max; ) {
@@ -77,28 +121,26 @@ const CommonOptions = {
     { label: "No", value: "N" }
   ],
   terms: createTermOptions,
-  profiles : [
+  profiles: [
     { label: "Property Owner", value: "Property Owner" },
     { label: "Non Property Owner", value: "Non Property Owner" }
   ],
-  clientTiers : [
+  clientTiers: [
     { label: "Tier 1", value: "Tier 1" },
     { label: "Tier 2", value: "Tier 2" },
     { label: "Tier 3", value: "Tier 3" }
   ],
-  assetTypes : [
+  assetTypes: [
     { label: "Car", value: "Car" },
     { label: "Caravan", value: "Caravan" }
   ],
-  vehicleConditions : [
+  vehicleConditions: [
     { label: "New", value: "New" },
     { label: "Demo", value: "Demo" },
     { label: "Used", value: "Used" }
   ],
-  vehicleBuildDates : createNumberDESCOptions,
-  apiUsers: [
-    { label: "Savvy Admin", value: "Savvy Admin" }
-  ]
+  vehicleBuildDates: createNumberDESCOptions,
+  apiUsers: [{ label: "Savvy Admin", value: "Savvy Admin" }]
 };
 
 const resetResults = () => {
@@ -112,7 +154,8 @@ const resetResults = () => {
     rental: null,
     monthlyPayment: null,
     fortnightlyPayment: null,
-    weeklyPayment: null
+    weeklyPayment: null,
+    comprehensive: { monthly: 0, fortnightly: 0, weekly: 0, isMvAccept: false }
   };
 };
 
@@ -146,18 +189,60 @@ const mapSObjectToLwc = ({
         // Set Commission Calculations
         COMMISSION_FIELDS.forEach((value, key, map) => {
           r.commissions[`${key}`] = quoteData.data[`${value}`];
-          // console.log(`{${key}: ${value}} | `, quoteData[`${value}`]);
         });
       }
+
+      r.insurance = { ...resetInsurance() };
+      // insurance fields mapping
+      INSURANCE_FIELDS.forEach((value, key) => {
+        // console.log(`{${key}: ${value}} | `, quoteData.data[`${value}`]);
+        if (quoteData.data[`${value}`] && key) {
+          if (
+            quoteData.data[`${value}`] === "U" ||
+            quoteData.data[`${value}`] === "A"
+          ) {
+            r.insurance[`${key}`] =
+              quoteData.data[`${value}`] === "U" ? false : true;
+          } else if (quoteData.data[`${value}`] === "D") {
+            if (key.includes("warranty"))
+              r.insurance["iswarrantyDecline"] = true;
+            if (key.includes("mv")) r.insurance["ismvDecline"] = true;
+            if (key.includes("LPI")) r.insurance["isLPIDecline"] = true;
+            if (key.includes("shortfall"))
+              r.insurance["isshortfallDecline"] = true;
+            if (key.includes("Integrity"))
+              r.insurance["isIntegrityDecline"] = true;
+          } else if (key.startsWith("integrity.")) {
+            let k = key.slice(key.indexOf(".") + 1, key.length);
+            if (
+              key.includes("term") ||
+              key.includes("type") ||
+              key.includes("category")
+            ) {
+              r.insurance.integrity[`${k}`] = quoteData.data[`${value}`];
+            } else {
+              r.insurance[`${k}`] = quoteData.data[`${value}`];
+            }
+          } else {
+            r.insurance[`${key}`] = quoteData.data[`${value}`];
+          }
+          r.insurance.typeRetail = quoteData.data[
+            "Insurance_NWC_Is_Manually_Value__c"
+          ]
+            ? ["Yes"]
+            : [];
+          if (r.insurance.LPIType === "Liberty LFI")
+            r.insurance.LPITerm = "(Loan Term)";
+        }
+      });
     }
     return r;
-    
   } catch (error) {
-    console.log(error);
+    console.error(error);
   }
 };
 
-const mapDataToLwc = (obj, data, DataFields) => {
+const mapDataToLwc = (obj, data, DataFields, insurance) => {
   let r = obj;
   if (data && DataFields) {
     DataFields.forEach((value, key, map) => {
@@ -165,11 +250,22 @@ const mapDataToLwc = (obj, data, DataFields) => {
       console.log(`{${key}: ${value}} | `, data[`${value}`]);
     });
   }
+  if (insurance) {
+    r.comprehensive.weekly = insurance.mvRetailPrice / 52;
+    r.comprehensive.fortnightly = insurance.mvRetailPrice / 26;
+    r.comprehensive.monthly = insurance.mvRetailPrice / 12;
+    r.comprehensive.isMvAccept = insurance.ismvAccept;
+  }
   return r;
 };
 
-const mapCommissionSObjectToLwc = (data) => {
-  return mapDataToLwc(resetResults(), data, COMMISSION_CALCULATION_FIELDS);
+const mapCommissionSObjectToLwc = (data, insurance) => {
+  return mapDataToLwc(
+    resetResults(),
+    data,
+    COMMISSION_CALCULATION_FIELDS,
+    insurance
+  );
   // console.log("🚀 ~ file: QuoteCommons.js ~ line 107 ~ mapCommissionSObjectToLwc ~ data", JSON.stringify(data));
   // let r = resetResults();
   // if (data) {
@@ -210,16 +306,118 @@ const calcTotalAmount = (quote) => {
   }
   return r;
 };
-
-const calcTotalInsuranceType = (quote) => {
+// public static final String INS_PROD_GAP = 'GAP';
+// public static final String INS_PROD_WARR = 'WRR';
+// public static final String INS_PROD_NWC = 'NWC';
+// public static final String INS_PROD_CCI = 'CCI';
+// CALC_QUOTING = 'Q'
+// implementing - lee
+// calculate retail price field
+const calcTotalInsuranceType = (quote, calcType) => {
   let r = 0.0;
-  // TODO: implementation is still pending
-  return r;
+  try {
+    if (quote.insurance) {
+      // focusing on CalculateType 'Q'
+      switch (calcType) {
+        case "Q":
+          // shortfall
+          if (
+            quote.insurance.isshortfallAccept &&
+            quote.insurance.shortfallPBM === "Financed"
+          ) {
+            r += parseFloat(
+              quote.insurance.shortfallRetailPrice
+                ? quote.insurance.shortfallRetailPrice
+                : 0.0
+            );
+            console.log("shortfall >> ", r);
+          }
+          // warranty
+          if (
+            (quote.insurance.iswarrantyAccept &&
+              quote.insurance.warrantyPBM === "Financed") ||
+            quote.insurance.isIntegrityAccept
+          )
+            r += parseFloat(
+              quote.insurance.warrantyRetailPrice
+                ? quote.insurance.warrantyRetailPrice
+                : 0.0
+            );
+          // LPI
+          if (
+            quote.insurance.isLPIAccept &&
+            quote.insurance.LPIPBM === "Financed"
+          )
+            r += parseFloat(
+              quote.insurance.LPIRetailPrice
+                ? quote.insurance.LPIRetailPrice
+                : 0.0
+            );
+          // mv
+          if (
+            quote.insurance.ismvAccept &&
+            quote.insurance.mvPBM === "Financed"
+          )
+            r += parseFloat(
+              quote.insurance.mvRetailPrice
+                ? quote.insurance.mvRetailPrice
+                : 0.0
+            );
+          break;
+        case "GAP":
+          break;
+        case "WRR":
+          break;
+        case "NWC":
+          break;
+        case "CCI":
+          break;
+        default:
+          break;
+      }
+    }
+    return r;
+  } catch (error) {
+    console.error(error);
+  }
+};
+
+// calculate commission part of Insurance
+const calcTotalInsuranceIncome = (quote) => {
+  let r = 0.0;
+  try {
+    // focusing on CalculateType 'Q'
+    if (quote.insurance) {
+      // shortfall
+      if (quote.insurance.isshortfallAccept) {
+        r += parseFloat(
+          quote.insurance.shortfallCommission
+            ? quote.insurance.shortfallCommission
+            : 0.0
+        );
+      }
+      // warranty
+      if (quote.insurance.iswarrantyAccept)
+        r += parseFloat(
+          quote.insurance.warrantyCommission
+            ? quote.insurance.warrantyCommission
+            : 0.0
+        );
+      // LPI
+      if (quote.insurance.isLPIAccept)
+        r += parseFloat(
+          quote.insurance.LPICommission ? quote.insurance.LPICommission : 0.0
+        );
+    }
+    return r;
+  } catch (error) {
+    console.error(error);
+  }
 };
 
 const calcNetRealtimeNaf = (quote) => {
   let r = calcTotalAmount(quote);
-  r += calcTotalInsuranceType(quote);
+  r += calcTotalInsuranceType(quote, "Q");
   return r;
 };
 
@@ -334,13 +532,94 @@ const mapLWCToSObject = (
   LENDER_QUOTING,
   QUOTE_FIELDS_MAPPING
 ) => {
-  let obj = { data: {}, results: { commissions: {} } };
+  let obj = { data: {}, results: { commissions: {} }, insurance: {} };
   // data
   console.log(`@@quote form : ${JSON.stringify(quoteForm, null, 2)}`);
+  const FULL_FIELDS_MAPPING = [...QUOTE_FIELDS_MAPPING, ...INSURANCE_FIELDS];
   try {
-    for (const [key, value] of QUOTE_FIELDS_MAPPING) {
+    for (const [key, value] of FULL_FIELDS_MAPPING) {
+      //  --- insurance part ---
+      if (key === "typeRetail") continue;
+      if ([...INSURANCE_FIELDS.keys()].includes(key)) {
+        // belongs to insurance fields
+        if (key.startsWith("integrity.")) {
+          // belongs to intergrity in Insurance
+          let k = key.slice(key.indexOf(".") + 1, key.length);
+          obj.insurance[value] = quoteForm.insurance["integrity"][`${k}`];
+        } else {
+          // other insurance type
+          obj.insurance[value] = quoteForm.insurance[key];
+        }
+      }
       obj.data[value] = quoteForm[key];
     }
+    // mv
+    if (
+      quoteForm.insurance["ismvAccept"] ||
+      quoteForm.insurance["ismvDecline"]
+    ) {
+      obj.insurance["Insurance_MV_Acceptance__c"] = quoteForm.insurance[
+        "ismvAccept"
+      ]
+        ? "A"
+        : "D";
+    } else {
+      obj.insurance["Insurance_MV_Acceptance__c"] = "U";
+    }
+    // shortfall/GAP
+    if (
+      quoteForm.insurance["isshortfallAccept"] ||
+      quoteForm.insurance["isshortfallDecline"]
+    ) {
+      obj.insurance["Insurance_GAP_Acceptance__c"] = quoteForm.insurance[
+        "isshortfallAccept"
+      ]
+        ? "A"
+        : "D";
+    } else {
+      obj.insurance["Insurance_GAP_Acceptance__c"] = "U";
+    }
+    // LPI/AIC
+    if (
+      quoteForm.insurance["isLPIAccept"] ||
+      quoteForm.insurance["isLPIDecline"]
+    ) {
+      obj.insurance["Insurance_AIC_Acceptance__c"] = quoteForm.insurance[
+        "isLPIAccept"
+      ]
+        ? "A"
+        : "D";
+    } else {
+      obj.insurance["Insurance_AIC_Acceptance__c"] = "U";
+    }
+    // Warranty
+    if (
+      quoteForm.insurance["iswarrantyAccept"] ||
+      quoteForm.insurance["iswarrantyDecline"]
+    ) {
+      obj.insurance["Insurance_Warranty_Acceptance__c"] = quoteForm.insurance[
+        "iswarrantyAccept"
+      ]
+        ? "A"
+        : "D";
+    } else {
+      obj.insurance["Insurance_Warranty_Acceptance__c"] = "U";
+    }
+    // Integrity
+    if (
+      quoteForm.insurance["isIntegrityAccept"] ||
+      quoteForm.insurance["isIntegrityDecline"]
+    ) {
+      obj.insurance["Insurance_NWC_Acceptance__c"] = quoteForm.insurance[
+        "isIntegrityAccept"
+      ]
+        ? "A"
+        : "D";
+    } else {
+      obj.insurance["Insurance_NWC_Acceptance__c"] = "U";
+    }
+
+    //  --- insurance part : end ---
     obj.data["Opportunity__c"] = oppId;
     obj.data["Name"] = LENDER_QUOTING;
     // commissions
@@ -351,14 +630,89 @@ const mapLWCToSObject = (
   } catch (error) {
     console.error(error);
   }
+  obj.data = { ...obj.data, ...obj.insurance };
+  obj.data["Insurance_NWC_Is_Manually_Value__c"] =
+    quoteForm.insurance["typeRetail"] &&
+    quoteForm.insurance["typeRetail"].length > 0;
+
   console.log(`@@obj mapping : ${JSON.stringify(obj, null, 2)}`);
   return obj;
+};
+
+/**
+ * calculation of payment
+ * -- lee
+ * @param {Number} premium - Retail Price
+ * @param {String} term - term (should parse to integer)
+ * @param {String} payType - Financed/PBM
+ * @returns
+ */
+const getInsurancePayment = (premium, term, payType) => {
+  try {
+    let r = null;
+    if (premium && term && payType && "PBM" === payType) {
+      r = ((premium / parseInt(term)) * 12) / 52;
+    }
+    return r;
+  } catch (error) {
+    console.error(error);
+  }
+};
+
+const resetInsurance = () => {
+  return {
+    mvType: null,
+    mvProduct: null,
+    mvRetailPrice: null,
+    mvCommission: null,
+    mvPayment: null,
+    mvTerm: "12",
+    mvPBM: "PBM",
+    shortfallType: null,
+    shortfallProduct: null,
+    shortfallRetailPrice: null,
+    shortfallCommission: null,
+    shortfallPayment: null,
+    shortfallTerm: "12",
+    shortfallPBM: null,
+    LPIType: null,
+    LPIProduct: null,
+    LPIRetailPrice: null,
+    LPICommission: null,
+    LPIPayment: null,
+    LPITerm: null,
+    LPIPBM: null,
+    warrantyType: null,
+    warrantyProduct: null,
+    warrantyRetailPrice: null,
+    warrantyCommission: null,
+    warrantyPayment: null,
+    warrantyTerm: "12",
+    warrantyPBM: null,
+    integrity: {
+      type: null,
+      term: null,
+      category: null
+    },
+    typeRetail: [],
+    ismvAccept: false,
+    ismvDecline: false,
+    isshortfallAccept: false,
+    isshortfallDecline: false,
+    iswarrantyAccept: false,
+    iswarrantyDecline: false,
+    isLPIAccept: false,
+    isLPIDecline: false,
+    isIntegrityAccept: false,
+    isIntegrityDecline: false
+  };
 };
 
 const QuoteCommons = {
   resetResults: resetResults,
   COMMISSION_FIELDS: COMMISSION_FIELDS,
   VALIDATION_OPTIONS: VALIDATION_OPTIONS,
+  INSURANCE_FIELDS: INSURANCE_FIELDS,
   mapSObjectToLwc: mapSObjectToLwc,
   mapCommissionSObjectToLwc: mapCommissionSObjectToLwc,
   mapDataToLwc: mapDataToLwc,
@@ -372,7 +726,10 @@ const QuoteCommons = {
   resetMessage: resetMessage,
   uniqueArray: uniqueArray,
   mapLWCToSObject: mapLWCToSObject,
-  createTermOptions: createTermOptions
+  createTermOptions: createTermOptions,
+  calcTotalInsuranceIncome: calcTotalInsuranceIncome,
+  getInsurancePayment: getInsurancePayment,
+  resetInsurance: resetInsurance
 };
 
 export { QuoteCommons, CommonOptions, FinancialUtilities, VALIDATION_OPTIONS };
