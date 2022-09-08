@@ -902,7 +902,9 @@ public class Test_DataGeneratorHelper {
                Application__r.Name, Application__r.Credit_Status_1__c, Application__r.Credit_Status_2__c, Application__r.Previous_Work_Country_1__c, Application__r.Previous_Mode_of_Employment_1__c, ApplicationServicing__r.Lender_Code__c,
                ApplicationServicing__r.Is_Splitting_Expenses__c, ApplicationServicing__r.Partner_Income__c, ApplicationServicing__r.Net_Non_Centrelink__c, ApplicationServicing__r.Is_Split_Rent_Mortgage__c, ApplicationServicing__r.Is_Split_Living_Expenses__c,
                ApplicationServicing__r.Income_1__c, ApplicationServicing__r.Income_1b__c, ApplicationServicing__r.Income_2__c, ApplicationServicing__r.Income_2b__c, ApplicationServicing__r.Net_Profit_After_Tax__c, ApplicationServicing__r.Net_Profit_Before_Tax__c,
-               ApplicationServicing__r.Area__c, Application__r.Street_Address_2__c, Application__r.Suburb_2__c, Application__r.Date_Moved_in_2__c, Owner.Name, ApplicationServicing__r.Total_Living_Expenses_Full__c
+               ApplicationServicing__r.Area__c, Application__r.Street_Address_2__c, Application__r.Suburb_2__c, Application__r.Date_Moved_in_2__c, Owner.Name, ApplicationServicing__r.Total_Living_Expenses_Full__c,
+               Application__r.Loan_For__c, Lead__r.Credit_History__c, Lead__r.Finance_Amount__c, Lead__r.Loan_Type__c, Lead__r.Loan_For__c, lead__r.Employment_Status__c, lead__r.Property_Owner__c,
+               Lead__r.Length_of_Term__c, Lead__r.Vehicle_Year__c
     FROM Custom_Opportunity__c WHERE Id = :tstOpportunity.Id];
 	}
 

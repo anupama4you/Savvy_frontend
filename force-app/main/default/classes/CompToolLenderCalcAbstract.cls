@@ -243,6 +243,8 @@ public abstract class CompToolLenderCalcAbstract implements CompToolLenderCalc {
     public String abnLength { get; set; }
     @AuraEnabled
     public String gstRegistered { get; set; }
+    @AuraEnabled
+    public String paydays { get; set; }
 
     // Lelo                 2018-05-29
     // public Integer applicantAge {set;get;}
@@ -250,26 +252,31 @@ public abstract class CompToolLenderCalcAbstract implements CompToolLenderCalc {
     // public String tier {set;get;}
     // public String riskGrade {set; get;}
     // public String customerProfile {set; get;}
-
     public FilterParams() {
-      //Temp
-      this.assetType = 'Car';
-      this.loanType = 'Personal';
-      this.employmentType = 'Full-Time';
-      this.purchaseType = 'Dealer';
-      this.creditHistory = 'Good';
-      this.residentialStatus = 'Property Owner';
-      //
-      // this.assetCondition = 'New';
-      this.assetAge = 0;
-      this.term = 60;
-      this.price = null;
-      this.deposit = 0.00;
-      this.residual = 0.00;
+      this(true);
+    }
 
-      // this.ltv = '90-99';
-      // this.creditScore = 750;
-      // this.jobsLast3Years = 0;
+    public FilterParams(Boolean setDefaults) {
+      if (setDefaults) {
+        //Temp
+        this.assetType = 'Car';
+        this.loanType = 'Personal';
+        this.employmentType = 'Full-Time';
+        this.purchaseType = 'Dealer';
+        this.creditHistory = 'Good';
+        this.residentialStatus = 'Property Owner';
+        //
+        // this.assetCondition = 'New';
+        this.assetAge = 0;
+        this.term = 60;
+        this.price = null;
+        this.deposit = 0.00;
+        this.residual = 0.00;
+
+        // this.ltv = '90-99';
+        // this.creditScore = 750;
+        // this.jobsLast3Years = 0;
+      }
     }
 
     public String getPrivateSales() {
@@ -322,6 +329,14 @@ public abstract class CompToolLenderCalcAbstract implements CompToolLenderCalc {
           String[] v = this.creditScore.remove(' ').split('-');
           r = Integer.valueOf(v[0]);
         }
+      }
+      return r;
+    }
+
+    public Integer getPaydaysValue() {
+      Integer r = 0;
+      if (String.isNotBlank(this.paydays) && this.paydays.isNumeric()) {
+        r = Integer.valueOf(this.paydays);
       }
       return r;
     }

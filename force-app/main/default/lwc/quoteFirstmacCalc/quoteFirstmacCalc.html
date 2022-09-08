@@ -1,5 +1,5 @@
 <template>
-    <c-quote-container title="Firstmac" is-busy={isBusy} commissions=""
+    <c-quote-container title="Firstmac" is-busy={isBusy} commissions={quoteForm.commissions}
     messages={messageObj} >
         <!-- Logo -->
         <img src={logoUrl} slot="logo" class="c-lender-logo" title="Firstmac" />
@@ -254,18 +254,23 @@
         <!-- end of Finance Details-->
 
         <!-- Insurances -->
-        <c-quote-insurance-form slot="insurances" opp-id="" quote-form=""></c-quote-insurance-form>
+        <c-quote-insurance-form slot="insurances" opp-id={quoteForm.oppId} quote-form={quoteForm}></c-quote-insurance-form>
 
         <!-- Table Rates -->
         <div slot="table-rates">
             <div class="c-rates-section-title">Firstmac - Table Rates</div>
-            
-            <div class="slds-grid slds-gutters">
-                <div class="slds-col slds-size_12-of-12">
-                <lightning-datatable key-field="Id" data={tableRates} columns={tableRatesCols} hide-checkbox-column>
-                </lightning-datatable>
-                </div>
-            </div>
+            <table class="slds-table slds-table_bordered slds-table_col-bordered slds-wrap">
+                <tr>
+                    <td>
+                    <div class="slds-grid slds-wrap slds-gutters">
+                        <div class="slds-size_12-of-12">
+                            <lightning-datatable key-field="Id" data={tableRates} columns={tableRatesCols} hide-checkbox-column>
+                            </lightning-datatable>
+                        </div>
+                    </div>
+                    </td>
+                </tr>
+            </table>  
         </div>
     </c-quote-container> 
 </template>

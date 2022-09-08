@@ -39,6 +39,7 @@ export default class QuoteAngleFinanceCalc extends LightningElement {
             console.log(`CalHelper: Data loaded!`, data);
             this.quoteForm = data;
             this.applicationFee = this.quoteForm.applicationFee;
+            this.quoteForm.assetAge = this.quoteForm.assetAge? this.quoteForm.assetAge.toString() : "1";
             this.tableRates1 = CalHelper.getTableRatesData1();
             this.tableRates2 = CalHelper.getTableRatesData2();
             console.log('@@tableRates', JSON.stringify(this.tableRates1));

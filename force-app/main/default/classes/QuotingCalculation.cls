@@ -150,6 +150,8 @@ public without sharing class QuotingCalculation {
         r = calculateWestpac(param);
       } else if ('Angle Finance'.equals(param.lender)) {
         r = calculateAngleFinance(param);
+      } else if ('Branded Consumer'.equals(param.lender)) {
+        r = calculateBranded(param);
       }
     }
     return r;
@@ -672,7 +674,7 @@ public without sharing class QuotingCalculation {
   //Lelo                2017-07-26
   private static Application_Quoting_Result__c calculateMacquarie(
     CalcParam param
-  ) {
+  ) {system.debug('calculateMacquarie ==>'+param);
     Application_Quoting_Result__c r = new Application_Quoting_Result__c();
     r.Payment_Calc_Type__c = 'DF';
     r.NAF__c = param.getNaf();
@@ -776,7 +778,8 @@ public without sharing class QuotingCalculation {
     r.NAF__c = param.getNaf();
     
     // calculate the payment rate based on client rate, which is determined by consultants
-    decimal realRate = param.baseRate / 100;
+    // decimal realRate = param.baseRate / 100;
+    decimal realRate = param.clientRate / 100;
     decimal futureValue = FinancialUtilities.fv(realRate / 12, 12, 1000);
     decimal rate = FinancialUtilities.rate(
       1000,
@@ -1431,6 +1434,76 @@ public without sharing class QuotingCalculation {
     return r;
   }
 
+  // Lee 2022-08-09
+  public static Application_Quoting_Result__c calculateBranded(CalcParam param){
+    Application_Quoting_Result__c r = new Application_Quoting_Result__c();
+    r.Payment_Calc_Type__c = 'DF';
+    r.NAF__c = param.getNaf();
+
+    // calculate the payment rate based on client rate, which is determined by consultants
+    decimal realRate = param.clientRate / 100;
+    decimal futureValue = FinancialUtilities.fv(realRate / 12, 12, 1000);
+    decimal rate = FinancialUtilities.rate(
+      1000,
+      12,
+      0,
+      futureValue,
+      realRate / 12,
+      false
+    );
+
+    // calculate the monthly payment based on client rate
+    r.Rental__c = FinancialUtilities.pmt(
+      param.getNaf(),
+      rate,
+      param.term,
+      param.residualValue,
+      param.getPaymentTypeBoolean()
+    );
+    r.Rental__c = r.Rental__c.setScale(2);
+
+    // calculate the estimated commission
+    Decimal commissionRate = 0.75;
+    // if (param.term >= 12 && param.term < 24) {
+    //   commissionRate = 0.20;
+    // } else if (param.term >= 24 && param.term < 36) {
+    //   commissionRate = 0.40;
+    // } else if (param.term >= 36 && param.term < 48) {
+    //   commissionRate = 0.60;
+    // } else if (param.term >= 48 && param.term < 60) {
+    //   commissionRate = 0.80;
+    // } else if (param.term >= 60 && param.term <= 84) {
+    //   commissionRate = 1.00;
+    // }
+    System.debug('Commission rates: ' + param.commRate + '|' + commissionRate);
+    r.Estimated_Commission__c =
+      r.NAF__c *
+      param.commRate /
+      100 *
+      commissionRate;
+    r.Estimated_Commission__c = r.Estimated_Commission__c.setScale(2);
+    System.debug('Estimated Commission: ' + r.Estimated_Commission__c);
+
+    //calculate the insurance income
+    r.Insurance_Income__c = param.totalInsuranceIncome;
+    r.Insurance_Income__c = r.Insurance_Income__c / 1.1;
+    r.Insurance_Income__c = r.Insurance_Income__c.setScale(2);
+
+    // calculate the dof without GST
+    r.DOF__c = param.dof / 1.1;
+    r.DOF__c = r.DOF__c.setScale(2);
+    // System.debug('DOF: ' + r.DOF__c);
+
+    // calculate the monthly payment
+    r.Monthly_Payment__c = r.Rental__c + param.monthlyFee;
+    r.Monthly_Payment__c = r.Monthly_Payment__c.setScale(2);
+    // System.debug('Monthly Payment: ' + r.Monthly_Payment__c);
+
+    r.recalculateFormulas();
+
+    return r;
+  }
+
   //Lelo                2017-07-25
   public static Decimal getProtectedPercentaje(Decimal vehiclePrice) {
     Decimal r = 0.0;
@@ -1480,10 +1553,9 @@ public without sharing class QuotingCalculation {
 
   //BaseRateCalc
   public static Decimal getBaseRate(CalcParam param) {
-    System.debug('@@getBaseRate: ' + JSON.serializePretty(param));
     Decimal r = 0.0;
     if (param != null) {
-      // System.debug('param.lender' + param.lender);
+       System.debug('param.lender' + param.lender);
       if ('ANZ Consumer'.equals(param.lender)) {
         r = getANZConsumerBaseRate(param);
       } else if ('ANZ Commercial'.equals(param.lender)) {
@@ -1547,7 +1619,9 @@ public without sharing class QuotingCalculation {
         r = getRateSetterBaseRate(param, false);
       } else if ('Latitude'.equals(param.lender)) {
         r = getRateLatitudeBaseRate(param, false);
-      } else if ('Green Light'.equals(param.lender)) {
+      } else if ('Racv'.equals(param.lender)) {
+        r = getRateLatitudeBaseRate(param, false);
+      }else if ('Green Light'.equals(param.lender)) {
         r = getRateGreenLightBaseRate(param);
       } else if (
         LatitudePersonalCalculatorExtension.LENDER_QUOTING.equals(param.lender)
@@ -1585,9 +1659,10 @@ public without sharing class QuotingCalculation {
         r = getAzoraBaseRate(param);
       } else if ('Society One'.equals(param.lender)) {
         r = getSocietyOneBaseRate(param, false);
+      } else if ('Branded Consumer'.equals(param.lender)) {
+        r = getBrandedConsumerBaseRate(param, false);
       }
     }
-    System.debug('@@baseRateCalculated: ' + r);
     return r;
   }
 
@@ -2815,7 +2890,7 @@ public without sharing class QuotingCalculation {
   }
 
   //Macquarie Consumer Base Rate
-  private static Decimal getMacquarieConsumerBaseRate(CalcParam param) {
+  private static Decimal getMacquarieConsumerBaseRate(CalcParam param) {system.debug('getMacquarieConsumerBaseRate ==> '+param);
     Decimal r = 0.0;
     MacquarieConsumerRatesv2__c rate = null;
 
@@ -3167,7 +3242,6 @@ public without sharing class QuotingCalculation {
     List<MetroCalculatorRates__c> rates = MetroCalculatorRates__c.getAll()
       .values();
     rates.sort();
-    System.debug('@@TotalRates: ' + rates.size());
 
     Decimal originalRate = 0.00;
     //decimal totalInsurance = nwc + gap + warranty + lti + truckGap + tai + mv + cci;
@@ -3556,7 +3630,9 @@ public without sharing class QuotingCalculation {
         r = getYamahaBaseRate(param, true, true);
       } else if ('Latitude'.equals(param.lender)) {
         r = getRateLatitudeBaseRate(param, true);
-      } else if ('AFS Consumer'.equals(param.lender)) {
+      } else if ('Racv'.equals(param.lender)) {
+        r = getRateLatitudeBaseRate(param, false);
+      }else if ('AFS Consumer'.equals(param.lender)) {
         r = getAFSConsumerBaseRate(param, true);
       } else if ('AFS Commercial'.equals(param.lender)) {
         r = getAfsCommercialBaseRate(param, true);
@@ -3582,6 +3658,8 @@ public without sharing class QuotingCalculation {
         r = getAzoraBaseRate(param);
       } else if ('Society One'.equals(param.lender)) {
         r = getSocietyOneBaseRate(param, true);
+      } else if ('Branded Consumer'.equals(param.lender)) {
+        r = getBrandedConsumerBaseRate(param, true);
       }
     }
     return r;
@@ -4518,6 +4596,10 @@ public without sharing class QuotingCalculation {
     public Decimal applicationFee {set; get;}
     @AuraEnabled
     public Decimal riskFee { get; set; }
+    @AuraEnabled
+    public Decimal netDeposit { get; set; }
+    @AuraEnabled
+    public String gst { get; set; }
 
     public CalcParam() {
       this.totalAmount = 0.0;
@@ -4726,21 +4808,23 @@ public without sharing class QuotingCalculation {
     CalcParam param,
     Boolean isMaxRate
   ) {
+    Decimal r = 0.00;
     List<LatitudeRatesv3__c> rateList = getLatitudeRatesByClass(
       param.goodsType,
       param.loanTypeDetail,
       param.carAge
     );
-    Decimal minRate = 0.0;
-    Decimal maxRate = 0.0;
+    
     if (rateList != null && !rateList.isEmpty()) {
-      minRate = rateList[0].Rate__c;
-      maxRate = rateList[rateList.size() - 1].Rate__c;
+      Decimal minRate = rateList[0].Rate__c;
+      Decimal maxRate = rateList[rateList.size() - 1].Rate__c;
+      
+      r = isMaxRate? maxRate : minRate;
+      if (r > 0.00) {
+        r -= 'Fixed'.equals(param.interestType)? 0.0 : 1.5;
+      }
     }
-    if (isMaxRate) {
-      return maxRate;
-    }
-    return minRate;
+    return r;
   }
 
   private static Decimal getRateLatitudePLBaseRate(
@@ -5143,7 +5227,7 @@ public without sharing class QuotingCalculation {
           r = 880.0;
         }
       } else {
-        if (param.totalAmount >= 8000.0 && param.totalAmount < 9000.0) {
+        if (param.totalAmount < 9000.0) {
           r = 770.0;
         } else if (param.totalAmount >= 9000.0 && param.totalAmount < 10000.0) {
           r = 880.0;
@@ -6390,6 +6474,28 @@ public without sharing class QuotingCalculation {
     String name = param.customerProfile + '_' + param.clientTier;
     name = name.replace(' ', '_');
     return Society_One_Rate__mdt.getInstance(name);
+  }
+
+  public static Decimal getBrandedConsumerBaseRate(CalcParam param, Boolean isMaxRate){
+    Decimal r = 0.00;
+    List<Branded_Consumer_Rates__c> rates = Branded_Consumer_Rates__c.getAll().values();
+    for (Branded_Consumer_Rates__c rate : rates) {
+      if(rate.Credit_Score__c == param.creditScore 
+      && rate.Condition__c == param.condition 
+      && rate.Profile__c == param.customerProfile)
+      {
+        r = rate.Rate__c;
+      }
+      System.debug('rate.Credit_Score__c >> ' + rate.Credit_Score__c);
+      System.debug('rate.Condition__c >> ' + rate.Condition__c);
+      System.debug('rate.Profile__c >> ' + rate.Profile__c);
+    }
+    if(rates != null) {
+      r = isMaxRate ? r+2 : r;
+    } else {
+      return 0.0;
+    }
+    return r;
   }
 
 }

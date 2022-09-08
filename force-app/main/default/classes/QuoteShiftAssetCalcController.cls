@@ -96,14 +96,13 @@ public with sharing class QuoteShiftAssetCalcController {
         pdf.getParameters().put('brokeragePercentage', NumberUtils.format(quote.Brokerage__c));
         pdf.getParameters().put('customerProfile', quote.Customer_Profile__c+'');
         pdf.getParameters().put('productGoodsType', quote.Goods_type__c+'');
-        pdf.getParameters().put('netDeposit', quote.Net_Deposit__c+'');
-
-        pdf.getParameters().put('baseRate', NumberUtils.format(quote.Base_Rate__c));
+        pdf.getParameters().put('netDeposit', NumberUtils.format(quote.Net_Deposit__c));
+        pdf.getParameters().put('baseRate', NumberUtils.format(quote.Base_Rate__c));                                                                                                                                                                                                    
         pdf.getParameters().put('clientRate', NumberUtils.format(quote.Client_Rate__c));
         
         // ---- commissions -----
         pdf.getParameters().put('estimatedCommission', NumberUtils.format(quote.Commission_Estimation__c));
-        pdf.getParameters().put('insuranceIncome', NumberUtils.format(quote.Commission_Insurance_Income__c));
+        pdf.getParameters().put('insuranceIncome', NumberUtils.format(quote.Commission_Insurance_Income__c));                                                                           
         pdf.getParameters().put('dofResult', NumberUtils.format(quote.Commission_DOF__c));
         pdf.getParameters().put('totalCommission', NumberUtils.format(quote.Commission_Total_GST_Exc__c));
         pdf.getParameters().put('totalCommissionGst', NumberUtils.format(quote.Commission_Total_GST_Inc__c));
@@ -120,8 +119,8 @@ public with sharing class QuoteShiftAssetCalcController {
 
     public static Product__c productHandler(Application_Quoting__c quote) {
         Product__c p = QuoteController.getProduct(quote.Opportunity__c);
-        p.Loan_Purpose__c = 'Personal Use';
-        p.Lender__c = 'Yamaha';
+        p.Loan_Purpose__c = 'Business Use';
+        p.Lender__c = 'Shift';
         p.Quoting_Source__c = quote.Name;
         p.Repayment_Regularity__c = 'Monthly';
         p.Loan_Type__c = quote.Loan_Type__c;

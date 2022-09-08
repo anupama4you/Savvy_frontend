@@ -1,64 +1,43 @@
 import { LightningElement, api, track, wire } from "lwc";
 import { displayToast } from "c/partnerJsUtils";
-import { CalHelper } from "./quotePlentiPLCalcHelper";
 import { QuoteCommons } from "c/quoteCommons";
+import { CalHelper } from "./quotePlentiPLCalcHelper";
 import LENDER_LOGO from "@salesforce/resourceUrl/RateSetterLogo";
 import FNAME_FIELD from "@salesforce/schema/Custom_Opportunity__c.Account_First_Name__c";
 import LNAME_FIELD from "@salesforce/schema/Custom_Opportunity__c.Account_Last_Name__c";
 import OPPNAME_FIELD from "@salesforce/schema/Custom_Opportunity__c.Name";
 import { getRecord, getFieldValue } from "lightning/uiRecordApi";
-import getQuotingTable from '@salesforce/apex/QuoteManager.getQuotingTable';
+import getRateSetterRate from "@salesforce/apex/QuoteManager.getRateSetterRate";
 
 const fields = [FNAME_FIELD, LNAME_FIELD, OPPNAME_FIELD];
-
-export default class QuoteMoneyPlaceCalc extends LightningElement {
-  isBusy; // loading
-  isCalculated = false;
+//const oppID = 'a01Bm00000192uuIAA';
+export default class QuotePlentiPLCalc extends LightningElement {
   tableRatesCols = CalHelper.tableRateDataColumns;
   tableRatesCols2 = CalHelper.tableRateDataColumns2;
+  isBusy;
+  isBaseRateBusy;
+  isCalculated = false;
+  @api recordId; // Opportunity Id
   @track messageObj = QuoteCommons.resetMessage();
   @track quoteForm;
   // Rate Settings
-  @track tableRates = [];
-  @track tableRates2 = [];
-  @api recordId; // Opportunity Id
+  @track tableRates;
+  @track tableRates2;
   @wire(getRecord, { recordId: "$recordId", fields })
   opp;
 
-  LENDER_QUOTING = "Plenti PL";
-  LENDER_QUOTING2 = "Plenti PL Fee";
-
-  // initial data and configs
   connectedCallback() {
-    getQuotingTable({ LENDER_QUOTING: this.LENDER_QUOTING })
-    .then(result => {
-      console.log(result);
-        this.tableRates = result;
-    })
-    .catch(error => {
-      console.log(error);
-        this.error = error;
-    });
-
-    getQuotingTable({ LENDER_QUOTING: this.LENDER_QUOTING2 })
-    .then(result => {
-      console.log(result);
-        this.tableRates2 = result;
-    })
-    .catch(error => {
-      console.log(error);
-        this.error = error;
-    });
-
+    //console.log(`connectedCallback...`);
     this.isBusy = true;
     this.reset();
     CalHelper.load(this.recordId)
+      //CalHelper.load(oppID)
       .then((data) => {
-        console.log(`Data loaded!`);
+        //console.log(`Data loaded!`);
+        //console.log(`JS DATA `, JSON.stringify(data));
         this.quoteForm = data;
-        this.quoteForm["maxDof"] = this.quoteForm["dof"] =
-          CalHelper.handleMaxDOF(this.quoteForm["price"]);
-        //this.tableRates = CalHelper.getTableRatesData();TBC
+        this.tableRates = CalHelper.getTableRatesData();
+        this.tableRates2 = CalHelper.getTableRatesData2();
       })
       .catch((error) => {
         console.error(JSON.stringify(error, null, 2));
@@ -66,6 +45,8 @@ export default class QuoteMoneyPlaceCalc extends LightningElement {
       })
       .finally(() => {
         this.isBusy = false;
+        this.baseRateCalc();
+        this.calculateFees();
       });
   }
 
@@ -74,6 +55,7 @@ export default class QuoteMoneyPlaceCalc extends LightningElement {
     QuoteCommons.resetValidateFields(this);
   }
 
+  //Images
   get logoUrl() {
     return LENDER_LOGO;
   }
@@ -87,20 +69,20 @@ export default class QuoteMoneyPlaceCalc extends LightningElement {
     return CalHelper.options.loanProducts;
   }
 
-  get paymentTypeOptions() {
-    return CalHelper.options.paymentTypes;
+  get assetTypeOptions() {
+    return CalHelper.options.assetTypes;
   }
 
-  get profileOptions() {
-    return CalHelper.options.profiles;
+  get paymentTypeOptions() {
+    return CalHelper.options.paymentTypes;
   }
 
   get termOptions() {
     return CalHelper.options.terms;
   }
 
-  get assetTypeOptions() {
-    return CalHelper.options.assetTypes;
+  get customerProfileOptions() {
+    return CalHelper.options.customerProfiles;
   }
 
   get clientTierOptions() {
@@ -115,8 +97,8 @@ export default class QuoteMoneyPlaceCalc extends LightningElement {
     return CalHelper.options.greenCars;
   }
 
-  get vehicleBuildDateOptions() {
-    return CalHelper.options.vehicleBuildDates;
+  get vehicleYearOptions() {
+    return CalHelper.options.vehicleYears;
   }
 
   get leaseAgreementOptions() {
@@ -142,12 +124,61 @@ export default class QuoteMoneyPlaceCalc extends LightningElement {
   get additionalDetailsOptions() {
     return CalHelper.options.additionalDetails;
   }
-  
-  //clientTierOptions
 
-  // realtime displaying the NAF as the last row in the left side
+  // Events
+  handleFieldChange(event) {
+    console.log(`Changing value for: ${event.target.name}...`);
+    const fldName = event.target.name;
+    this.isCalculated = false;
+    let fld = this.template.querySelector(`[data-id="${fldName}-field"]`);
+    let v = event.detail ? event.detail.value : "";
+    console.log(`new value: ${event.target.value}...`);
+    if (fld && fld.type === "number") {
+      v = Number(v);
+    }
+    this.quoteForm[fldName] = v;
+    this.quoteForm["netDeposit"] = this.netDeposit;
+    fldName === "term"
+      ? (this.quoteForm[fldName] = parseInt(v))
+      : (this.quoteForm[fldName] = v);
+    // --------------
+    // Trigger events
+    // --------------
+
+    // Base Rate Calculation
+    if (CalHelper.BASE_RATE_FIELDS.includes(fldName)) {
+      console.log("==> SHOOT HERE Base Rate Calculation handlefieldchange");
+      this.baseRateCalc();
+    }
+
+    // Fees Calculation
+    if (CalHelper.CALC_FEES_FIELDS.includes(fldName)) {
+      console.log(
+        "==> SHOOT HERE CALC_FEES_FIELDS Calculation handlefieldchange"
+      );
+      this.calculateFees();
+    }
+
+    //CommRate
+    getRateSetterRate({
+      param: this.quoteForm
+    })
+      .then((param) => {
+        console.log("getRateSetterRate==>" + param.commRate.toString());
+        this.quoteForm.commRate = param.commRate;
+      })
+      .catch((error) => reject(error));
+
+    // --------------
+  }
+
+  // Calculations
+  get netDeposit() {
+    return CalHelper.getNetDeposit(this.quoteForm);
+  }
+
   get netRealtimeNaf() {
-    return CalHelper.getNetRealtimeNaf(this.quoteForm);
+    return CalHelper.getNetRealtimeNaf(this.quoteForm) + this.quoteForm.riskFee;
   }
 
   get disableAction() {
@@ -157,6 +188,49 @@ export default class QuoteMoneyPlaceCalc extends LightningElement {
   // Reset
   reset() {
     this.quoteForm = CalHelper.reset(this.recordId);
+    //this.quoteForm = CalHelper.reset(oppID);
+    /*console.log(
+        "🚀 ~ file: QuotePepperMVCalc.js ~ line 113 ~ QuotePepperMVCalc ~ reset ~ this.quoteForm",
+        JSON.stringify(this.quoteForm, null, 2)
+        );*/
+  }
+
+  // Base Rate
+  baseRateCalc() {
+    this.isBaseRateBusy = true;
+    CalHelper.baseRates(this.quoteForm)
+      .then((data) => {
+        //console.log(`Data loaded!`);
+        this.quoteForm.baseRate = data.baseRate;
+        this.quoteForm.maxRate = data.maxRate;
+      })
+      .catch((error) => {
+        console.error(JSON.stringify(error, null, 2));
+        displayToast(this, "Base Rate...", error, "error");
+      })
+      .finally(() => {
+        this.isBaseRateBusy = false;
+      });
+  }
+
+  // Fees Calculations
+  calculateFees() {
+    //this.quoteForm.maxApplicationFee = CalHelper.calcFees(this.quoteForm);
+    CalHelper.calcFees(this.quoteForm)
+      .then((data) => {
+        console.log("==> calcFees data ", JSON.stringify(data));
+        //this.quoteForm.applicationFee = data.applicationFee;
+        //this.quoteForm.maxApplicationFee = data.maxApplicationFee;
+        //this.quoteForm.dof = data.dof;
+        this.quoteForm.maxDof = data.maxDof;
+      })
+      .catch((error) => {
+        console.error(JSON.stringify(error, null, 2));
+        //displayToast(this, "Calc Fees...", error, "error");
+      })
+      .finally(() => {
+        //this.isBaseRateBusy = false;
+      });
   }
 
   // -------------
@@ -177,11 +251,11 @@ export default class QuoteMoneyPlaceCalc extends LightningElement {
           if (this.quoteForm.commissions) this.isCalculated = true;
         })
         .catch((error) => {
-          console.error(`error from QuoteMoneyPlaceCalc ${error}`);
+          console.error(`error from QuotePlentiCalc ${error}`);
           this.messageObj = error.messages;
           QuoteCommons.fieldErrorHandler(this, this.messageObj.errors);
           console.error(
-            "quoteMoneyPlaceCalc.js: get errors -- ",
+            "quotePlentiCalc.js: get errors -- ",
             JSON.stringify(error.messages.errors, null, 2)
           );
         })
@@ -191,93 +265,87 @@ export default class QuoteMoneyPlaceCalc extends LightningElement {
     } catch (error) {
       console.error(error);
     }
+    /*this.isBusy = true;
+        this.messageObj = QuoteCommons.resetMessage();
+        CalHelper.calculate(this.quoteForm)
+        .then((data) => {
+            
+            this.quoteForm.commissions = data.commissions;
+            this.messageObj = data.messages;
+            QuoteCommons.handleHasErrorClassClear(this);
+            if (this.quoteForm.commissions) this.isCalculated = true;
+        })
+        .catch((error) => {
+            this.messageObj = error.messages;
+            QuoteCommons.fieldErrorHandler(this, this.messageObj.errors);
+        })
+        .finally(() => {
+            this.isBusy = false;
+        });
+
+        //if (results && Array.isArray(results) && results.length > 0) {
+        // this.quoteResult = results[0];
+        //}
+        this.baseRateCalc(); */
   }
 
-  // Reset function
+  // Reset
   handleReset(event) {
     const appQuoteId = this.quoteForm["Id"];
     this.reset();
     this.quoteForm["Id"] = appQuoteId;
+    this.isCalculated = false;
     this.messageObj = QuoteCommons.resetMessage();
     QuoteCommons.handleHasErrorClassClear(this);
-    this.isCalculated = false;
+    /*console.log(
+        "🚀 ~ file: QuotePepperMVCalc.js ~ line 172 ~ QuotePepperMVCalc ~ reset ~ this.quoteForm",
+        JSON.stringify(this.quoteForm, null, 2)
+        );*/
+    this.baseRateCalc();
   }
 
-  // handle all field changes according to the type of field
-  handleFieldChange(event) {
-    console.log(`Changing value for: ${event.target.name}...`);
-    try {
-      const fldName = event.target.name;
-      this.isCalculated = false;
-      let fld = this.template.querySelector(`[data-id="${fldName}-field"]`);
-      let v = event.detail ? event.detail.value : "";
-      if (fld && fld.type === "number") {
-        v = Number(v);
-      }
-      this.quoteForm[fldName] = v;
-      // // casting the string to number
-      fldName === "term" || fldName === "vehicleBuildDate"
-        ? (this.quoteForm[fldName] = parseInt(v))
-        : (this.quoteForm[fldName] = v);
-      // calculate max dof
-      if (fldName === "price") {
-        this.quoteForm["maxDof"] = this.quoteForm["dof"] =
-          CalHelper.handleMaxDOF(event.detail.value);
-      }
-    } catch (error) {
-      console.error(error);
-    }
-  }
-
-  // all Save Buttons actions
+  // all Save Buttons actions - CURRENTLY DISABLE DUE UNFINISHED COMMON COMPS
   handleSave(event) {
     console.log(`event detail : ${event.target.value.toUpperCase()}`);
     const isNONE = event.target.value.toUpperCase() === "NONE";
     this.isBusy = true;
     const loanType = event.target.value.toUpperCase();
-    try {
-      if (!this.messageObj.errors.length > 0) {
-        this.messageObj = QuoteCommons.resetMessage();
-        CalHelper.saveQuote(loanType, this.quoteForm, this.recordId)
-          .then((data) => {
-            console.log(
-              "@@data in handle save quote:",
-              JSON.stringify(data, null, 2)
-            );
-            !isNONE
-              ? this.messageObj.confirms.push(
-                  {
-                    field: "confirms",
-                    message: "Calculation saved successfully."
-                  },
-                  {
-                    fields: "confirms",
-                    message: "Product updated successfully."
-                  }
-                )
-              : this.messageObj.confirms.push({
+    if (!this.messageObj.errors.length > 0) {
+      this.messageObj = QuoteCommons.resetMessage();
+      CalHelper.saveQuote(loanType, this.quoteForm, this.recordId)
+        .then((data) => {
+          console.log("@@data in handleSave:", JSON.stringify(data, null, 2));
+          !isNONE
+            ? this.messageObj.confirms.push(
+                {
                   field: "confirms",
                   message: "Calculation saved successfully."
-                });
-            // passing data to update quoteform
-            this.quoteForm["Id"] = data["Id"];
-          })
-          .catch((error) => {
-            console.error("handlePreApproval : ", error);
-          })
-          .finally(() => {
-            this.isBusy = false;
-          });
-      } else {
-        QuoteCommons.fieldErrorHandler(this, this.messageObj.errors);
-        this.isCalculated = true;
-      }
-    } catch (error) {
-      console.error(error);
+                },
+                {
+                  fields: "confirms",
+                  message: "Product updated successfully."
+                }
+              )
+            : this.messageObj.confirms.push({
+                field: "confirms",
+                message: "Calculation saved successfully."
+              });
+          // passing data to update quoteform
+          this.quoteForm["Id"] = data["Id"];
+        })
+        .catch((error) => {
+          console.error("handleSave : ", error);
+        })
+        .finally(() => {
+          this.isBusy = false;
+        });
+    } else {
+      QuoteCommons.fieldErrorHandler(this, this.messageObj.errors);
+      this.isCalculated = true;
     }
   }
 
-  // Send Email
+  // Send Email - CURRENTLY DISABLE DUE UNFINISHED COMMON COMPS
   handleSendQuote() {
     this.isBusy = true;
     if (!this.messageObj.errors.length > 0) {

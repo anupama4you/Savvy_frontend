@@ -8,8 +8,11 @@ public class CompToolAFSCommercialCalc extends CompToolLenderCalcAbstract {
 
     // ---------------
     // Find base rates
-    this.quoteParam.gstLength = 'Y'.equals(this.param.gstRegistered) 
-      ? 'Registered' : 'Not Registered';
+    this.quoteParam.gstLength = (
+      String.isNotBlank(this.param.gstRegistered) &&
+      !'N'.equals(this.param.gstRegistered)
+    ) ? 'Registered' : 'Not Registered';
+    
     this.quoteParam.residency = 'Property Owner'.equals(param.residentialStatus)
       ? 'Home Buyer' : 'Non-Home Buyer';
     

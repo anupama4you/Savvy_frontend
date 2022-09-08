@@ -1,90 +1,128 @@
 import { QuoteCommons } from "c/quoteCommons";
+import { CalHelper } from "./quoteMacquarieConsumerCalcHelper";
 
+// Validation Types: ERROR, WARNING, INFO
 /**
- * @param {Object} quote - quote form OR commissions result
+ * @param {Object} quote - quote form
  * @param {Object} messages - old messages object
  * @returns
  */
 const validate = (quote, messages) => {
-  console.log(messages);
-  const r =
-    typeof messages == "undefined" || messages == null
-      ? QuoteCommons.resetMessage()
-      : messages;
-  let errorList = r.errors;
-  let warningList = r.warnings;
+    const r =
+        typeof messages == "undefined" || messages == null
+            ? QuoteCommons.resetMessage()
+            : messages;
+    let errorList = r.errors;
+    let warningList = r.warnings;
 
-  for (const fieldName in quote) {
-    const element = quote[fieldName];
-    switch (fieldName) {
-      // case "loanType":
-      //   break;
-      // case "loanProduct":
-      //   break;
-      case "price":
-        if (element <= 0 || element === null)
-          errorList.push({
-            field: "price",
-            message: "Loan Amount cannot be ZERO"
-          });
-        break;
-      case "dof":
-        if (element <= 0 || element === null)
-          errorList.push({
-            field: "dof",
-            message: "DOF  cannot be ZERO"
-          });
-        break;
-      case "applicationFee":
-        if (element <= 0 || element === null)
-          errorList.push({
-            field: "applicationFee",
-            message: "Application Fee cannot be ZERO"
-          });
-        break;
-      // case "residual":
-      //   if (element < 0 || element === null)
-      //     errorList.push({
-      //       field: "residual",
-      //       message: "Residual must be a POSITIVE number and cannot be ZERO"
-      //     });
-      //   break;
-      // case "monthlyFee":
-      //   if (element < 0 || element === null)
-      //     errorList.push({
-      //       field: "monthlyFee",
-      //       message: "Monthly Fee must be a POSITIVE number and cannot be ZERO"
-      //     });
-      //   break;
-      case "clientRate":
-        if (element <= 0 || element === null)
-          errorList.push({
-            field: "clientRate",
-            message: "Client Rate must be a POSITIVE number and cannot be ZERO"
-          });
-        break;
-      case "loanPurpose":
-        console.log(
-          `loanPurpose is : ${element}, the type is : ${typeof element}`
-        );
-        if (element == "" || element === null || element.length === 0) {
-          warningList.push({
-            field: "loanPurpose",
-            message: "The Loan Purpose is neccessary for any approval"
-          });
-        }
-        break;
-      default:
-        break;
+    const baseRate = quote["baseRate"];
+    const maxRate = quote["maxRate"];
+    const NAF = CalHelper.getNetRealtimeNaf(quote);
+
+    console.log('NAF===>'+NAF);
+
+    if (quote.assetYear == "" || quote.assetYear == null) {
+        errorList.push({
+            field: "assetYear",
+            message: "Please select an Asset Year."
+        });
     }
-  }
-  r.warnings = [].concat(QuoteCommons.uniqueArray(warningList));
-  r.errors = [].concat(QuoteCommons.uniqueArray(errorList));
-  return r;
+    if (baseRate == null || baseRate == 0) {
+        errorList.push({
+            field: "baseRate",
+            message: "Base Rate cannot be Zero."
+        });
+    }
+    if(quote.dof > quote.maxDof){
+        warningList.push({
+            field: "dof",
+            message: "Max DOF is 8% of NAF."
+        });
+    }
+    if (quote.term == null || quote.term == 0) {
+        errorList.push({
+            field: "term",
+            message: "Please choose an appropriate term."
+        });
+    }
+    if (quote.brokeragePer > 8) {
+        errorList.push({
+            field: "brokeragePer",
+            message: "Maximum Brokerage is 8.00%"
+        });
+    }
+    if(quote.goodsType == "MOTOV" && quote.goodsSubType == "MOTOV_CARS_-_OTHER_CARS_AU"){
+        /*
+        if (this.opp.Application_AssetDetail__c == null) {
+            ApexPages.addMessage(new ApexPages.Message(ApexPages.Severity.WARNING, 'Please save a Asset Detail - LTV before quoting.'));
+            //r = false;
+        }*/
+    }
+    if (quote.ltv != null && quote.ltv > 130) {
+        errorList.push({
+            field: "ltv",
+            message: "LTV should be max. 130%"
+        });
+    }
+    /*
+    if (!isInsuranceValidationOK()) {
+            r = false;   
+        }
+    */
+    if(quote.loanType == "Consumer Loan" && quote.residualValue != null && quote.residualValue > 0){
+        let assetAge = 0;
+        if (quote.assetYear != null && quote.assetYear != "") {
+            assetAge = Datetime.now().year() - quote.assetYear;
+        }
+        let a = (quote.term / 12) + assetAge;
+        if (a > 8) {
+            warningList.push({
+                field: "assetYear",
+                message: "Balloons at the discretion of Macquarie."
+              });
+        }
+    }
+    if(quote.goodsType == 'LIFES' && quote.privateSales == "Y" && quote.goodsSubType == "LIFES_MOTORCYCLES_&_SCOOTERS_AU"){
+        errorList.push({
+            field: "",
+            message: "No private sales on Motorcycles & Scooters."
+        });
+    }
+    if(quote.residualValue > 0 && quote.term > 60){
+        warningList.push({
+            field: "assetYear",
+            message: "Balloons at the discretion of Macquarie."
+        });
+    }
+
+    r.warnings = [].concat(QuoteCommons.uniqueArray(warningList));
+    r.errors = [].concat(QuoteCommons.uniqueArray(errorList));
+    return r;
+};
+
+const validatePostCalculation = (quote, messages) => {
+    const r =
+        typeof messages == "undefined" || messages == null
+            ? QuoteCommons.resetMessage()
+            : messages;
+    let errorList = r.errors;
+    let warningList = r.warnings;
+
+    if (quote.commission === null || !(quote.commission > 0.0)) {
+        warningList.push({
+            field: "Commissions and Repayments",
+            message: `The commission is below zero. Please make adjustment to make sure commission is above zero.`
+        });
+    }
+
+    r.warnings = [].concat(QuoteCommons.uniqueArray(warningList));
+    r.errors = [].concat(QuoteCommons.uniqueArray(errorList));
+    return r;
 };
 
 const Validations = {
-  validate: validate
+    validate: validate,
+    validatePostCalculation: validatePostCalculation
 };
 
 export { Validations };

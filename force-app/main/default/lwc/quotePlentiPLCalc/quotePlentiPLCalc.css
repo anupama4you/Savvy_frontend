@@ -1,7 +1,2 @@
 /* Calculators styles */
-@import "c/quoteCommonsStyles";
-
-.c-header-data {
-    padding-right: 25px;
-    padding-left: 15px;
-  }
+@import 'c/quoteCommonsStyles';

@@ -383,6 +383,7 @@ public class EmailSender {
 
     // Lelo             2019-12-23
     public static void sendCustomerInsurancePresentation(Custom_Opportunity__c opp, String pCode, Set<String> docs) {
+      System.debug('opp >> ' + JSON.serialize(opp) + ' ,,,  pCode >>> '+ pCode);
         Boolean isPartnerUser = SOQLSingletonQueries.recs().isBrokerPartnerUser;
         // Define the Email
         Messaging.SingleEmailMessage email = new Messaging.SingleEmailMessage();
@@ -960,10 +961,6 @@ public class EmailSender {
 
     @future(callout=true)
     public static void sendEmailOpportunityPreApprovedLiberty(Id oppId) {
-      sendEmailOpportunityPreApprovedLiberty(oppId, true);
-    }
-
-    public static void sendEmailOpportunityPreApprovedLiberty(Id oppId, Boolean noReply) {
       
       Custom_Opportunity__c opp =[
           SELECT 
@@ -972,10 +969,10 @@ public class EmailSender {
             Partner_Is_External__c 
           FROM Custom_Opportunity__c where Id =: oppId
       ];
-      sendEmailOpportunityPreApprovedLiberty(opp, noReply);
+      sendEmailOpportunityPreApprovedLiberty(opp);
     }
 
-    public static void sendEmailOpportunityPreApprovedLiberty(Custom_Opportunity__c o, Boolean noReply) {    
+    public static void sendEmailOpportunityPreApprovedLiberty(Custom_Opportunity__c o) {    
       Parameters_Service__c param =  Parameters_Service__c.getInstance('OppPreApprovedLenderEmail');
 
       if (o == null || param == null || !'ON'.equals(param.value__c) || o.Partner_Is_External__c) {
@@ -1034,7 +1031,7 @@ public class EmailSender {
         files.add(a);
 
         List<Cloud_Documents__c> preApprovalFiles = [
-          SELECT Bucket_Name__c, Folder_Id__c, CreatedDate, File_Name__c, Document_Type__c 
+          SELECT Bucket_Name__c, Folder_Id__c, CreatedDate, File_Name__c 
           FROM Cloud_Documents__c 
           WHERE Custom_Opportunity__c =:o.Id and Document_Type__c = 'Quoting Calculation (Pre-approval)'
           ORDER BY CreatedDate DESC
@@ -1055,11 +1052,9 @@ public class EmailSender {
         // Messaging.SendEmailResult [] r = Messaging.sendEmail(new Messaging.SingleEmailMessage [] {email});     //original line
         Messaging.SendEmailResult [] r = null;
         try {
-          if (noReply) {
-            OrgWideEmailAddress owea = getNoReplyEmail();
-            if (owea != null) {
-              email.setOrgWideEmailAddressId(owea.Id);
-            }
+          OrgWideEmailAddress owea = getNoReplyEmail();
+          if (owea != null) {
+            email.setOrgWideEmailAddressId(owea.Id);
           }
           r = Messaging.sendEmail(new Messaging.SingleEmailMessage [] {email});
         } catch (EmailException e) {

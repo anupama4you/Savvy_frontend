@@ -384,7 +384,8 @@ public class CalculatorPdfExtension {
         System.debug('residualValue >> ' + residualValue + ' | highlightResidualValue >> ' + highlightResidualValue);
         if (String.isNotBlank(residualValue)) {
             try {
-                Decimal v = Decimal.valueOf(residualValue);
+                String t = residualValue.remove(',');
+                Decimal v = Decimal.valueOf(t);
                 if (v > 0.0) {
                     highlightResidualValue = true;
                 }

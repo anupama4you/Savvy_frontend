@@ -574,7 +574,8 @@ public class RateSetterCalculatorExtension extends QuotingExtension {
         if (rate != null) {
             param.commRate = rate.Overs__c;
         }
-        System.debug(quotingType + '|' + param.totalAmount + '|' + param.totalInsurance + '|' + param.totalInsuranceIncome);
+        System.debug('AUGDEBUG: '+quotingType + '|' + param.totalAmount + '|' + param.totalInsurance + '|' + param.totalInsuranceIncome + '|' + param.commRate);
+        // System.debug(quotingType + '|' + param.totalAmount + '|' + param.totalInsurance + '|' + param.totalInsuranceIncome);
 
         Application_Quoting_Result__c r = QuotingCalculation.calculate(param);
         if (r != null) {

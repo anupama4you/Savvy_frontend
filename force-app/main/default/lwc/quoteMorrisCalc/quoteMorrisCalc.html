@@ -1,6 +1,6 @@
 <template>
   <c-quote-container
-    title="Grow Asset Car"
+    title="Morris"
     is-busy={isBusy}
     commissions={quoteForm.commissions}
     messages={messageObj}
@@ -10,7 +10,7 @@
       src={logoUrl}
       slot="logo"
       class="c-lender-logo"
-      title="GrowAsset"
+      title="Morris"
     />
 
     <!-- Buttons -->
@@ -401,7 +401,7 @@
       </div>
       <div class="slds-col slds-size_8-of-12 c-base-rate">
         <lightning-formatted-number
-          value={quoteForm.customerRate}
+          value={quoteForm.clientRate}
           format-style="percent-fixed"
           minimum-fraction-digits="2"
           class="c-read-only-field"

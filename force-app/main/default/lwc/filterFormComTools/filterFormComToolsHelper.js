@@ -139,21 +139,31 @@ export const ComparisonOptions = {
   businessEmploymentTypes: [{ label: "Self-Employed", value: "Self-Employed" }],
 
   abnLengths: [
-    { label: "0 - 1", value: "0" },
-    { label: "1 - 2", value: "1" },
-    { label: "2 - 3", value: "2" },
-    { label: "3+", value: "3" }
+    { label: "0 - 1 years", value: "0" },
+    { label: "1 - 2 years", value: "1" },
+    { label: "2 - 3 years", value: "2" },
+    { label: "3+  years", value: "3" }
   ],
 
   gstRegisteredOptions: [
-    { label: "Yes", value: "Y" },
-    { label: "No", value: "N" }
+    { label: "No", value: "N" },
+    { label: "0 - 1  years", value: "0" },
+    { label: "1 - 2  years", value: "1" },
+    { label: "2+  years", value: "2" }
   ],
 
   assetAge: assetAgeValues(),
 
   jobs: jobsAmount(),
 
-  getCreditScoreValue: getCreditScoreValue
-  
+  getCreditScoreValue: getCreditScoreValue,
+
+  paydays: [
+    { label: "0", value: "0" },
+    { label: "1", value: "1" },
+    { label: "2", value: "2" },
+    { label: "3", value: "3" },
+    { label: "4", value: "4" },
+    { label: "5+", value: "5" }
+  ]
 };

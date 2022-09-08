@@ -175,14 +175,27 @@
           required
         ></lightning-combobox>
     </div>
-    <div class="slds-col slds-size_12-of-12 slds-large-size_2-of-12">
+    <div class="slds-col slds-size_12-of-12 slds-large-size_1-of-12">
       <lightning-combobox
           name="hasVerifiableCredit"
-          label="Any current verifiable credit?"
+          label="Verifiable credit?"
           data-id="hasVerifiableCredit-field"
           value={params.hasVerifiableCredit}
           placeholder="Select a value"
           options={yesNoOptions}
+          onchange={handleFieldChange}
+          class=""
+          variant="label-stacked"
+        ></lightning-combobox>
+    </div>
+    <div class="slds-col slds-size_12-of-12 slds-large-size_1-of-12">
+      <lightning-combobox
+          name="paydays"
+          label="Paydays"
+          data-id="paydays-field"
+          value={params.paydays}
+          placeholder="Select a value"
+          options={paydaysOptions}
           onchange={handleFieldChange}
           class=""
           variant="label-stacked"
@@ -201,7 +214,7 @@
           class="slds-button slds-m-left_x-small"
           type="button"
           label="Reset"
-          onclick={resetFormData}
+          onclick={handleReset}
         >
         </lightning-button>
     </div>

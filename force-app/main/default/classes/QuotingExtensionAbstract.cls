@@ -539,6 +539,7 @@ public abstract class QuotingExtensionAbstract {
       // Shortfall / GAP
       if ('A'.equals(this.gapAcceptance)) {
         r += (this.gapIncome > 0)? this.gapIncome : 0.0;
+        System.debug('this.gapIncome'+this.gapIncome);
       }
       // Warranty
       if ('A'.equals(this.warrantyAcceptance)) {
@@ -706,6 +707,7 @@ public abstract class QuotingExtensionAbstract {
   public void calculateGAP() {
     System.debug('calculateGAP...');
     if (this.getIsGAPCalculated()) {
+      System.debug('state:    >>> ' + this.Opp.Application__r.State__c);
       Liberty_VEI_Setting__c a = QuotingToolHelper.getLibertyVEISetting(this.Opp.Application__r.State__c, this.gapLevel);
       //System.debug(this.Opp.Application__r.State__c + '|' + veiLevel + '|' + a);
       this.gap = 0.00;
@@ -731,6 +733,7 @@ public abstract class QuotingExtensionAbstract {
       param.maritalStatus = Opp.Application__r.Marital_Status_1__c;
       param.noOfDependants = Opp.Application__r.No_of_Dependants_1__c;
       param.noOfPeople = Opp.Application__r.No_of_People__c;
+      System.debug('param    >>>> '+JSON.serialize(param));
       try {
         QuotingCalculation.LibertyLPI p = QuotingCalculation.calculateLibertyLPI(param);
         cci = p.premium;
@@ -933,7 +936,7 @@ public abstract class QuotingExtensionAbstract {
       String.isNotBlank(this.Opp.Application__r.State__c)
     )? this.Opp.Application__r.State__c : null;
 
-    System.debug(JSON.serializePretty(this.nwcParam));
+    System.debug('this.nwcParam >>> ' + JSON.serializePretty(this.nwcParam));
     this.NWCPlanOptions = NWCCalc.NWCPlanOptions(
       this.nwcParam.assetType,
       this.nwcParam.type_p
@@ -993,6 +996,7 @@ public abstract class QuotingExtensionAbstract {
           this.nwc = r.retailPrice;
           this.nwcIncome = r.commission;
           this.priceCustomer = this.nwc;
+          System.debug('rrrr  >>>> ' + JSON.serialize(r));
           //NWCMessage = 'OK-' + nwcParam.nwcPriceToCustomer;
         } catch (Exception ex) {
           this.NWCMessage = ex.getMessage();
@@ -1767,11 +1771,8 @@ public abstract class QuotingExtensionAbstract {
 
     // MV Insurance
     if ('A'.equals(this.mvAcceptance)) {
-      String insurer = InsuranceQuoteUtils.INS_PROD_MV_SUNCORP.equals(
-        this.quoting.Insurance_MV_Options__c
-      ) ? InsuranceQuoteUtils.INS_PROD_MV_SUNCORP : 'Comprehensive';
       Product__c p = buildInsProduct(
-        insurer, 'Full Comprehensive', this.mv, this.mvIncome, 'PBM');
+        'Comprehensive', 'Full Comprehensive', this.mv, this.mvIncome, 'PBM');
       productList.add(p);
     }
     //Lelo      Insurnce        2018-02-26
@@ -1859,7 +1860,6 @@ public abstract class QuotingExtensionAbstract {
     
     // Send the email
     try {
-      // Customer Email
       EmailSender.sendCustomerInsurancePresentation(
         this.Opp,
         InsuranceQuoteUtils.getPresentationUrlCode(this.Opp.Application__c),
@@ -1875,31 +1875,8 @@ public abstract class QuotingExtensionAbstract {
           'Customer Insurance Presentation has just been sent.'
         )
       );
-      QuotingExtensionAbstract.sendLibertyNotification(this.opp.Id);
     } catch (EmailException e) {
       ApexPages.addMessage(new ApexPages.Message(ApexPages.Severity.ERROR,e.getMessage()));
-    }
-  }
-
-  @future(callout=true)
-  public static void sendLibertyNotification(Id oppId) {
-    List<AggregateResult> d = [
-      SELECT WhatId
-      FROM Task
-      WHERE
-        Subject = 'Email: Pre-approved loan - Savvy'
-        AND WhatId = :oppId
-        AND CreatedDate = LAST_N_DAYS:30
-      GROUP BY WhatId
-      HAVING COUNT(Subject) > 1
-    ];
-    Set<Id> oppEmail = new Set<Id>();
-    for (AggregateResult o : d) {
-      oppEmail.add((Id) o.get('WhatId'));
-    }
-    if (!oppEmail.contains(oppId)) {
-      // Liberty Email
-      EmailSender.sendEmailOpportunityPreApprovedLiberty(oppId, false); 
     }
   }
 
@@ -2021,8 +1998,7 @@ public abstract class QuotingExtensionAbstract {
     rpt.getParameters().put('mvIncome', String.valueOf(0.00));
     rpt.getParameters().put('mvPayType', null);
     if ('A'.equals(this.mvAcceptance)) {
-      String level = this.mvLevel + ' [ ' + this.quoting.Insurance_MV_Options__c + ' ] ';
-      rpt.getParameters().put('mvLevel', level);
+      rpt.getParameters().put('mvLevel', mvLevel);
       rpt.getParameters().put('mv', String.valueOf(mv));
       rpt.getParameters().put('mvIncome', String.valueOf(mvIncome));
       rpt.getParameters().put('mvPayType', 'PBM');

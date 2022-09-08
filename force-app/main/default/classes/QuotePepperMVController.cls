@@ -5,16 +5,6 @@ public without sharing class QuotePepperMVController {
     QuoteController.QuotingDataParam param
   ) {
     QuoteController.AppQuotingWraper r = QuoteController.getQuotingData(param); 
-    try {
-      
-      // r.data.Application__r.Type_of_Asset__c = 'Car';
-      // String appId = QuoteController.getOpportunityById(param.oppId).Application__c;
-      // List<Application__c> app = [SELECT Type_of_Asset__c FROM Application__c WHERE Id=:appId];
-      // r.data.Application__r.Type_of_Asset__c = app[0].Type_of_Asset__c;
-    }
-    catch (Exception ex) {
-     throw new GenericException(ex.getMessage());
-    }
     // Lender settings
     // Rate Settings
     String rateObjName = param.rateSettings != null && !param.rateSettings.isEmpty() 
@@ -42,9 +32,15 @@ public without sharing class QuotePepperMVController {
   @AuraEnabled
   public static Application_Quoting__c save(QuoteController.AppQuotingWraper param, String approvalType){
      try {
+          System.debug('type.....  '+approvalType);
+         if( param.additionalProcess == null) {
+          param.additionalProcess = new List<String>();
+         }
+          param.additionalProcess.add(approvalType);
+          System.debug('param.additionalProcess >> ' + param.additionalProcess);
           QuoteController.saveQuoting(param);
           Product__c p = null;
-          if (!'NONE'.equals(approvalType)) {
+          if (!'NONE'.equals(approvalType) && !'SEND'.equals(approvalType) && !'PREVIEW'.equals(approvalType)) {
               // save pdf
               PageReference pdf = Page.UniversalCalculatorPdf;
               pdf = pdfHandler(param.data);

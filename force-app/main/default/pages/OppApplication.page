@@ -1097,7 +1097,7 @@
                             </apex:outputPanel>
                         </apex:outputPanel>
                         <div class="subSectionTab">
-                            <h3>Finance Details</h3>
+                            <h3>Business Details</h3>
                         </div>
                         <table class="tableSubsection">
                             <tr>
@@ -1614,9 +1614,6 @@
                             <tr>
                                 <td class="labelColumn">Year First Licensed</td>
                                 <td class="dataColumn">
-                                    <apex:outputPanel styleClass="requiredInput" rendered="{!haveDriverLicence1 == 'Yes' || o.Application__r.Do_you_have_drivers_licence_1__c == 'Yes'}">
-                                        <apex:outputPanel styleClass="requiredBlock"></apex:outputPanel>
-                                    </apex:outputPanel>
                                     <apex:inputField styleClass="dataInput" value="{!o.Application__r.Year_First_Licensed_1__c}" rendered="{!IF(ISBLANK(Custom_Opportunity__c.Application__c),false,true)}"
                                                      />
                                     <apex:inputField styleClass="dataInput" value="{!app0.Year_First_Licensed_1__c}" rendered="{!IF(ISBLANK(Custom_Opportunity__c.Application__c),true,false)}"

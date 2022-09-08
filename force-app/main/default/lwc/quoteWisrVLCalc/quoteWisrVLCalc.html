@@ -242,6 +242,20 @@
         </span>
       </div>
     </div>
+    <!-- Private Sale Fee -->
+    <div class="c-row-details">
+      <div class="c-detail-labels">
+          <span class="c-label">Private Sale Fee</span>
+      </div>
+      <div class="c-detail-fields">
+        <lightning-formatted-number
+          value={quoteForm.privateSaleFee}
+          format-style="currency"
+          currency-code="AUD"
+          class="c-read-only-field"
+        ></lightning-formatted-number>
+      </div>
+    </div>
     <!-- PPSR -->
     <div class="c-row-details">
       <div class="c-detail-labels">
@@ -515,7 +529,7 @@
     </div>
     <!-- end -->
     <!-- Insurances -->
-    <c-quote-insurance-form slot="insurances"></c-quote-insurance-form>
+    <!-- <c-quote-insurance-form slot="insurances"></c-quote-insurance-form> -->
     <!-- Additional Content -->
     <div slot="more">
 

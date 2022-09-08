@@ -1,8 +1,10 @@
+import loadData from "@salesforce/apex/QuoteInsuranceController.loadData";
 import calculateGAP from "@salesforce/apex/QuoteInsuranceController.calculateGAP";
 import calculateLPI from "@salesforce/apex/QuoteInsuranceController.calculateLPI";
 import calculateNWC from "@salesforce/apex/QuoteInsuranceController.calculateNWC";
-import loadData from "@salesforce/apex/QuoteInsuranceController.loadData";
+import getPresentationStatus from "@salesforce/apex/QuoteInsuranceController.getPresentationStatus";
 import { QuoteCommons } from "c/quoteCommons";
+import { Validations } from "./quoteInsuranceFormValidation";
 
 const RESET_FIELDS = [
   "mvRetailPrice",
@@ -62,8 +64,8 @@ const getShortfallOptions = () => {
   return {
     typeOptions: [
       ...noneOption,
-      { label: "Eric - Shortfall (EPI)", value: "Eric - Shortfall (EPI)" },
-      { label: "Liberty - Shortfall (VEI)", value: "Liberty - Shortfall (VEI)" }
+      { label: "Eric - Shortfall (EPI)", value: "Eric EPI" },
+      { label: "Liberty - Shortfall (VEI)", value: "Liberty VEI" }
     ],
     productOptions: {
       Eric: [{ label: "(not applicable)", value: null }],
@@ -83,11 +85,11 @@ const getLPIOptions = () => {
       ...noneOption,
       {
         label: "Eric - Loan Protection (FPI)",
-        value: "Eric - Loan Protection (FPI)"
+        value: "Eric FPI"
       },
       {
         label: "Liberty - Loan Protection (LFI)",
-        value: "Liberty - Loan Protection (LFI)"
+        value: "Liberty LFI"
       }
     ],
     productOptions: {
@@ -193,44 +195,15 @@ const getWarrantyOptions = () => {
 };
 
 const reset = () => {
-  return {
-    mvType: null,
-    mvProduct: null,
-    mvRetailPrice: null,
-    mvCommission: null,
-    mvPayment: null,
-    mvTerm: "12",
-    mvPBM: "PBM",
-    shortfallType: null,
-    shortfallProduct: null,
-    shortfallRetailPrice: null,
-    shortfallCommission: null,
-    shortfallPayment: null,
-    shortfallTerm: "12",
-    shortfallPBM: null,
-    LPIType: null,
-    LPIProduct: null,
-    LPIRetailPrice: null,
-    LPICommission: null,
-    LPIPayment: null,
-    LPITerm: null,
-    LPIPBM: null,
-    warrantyType: null,
-    warrantyProduct: null,
-    warrantyRetailPrice: null,
-    warrantyCommission: null,
-    warrantyPayment: null,
-    warrantyTerm: "12",
-    warrantyPBM: null,
-    integrity: {
-      type: null,
-      term: null,
-      category: null
-    },
-    typeRetail: []
-  };
+  return QuoteCommons.resetInsurance();
 };
 
+/**
+ * This function is only used for integrity absolute options only
+ * @param {number} level
+ * @param {number} value
+ * @returns options
+ */
 const createAbsoluteOpts = (level, value) => {
   let opts = [...noneOption];
   for (let i = level; i > 0; i--) {
@@ -267,14 +240,63 @@ const calculatingGAP = ({ shortfallType, shortfallProduct }, oppId) =>
     }
   });
 
+const gettingPresentationStatus = (appQuoteId) =>
+  new Promise((resolve, reject) => {
+    if (appQuoteId)
+      getPresentationStatus({ appQuoteId: appQuoteId })
+        .then((data) => {
+          console.log("presentation status >> " + data);
+          switch (data) {
+            case "SENT":
+              data = "Sent";
+              break;
+            case "DECI":
+              data = "Deciding Product";
+              break;
+            case "DECL":
+              data = "Declaring";
+              break;
+            case "SECO":
+              data = "Selecting Comprehensive";
+              break;
+            case "FIIN":
+              data = "Filling Health Information";
+              break;
+            case "FINI":
+              data = "Finished";
+              break;
+            default:
+              data = "None";
+              break;
+          }
+          if (data) resolve(data);
+        })
+        .catch((error) => {
+          console.error(error);
+          reject(error);
+        });
+  });
+
 /**
  * calculate LPI fee
  * -- lee
  * @param {*} insuranceForm
  * @param {*} quoteForm
  */
-const calculatingLPI = ({ LPIType, LPIProduct, LPITerm }, quoteForm) =>
+const calculatingLPI = (
+  {
+    LPIType,
+    LPIProduct,
+    LPITerm,
+    warrantyRetailPrice,
+    iswarrantyAccept,
+    isIntegrityAccept
+  },
+  quoteForm
+) =>
   new Promise((resolve, reject) => {
+    console.log("LPITERM --> " + LPITerm);
+    const term = LPITerm === "(Long Term)" ? quoteForm.term : LPITerm;
     if (LPIType && LPIType.includes("Liberty") && LPIProduct) {
       console.log(
         "calculating ... LPI >> ",
@@ -286,16 +308,19 @@ const calculatingLPI = ({ LPIType, LPIProduct, LPITerm }, quoteForm) =>
         )
       );
 
+      console.log("LPITERM --> " + term + "  type of term --> " + typeof term);
       calculateLPI({
         oppId: quoteForm.oppId,
-        term: LPITerm === "(Long Term)" ? quoteForm.term : LPITerm,
+        term: parseFloat(term),
         cciLevel: LPIProduct,
         data: QuoteCommons.mapLWCToSObject(
           quoteForm,
           quoteForm.oppId,
           null,
           QUOTING_FIELDS
-        ).data
+        ).data,
+        warrantyRetailPrice: warrantyRetailPrice,
+        iswarrantyAccept: iswarrantyAccept || isIntegrityAccept
       })
         .then((data) => {
           resolve(data);
@@ -345,26 +370,6 @@ const calculatingNWC = ({ integrity }, quoteForm) =>
     }
   });
 
-/**
- * calculation of payment
- * -- lee
- * @param {Number} premium - Retail Price
- * @param {String} term - term (should parse to integer)
- * @param {String} payType - Financed/PBM
- * @returns
- */
-const getInsurancePayment = (premium, term, payType) => {
-  try {
-    let r = null;
-    if (premium && term && payType && "PBM" === payType) {
-      r = ((premium / parseInt(term)) * 12) / 52;
-    }
-    return r;
-  } catch (error) {
-    console.error(error);
-  }
-};
-
 // loading the type of asset
 const load = (oppId) =>
   new Promise((resolve, reject) => {
@@ -372,7 +377,7 @@ const load = (oppId) =>
       try {
         loadData({ oppId: oppId })
           .then((data) => {
-            console.log("data", JSON.stringify(data, null, 2));
+            console.log("data >> ", JSON.stringify(data, null, 2));
             if (data) resolve(data);
           })
           .catch((error) => {
@@ -384,6 +389,48 @@ const load = (oppId) =>
     }
   });
 
+const sendPresentation = (insuranceForm, quoteForm) =>
+  new Promise((resolve, reject) => {
+    let messages = QuoteCommons.resetMessage();
+    messages = { ...Validations.validate(insuranceForm, quoteForm) };
+    // console.log("insurance form >> ", JSON.stringify(insuranceForm, null, 2));
+    // console.log("quote form >> ", JSON.stringify(quoteForm, null, 2));
+    console.log(
+      "mapping quote form >>",
+      JSON.stringify(
+        QuoteCommons.mapLWCToSObject(
+          insuranceForm,
+          null,
+          null,
+          QuoteCommons.INSURANCE_FIELDS
+        ),
+        null,
+        2
+      )
+    );
+    if (messages.errors.length > 0) {
+      console.log("error messages >> ", messages);
+      reject(messages);
+    } else {
+      resolve(messages);
+    }
+  });
+
+// reset insurance form when press [Send Presentation] button
+const resetInsuranceAccept = (insuranceForm) => {
+  insuranceForm.isLPIAccept = false;
+  insuranceForm.ismvAccept = false;
+  insuranceForm.isshortfallAccept = false;
+  insuranceForm.iswarrantyAccept = false;
+  insuranceForm.isIntegrityAccept = false;
+  insuranceForm.isLPIDecline = false;
+  insuranceForm.ismvDecline = false;
+  insuranceForm.isshortfallDecline = false;
+  insuranceForm.iswarrantyDecline = false;
+  insuranceForm.isIntegrityDecline = false;
+  return insuranceForm;
+};
+
 export const InsuranceHelper = {
   RESET_FIELDS: RESET_FIELDS,
   getMVOptions: getMVOptions,
@@ -391,11 +438,13 @@ export const InsuranceHelper = {
   getShortfallOptions: getShortfallOptions,
   getLPIOptions: getLPIOptions,
   getWarrantyOptions: getWarrantyOptions,
-  getInsurancePayment: getInsurancePayment,
   getPBMOptions: getPBMOptions,
   reset: reset,
   calculateGAP: calculatingGAP,
   calculatingLPI: calculatingLPI,
   calculatingNWC: calculatingNWC,
-  load: load
+  load: load,
+  gettingPresentationStatus: gettingPresentationStatus,
+  sendPresentation: sendPresentation,
+  resetInsuranceAccept: resetInsuranceAccept
 };

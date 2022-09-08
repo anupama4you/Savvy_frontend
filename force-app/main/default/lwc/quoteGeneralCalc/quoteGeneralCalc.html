@@ -1,0 +1,264 @@
+<template>
+  <!-- commissions={quoteForm.commissions} -->
+  <c-quote-container title="General" is-busy={isBusy} messages={messageObj} commissions={quoteForm.commissions}>
+    <!-- Logo -->
+    <img src={logoUrl} slot="logo" class="c-lender-logo" title="General" />
+
+    <!-- Buttons -->
+    <lightning-button label="Calculate" slot="actions" onclick={handleCalculate}></lightning-button>
+    <lightning-button label="Reset" slot="actions" onclick={handleReset}></lightning-button>
+    <lightning-button label="Save Quoting" slot="actions" value="none" disabled={disableAction} onclick={handleSave}>
+    </lightning-button>
+    <lightning-button label="Save Pre-approval" slot="actions" value="pre_approval" disabled={disableAction}
+      onclick={handleSave}>
+    </lightning-button>
+    <lightning-button label="Save Amendment" slot="actions" value="pre_approval_amendment" disabled={disableAction}
+      onclick={handleSave}>
+    </lightning-button>
+    <lightning-button label="Save Formal Approval" value="formal_approval" slot="actions" disabled={disableAction}
+      onclick={handleSave}>
+    </lightning-button>
+    <lightning-button label="Send quote" slot="actions" disabled={disableAction} onclick={handleSendQuote}>
+    </lightning-button>
+
+    <!-- Finance Details -->
+    <!-- Loan Type -->
+    <div class="c-row-details">
+      <div class="c-detail-labels"><span class="c-label">Loan Type</span></div>
+      <div class="c-detail-fields">
+        <lightning-combobox name="loanType" label="Loan Type" data-id="loanType-field" value={quoteForm.loanType}
+          placeholder="Select a value" options={loanTypeOptions} onchange={handleFieldChange} class="slds-form__item"
+          variant="label-hidden" required></lightning-combobox>
+      </div>
+    </div>
+    <!-- Loan Product -->
+    <div class="c-row-details">
+      <div class="c-detail-labels">
+        <span class="c-label">Loan Product</span>
+      </div>
+      <div class="c-detail-fields">
+        <lightning-combobox name="loanProduct" label="Loan Product" data-id="loanProduct-field"
+          value={quoteForm.loanProduct} placeholder="Select a value" options={loanProductOptions}
+          onchange={handleFieldChange} class="slds-form__item" variant="label-hidden">
+        </lightning-combobox>
+      </div>
+    </div>
+    <!-- Car Price -->
+    <div class="c-row-details">
+      <div class="c-detail-labels"><span class="c-label">Price</span></div>
+      <div class="c-detail-fields">
+        <lightning-input type="number" formatter="currency" step="0.01" name="price" data-id="price-field"
+          value={quoteForm.price} label="Price" placeholder="$" class="slds-form__item" variant="label-hidden"
+          onchange={handleFieldChange} required></lightning-input>
+      </div>
+    </div>
+    <!-- Deposit -->
+    <div class="c-row-details">
+      <div class="c-detail-labels"><span class="c-label">Deposit</span></div>
+      <div class="c-detail-fields">
+        <lightning-input type="number" formatter="currency" step="0.01" name="deposit" data-id="deposit-field"
+          value={quoteForm.deposit} label="Deposit" placeholder="$" class="slds-form__item" variant="label-hidden"
+          onchange={handleFieldChange}></lightning-input>
+      </div>
+    </div>
+    <!-- Trade In -->
+    <div class="c-row-details">
+      <div class="c-detail-labels"><span class="c-label">Trade In</span></div>
+      <div class="c-detail-fields">
+        <lightning-input type="number" formatter="currency" step="0.01" name="tradeIn" data-id="tradeIn-field"
+          value={quoteForm.tradeIn} label="Trade In" placeholder="$" class="slds-form__item" variant="label-hidden"
+          onchange={handleFieldChange}></lightning-input>
+      </div>
+    </div>
+    <!-- Payout On Trade In -->
+    <div class="c-row-details">
+      <div class="c-detail-labels">
+        <span class="c-label">Payout On Trade In</span>
+      </div>
+      <div class="c-detail-fields">
+        <lightning-input type="number" formatter="currency" step="0.01" name="payoutOn" data-id="payoutOn-field"
+          value={quoteForm.payoutOn} label="Payout On Trade In" placeholder="$" class="slds-form__item"
+          variant="label-hidden" onchange={handleFieldChange}>
+        </lightning-input>
+      </div>
+    </div>
+    <!-- Net Deposit -->
+    <div class="c-row-details">
+      <div class="c-detail-labels">
+        <span class="c-label">Net Deposit</span>
+      </div>
+      <div class="c-detail-fields">
+        <lightning-formatted-number value={netDeposit} format-style="currency" currency-code="AUD"
+          class="c-read-only-field">
+        </lightning-formatted-number>
+      </div>
+    </div>
+    <!-- Application Fee -->
+    <div class="c-row-details">
+      <div class="c-detail-labels">
+        <span class="c-label">Application Fee</span>
+      </div>
+      <div class="c-detail-fields">
+        <lightning-input type="number" formatter="currency" step="0.01" name="applicationFee"
+          data-id="applicationFee-field" value={quoteForm.applicationFee} label="Application Fee" placeholder="$"
+          class="slds-form__item field-x-small-width" variant="label-hidden" onchange={handleFieldChange} required>
+        </lightning-input>
+      </div>
+    </div>
+    <!-- DOF -->
+    <div class="c-row-details">
+      <div class="c-detail-labels"><span class="c-label">DOF</span></div>
+      <div class="c-detail-fields">
+        <lightning-input type="number" formatter="currency" step="0.01" name="dof" data-id="dof-field"
+          value={quoteForm.dof} label="DOF" placeholder="$" class="slds-form__item field-x-small-width"
+          variant="label-hidden" onchange={handleFieldChange} required>
+        </lightning-input>
+      </div>
+    </div>
+    <!-- PPSR -->
+    <div class="c-row-details">
+      <div class="c-detail-labels"><span class="c-label">PPSR</span></div>
+      <div class="c-detail-fields">
+        <lightning-input type="number" formatter="currency" step="0.01" name="ppsr" data-id="ppsr-field"
+          value={quoteForm.ppsr} label="PPSR" placeholder="$" class="slds-form__item field-x-small-width"
+          variant="label-hidden" onchange={handleFieldChange}></lightning-input>
+      </div>
+    </div>
+    <!-- (1) -->
+    <div class="c-row-details">
+      <p class="c-same-line">1)</p>
+      <lightning-input data-id="ppsrLabel1-field" name="ppsrLabel1" value={quoteForm.ppsrLabel1} variant="label-hidden"
+        class="c-same-line c-ppsr-label field-x-small-width" onchange={handleFieldChange}>
+      </lightning-input>
+      <div class="c-detail-fields">
+        <lightning-input type="number" formatter="currency" step="0.01" name="ppsr1" data-id="ppsr1-field"
+          value={quoteForm.ppsr1} label="PPSR" placeholder="$" class="slds-form__item field-x-small-width"
+          variant="label-hidden" onchange={handleFieldChange}>
+        </lightning-input>
+      </div>
+    </div>
+    <!-- (2) -->
+    <div class="c-row-details">
+      <p class="c-same-line">2)</p>
+      <lightning-input data-id="ppsrLabel2-field" value={quoteForm.ppsrLabel2} name="ppsrLabel2" variant="label-hidden"
+        class="c-same-line c-ppsr-label field-x-small-width" onchange={handleFieldChange}>
+      </lightning-input>
+      <div class="c-detail-fields">
+        <lightning-input type="number" formatter="currency" step="0.01" name="ppsr2" data-id="ppsr2-field"
+          value={quoteForm.ppsr2} label="PPSR" placeholder="$" class="slds-form__item field-x-small-width"
+          variant="label-hidden" onchange={handleFieldChange}>
+        </lightning-input>
+      </div>
+    </div>
+    <!-- (3) -->
+    <div class="c-row-details">
+      <p class="c-same-line">3)</p>
+      <lightning-input data-id="ppsrLabel3-field" value={quoteForm.ppsrLabel3} name="ppsrLabel3" variant="label-hidden"
+        class="c-same-line c-ppsr-label field-x-small-width" onchange={handleFieldChange}>
+      </lightning-input>
+      <div class="c-detail-fields">
+        <lightning-input type="number" formatter="currency" step="0.01" name="ppsr3" data-id="ppsr3-field"
+          value={quoteForm.ppsr3} label="PPSR" placeholder="$" class="slds-form__item field-x-small-width"
+          variant="label-hidden" onchange={handleFieldChange}>
+        </lightning-input>
+      </div>
+    </div>
+    <!-- (4) -->
+    <div class="c-row-details">
+      <p class="c-same-line">4)</p>
+      <lightning-input data-id="ppsrLabel4-field" value={quoteForm.ppsrLabel4} name="ppsrLabel4" variant="label-hidden"
+        class="c-same-line c-ppsr-label field-x-small-width" onchange={handleFieldChange}>
+      </lightning-input>
+      <div class="c-detail-fields">
+        <lightning-input type="number" formatter="currency" step="0.01" name="ppsr4" data-id="ppsr4-field"
+          value={quoteForm.ppsr4} label="PPSR" placeholder="$" class="slds-form__item field-x-small-width"
+          variant="label-hidden" onchange={handleFieldChange}>
+        </lightning-input>
+      </div>
+    </div>
+    <!-- Residual Value -->
+    <div class="c-row-details">
+      <div class="c-detail-labels"><span class="c-label">Residual Value</span></div>
+      <div class="c-detail-fields">
+        <lightning-input type="number" formatter="currency" step="0.01" name="residual" data-id="residual-field"
+          value={quoteForm.residual} label="Residual" placeholder="$" class="slds-form__item field-x-small-width"
+          variant="label-hidden" onchange={handleFieldChange}></lightning-input>
+      </div>
+    </div>
+    <!-- Monthly Fee -->
+    <div class="c-row-details">
+      <div class="c-detail-labels">
+        <span class="c-label">Monthly Fee</span>
+      </div>
+      <div class="c-detail-fields">
+        <lightning-input type="number" formatter="currency" step="0.01" name="monthlyFee" data-id="monthlyFee-field"
+          value={quoteForm.monthlyFee} label="Monthly Fee" placeholder="$" class="slds-form__item field-x-small-width"
+          variant="label-hidden" onchange={handleFieldChange}></lightning-input>
+      </div>
+    </div>
+    <!-- Additional Details -->
+    <div class="c-row-details">
+      <span class="c-detail-subtitle">Loan Details</span>
+    </div>
+    <!-- Term -->
+    <div class="c-row-details">
+      <div class="c-detail-labels">
+        <span class="c-label">Term (months)</span>
+      </div>
+      <div class="c-detail-fields">
+        <lightning-combobox name="term" label="Term (months)" data-id="term-field" value={quoteForm.term}
+          placeholder="Select a value" options={termOptions} onchange={handleFieldChange} class="slds-form__item"
+          variant="label-hidden" required></lightning-combobox>
+      </div>
+    </div>
+    <!-- Payment -->
+    <div class="c-row-details">
+      <div class="c-detail-labels"><span class="c-label">Payment</span></div>
+      <div class="c-detail-fields">
+        <lightning-combobox name="paymentType" label="Payment" data-id="paymentType-field" value={quoteForm.paymentType}
+          placeholder="Select a value" options={paymentTypeOptions} onchange={handleFieldChange} class="slds-form__item"
+          variant="label-hidden" required></lightning-combobox>
+      </div>
+    </div>
+    <!-- Brokerage (%) -->
+    <div class="c-row-details">
+      <div class="c-detail-labels">
+        <span class="c-label">Brokerage (%)</span>
+      </div>
+      <lightning-input type="number" step="0.01" name="brokeragePercentage" data-id="brokeragePercentage-field"
+        value={quoteForm.brokeragePercentage} label="Brokerage" placeholder="0.00"
+        class="slds-form__item field-x-small-width" variant="label-hidden" onchange={handleFieldChange} required>
+      </lightning-input>
+    </div>
+    <!-- Rates -->
+    <!-- Base Rate -->
+    <div class="c-row-details">
+      <div class="c-detail-labels"><span class="c-label">Base Rate</span></div>
+      <div class="c-detail-fields">
+        <lightning-input type="number" step="0.01" name="baseRate" data-id="baseRate-field" value={quoteForm.baseRate}
+          label="Price" placeholder="$" class="slds-form__item field-x-small-width" variant="label-hidden"
+          onchange={handleFieldChange} required>
+        </lightning-input>
+      </div>
+    </div>
+    <!-- Client Rate -->
+    <div class="c-row-details">
+      <div class="c-detail-labels">
+        <span class="c-label">Client Rate</span>
+      </div>
+      <lightning-formatted-number value={clientRate} format-style="percent-fixed" minimum-fraction-digits="2"
+        class="c-read-only-field">
+        <!-- <lightning-formatted-number value={quoteForm.clientRate} format-style="percent-fixed" minimum-fraction-digits="2"
+        class="c-read-only-field"> -->
+      </lightning-formatted-number>
+    </div>
+    <!-- NAF -->
+    <div class="c-row-details">
+      <div class="c-detail-labels"><span class="c-label">NAF</span></div>
+      <div class="c-detail-fields c-naf-division">
+        <lightning-formatted-number value={netRealtimeNaf} format-style="currency" currency-code="AUD"
+          class="c-read-only-field c-naf-field"></lightning-formatted-number>
+      </div>
+    </div>
+  </c-quote-container>
+</template>

@@ -8,7 +8,6 @@ public with sharing class QuoteWisrVLCalcController {
         Map<String, List<sObject>> rates = new Map<String, List<sObject>>();
         rates.put(rateObjName, getRates());
         r.rateSettings = rates;
-        r.settings = QuotingCalculation.getLenderSettings(WisrVLCalcExtension.LENDER_QUOTING);
         return r;
     }
 

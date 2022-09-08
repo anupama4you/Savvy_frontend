@@ -14,8 +14,6 @@ const validate = (quote, messages) => {
   let errorList = r.errors;
   let warningList = r.warnings;
 
-  const baseRate = quote.baseRate;
-
   console.log(
     "🚀 ~ file: quoteValidations.js ~ line 21 ~ validate ~ quote", quote);
 
@@ -68,6 +66,12 @@ const validate = (quote, messages) => {
     warningList.push({
       field: "baseRate",
       message: "Base Rate cannot be Zero."
+    });
+  }
+  if (quote.residualValue > 0 || Number(quote.term) > 60) {
+    errorList.push({
+      field: "residualValue",
+      message: "You cannot have a balloon or residual payment when the loan term is > 5 years."
     });
   }
   if (quote.loanPurpose === null || quote.loanPurpose === '') {

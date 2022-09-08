@@ -1,90 +1,115 @@
 import { QuoteCommons } from "c/quoteCommons";
+import { CalHelper } from "./quoteMacquarieCommercialCalcHelper";
 
+// Validation Types: ERROR, WARNING, INFO
 /**
- * @param {Object} quote - quote form OR commissions result
+ * @param {Object} quote - quote form
  * @param {Object} messages - old messages object
  * @returns
  */
 const validate = (quote, messages) => {
-  console.log(messages);
-  const r =
-    typeof messages == "undefined" || messages == null
-      ? QuoteCommons.resetMessage()
-      : messages;
-  let errorList = r.errors;
-  let warningList = r.warnings;
+    const r =
+        typeof messages == "undefined" || messages == null
+            ? QuoteCommons.resetMessage()
+            : messages;
+    let errorList = r.errors;
+    let warningList = r.warnings;
 
-  for (const fieldName in quote) {
-    const element = quote[fieldName];
-    switch (fieldName) {
-      // case "loanType":
-      //   break;
-      // case "loanProduct":
-      //   break;
-      case "price":
-        if (element <= 0 || element === null)
-          errorList.push({
-            field: "price",
-            message: "Loan Amount cannot be ZERO"
-          });
-        break;
-      case "dof":
-        if (element <= 0 || element === null)
-          errorList.push({
-            field: "dof",
-            message: "DOF  cannot be ZERO"
-          });
-        break;
-      case "applicationFee":
-        if (element <= 0 || element === null)
-          errorList.push({
-            field: "applicationFee",
-            message: "Application Fee cannot be ZERO"
-          });
-        break;
-      // case "residual":
-      //   if (element < 0 || element === null)
-      //     errorList.push({
-      //       field: "residual",
-      //       message: "Residual must be a POSITIVE number and cannot be ZERO"
-      //     });
-      //   break;
-      // case "monthlyFee":
-      //   if (element < 0 || element === null)
-      //     errorList.push({
-      //       field: "monthlyFee",
-      //       message: "Monthly Fee must be a POSITIVE number and cannot be ZERO"
-      //     });
-      //   break;
-      case "clientRate":
-        if (element <= 0 || element === null)
-          errorList.push({
+    const baseRate = quote["baseRate"];
+    const maxRate = quote["maxRate"];
+    const NAF = CalHelper.getNetRealtimeNaf(quote);
+
+    console.log('NAF===>'+NAF);
+
+    if (quote.clientRate > 14.75) {
+        errorList.push({
             field: "clientRate",
-            message: "Client Rate must be a POSITIVE number and cannot be ZERO"
-          });
-        break;
-      case "loanPurpose":
-        console.log(
-          `loanPurpose is : ${element}, the type is : ${typeof element}`
-        );
-        if (element == "" || element === null || element.length === 0) {
-          warningList.push({
-            field: "loanPurpose",
-            message: "The Loan Purpose is neccessary for any approval"
-          });
-        }
-        break;
-      default:
-        break;
+            message: "Client Rate cannot be larger than 14.75%."
+        });
     }
-  }
-  r.warnings = [].concat(QuoteCommons.uniqueArray(warningList));
-  r.errors = [].concat(QuoteCommons.uniqueArray(errorList));
-  return r;
+
+    if (quote.term > 60) {
+        errorList.push({
+            field: "term",
+            message: "Term cannot be longer than five years."
+        });
+    }
+    if (NAF < 10000) {
+        errorList.push({
+            field: "",
+            message: "Financed Amount cannot be less than $10,000."
+        });
+    }
+    if (quote.clientRate == null || quote.clientRate == 0) {
+        errorList.push({
+            field: "clientRate",
+            message: "Client Rate cannot be Zero."
+        });
+    }
+    if (baseRate == null || baseRate == 0) {
+        errorList.push({
+            field: "baseRate",
+            message: "Base Rate cannot be Zero."
+        });
+    }
+    if (quote.term == null || quote.term == 0) {
+        errorList.push({
+            field: "term",
+            message: "Please choose an appropriate term."
+        });
+    }
+    if (quote.assetYear == "" || quote.assetYear == null) {
+        errorList.push({
+            field: "assetYear",
+            message: "Please choose an Asset Year option."
+        });
+    }
+    if (quote.privateSales == "" || quote.privateSales == null) {
+        errorList.push({
+            field: "privateSales",
+            message: "Please choose a Private Sale option."
+        });
+    }
+    if (quote.brokeragePer > 4) {
+        errorList.push({
+            field: "brokeragePer",
+            message: "Brokerage cannot be greater than 4%"
+        });
+    }
+    if (quote.residualValue > 0 && quote.term > 60) {
+        warningList/errorList.push({
+            field: "term",
+            message: "You cannot have a balloon or residual payment when the loan term is > 5 years."
+        });
+    }
+    r.warnings = [].concat(QuoteCommons.uniqueArray(warningList));
+    r.errors = [].concat(QuoteCommons.uniqueArray(errorList));
+    return r;
+};
+
+const validatePostCalculation = (quote, messages) => {
+    const r =
+        typeof messages == "undefined" || messages == null
+            ? QuoteCommons.resetMessage()
+            : messages;
+    let errorList = r.errors;
+    let warningList = r.warnings;
+
+    if (quote.commission === null || !(quote.commission > 0.0)) {
+        warningList.push({
+            field: "Commissions and Repayments",
+            message: `The commission is below zero. Please make adjustment to make sure commission is above zero.`
+        });
+    }
+
+    r.warnings = [].concat(QuoteCommons.uniqueArray(warningList));
+    r.errors = [].concat(QuoteCommons.uniqueArray(errorList));
+    return r;
 };
 
 const Validations = {
-  validate: validate
+    validate: validate,
+    validatePostCalculation: validatePostCalculation
 };
 
 export { Validations };

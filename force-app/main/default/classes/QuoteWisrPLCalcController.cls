@@ -11,7 +11,6 @@ public without sharing class QuoteWisrPLCalcController {
         rates.put(rateObjName1, getRates());
         rates.put(rateObjName2, getFees());
         r.rateSettings = rates;
-        r.settings = QuotingCalculation.getLenderSettings(WisrCalculatorExtension.LENDER_QUOTING);
         return r;
     }
 

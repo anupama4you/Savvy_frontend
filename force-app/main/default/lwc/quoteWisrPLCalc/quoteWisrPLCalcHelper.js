@@ -39,14 +39,14 @@ const QUOTING_FIELDS = new Map([
   ["term", "Term__c"],
   ["creditScore", "Vedascore__c"],
   ["paymentType", "Payment__c"],
-  ["loanPurpose", "Loan_Purpose__c"]
+  ["loanPurpose", "Loan_Purpose__c"],
+  ["clientRate", "Client_Rate__c"],
 ]);
 
 // - TODO: need to map more fields
 const FIELDS_MAPPING_FOR_APEX = new Map([
   ...QUOTING_FIELDS,
   ["Id", "Id"],
-  ["clientRate", "Client_Rate__c"],
 ]);
 
 const RATE_SETTING_NAMES = ["Rate Table", "Fee Table"];
@@ -56,6 +56,8 @@ const SETTING_FIELDS = new Map([
   ["maxDof", "Max_DOF__c"],
   ["residual", "Residual_Value__c"],
   ["monthlyFee", "Monthly_Fee__c"],
+  ["term", "Term__c"],
+  ["clientRate", "Client_Rate__c"],
 ]);
 
 const BASE_RATE_FIELDS = [

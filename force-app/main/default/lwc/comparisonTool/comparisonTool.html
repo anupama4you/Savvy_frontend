@@ -6,12 +6,12 @@
     <div class="c-container slds-p-horizontal_small">
       <lightning-layout pull-to-boundary="medium">
         <lightning-layout-item size="12" flexibility="auto" padding="horizontal-medium">
-          <c-filter-form-com-tools onsearch={handleSearch} global-params={globalParams}></c-filter-form-com-tools>
+          <c-filter-form-com-tools record-id={recordId} onsearch={handleSearch} global-params={globalParams}></c-filter-form-com-tools>
         </lightning-layout-item>
       </lightning-layout>
       <lightning-layout pull-to-boundary="medium">
         <lightning-layout-item size="12" flexibility="auto" padding="horizontal-medium">
-          <c-comparison-tool-result params={filterParams} records={calcs} ></c-comparison-tool-result>
+          <c-comparison-tool-result params={filterParams} records={calcs} record-id={recordId}></c-comparison-tool-result>
         </lightning-layout-item>
       </lightning-layout>
     </div>

@@ -1,7 +1,9 @@
-import getQuotingData from "@salesforce/apex/QuoteController.getQuotingData";//TBC not used
-import save from "@salesforce/apex/QuoteMoneyPlaceController.save";
+import getQuotingData from "@salesforce/apex/QuoteMoney3Controller.getQuotingData";
+import profileOnChangeAction from "@salesforce/apex/QuoteMoney3Controller.profileOnChangeAction";
+import getBaseRates from "@salesforce/apex/QuoteController.getBaseRates";
 import calculateRepayments from "@salesforce/apex/QuoteController.calculateRepayments";
 import sendQuote from "@salesforce/apex/QuoteController.sendQuote";
+import save from "@salesforce/apex/QuoteMoney3Controller.save";
 import {
   QuoteCommons,
   CommonOptions,
@@ -9,86 +11,66 @@ import {
 } from "c/quoteCommons";
 import { Validations } from "./quoteValidations";
 
-// only hard code in Plenti
-let tableRatesData = [];
-const tableRateDataColumns = [
-  { label: "Profile", fieldName: "Profile", type: "text" },
-  { label: "Tier", fieldName: "Tier", type: "text" },
-  { label: "Minimum Equifax Score", fieldName: "Min_Equifax_Score", type: "text" },
-  { label: "Overs", fieldName: "Overs", type: "text" },
-  { label: "New/Demo", fieldName: "Rate0", type: "text" },
-  { label: "(2022 - 2021)", fieldName: "Rate1", type: "text" },
-  { label: "(2020 - 2019)", fieldName: "Rate2", type: "text" },
-  { label: "(2018 - 2015)", fieldName: "Rate3", type: "text" },
-  { label: "(2014 - 2010)", fieldName: "Rate4", type: "text" }
-];
+// Default settings
+let lenderSettings = {};
 
-
-const LENDER_QUOTING = "Money Place";
+const LENDER_QUOTING = "Money3";
 
 const QUOTING_FIELDS = new Map([
   ["loanType", "Loan_Type__c"],
   ["loanProduct", "Loan_Product__c"],
+  ["assetType", "Goods_type__c"],
   ["price", "Vehicle_Price__c"],
+  ["deposit", "Deposit__c"],
+  ["tradeIn", "Trade_In__c"],
+  ["payoutOn", "Payout_On__c"],
+  ["netDeposit", "Net_Deposit__c"],
   ["applicationFee", "Application_Fee__c"],
   ["dof", "DOF__c"],
+  ["ppsr", "PPSR__c"],
   ["residual", "Residual_Value__c"],
   ["monthlyFee", "Monthly_Fee__c"],
   ["term", "Term__c"],
   ["paymentType", "Payment__c"],
   ["clientRate", "Client_Rate__c"],
-  ["loanPurpose", "Loan_Purpose__c"],
-  ["applicationId", "Application__c"]
+  ["applicationId", "Application__c"],
+  ["clientTier", "Client_Tier__c"],
+  ["customerProfile", "Customer_Profile__c"],
+  ["customerGrading", "Category_Type__c"],
+  ["riskFee", "Risk_Fee__c"],
+  ["loanPurpose", "Loan_Purpose__c"]
 ]);
 
-// - TODO: need to map more fields
-const FIELDS_MAPPING_FOR_APEX = new Map([["Id", "Id"], ...QUOTING_FIELDS]);
+const FIELDS_MAPPING_FOR_APEX = new Map([
+  ...QUOTING_FIELDS,
+  ["Id", "Id"],
+  ["clientTier", "Client_Tier__c"],
+  ["baseRate", "Base_Rate__c"],
+  ["maxRate", "Manual_Max_Rate__c"]
+]);
 
-// setting fields refer to the DEFAULT VALUES that showing on th page you open
+const RATE_SETTING_NAMES = ["Money3"];
+
 const SETTING_FIELDS = new Map([
+  ["monthlyFee", "Monthly_Fee__c"],
+  ["ppsr", "PPSR__c"],
   ["applicationFee", "Application_Fee__c"],
   ["maxApplicationFee", "Application_Fee__c"],
   ["dof", "DOF__c"],
-  ["maxDof", "DOF__c"],
-  ["monthlyFee", "Monthly_Fee__c"]
+  ["maxDof", "Max_DOF__c"]
 ]);
 
-const calcOptions = {
-  loanTypes: CommonOptions.loanTypes,
-  paymentTypes: CommonOptions.paymentTypes,
-  loanProducts: [
-    { label: "Consumer Loan", value: "Consumer Loan" }
-  ],
-  terms: CommonOptions.terms(36, 72),
-  assetTypes: CommonOptions.assetTypes,
-  profiles: [
-    { label: "None", value: "" },
-    { label: "Asset Finance", value: "Asset Finance" },
-    { label: "Personal Finance", value: "Personal Finance" }
-  ],
-  clientTiers: CommonOptions.clientTiers,
-  vehicleConditions: CommonOptions.vehicleConditions,
-  greenCars: CommonOptions.yesNo,
-  vehicleBuildDates: CommonOptions.vehicleBuildDates(2022, 2009),
-  leaseAgreements: CommonOptions.yesNo,
-  privateSales: CommonOptions.yesNo,
-  //plentiAPIUsers: CommonOptions.apiUsers,
-  customerGradings: [//Dynamic Picklist TODO
-    { label: "None", value: "" },
-    { label: "Platinum", value: "Platinum" },
-    { label: "Gold", value: "Gold" },
-    { label: "Silver", value: "Silver" },
-    { label: "Bronze", value: "Bronze" },
-    { label: "Micro Motor", value: "Micro Motor" },
-    { label: "Mini PL", value: "Mini PL" }
-  ]
-};
+const BASE_RATE_FIELDS = ["customerGrading"];
 
-/**
- *
- * @param {object} quote
- * @returns Returns list of calculation results
- */
+const CALC_FEES_FIELDS = [
+  "price",
+  "deposit",
+  "tradeIn",
+  "payoutOn",
+  "customerProfile",
+  "customerGrading"
+];
+
 const calculate = (quote) =>
   new Promise((resolve, reject) => {
     let res = {
@@ -113,18 +95,19 @@ const calculate = (quote) =>
       // Prepare params
       const p = {
         lender: LENDER_QUOTING,
-        totalAmount: QuoteCommons.calcTotalAmount(quote),
-        totalInsurance: QuoteCommons.calcTotalInsuranceType(quote),
-        totalInsuranceIncome: QuoteCommons.calcTotalInsuranceType(quote),
+        totalAmount: calculateRealTimeNaf(quote),
+        // totalInsurance: QuoteCommons.calcTotalInsuranceType(quote),
+        totalInsuranceIncome: QuoteCommons.calcTotalInsuranceIncome(quote),
         clientRate: quote.clientRate,
         paymentType: quote.paymentType,
         term: quote.term,
         dof: quote.dof,
         monthlyFee: quote.monthlyFee,
         residualValue: quote.residual,
-        amountBaseComm: quote.price
+        customerProfile: quote.customerProfile,
+        riskGrade: quote.customerGrading,
+        amountBaseComm: quote.price - QuoteCommons.calcNetDeposit(quote)
       };
-
       // Calculate
       console.log(`Calculating repayments...`, JSON.stringify(quote, null, 2));
       console.log(`@@param:`, JSON.stringify(p, null, 2));
@@ -134,9 +117,15 @@ const calculate = (quote) =>
         .then((data) => {
           console.log(`@@SF:`, JSON.stringify(data, null, 2));
           // Mapping
-          res.commissions = QuoteCommons.mapCommissionSObjectToLwc(data);
+          res.commissions = QuoteCommons.mapCommissionSObjectToLwc(
+            data,
+            quote.insurance
+          );
           // Validate for results
-          res.messages = Validations.validate(res.commissions, res.messages);
+          res.messages = Validations.validatePostCalculation(
+            res.commissions,
+            res.messages
+          );
           resolve(res);
         })
         .catch((error) => {
@@ -151,58 +140,117 @@ const calculate = (quote) =>
     }
   });
 
-// Reset the values to default
-const reset = (recordId, appQuoteId = null) => {
-  return {
+//return term months
+const getTerms = (min, max, interval) => {
+  let r = [];
+  for (let i = min; i < max + interval; ) {
+    r.push({ label: i.toString(), value: i });
+    i += interval;
+  }
+  return r;
+};
+
+const calcOptions = {
+  loanTypes: CommonOptions.loanTypes,
+  paymentTypes: CommonOptions.paymentTypes,
+  loanProducts: [{ label: "Consumer Loan", value: "Consumer Loan" }],
+  assetTypes: [
+    { label: "Car", value: "Car" },
+    { label: "Caravan", value: "Caravan" }
+  ],
+  terms: getTerms(36, 60, 12),
+  customerProfiles: [
+    { label: "-- None --", value: null },
+    { label: "Asset Finance", value: "Asset Finance" },
+    { label: "Personal Finance", value: "Personal Finance" }
+  ],
+  clientTiers: [
+    { label: "Tier 1", value: "Tier 1" },
+    { label: "Tier 2", value: "Tier 2" },
+    { label: "Tier 3", value: "Tier 3" }
+  ],
+  vehicleConditions: [
+    { label: "New", value: "new" },
+    { label: "Demo", value: "demo" },
+    { label: "Used", value: "used" }
+  ],
+  greenCars: CommonOptions.yesNo,
+  vehicleYears: getVehicleYear(),
+  leaseAgreements: CommonOptions.yesNo,
+  privateSales: CommonOptions.yesNo,
+  money3APIUsers: [{ label: "52454-Xyz Broker", value: "52454-Xyz Broker" }],
+  customerGradings: [
+    { label: "-- None --", value: null },
+    { label: "Platinum", value: "Platinum" },
+    { label: "Gold", value: "Gold" },
+    { label: "Silver", value: "Silver" },
+    { label: "Bronze", value: "Bronze" }
+  ],
+  noneOption: [{ label: "-- None --", value: null }]
+};
+
+const reset = (recordId) => {
+  let r = {
     oppId: recordId,
-    Id: appQuoteId,
-    quoteName: LENDER_QUOTING,
     loanType: calcOptions.loanTypes[0].value,
     loanProduct: calcOptions.loanProducts[0].value,
-    price: null,
-    applicationFee: null,
-    maxDof: 0.0,
-    dof: 0.0,
-    residual: 0.0,
-    term: 60,
-    monthlyFee: 0.0,
-    clientRate: 0.0,
-    paymentType: calcOptions.paymentTypes[0].value,
-    commissions: QuoteCommons.resetResults(),
-    loanPurpose: "",
     assetType: calcOptions.assetTypes[0].value,
-    profile: "",
-    clientTier: "",
-    vehicleCondition: "",
-    greenCar: "",
-    vehicleBuildDate: "",
-    leaseAgreement: "",
-    privateSale: "No",
-    plentiAPIUser: "",
-    standardRate: 0.0
+    price: null,
+    deposit: null,
+    netDeposit: 0.0,
+    tradeIn: null,
+    payoutOn: null,
+    applicationFee: null,
+    maxApplicationFee: null,
+    dof: null,
+    maxDof: 0.0,
+    ppsr: null,
+    residual: 0.0,
+    monthlyFee: null,
+    term: 60,
+    customerProfile: null,
+    clientTier: null,
+    vehicleCondition: null,
+    greenCar: null,
+    vehicleBuildDate: null,
+    leaseAgreement: null,
+    privateSales: "N",
+    paymentType: "Arrears",
+    maxRate: 0.0,
+    baseRate: 0.0,
+    clientRate: null,
+    commissions: QuoteCommons.resetResults(),
+    // brokerage: 5,
+    riskFee: null,
+    riskFeeTotal: 0.0,
+    customerGrading: calcOptions.customerGradings[0].value,
+    loanPurpose: "",
+    // include insurance object if the calculator has the part
+    insurance: { integrity: {} }
   };
+  r = QuoteCommons.mapDataToLwc(r, lenderSettings, SETTING_FIELDS);
+  r.maxDof = 0.0;
+  return r;
 };
 
 // Load Data
 const loadData = (recordId) =>
   new Promise((resolve, reject) => {
-    //  const fields = Array.from(QUOTING_FIELDS.values());
     const fields = [
       ...QUOTING_FIELDS.values(),
       ...QuoteCommons.COMMISSION_FIELDS.values()
     ];
     console.log(`@@fields:`, JSON.stringify(fields, null, 2));
     getQuotingData({
-      param: { oppId: recordId, fields: fields, calcName: LENDER_QUOTING }
+      param: {
+        oppId: recordId,
+        fields: fields,
+        calcName: LENDER_QUOTING,
+        rateSettings: RATE_SETTING_NAMES
+      }
     })
       .then((quoteData) => {
-        console.log(
-          `@@ quoteData in loadData function: ${JSON.stringify(
-            quoteData,
-            null,
-            2
-          )}`
-        );
+        console.log(`@@SF:`, JSON.stringify(quoteData, null, 2));
         // Mapping Quote's fields
         let data = QuoteCommons.mapSObjectToLwc({
           calcName: LENDER_QUOTING,
@@ -212,47 +260,63 @@ const loadData = (recordId) =>
           quotingFields: QUOTING_FIELDS
         });
 
-        // Rate Setting
-        /*tableRatesData = [
-          {
-            profile: "a",
-            tier: "$5,000 - $19,999"
-          }
-        ];*/
-        console.log(`@@data in loadData:`, JSON.stringify(data, null, 2));
+        console.log(`@@data:`, JSON.stringify(data, null, 2));
+        // Settings
+        lenderSettings = quoteData.settings;
+        // TODO: remove hard code value
+        data.maxDof = 0.0;
         resolve(data);
       })
       .catch((error) => reject(error));
   });
 
-/**
- * @param {number} value - value of input price/amount
- * @returns max dof for two decimal format
- */
-const handleMaxDOF = (value) => {
-  let r = 0.0;
-  let v = value; //
-  if (v < 0) {
-    r = 0.0;
-  } else if (v < 20000) {
-    r = v * 0.1 > 990.0 ? 990.0 : v * 0.1;
-  } else if (v < 40000) {
-    r = 1690.0;
-  } else {
-    r = 1990.0;
-  }
-  return parseFloat(r.toFixed(2));
-};
+// Get Base Rates
+const getMyBaseRates = (quote) =>
+  new Promise((resolve, reject) => {
+    const p = {
+      lender: LENDER_QUOTING,
+      riskGrade: quote.customerGrading
+    };
+    getBaseRates({
+      param: p
+    })
+      .then((rates) => {
+        console.log("rates >> ", JSON.stringify(rates));
+        resolve(rates);
+      })
+      .catch((error) => reject(error));
+  });
 
-const getTableRatesData = () => {
-  return tableRatesData;
-};
+const calculateParams = (quote) =>
+  new Promise((resolve, reject) => {
+    const params = QuoteCommons.mapLWCToSObject(
+      quote,
+      recordId,
+      LENDER_QUOTING,
+      FIELDS_MAPPING_FOR_APEX
+    );
+    params.data.NAF__c = calculateRealTimeNaf(quote);
+    console.log("@params >> " + JSON.stringify(params, null, 2));
+    profileOnChangeAction({
+      quote: params,
+      riskFeeBase: calcRiskFeeBase(quote) // riskFeeBase = getLoanAmount
+    })
+      .then((data) => {
+        console.log("calculate params >> " + JSON.stringify(data, null, 2));
+        resolve(data);
+      })
+      .catch((error) => {
+        console.error(error);
+        reject(error);
+      });
+  });
 
 /**
  * -- Lee
- * @param {String} approvalType - string and what type of the button
- * @param {Object} param - quote form
+ * @param {String} approvalType - type of approval
+ * @param {Object} quote - quoting form
  * @param {Id} recordId - recordId
+ * @returns
  */
 const saveQuote = (approvalType, param, recordId) =>
   new Promise((resolve, reject) => {
@@ -270,18 +334,10 @@ const saveQuote = (approvalType, param, recordId) =>
           resolve(data);
         })
         .catch((error) => {
-          reject(`error in saveApproval ${approvalType}: `, error.messages);
+          reject(error);
         });
     } else {
-      reject(
-        new Error(
-          `Something Wrong, appType: ${approvalType}, param: ${JSON.stringify(
-            param,
-            null,
-            2
-          )}, param: ${recordId}`
-        )
-      );
+      reject(new Error("QUOTE OR RECORDID EMPTY in SaveQuoting function"));
     }
   });
 
@@ -314,15 +370,82 @@ const sendEmail = (param, recordId) =>
     }
   });
 
+// re-write calculate total amount
+const calculateRealTimeNaf = (quote) => {
+  const naf =
+    QuoteCommons.calcNetRealtimeNaf(quote) +
+    (quote.riskFee ? parseFloat(quote.riskFee) : 0);
+  console.log("naf >> " + naf);
+  return (
+    QuoteCommons.calcNetRealtimeNaf(quote) +
+    (quote.riskFee ? parseFloat(quote.riskFee) : 0)
+  );
+};
+
+// calculate money 3 risk fee
+const getMoney3RiskFee = (quote) => {
+  try {
+    let r = 0.0;
+    if (quote != null && calcRiskFeeBase(quote) > 12000) {
+      r = (calcRiskFeeBase(quote) * 5) / 100.0;
+      if (r > 995.0) {
+        r = 995.0;
+      }
+    }
+    return parseFloat(r.toFixed(2));
+  } catch (error) {
+    console.error(error);
+  }
+};
+
+const calcRiskFeeBase = (quote) => {
+  try {
+    let r = 0.0;
+    r +=
+      (quote.price ? quote.price : 0) -
+      (quote.customerProfile === "Personal Finance" ? 0 : quote.netDeposit);
+    return r;
+  } catch (error) {
+    console.error(error);
+  }
+};
+
+const renderTerms = (quote) => {
+  try {
+    let terms = getTerms(36, 60, 12);
+    if (!quote) return terms;
+    if (quote.customerProfile === "Personal Finance") {
+      terms = getTerms(24, 36, 12);
+    }
+    if (
+      quote.customerGrading === "Mini PL" &&
+      quote.customerProfile === "Personal Finance"
+    ) {
+      terms = getTerms(12, 24, 12);
+    }
+    if (quote.customerGrading === "Micro Motor") {
+      terms = getTerms(24, 36, 12);
+    }
+    return terms;
+  } catch (error) {
+    console.error(error);
+  }
+};
+
 export const CalHelper = {
   options: calcOptions,
-  tableRateDataColumns: tableRateDataColumns,
-  getNetRealtimeNaf: QuoteCommons.calcNetRealtimeNaf,
   calculate: calculate,
   load: loadData,
   reset: reset,
-  handleMaxDOF: handleMaxDOF,
-  getTableRatesData: getTableRatesData,
+  calculateParams: calculateParams,
+  baseRates: getMyBaseRates,
+  BASE_RATE_FIELDS: BASE_RATE_FIELDS,
+  CALC_FEES_FIELDS: CALC_FEES_FIELDS,
+  lenderSettings: lenderSettings,
+  calculateRealTimeNaf: calculateRealTimeNaf,
+  getNetDeposit: QuoteCommons.calcNetDeposit,
+  getMoney3RiskFee: getMoney3RiskFee,
   saveQuote: saveQuote,
-  sendEmail: sendEmail
+  sendEmail: sendEmail,
+  renderTerms: renderTerms
 };

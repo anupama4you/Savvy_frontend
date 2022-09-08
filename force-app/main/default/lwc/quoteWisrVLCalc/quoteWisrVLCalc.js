@@ -11,8 +11,7 @@ import { getRecord } from "lightning/uiRecordApi";
 const fields = [FNAME_FIELD, LNAME_FIELD, OPPNAME_FIELD];
 
 export default class QuoteWisrVLCalc extends LightningElement {
-    tableRatesCols = CalHelper.tableRateDataColumns;
-    tableFeesCols = CalHelper.tableFeeDataColumns;
+    @track tableRatesCols = CalHelper.tableRateDataColumns;
     isBusy;
     isBaseRateBusy;
     isCalculated = false;
@@ -35,8 +34,10 @@ export default class QuoteWisrVLCalc extends LightningElement {
         .then((data) => {
             console.log(`CalHelper: Data loaded!`, data);
             this.quoteForm = data;
+            this.quoteForm.vehicleYear = this.quoteForm.vehicleYear? this.quoteForm.vehicleYear.toString() : "";
             this.tableRates = CalHelper.getTableRatesData();
-            console.log('@@tableRates', JSON.stringify(this.tableRates));
+            console.log(this.tableRatesCols);
+            console.log('@@clientRate', JSON.stringify(this.quoteForm.clientRate));
         })
         .catch((error) => {
             console.error(JSON.stringify(error, null, 2));
@@ -157,7 +158,7 @@ export default class QuoteWisrVLCalc extends LightningElement {
     reset() {
         this.quoteForm = CalHelper.reset(this.recordId);
         console.log(
-        "🚀 ~ file: QuoteWisrVLCalc.js ~ line 130 ~ QuoteWisrVLCalc ~ reset ~ this.quoteForm",
+        "🚀 ~ file: QuoteWisrVLCalc.js ~ line 160 ~ QuoteWisrVLCalc ~ reset ~ this.quoteForm",
         JSON.stringify(this.quoteForm, null, 2)
         );
     }
@@ -182,7 +183,6 @@ export default class QuoteWisrVLCalc extends LightningElement {
 
     // Max Application Fee and DOF 
     maxFeeDofCalc() {
-        console.log(`maxFeeDofCalc...`);
         let maxValues = CalHelper.maxFees(this.quoteForm);
         this.quoteForm.maxDof = maxValues.maxDof;
         this.quoteForm.maxApplicationFee = maxValues.maxApplicationFee;
@@ -192,6 +192,7 @@ export default class QuoteWisrVLCalc extends LightningElement {
         if(this.quoteForm.applicationFee === "" || this.quoteForm.applicationFee === null || this.quoteForm.applicationFee === 0 || !this.isApplicationFeeInputed) {
             this.quoteForm.applicationFee = this.quoteForm.maxApplicationFee;
         }
+        console.log(`maxFeeDofCalc...`);
     }
 
     // -------------

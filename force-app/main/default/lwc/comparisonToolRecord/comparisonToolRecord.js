@@ -1,8 +1,14 @@
 import { LightningElement, api, track } from 'lwc';
+import { NavigationMixin } from "lightning/navigation";
 import calculatePayments from "@salesforce/apex/ComparisonToolsController.calculate";
-import { convertNumbers, lenderLogo } from "c/comparisonToolUtils";
+import {
+  convertNumbers,
+  lenderLogo,
+  getQuotingPage
+} from "c/comparisonToolUtils";
 
-export default class ComparisonToolRecord extends LightningElement {
+export default class ComparisonToolRecord extends NavigationMixin(LightningElement) {
+  @api recordId;
   @api record;
   @api params;
   @api get options() {
@@ -51,7 +57,7 @@ export default class ComparisonToolRecord extends LightningElement {
     p["customClientRate"] = this.form.clientRate;
     p["customDof"] = this.form.dof;
     p["clientRateFactor"] = this.myOptions.clientRate;
-    // console.log(`param:`, JSON.stringify(this.params, null, 2));
+    console.log(`Record params:`, JSON.stringify(this.params, null, 2));
     // console.log(`p:`, JSON.stringify(p, null, 2));
     // console.log(`invoking backend...`);
     // console.log(`calc:`, JSON.stringify(c));
@@ -92,6 +98,15 @@ export default class ComparisonToolRecord extends LightningElement {
 
   handleCalculate(event) {
     this.calculate();
+  }
+
+  handleOpenCalculator(event) {
+    // this.calculate();
+    console.log(`handleOpenCalculator...`);
+    let pageRef = getQuotingPage(this.recordId, this.oppName, this.record.Name, undefined);
+    console.log("🚀 ~ file: comparisonToolRecord.js ~ line 106 ~ ComparisonToolRecord ~ handleOpenCalculator ~ pageRef", JSON.stringify(pageRef, null, 2));
+    
+    this[NavigationMixin.Navigate](pageRef);
   }
 
   get customValue1Options() {
@@ -156,4 +171,9 @@ export default class ComparisonToolRecord extends LightningElement {
     }
     return r;
   }
+
+  get oppName() {
+    return this.params && this.params.oppName ? this.params.oppName : null;
+  }
+
 }

@@ -356,7 +356,8 @@ const getResidualValue = (quote) => {
 }
 
 const getResidualPercentage = (quote) => {
-  return (quote.residualValue / (quote.price - QuoteCommons.calcNetDeposit(quote))) * 100;
+  let percentage = (quote.residualValue / (quote.price - QuoteCommons.calcNetDeposit(quote))) * 100;
+  return percentage.toFixed(2);
 }
 
 // Get Base Rates

@@ -4,7 +4,6 @@ public with sharing class QuoteMorrisCalcController {
         QuoteController.QuotingDataParam param
     ) {
         QuoteController.AppQuotingWraper r = QuoteController.getQuotingData(param); 
-        r.settings = QuotingCalculation.getLenderSettings(GrowAssetCarExtension.LENDER_QUOTING);
         return r;
     }
 
@@ -52,22 +51,20 @@ public with sharing class QuoteMorrisCalcController {
         //Financial Details
         pdf.getParameters().put('loanType',  quote.Loan_Type__c+'');
         pdf.getParameters().put('assetType', quote.Goods_type__c+'');
+        pdf.getParameters().put('productType', quote.Loan_Facility_Type__c+'');
+        pdf.getParameters().put('abnLength', quote.Extra_Label_1__c+'');
         pdf.getParameters().put('price', NumberUtils.format(quote.Vehicle_Price__c));
         pdf.getParameters().put('deposit', NumberUtils.format(quote.Deposit__c));
         pdf.getParameters().put('tradeIn', NumberUtils.format(quote.Trade_In__c));
         pdf.getParameters().put('payoutOn', NumberUtils.format(quote.Payout_On__c));
         pdf.getParameters().put('applicationFee', NumberUtils.format(quote.Application_Fee__c));
-        pdf.getParameters().put('dof', NumberUtils.format(quote.DOF__c));
         pdf.getParameters().put('ppsr', NumberUtils.format(quote.PPSR__c));
-        pdf.getParameters().put('privateSales', quote.Private_Sales__c + '');
-        pdf.getParameters().put('vehicleAge', quote.Vehicle_Age__c + '');
-        pdf.getParameters().put('residualValue', NumberUtils.format(quote.Residual_Value__c));
-        pdf.getParameters().put('brokeragePercentage', NumberUtils.format(quote.Brokerage__c));
         pdf.getParameters().put('term', NumberUtils.format(quote.Term__c));
         pdf.getParameters().put('paymentType', quote.Payment__c+'');
-        pdf.getParameters().put('monthlyFee', NumberUtils.format(quote.Monthly_Fee__c));
-        pdf.getParameters().put('creditScore', String.valueOf(quote.Credit_Score__c)+'');
-        
+        pdf.getParameters().put('gstLength', quote.Extra_Label_2__c+'');
+        pdf.getParameters().put('assetAge', quote.Vehicle_Age__c + '');
+        pdf.getParameters().put('customerProfile', quote.Customer_Profile__c + '');
+        pdf.getParameters().put('brokeragePercentage', NumberUtils.format(quote.Brokerage__c));
         pdf.getParameters().put('baseRate', NumberUtils.format(quote.Base_Rate__c));
         pdf.getParameters().put('clientRate', NumberUtils.format(quote.Client_Rate__c));
         
@@ -97,11 +94,9 @@ public with sharing class QuoteMorrisCalcController {
         p.Loan_Type__c = quote.Loan_Type__c;
         p.Loan_Product__c = quote.Loan_Product__c;
         p.Loan_Term__c = quote.Term__c;
-        p.Client_Rate__c = quote.Client_Rate__c;
         p.Payments__c = quote.Repayment_Monthly__c > 0 ? quote.Repayment_Monthly__c : 0.00; 
         p.Cost_of_Goods__c = quote.Vehicle_Price__c;
         p.Deposit__c = quote.Net_Deposit__c == null? 0 : quote.Net_Deposit__c;
-        p.DOF__c = quote.DOF__c;
         p.Brokerage__c = quote.Commission_Estimation__c == null? 0 : quote.Commission_Estimation__c;
         p.Lender_App_Fee__c = quote.Application_Fee__c;
         p.Equalisation_Fee_PPSR__c = quote.PPSR__c;

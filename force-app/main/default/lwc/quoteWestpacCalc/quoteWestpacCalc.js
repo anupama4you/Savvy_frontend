@@ -19,24 +19,25 @@ export default class QuoteWestpacCalc extends LightningElement {
     @api recordId; // Opportunity Id
     @track messageObj = QuoteCommons.resetMessage();
     @track quoteForm;
+    @track resDisable;
+    @track typeValue;
     // Rate Settings
     @track tableRates;
     @track tableRates2;
     @track tableRates3;
+
     @wire(getRecord, { recordId: "$recordId", fields })
     opp;
 
     connectedCallback() {
         console.log(`connectedCallback...`);
         this.isBusy = true;
+        this.resDisable = { per: true, val: false };
         this.reset();
         CalHelper.load(this.recordId)
             .then((data) => {
                 console.log(`Data loaded! ${JSON.stringify(data, null, 2)}`);
                 this.quoteForm = data;
-                // this.tableRates = CalHelper.getTableRatesData();
-                // this.tableRates2 = CalHelper.getTableRatesData2();
-                // this.tableRates3 = CalHelper.getTableRatesData3();
             })
             .catch((error) => {
                 console.error(JSON.stringify(error, null, 2));
@@ -51,6 +52,7 @@ export default class QuoteWestpacCalc extends LightningElement {
     // lifecycle hook - after rendering all components(child+parent), will triggered
     renderedCallback() {
         QuoteCommons.resetValidateFields(this);
+        this.quoteForm.clientRate = CalHelper.getClientRateCalc(this.quoteForm);
     }
 
     get logoUrl() {
@@ -67,7 +69,11 @@ export default class QuoteWestpacCalc extends LightningElement {
     }
 
     get loanFrequencyOptions() {
-        return CalHelper.options.loanFrequencies;
+        let opt;
+        const p = this.quoteForm.loanProduct;
+        let o = CalHelper.prodMap[p];
+        opt = CalHelper.options[o];
+        return opt;
     }
 
     get assetTypeOptions() {
@@ -97,7 +103,7 @@ export default class QuoteWestpacCalc extends LightningElement {
     get termOptions() {
         return CalHelper.options.terms;
     }
-    
+
     get typeValueOptions() {
         return CalHelper.options.typeValues;
     }
@@ -125,6 +131,35 @@ export default class QuoteWestpacCalc extends LightningElement {
         if (CalHelper.BASE_RATE_FIELDS.includes(fldName)) {
             this.baseRateCalc();
         }
+        if (CalHelper.RESIDUAL_VALUE_FIELDS.includes(fldName)) {
+            this.residualCalc();
+        }
+
+        if (fldName === "loanProduct") {
+            CalHelper.monPro.includes(this.quoteForm.loanProduct) && this.quoteForm.loanFrequency === "FORTNIGHTLY"
+                && (this.quoteForm.loanFrequency = "MONTHLY");
+            // this.quoteForm.loanProduct;
+            // this.quoteForm.loanFrequency === "FORTNIGHTLY";
+            // console.log(`FRE IS ${this.quoteForm.loanFrequency}`);
+        }
+        if (fldName === "baseRate" || fldName === "brokeragePercentage") {
+            this.quoteForm.clientRate = CalHelper.getClientRateCalc(this.quoteForm);
+        }
+    }
+
+    residualCalc() {
+        if (this.quoteForm.typeValue === 'Value' && this.quoteForm.residualValue > 0) {
+            this.quoteForm.residualPer = CalHelper.getResiPer(this.quoteForm);
+        }
+        else if (this.quoteForm.typeValue === 'Percentage' && this.quoteForm.residualPer > 0) {
+            this.quoteForm.residualValue = CalHelper.getResiVal(this.quoteForm);
+        }
+    }
+
+    handleTypeChange(event) {
+        this.quoteForm.typeValue = event.target.value;
+        console.log('this.quoteForm.typeValue: ', this.quoteForm.typeValue);
+        this.resPerDisable();
     }
 
     // Calculations
@@ -140,6 +175,14 @@ export default class QuoteWestpacCalc extends LightningElement {
         return !this.isCalculated;
     }
 
+    resPerDisable() {
+        // console.log(`come here ${CalHelper.options.typeValues[0]}`);
+        let tmp;
+        this.quoteForm.typeValue === CalHelper.options.typeValues[0].value ? tmp = true : tmp = false;
+        this.resDisable.per = !tmp;
+        this.resDisable.val = tmp;
+    }
+
     // Reset
     reset() {
         this.quoteForm = CalHelper.reset();
@@ -151,12 +194,14 @@ export default class QuoteWestpacCalc extends LightningElement {
 
     // Base Rate
     baseRateCalc() {
+        return;
+
         this.isBaseRateBusy = true;
         CalHelper.baseRates(this.quoteForm)
             .then((data) => {
                 console.log(`Data loaded!`);
                 this.quoteForm.baseRate = data.baseRate;
-                this.quoteForm.maxRate = data.maxRate;
+                // this.quoteForm.maxRate = data.maxRate;
             })
             .catch((error) => {
                 console.error(JSON.stringify(error, null, 2));
@@ -205,6 +250,7 @@ export default class QuoteWestpacCalc extends LightningElement {
     // Reset
     handleReset(event) {
         this.reset();
+        this.quoteForm.typeValue = "Value";
         this.messageObj = QuoteCommons.resetMessage();
         this.isCalculated = false;
         QuoteCommons.handleHasErrorClassClear(this);

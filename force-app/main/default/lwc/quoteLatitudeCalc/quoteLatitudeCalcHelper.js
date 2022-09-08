@@ -18,6 +18,7 @@ let rates3List = [];
 let riskGradeOptionsData = [];
 // all table types defined
 let formattedTableData = [];
+const FIXED_RATE_FACTOR = 1.5;
 
 const TABLE_DATA_COLUMNS = [
   { label: "0 - 3 years", fieldName: "comm1" },
@@ -58,6 +59,7 @@ const QUOTING_FIELDS = new Map([
   ["applicationId", "Application__c"],
   ["netDeposit", "Net_Deposit__c"],
   ["baseRate", "Base_Rate__c"],
+  ["rateOption", "Rate_Options__c"],
 ]);
 
 // - TODO: need to map more fields
@@ -76,7 +78,8 @@ const BASE_RATE_FIELDS = [
   "customerProfile",
   "loanTypeDetail",
   "carAge",
-  "vehicleType"
+  "vehicleType",
+  "rateOption"
 ];
 
 const DOF_CALC_FIELDS = [
@@ -202,6 +205,10 @@ const calcOptions = {
     { label: "Demo", value: "DEMO" },
     { label: "Used", value: "USED" }
   ],
+  rateOptions: [
+    { label: "Fixed", value: "Fixed" },
+    { label: "Variable", value: "Variable" }
+  ],
   terms: CommonOptions.terms(12, 84)
 };
 
@@ -236,7 +243,8 @@ const reset = (recordId) => {
     paymentType: calcOptions.paymentTypes[0].value,
     loanTypeDetail: calcOptions.classes[0].value,
     commissions: QuoteCommons.resetResults(),
-    registrationFee: 3.40
+    rateOption: calcOptions.rateOptions[0].value,
+    registrationFee: 3.40,
   };
   r = QuoteCommons.mapDataToLwc(r, lenderSettings, SETTING_FIELDS);
   return r;
@@ -299,6 +307,7 @@ const getMyBaseRates = (quote) =>
       loanTypeDetail: quote.loanTypeDetail,
       goodsType: quote.category,
       carAge: quote.carAge,
+      interestType: quote.rateOption,
       hasMaxRate: true
     };
     console.log(`getMyBaseRates...`, JSON.stringify(p, null, 2));
@@ -325,7 +334,7 @@ const getQuoteFees = (quote) => {
 }
 
 // Get Single table out using #category and #class
-const getSingleTable = (category, class_) => {
+const getSingleTable = (quote, category, class_) => {
 
   let fieldsList = { "comm1": [], "comm2": [], "comm3": [], "rate1": [], "rate2": [], "rate3": [] }
 
@@ -351,18 +360,16 @@ const getSingleTable = (category, class_) => {
       }
     });
 
-    console.log(`fieldsList...`, JSON.stringify(fieldsList, null, 2));
-
     const singleTable = [];
 
     for (let j = 0; j < 9; j++) {
 
       const row = {
-        "comm1": Object.values(fieldsList)[0][j],
+        "comm1": Object.values(fieldsList)[0][j] > 0 && quote.rateOption === 'Fixed' ? Object.values(fieldsList)[0][j] : Object.values(fieldsList)[0][j] - FIXED_RATE_FACTOR,
         "comm2": Object.values(fieldsList)[1][j],
-        "comm3": Object.values(fieldsList)[2][j],
+        "comm3": Object.values(fieldsList)[2][j] > 0 && quote.rateOption === 'Fixed' ? Object.values(fieldsList)[2][j] : Object.values(fieldsList)[2][j] - FIXED_RATE_FACTOR,
         "rate1": Object.values(fieldsList)[3][j],
-        "rate2": Object.values(fieldsList)[4][j],
+        "rate2": Object.values(fieldsList)[4][j] > 0 && quote.rateOption === 'Fixed' ? Object.values(fieldsList)[4][j] : Object.values(fieldsList)[4][j] - FIXED_RATE_FACTOR,
         "rate3": Object.values(fieldsList)[5][j],
       }
       singleTable.push(row);
@@ -374,25 +381,24 @@ const getSingleTable = (category, class_) => {
 };
 
 // Get all tables data
-const getAllTableData = (category) => {
+const getAllTableData = (category, quote) => {
   // empty the array
   formattedTableData.splice(0, formattedTableData.length);
   // diamond plus
-  formattedTableData.push({ data: getSingleTable(category, calcOptions.classes[0].value), colName: calcOptions.classes[0].value });
+  formattedTableData.push({ data: getSingleTable(quote, category, calcOptions.classes[0].value), colName: calcOptions.classes[0].value });
   // diamond 
-  formattedTableData.push({ data: getSingleTable(category, calcOptions.classes[1].value), colName: calcOptions.classes[1].value });
+  formattedTableData.push({ data: getSingleTable(quote, category, calcOptions.classes[1].value), colName: calcOptions.classes[1].value });
   // Sapphire
-  formattedTableData.push({ data: getSingleTable(category, calcOptions.classes[2].value), colName: calcOptions.classes[2].value });
+  formattedTableData.push({ data: getSingleTable(quote, category, calcOptions.classes[2].value), colName: calcOptions.classes[2].value });
   // Ruby
-  formattedTableData.push({ data: getSingleTable(category, calcOptions.classes[3].value), colName: calcOptions.classes[3].value });
+  formattedTableData.push({ data: getSingleTable(quote, category, calcOptions.classes[3].value), colName: calcOptions.classes[3].value });
   // Emerald
-  formattedTableData.push({ data: getSingleTable(category, calcOptions.classes[4].value), colName: calcOptions.classes[4].value });
+  formattedTableData.push({ data: getSingleTable(quote, category, calcOptions.classes[4].value), colName: calcOptions.classes[4].value });
   return formattedTableData;
 };
 
 // custom calculations for NAF generations
 const calcNetRealtimeNaf = (quote) => {
-  console.log('variables', quote.price, quote.applicationFee, quote.dof, quote.ppsr, quote.registrationFee)
   let netRealtimeNaf = QuoteCommons.calcNetRealtimeNaf(quote);
   console.log('variables', netRealtimeNaf);
   let r = quote.registrationFee + netRealtimeNaf;

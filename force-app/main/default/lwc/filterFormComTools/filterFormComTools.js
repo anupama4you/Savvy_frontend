@@ -1,8 +1,16 @@
 import { LightningElement, api, track } from 'lwc';
 import { ComparisonOptions } from "./filterFormComToolsHelper";
+import getInitialParamsById from "@salesforce/apex/ComparisonToolsController.getInitialParamsById";
 
 export default class FilterFormComTools extends LightningElement {
-  @api recordId;
+  @api get recordId() {
+    return this.myRecordId;
+  }
+  set recordId(value) {
+    this.myRecordId = value;
+    console.log(`Filters - recordId:`, this.myRecordId)
+  }
+
   @api get globalParams() {
     return this.myGlobalParams;
   }
@@ -12,6 +20,7 @@ export default class FilterFormComTools extends LightningElement {
     this.loadGlobalParams();
   }
 
+  myRecordId;
   myGlobalParams;
   @track params = this.resetFormData();
 
@@ -21,10 +30,33 @@ export default class FilterFormComTools extends LightningElement {
       `this.globalParams 1:`,
       JSON.stringify(this.globalParams, null, 2)
     );
+    this.loadData();
     // if (!this.params) {
     //   this.resetFormData();
     // }
     // console.log(`this.params 2:`, JSON.stringify(this.params, null, 2));
+  }
+
+  loadData() {
+    console.log(`filter - loadData...`, this.recordId);
+    if (this.recordId) {
+      getInitialParamsById({ oppId: this.recordId })
+        .then((data) => {
+          console.log("data:", JSON.stringify(data, null, 2));
+          if (data) {
+            Object.keys(data).forEach((v) => {
+              // console.log(v, ': ', data[`${v}`]);
+              this.params[`${v}`] = `${data[`${v}`]}`;
+            });
+          }
+          if (this.params.loanType === 'Business' && !data.assetType) {
+            this.params.assetType = 'Cars';
+          }
+        })
+        .catch((error) => {
+          console.error(error);
+        });
+    }
   }
 
   resetFormData() {
@@ -49,18 +81,20 @@ export default class FilterFormComTools extends LightningElement {
       verifiableSavings: "",
       ltv: "",
       abnLength: "0",
-      gstRegistered: "Y"
+      gstRegistered: "N",
+      paydays: null,
+      oppName: null
     };
 
-    this.template.querySelectorAll("lightning-combobox").forEach((each) => {
-      each.value = this.params[each.name];
-      console.log("cleaning combobox: ", each.name);
-    });
+    // this.template.querySelectorAll("lightning-combobox").forEach((each) => {
+    //   each.value = this.params[each.name];
+    //   console.log("cleaning combobox: ", each.name);
+    // });
 
-    this.template.querySelectorAll("lightning-input").forEach((each) => {
-      each.value = this.params[each.name];
-      console.log("cleaning combobox: ", each.name);
-    });
+    // this.template.querySelectorAll("lightning-input").forEach((each) => {
+    //   each.value = this.params[each.name];
+    //   console.log("cleaning combobox: ", each.name);
+    // });
   }
 
   get assetTypeOptions() {
@@ -131,6 +165,10 @@ export default class FilterFormComTools extends LightningElement {
     return ComparisonOptions.gstRegisteredOptions;
   }
 
+  get paydaysOptions() {
+    return ComparisonOptions.paydays;
+  }
+
   handleFieldChange(event) {
     console.log(
       `handleFieldChange...`,
@@ -164,6 +202,10 @@ export default class FilterFormComTools extends LightningElement {
     }
   }
 
+  handleReset(event) {
+    this.params = this.resetFormData();
+  }
+
   isValidForm() {
     let r = true;
     // Price
@@ -178,11 +220,17 @@ export default class FilterFormComTools extends LightningElement {
 
   loadGlobalParams() {
     if (this.params && this.myGlobalParams) {
-      if (this.myGlobalParams.creditScore && this.myGlobalParams.creditScore > 0)  {
+      if (
+        this.myGlobalParams.creditScore &&
+        this.myGlobalParams.creditScore > 0
+      ) {
         this.params.realCreditScore = this.myGlobalParams.creditScore;
         this.params.creditScore = ComparisonOptions.getCreditScoreValue(
           this.params.realCreditScore
         );
+      }
+      if (this.myGlobalParams.oppName) {
+        this.params.oppName = this.myGlobalParams.oppName;
       }
     }
   }
@@ -193,13 +241,12 @@ export default class FilterFormComTools extends LightningElement {
       this.myGlobalParams.creditScore &&
       this.myGlobalParams.creditScore > 0
     ) {
-      v += " (" + this.myGlobalParams.creditScore + ")"; 
+      v += " (" + this.myGlobalParams.creditScore + ")";
     }
-    return  v;
+    return v;
   }
 
   get disableCreditScore() {
     return this.params.realCreditScore > 0;
   }
-  
 }

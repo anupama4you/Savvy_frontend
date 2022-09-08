@@ -52,9 +52,9 @@ export default class ComparisonTool extends LightningElement {
         this.calcs = data;
         displayToast(
           this,
-          "Success",
+          "Result",
           `Calculators found: ${this.calcs.length}`,
-          "success"
+          this.calcs.length > 0? "success" : "info"
         );
       })
       .catch((error) => {

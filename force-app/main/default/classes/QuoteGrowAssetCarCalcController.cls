@@ -5,7 +5,6 @@ public with sharing class QuoteGrowAssetCarCalcController {
     ) {
         QuoteController.AppQuotingWraper r = QuoteController.getQuotingData(param); 
         r.rateSettings = getTableRates(param.rateSettings);
-        r.settings = QuotingCalculation.getLenderSettings(GrowAssetCarExtension.LENDER_QUOTING);
         return r;
     }
 

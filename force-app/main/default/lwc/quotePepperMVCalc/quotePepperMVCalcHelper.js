@@ -41,16 +41,16 @@ const QUOTING_FIELDS = new Map([
   ["monthlyFee", "Monthly_Fee__c"],
   ["term", "Term__c"],
   ["paymentType", "Payment__c"],
-  ["applicationId", "Application__c"]
+  ["applicationId", "Application__c"],
+  ["clientTier", "Client_Tier__c"],
+  ["assetAge", "Vehicle_Age__c"],
+  ["privateSales", "Private_Sales__c"]
 ]);
 
 // - TODO: need to map more fields
 const FIELDS_MAPPING_FOR_APEX = new Map([
   ...QUOTING_FIELDS,
   ["Id", "Id"],
-  ["privateSales", "Private_Sales__c"],
-  ["clientTier", "Client_Tier__c"],
-  ["assetAge", "Vehicle_Age__c"],
   ["baseRate", "Base_Rate__c"],
   ["maxRate", "Manual_Max_Rate__c"]
 ]);
@@ -96,8 +96,9 @@ const calculate = (quote) =>
         vehicleYear: quote.assetAge,
         goodsType: quote.assetType,
         privateSales: quote.privateSales,
-        totalAmount: QuoteCommons.calcTotalAmount(quote),
-        totalInsurance: QuoteCommons.calcTotalInsuranceType(quote),
+        totalAmount: QuoteCommons.calcNetRealtimeNaf(quote),
+        // totalInsurance: QuoteCommons.calcTotalInsuranceType(quote),
+        totalInsuranceIncome: QuoteCommons.calcTotalInsuranceIncome(quote),
         clientRate: quote.clientRate,
         baseRate: quote.baseRate,
         paymentType: quote.paymentType,
@@ -115,7 +116,10 @@ const calculate = (quote) =>
         .then((data) => {
           console.log(`@@SF:`, JSON.stringify(data, null, 2));
           // Mapping
-          res.commissions = QuoteCommons.mapCommissionSObjectToLwc(data);
+          res.commissions = QuoteCommons.mapCommissionSObjectToLwc(
+            data,
+            quote.insurance
+          );
           console.log(JSON.stringify(res.commissions, null, 2));
           // Validate the result of commissions
           res.messages = Validations.validatePostCalculation(
@@ -135,7 +139,7 @@ const calcOptions = {
   loanTypes: CommonOptions.loanTypes,
   paymentTypes: CommonOptions.paymentTypes,
   loanProducts: CommonOptions.fullLoanProducts,
-  privateSales: CommonOptions.yesNo,
+  privateSales: [{ label: "-- None --", value: null }, ...CommonOptions.yesNo],
   assetTypes: [
     { label: "Car", value: "Car" },
     { label: "Caravan", value: "Caravan" }
@@ -181,7 +185,8 @@ const reset = (recordId) => {
     paymentType: "Arrears",
     clientTier: calcOptions.clientTiers[0].value,
     assetAge: calcOptions.vehicleAges[0].value,
-    commissions: QuoteCommons.resetResults()
+    commissions: QuoteCommons.resetResults(),
+    insurance: { integrity: {} }
   };
   r = QuoteCommons.mapDataToLwc(r, lenderSettings, SETTING_FIELDS);
   return r;
@@ -193,7 +198,8 @@ const loadData = (recordId) =>
     //  const fields = Array.from(QUOTING_FIELDS.values());
     const fields = [
       ...QUOTING_FIELDS.values(),
-      ...QuoteCommons.COMMISSION_FIELDS.values()
+      ...QuoteCommons.COMMISSION_FIELDS.values(),
+      ...QuoteCommons.INSURANCE_FIELDS.values()
     ];
     console.log(`@@fields:`, JSON.stringify(fields, null, 2));
     getQuotingData({
@@ -222,7 +228,7 @@ const loadData = (recordId) =>
         if (quoteData.rateSettings) {
           tableRatesData = quoteData.rateSettings[`${RATE_SETTING_NAMES[0]}`];
         }
-        // console.log(`@@data:`, JSON.stringify(data, null, 2));
+        console.log(`@@data:`, JSON.stringify(data, null, 2));
         resolve(data);
       })
       .catch((error) => reject(error));

@@ -40,7 +40,8 @@ export default class QuoteGrowAssetCarCalc extends LightningElement {
         .then((data) => {
             console.log(`CalHelper: Data loaded!`, data);
             this.quoteForm = data;
-            this.quoteForm.term = this.quoteForm.term.toString();
+            this.quoteForm.term = this.quoteForm.term? this.quoteForm.term.toString() : "0";
+            this.quoteForm.assetAge = this.quoteForm.assetAge? this.quoteForm.assetAge.toString() : "1";
             this.applicationFee = this.quoteForm.applicationFee;
             this.tableRates1 = CalHelper.getTableRatesData1();
             this.tableRates2 = CalHelper.getTableRatesData2();

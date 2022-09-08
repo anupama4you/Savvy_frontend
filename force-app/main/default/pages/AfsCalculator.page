@@ -444,7 +444,7 @@
           <h3>Input</h3>
         </div>
         <div style="display: flex;">
-          <div id="leftTables">
+          <div id="leftTables" style="padding-right: 300px !important;">
             <div id="financeTab">
               <h3>Finance Details</h3>
             </div>

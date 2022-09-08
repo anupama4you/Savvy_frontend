@@ -209,8 +209,9 @@
                     <apex:image url="{!$Resource.CheckBlankIcon}" height="14"/> Check<br/>
                     <apex:image url="{!$Resource.CheckIcon}" height="14"/> CREDIT ACCOUNT<br/><br/>
                     <apex:outputPanel layout="block" rendered="{!NOT(Custom_Opportunity__c.Partner_Is_External__c)}">
-                      Name: &nbsp;&nbsp;&nbsp;&nbsp;<span class="subTitle2">Savvy Finance</span><br/>
-                      Account:&nbsp;&nbsp;<span class="subTitle1">085 005&nbsp;&nbsp;&nbsp;&nbsp;244 465 955</span>
+                      Name: &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="subTitle2">Quantum Savvy Pty Ltd</span><br/>
+                      BSB: &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="subTitle1">085-375</span><br/>
+                      Account #: &nbsp;&nbsp;<span class="subTitle1">546651905</span>
                     </apex:outputPanel>
                     <apex:outputPanel layout="block" rendered="{!Custom_Opportunity__c.Partner_Is_External__c}">
                       Name: &nbsp;&nbsp;&nbsp;&nbsp;

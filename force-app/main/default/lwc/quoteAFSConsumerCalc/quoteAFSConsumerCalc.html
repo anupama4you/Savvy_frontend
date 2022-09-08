@@ -1,5 +1,5 @@
 <template>
-    <c-quote-container title="AFS Consumer" is-busy={isBusy} commissions=""
+    <c-quote-container title="AFS Consumer" is-busy={isBusy} commissions={quoteForm.commissions}
     messages={messageObj} >
         <!-- Logo -->
         <img src={logoUrl} slot="logo" class="c-lender-logo" title="AFS Consumer" />
@@ -29,7 +29,7 @@
             <div class="c-detail-fields">
                 <lightning-combobox name="loanType" label="Loan Type" data-id="loanType-field" value={quoteForm.loanType}
                     placeholder="Select a value" options={loanTypeOptions} onchange={handleFieldChange} class="slds-form__item"
-                    variant="label-hidden"> required
+                    variant="label-hidden"> 
                 </lightning-combobox>
             </div>
         </div>
@@ -39,7 +39,7 @@
             <div class="c-detail-fields">
                 <lightning-combobox name="loanProduct" label="Loan Product" data-id="loanProduct-field" value={quoteForm.loanProduct}
                     placeholder="Select a value" options={loanProductOptions}
-                    onchange={handleFieldChange} class="slds-form__item" variant="label-hidden"> required
+                    onchange={handleFieldChange} class="slds-form__item" variant="label-hidden"> 
                 </lightning-combobox>
             </div>
         </div>
@@ -59,7 +59,7 @@
             <div class="c-detail-fields">
                 <lightning-combobox name="assetCondition" label="Asset Condition" data-id="assetCondition-field" value={quoteForm.assetCondition}
                     placeholder="Select a value" options={assetConditionOptions}
-                    onchange={handleFieldChange} class="slds-form__item" variant="label-hidden" required> 
+                    onchange={handleFieldChange} class="slds-form__item" variant="label-hidden" > 
                 </lightning-combobox>
             </div>
         </div>
@@ -193,7 +193,7 @@
             <div class="c-detail-fields">
                 <lightning-combobox name="assetAge" label="Asset Age " data-id="assetAge-field" value={quoteForm.assetAge}
                     placeholder="Select a value" options={assetAgeOptions} onchange={handleFieldChange} class="slds-form__item"
-                    variant="label-hidden" required>
+                    variant="label-hidden" >
                 </lightning-combobox>
             </div>
         </div>
@@ -213,7 +213,7 @@
             <div class="c-detail-fields">
                 <lightning-combobox name="employmentStats" label="Employment Status" data-id="employmentStats-field" value={quoteForm.employmentStats}
                     placeholder="Select a value" options={employmentStatsOptions} onchange={handleFieldChange} class="slds-form__item"
-                    variant="label-hidden" required>
+                    variant="label-hidden" >
                 </lightning-combobox>
             </div>
             
@@ -224,7 +224,7 @@
             <div class="c-detail-fields">
                 <lightning-combobox name="creditImpaired" label="Credit Impaired" data-id="creditImpaired-field" value={quoteForm.creditImpaired}
                     placeholder="Select a value" options={creditImpairedOptions} onchange={handleFieldChange} class="slds-form__item"
-                    variant="label-hidden" required>
+                    variant="label-hidden" >
                 </lightning-combobox>
             </div>
             
@@ -288,31 +288,33 @@
                 </lightning-formatted-number>
             </div>
         </div>
-        <!-- Rates -->
-        <!-- Max Rate -->
-        <div class="c-row-details">
-            <div class="c-detail-labels"><span class="c-label">Max Rate</span></div>
-            <div class="c-detail-fields">
-                <lightning-formatted-number format-style="percent-fixed" minimum-fraction-digits="2" value={quoteForm.maxRate}
-                    class="c-read-only-field">
-                </lightning-formatted-number> 
+        <template if:true={showMaxAndBaseRates}>
+            <!-- Rates -->
+            <!-- Max Rate -->
+            <div class="c-row-details">
+                <div class="c-detail-labels"><span class="c-label">Max Rate</span></div>
+                <div class="c-detail-fields">
+                    <lightning-formatted-number format-style="percent-fixed" minimum-fraction-digits="2" value={quoteForm.maxRate}
+                        class="c-read-only-field">
+                    </lightning-formatted-number> 
+                </div>
             </div>
-        </div>
-        <!-- Base Rate -->
-        <div class="c-row-details">
-            <div class="c-detail-labels"><span class="c-label">Base Rate</span></div>
-            <div class="c-detail-fields">
-                <lightning-formatted-number format-style="percent-fixed" minimum-fraction-digits="2" value={quoteForm.baseRate}
-                    class="c-read-only-field">
-                </lightning-formatted-number>
-                <template if:true={isBaseRateBusy}>
-                    <span class="c-status-icon">
-                    <lightning-dynamic-icon type="eq" option="play" alternative-text="Recording in progress">
-                    </lightning-dynamic-icon>
-                    </span>
-                </template>
+            <!-- Base Rate -->
+            <div class="c-row-details">
+                <div class="c-detail-labels"><span class="c-label">Base Rate</span></div>
+                <div class="c-detail-fields">
+                    <lightning-formatted-number format-style="percent-fixed" minimum-fraction-digits="2" value={quoteForm.baseRate}
+                        class="c-read-only-field">
+                    </lightning-formatted-number>
+                    <template if:true={isBaseRateBusy}>
+                        <span class="c-status-icon">
+                        <lightning-dynamic-icon type="eq" option="play" alternative-text="Recording in progress">
+                        </lightning-dynamic-icon>
+                        </span>
+                    </template>
+                </div>
             </div>
-        </div>
+        </template>
         <!-- Client Rate -->
         <div class="c-row-details">
             <div class="c-detail-labels">
@@ -321,7 +323,7 @@
             <div class="c-detail-fields">
               <lightning-input type="number" formatter="percent-fixed" step="0.01" name="clientRate"
                 data-id="clientRate-field"  label="Client Rate" placeholder="0.00%" value={quoteForm.clientRate}
-                class="slds-form__item field-x-small-width" variant="label-hidden" onchange={handleFieldChange} >
+                class="slds-form__item field-x-small-width" variant="label-hidden" onchange={handleFieldChange} read-only={isCRReadOnly}>
               </lightning-input>
             </div>
         </div>
@@ -337,7 +339,7 @@
         <!-- end of Finance Details-->
 
         <!-- Insurances -->
-        <c-quote-insurance-form slot="insurances" opp-id="" quote-form=""></c-quote-insurance-form>
+        <c-quote-insurance-form slot="insurances" opp-id={quoteForm.oppId} quote-form={quoteForm}></c-quote-insurance-form>
 
         <!-- Table Rates -->
         
@@ -359,20 +361,20 @@
                 <tr>
                     <!-- First Column -->
                     <td>  
-                        <!--div class="slds-col slds-size_1-of-3">
-                            <lightning-datatable class="tableFontSize" key-field="Id" data={tableRates} columns={tableRatesCols} hide-checkbox-column>
+                        <div class="slds-col slds-size_1-of-1">
+                            <lightning-datatable class="tableFontSize" key-field="Id" data={propertyOwners} columns={tableRatesCols} hide-checkbox-column>
                             </lightning-datatable>
-                        </div-->
+                        </div>
                     </td>
                     <!-- Second Column-->
                     <td class="slds-col slds-size_1-of-3">
-                        <!--lightning-datatable class="tableFontSize" key-field="Id" data={tableRates} columns={tableRatesCols} hide-checkbox-column>
-                        </lightning-datatable-->
+                        <lightning-datatable class="tableFontSize" key-field="Id" data={nPropertyOwnersRenters} columns={tableRatesCols} hide-checkbox-column>
+                        </lightning-datatable>
                     </td>
                     <!-- Third Column -->
                     <td class="slds-col slds-size_1-of-3">
-                        <!--lightning-datatable class="tableFontSize" key-field="Id" data={tableRates} columns={tableRatesCols} hide-checkbox-column>
-                        </lightning-datatable-->
+                        <lightning-datatable class="tableFontSize" key-field="Id" data={nPropertyOwnersOthers} columns={tableRatesCols} hide-checkbox-column>
+                        </lightning-datatable>
                     </td>
                 </tr>
             </table>

@@ -60,16 +60,16 @@
             </div>
             <div class="slds-grid slds-size_9-of-12">
               <div class="slds-col slds-size_1-of-12 c-center">Payment/{formData.frequency}</div>
-              <div class="slds-col slds-size_1-of-12 c-center">Client Rate</div>
               <div class="slds-col slds-size_1-of-12 c-center">Base Rate</div>
-              <div class="slds-col slds-size_1-of-12 c-center">*Estimated Commission</div>
+              <div class="slds-col slds-size_1-of-12 c-center">Client Rate</div>
+              <div class="slds-col slds-size_1-of-12 c-center">Commission</div>
               <div class="slds-col slds-size_1-of-12 c-center">DOF</div>
-              <div class="slds-col slds-size_1-of-12 c-center">Total Commission</div>
+              <div class="slds-col slds-size_1-of-12 c-center">T/Comms</div>
               <div class="slds-col slds-size_2-of-12 c-center">Lender Fees</div>
               <div class="slds-col slds-size_1-of-12 c-center">NAF</div>
               <div class="slds-col slds-size_1-of-12 c-center">Break Cost</div>
               <div class="slds-col slds-size_1-of-12 c-center">Info</div>
-              <div class="slds-col slds-size_1-of-12 c-center">Actions</div>
+              <div class="slds-col slds-size_1-of-12 c-center">Proceed</div>
             </div>
           </div>
         </lightning-card>
@@ -79,6 +79,7 @@
             <c-comparison-tool-record 
               key={rec.Id} 
               record={rec} 
+              record-id={recordId}
               params={params} 
               options={formData}
               oncompleted={handleCompletedCalculation}

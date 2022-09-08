@@ -1,5 +1,5 @@
-import getQuotingData from "@salesforce/apex/QuoteGrowAssetCarCalcController.getQuotingData";
-import getBaseRates from "@salesforce/apex/QuoteGrowAssetCarCalcController.getBaseRates";
+import getQuotingData from "@salesforce/apex/QuoteMorrisCalcController.getQuotingData";
+import getBaseRates from "@salesforce/apex/QuoteMorrisCalcController.getBaseRates";
 import calculateRepayments from "@salesforce/apex/QuoteController.calculateRepayments";
 import { QuoteCommons, CommonOptions } from "c/quoteCommons";
 import { Validations } from "./quoteValidations";
@@ -8,19 +8,8 @@ import save from "@salesforce/apex/QuoteMorrisCalcController.save";
 
 // Default settings
 let lenderSettings = {};
-let gacTier1 = [], gacTier2 = [], gacTier3 = [], gacAdd = [];
-let tableRateDataColumns1 = [
-  { label: "Asset age", fieldName: "Asset_age__c", fixedWidth: 300 },
-  { label: "Asset backed", fieldName: "Asset_backed__c", fixedWidth: 300 },
-  { label: "Non Asset backed", fieldName: "Non_Asset_backed__c", fixedWidth: 300 },
-];
 
-let tableRateDataColumns2 = [
-  { label: "Additional rate", fieldName: "Additional_rate__c", fixedWidth: 300 },
-  { label: "Condition", fieldName: "Condition__c", fixedWidth: 400 },
-];
-
-const LENDER_QUOTING = "Grow Asset";
+const LENDER_QUOTING = "Morris";
 
 const QUOTING_FIELDS = new Map([
   ["loanType", "Loan_Type__c"],
@@ -40,7 +29,7 @@ const QUOTING_FIELDS = new Map([
   ["customerProfile", "Customer_Profile__c"],
   ["brokeragePercentage", "Brokerage__c"],
   ["baseRate", "Base_Rate__c"],
-  ["clientRate", "Client_Rate__c"],
+  ["clientRate", "Client_Rate__c"]
 ]);
 
 // - TODO: need to map more fields
@@ -50,47 +39,27 @@ const FIELDS_MAPPING_FOR_APEX = new Map([
   ["naf", "NAF__c"]
 ]);
 
-const RATE_SETTING_NAMES = ["gacTier1", "gacTier2", "gacTier3", "gacAdd"];
-
 const SETTING_FIELDS = new Map([
   ["price", "Vehicle_Price__c"],
   ["dof", "DOF__c"],
   ["applicationFee", "Application_Fee__c"],
   ["applicationFeePrivate", "Application_Fee_Private__c"],
   ["ppsr", "PPSR__c"],
-  ["monthlyFee", "Monthly_Fee__c"],
-  ["maxBrokerage", "Max_Brokerage__c"],
   ["assetAge", "Vehicle_Age__c"],
   ["term", "Term__c"],
 ]);
 
-const CLIENT_RATE_FIELDS = [
-  "brokeragePercentage",
-];
-
 const BASE_RATE_FIELDS = [
-  "assetAge", 
-  "term",
-  "assetType",
-  "customerProfile",
-  "abnLength",
-  "gstLength",
-  "brokeragePercentage",
   "price",
   "deposit",
   "tradeIn",
   "payoutOn",
   "applicationFee",
   "ppsr",
-  "paymentType"
+  "term",
+  "paymentType",
+  "brokeragePercentage"
 ];
-
-const getBaseAmountPmtInclBrokerageCalc = (quote) => {
-  let naf = QuoteCommons.calcNetRealtimeNaf(quote);
-  let brokerage = quote.brokeragePercentage > 0? quote.brokeragePercentage : 0;
-  console.log('get PMT...', naf + naf*brokerage/100);
-  return naf + (naf*brokerage)/100;
-}
 
 const calculate = (quote) =>
   new Promise((resolve, reject) => {
@@ -101,15 +70,16 @@ const calculate = (quote) =>
     };
     // Validate quote
     res.messages = Validations.validate(quote, res.messages);
-    console.log('ling 130', res.messages);
+    console.log('ling 72', res.messages);
     if (res.messages && res.messages.errors.length > 0) {
       reject(res);
-      console.log('ling 133', res);
+      console.log('ling 75', res);
     } else {
       // Prepare params
       const p = {
         lender: LENDER_QUOTING,
         baseRate: quote.baseRate,
+        clientRate: quote.clientRate,
         amountBasePmt: getBaseAmountPmtInclBrokerageCalc(quote),
         totalAmount: QuoteCommons.calcTotalAmount(quote),
         totalInsurance: QuoteCommons.calcTotalInsuranceType(quote),
@@ -127,7 +97,7 @@ const calculate = (quote) =>
         param: p
       })
         .then((data) => {
-          console.log(`@@SF...calculate line 159:`, JSON.stringify(data, null, 2));
+          console.log(`@@SF...calculate line 98:`, JSON.stringify(data, null, 2));
           // Mapping
           res.commissions = QuoteCommons.mapCommissionSObjectToLwc(data);
           console.log(JSON.stringify(res.commissions, null, 2));
@@ -177,7 +147,7 @@ const calculate = (quote) =>
       { label: "< 12 months", value: "< 12 months" },
     ],
     terms: createTerms(),
-    paymentTypes: CommonOptions.paymentTypes[0],
+    paymentTypes: [{ label: "Arrears", value: "Arrears" }],
     gstLengths: CommonOptions.yesNo,
     assetAges: createAssetAges(),
     propertyOwnerTypes: CommonOptions.yesNo,
@@ -202,9 +172,10 @@ const reset = (recordId) => {
     paymentType: calcOptions.paymentTypes[0].value,
     gstLength: calcOptions.gstLengths[0].value,
     assetAge: calcOptions.assetAges[0].value,
-    brokeragePercentage: 0,
+    brokeragePercentage: 6,
+    customerProfile: calcOptions.propertyOwnerTypes[1].value,
     baseRate: 0.0,
-    customerRate: 0,
+    clientRate: 0.0,
     commissions: QuoteCommons.resetResults()
   };
   console.log('Helper reset...');
@@ -223,8 +194,7 @@ const loadData = (recordId) =>
     ];
     console.log('oppId', recordId,
       'fields', fields,
-      'calcName', LENDER_QUOTING,
-      'rateSettings', RATE_SETTING_NAMES);
+      'calcName', LENDER_QUOTING);
     // console.log(`@@fields:`, JSON.stringify(fields, null, 2));
     getQuotingData({
       param: {
@@ -234,7 +204,7 @@ const loadData = (recordId) =>
       }
     })
       .then((quoteData) => {
-        console.log(`Helper line 308...@@SF:`, JSON.stringify(quoteData, null, 2));
+        console.log(`Helper line 205...@@SF:`, JSON.stringify(quoteData.data, null, 2));
         // Mapping Quote's fields
         let data = QuoteCommons.mapSObjectToLwc({
           calcName: LENDER_QUOTING,
@@ -243,43 +213,49 @@ const loadData = (recordId) =>
           settingFields: SETTING_FIELDS,
           quotingFields: QUOTING_FIELDS
         });
-
+        console.log(`Helper line 214...@@SF:`, JSON.stringify(data, null, 2));
         // Settings
         lenderSettings = quoteData.settings;
-
         resolve(data);
       })
       .catch((error) => reject(error));
   });
 
-// Get Base Rates
-const getMyBaseRates = (quote) =>
-  new Promise((resolve, reject) => {
-    const p = {
-      lender: LENDER_QUOTING,
-      assetAge: quote.assetAge,
-      term: parseInt(quote.term),
-      assetType: quote.assetType,
-      customerProfile: quote.customerProfile,
-      abnLength: quote.abnLength,
-      gstLength: quote.gstLength,
-      brokeragePer: quote.brokeragePercentage,
-      hasMaxRate: false,
-      amountBasePmt: getBaseAmountPmtInclBrokerageCalc(quote),
-      paymentType: quote.paymentType,
-      price: quote.price,
-      deposit: quote.deposit,
-      tradeIn: quote.tradeIn,
-      payoutOn: quote.payoutOn,
-      applicationFee: quote.applicationFee,
-      ppsr: quote.ppsr,
-      totalAmount: QuoteCommons.calcTotalAmount(quote),
-      totalInsurance: QuoteCommons.calcTotalInsuranceType(quote),
-    };
-    console.log(`getMyBaseRates...`, JSON.stringify(p, null, 2));
-    getBaseRates({
-      param: p
-    })
+  const getBaseAmountPmtInclBrokerageCalc = (quote) => {
+    let naf = QuoteCommons.calcNetRealtimeNaf(quote);
+    let brokerage = quote.brokeragePercentage > 0? quote.brokeragePercentage : 0;
+    console.log('get PMT...', naf + naf*brokerage/100);
+    return naf + (naf*brokerage)/100;
+  }
+
+  // Get Base Rates
+  const getMyBaseRates = (quote) =>
+    new Promise((resolve, reject) => {
+      const p = {
+        lender: LENDER_QUOTING,
+        assetAge: quote.assetAge,
+        term: parseInt(quote.term),
+        assetType: quote.assetType,
+        customerProfile: quote.customerProfile,
+        abnLength: quote.abnLength,
+        gstLength: quote.gstLength,
+        brokeragePer: quote.brokeragePercentage,
+        hasMaxRate: false,
+        amountBasePmt: getBaseAmountPmtInclBrokerageCalc(quote),
+        paymentType: quote.paymentType,
+        price: quote.price,
+        deposit: quote.deposit,
+        tradeIn: quote.tradeIn,
+        payoutOn: quote.payoutOn,
+        applicationFee: quote.applicationFee,
+        ppsr: quote.ppsr,
+        totalAmount: QuoteCommons.calcTotalAmount(quote),
+        totalInsurance: QuoteCommons.calcTotalInsuranceType(quote),
+      };
+      console.log(`getMyBaseRates...`, JSON.stringify(p, null, 2));
+      getBaseRates({
+        param: p
+      })
       .then((rates) => {
         console.log(`@@SF:`, JSON.stringify(rates, null, 2));
         resolve({
@@ -289,6 +265,7 @@ const getMyBaseRates = (quote) =>
       })
       .catch((error) => reject(error));
   });
+
 
 
 /**
@@ -357,7 +334,6 @@ export const CalHelper = {
   reset: reset,
   baseRates: getMyBaseRates,
   BASE_RATE_FIELDS: BASE_RATE_FIELDS,
-  CLIENT_RATE_FIELDS: CLIENT_RATE_FIELDS,
   lenderSettings: lenderSettings,
   getNetRealtimeNaf: QuoteCommons.calcNetRealtimeNaf,
   getNetDeposit: QuoteCommons.calcNetDeposit,

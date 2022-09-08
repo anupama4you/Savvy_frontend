@@ -1,5 +1,5 @@
 <template>
-    <c-quote-container title="AFS Commercial" is-busy={isBusy} commissions=""
+    <c-quote-container title="AFS Commercial" is-busy={isBusy} commissions={quoteForm.commissions}
     messages={messageObj} >
         <!-- Logo -->
         <img src={logoUrl} slot="logo" class="c-lender-logo" title="AFS Commercial" />
@@ -124,7 +124,7 @@
         </div>
         <!-- Registration/Research Fee -->
         <div class="c-row-details">
-            <div class="c-detail-labels"><span class="c-label">Registration/Research Fee</span></div>
+            <div class="c-detail-labels"><span class="c-label">Registration / Research Fee</span></div>
             <div class="c-detail-fields">
                 <lightning-input type="number" formatter="currency" step="0.01" name="rrfee" data-id="rrfee-field" value={quoteForm.rrfee}
                     label="Registration/Research Fee" placeholder="$" class="slds-form__item"
@@ -173,7 +173,7 @@
             <div class="c-detail-fields">
                 <lightning-combobox name="residency" label="Residency" data-id="residency-field" value={quoteForm.residency}
                     placeholder="Select a value" options={residencyOptions} onchange={handleFieldChange} class="slds-form__item"
-                    variant="label-hidden" required>
+                    variant="label-hidden" >
                 </lightning-combobox>
             </div>
         </div>
@@ -193,7 +193,7 @@
             <div class="c-detail-fields">
             <lightning-combobox name="gst" label="GST" data-id="gst-field" value={quoteForm.gst}
                 placeholder="Select a value" options={gstOptions} onchange={handleFieldChange} class="slds-form__item"
-                variant="label-hidden" required >
+                variant="label-hidden"  >
             </lightning-combobox>
             </div>
         </div>
@@ -201,7 +201,7 @@
         <div class="c-row-details">
             <div class="c-detail-labels"><span class="c-label">Monthly Fee </span></div>
             <div class="c-detail-fields">
-                <lightning-formatted-number value={monthlyFee} format-style="currency" currency-code="AUD"
+                <lightning-formatted-number format-style="currency" currency-code="AUD" value={quoteForm.monthlyFee}
                     class="c-read-only-field">
                 </lightning-formatted-number>
             </div>
@@ -230,7 +230,7 @@
         <!-- end of Finance Details-->
 
         <!-- Insurances -->
-        <c-quote-insurance-form slot="insurances" opp-id="" quote-form=""></c-quote-insurance-form>
+        <c-quote-insurance-form slot="insurances" opp-id={quoteForm.oppId} quote-form={quoteForm}></c-quote-insurance-form>
 
         <!-- Table Rates -->
         

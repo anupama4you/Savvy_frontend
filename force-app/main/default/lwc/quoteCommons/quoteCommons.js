@@ -313,7 +313,7 @@ const calcTotalAmount = (quote) => {
 // CALC_QUOTING = 'Q'
 // implementing - lee
 // calculate retail price field
-const calcTotalInsuranceType = (quote, calcType) => {
+const calcTotalInsuranceType = (quote, calcType = "Q") => {
   let r = 0.0;
   try {
     if (quote.insurance) {
@@ -532,94 +532,120 @@ const mapLWCToSObject = (
   LENDER_QUOTING,
   QUOTE_FIELDS_MAPPING
 ) => {
-  let obj = { data: {}, results: { commissions: {} }, insurance: {} };
+  const includeInsurance = quoteForm.insurance ? true : false;
+  const isIntegrity = quoteForm.insurance?.warrantyType === "Integrity";
+  const INTEGRITY_FIELDS = [
+    "warrantyRetailPrice",
+    "warrantyCommission",
+    "warrantyPBM",
+    "warrantyTerm"
+  ];
+  console.log("include insurance >> " + includeInsurance);
+  let obj = includeInsurance
+    ? { data: {}, results: { commissions: {} }, insurance: {} }
+    : { data: {}, results: { commissions: {} } };
   // data
   console.log(`@@quote form : ${JSON.stringify(quoteForm, null, 2)}`);
-  const FULL_FIELDS_MAPPING = [...QUOTE_FIELDS_MAPPING, ...INSURANCE_FIELDS];
+  const FULL_FIELDS_MAPPING = includeInsurance
+    ? [...QUOTE_FIELDS_MAPPING, ...INSURANCE_FIELDS]
+    : [...QUOTE_FIELDS_MAPPING];
   try {
     for (const [key, value] of FULL_FIELDS_MAPPING) {
-      //  --- insurance part ---
-      if (key === "typeRetail") continue;
-      if ([...INSURANCE_FIELDS.keys()].includes(key)) {
-        // belongs to insurance fields
-        if (key.startsWith("integrity.")) {
-          // belongs to intergrity in Insurance
-          let k = key.slice(key.indexOf(".") + 1, key.length);
-          obj.insurance[value] = quoteForm.insurance["integrity"][`${k}`];
-        } else {
-          // other insurance type
-          obj.insurance[value] = quoteForm.insurance[key];
+      // include insurance
+      if (includeInsurance) {
+        // console.log(``);
+        //  --- insurance part ---
+        if (key === "typeRetail") continue;
+        if ([...INSURANCE_FIELDS.keys()].includes(key)) {
+          // obj.insurance[value] = quoteForm.insurance[key];
+          // key inside the insurance fields
+          if (isIntegrity) {
+            if (key.startsWith("integrity.")) {
+              let k = key.slice(key.indexOf(".") + 1, key.length);
+              if (INTEGRITY_FIELDS.includes(k)) {
+                obj.insurance[value] = quoteForm.insurance[`${k}`];
+              } else {
+                obj.insurance[value] = quoteForm.insurance["integrity"][`${k}`]; // >> type, term, category
+              }
+            } else if (!INTEGRITY_FIELDS.includes(key)) {
+              console.log("key >> " + key + " |  value >> " + value);
+              obj.insurance[value] = quoteForm.insurance[key];
+            }
+          } else {
+            obj.insurance[value] = quoteForm.insurance[key];
+          }
         }
-      }
-      obj.data[value] = quoteForm[key];
-    }
-    // mv
-    if (
-      quoteForm.insurance["ismvAccept"] ||
-      quoteForm.insurance["ismvDecline"]
-    ) {
-      obj.insurance["Insurance_MV_Acceptance__c"] = quoteForm.insurance[
-        "ismvAccept"
-      ]
-        ? "A"
-        : "D";
-    } else {
-      obj.insurance["Insurance_MV_Acceptance__c"] = "U";
-    }
-    // shortfall/GAP
-    if (
-      quoteForm.insurance["isshortfallAccept"] ||
-      quoteForm.insurance["isshortfallDecline"]
-    ) {
-      obj.insurance["Insurance_GAP_Acceptance__c"] = quoteForm.insurance[
-        "isshortfallAccept"
-      ]
-        ? "A"
-        : "D";
-    } else {
-      obj.insurance["Insurance_GAP_Acceptance__c"] = "U";
-    }
-    // LPI/AIC
-    if (
-      quoteForm.insurance["isLPIAccept"] ||
-      quoteForm.insurance["isLPIDecline"]
-    ) {
-      obj.insurance["Insurance_AIC_Acceptance__c"] = quoteForm.insurance[
-        "isLPIAccept"
-      ]
-        ? "A"
-        : "D";
-    } else {
-      obj.insurance["Insurance_AIC_Acceptance__c"] = "U";
-    }
-    // Warranty
-    if (
-      quoteForm.insurance["iswarrantyAccept"] ||
-      quoteForm.insurance["iswarrantyDecline"]
-    ) {
-      obj.insurance["Insurance_Warranty_Acceptance__c"] = quoteForm.insurance[
-        "iswarrantyAccept"
-      ]
-        ? "A"
-        : "D";
-    } else {
-      obj.insurance["Insurance_Warranty_Acceptance__c"] = "U";
-    }
-    // Integrity
-    if (
-      quoteForm.insurance["isIntegrityAccept"] ||
-      quoteForm.insurance["isIntegrityDecline"]
-    ) {
-      obj.insurance["Insurance_NWC_Acceptance__c"] = quoteForm.insurance[
-        "isIntegrityAccept"
-      ]
-        ? "A"
-        : "D";
-    } else {
-      obj.insurance["Insurance_NWC_Acceptance__c"] = "U";
-    }
+        obj.data[value] = quoteForm[key];
+        // mv
+        if (
+          quoteForm.insurance["ismvAccept"] ||
+          quoteForm.insurance["ismvDecline"]
+        ) {
+          obj.insurance["Insurance_MV_Acceptance__c"] = quoteForm.insurance[
+            "ismvAccept"
+          ]
+            ? "A"
+            : "D";
+        } else {
+          obj.insurance["Insurance_MV_Acceptance__c"] = "U";
+        }
+        // shortfall/GAP
+        if (
+          quoteForm.insurance["isshortfallAccept"] ||
+          quoteForm.insurance["isshortfallDecline"]
+        ) {
+          obj.insurance["Insurance_GAP_Acceptance__c"] = quoteForm.insurance[
+            "isshortfallAccept"
+          ]
+            ? "A"
+            : "D";
+        } else {
+          obj.insurance["Insurance_GAP_Acceptance__c"] = "U";
+        }
+        // LPI/AIC
+        if (
+          quoteForm.insurance["isLPIAccept"] ||
+          quoteForm.insurance["isLPIDecline"]
+        ) {
+          obj.insurance["Insurance_AIC_Acceptance__c"] = quoteForm.insurance[
+            "isLPIAccept"
+          ]
+            ? "A"
+            : "D";
+        } else {
+          obj.insurance["Insurance_AIC_Acceptance__c"] = "U";
+        }
+        // Warranty
+        if (
+          quoteForm.insurance["iswarrantyAccept"] ||
+          quoteForm.insurance["iswarrantyDecline"]
+        ) {
+          obj.insurance["Insurance_Warranty_Acceptance__c"] = quoteForm
+            .insurance["iswarrantyAccept"]
+            ? "A"
+            : "D";
+        } else {
+          obj.insurance["Insurance_Warranty_Acceptance__c"] = "U";
+        }
+        // Integrity
+        if (
+          quoteForm.insurance["isIntegrityAccept"] ||
+          quoteForm.insurance["isIntegrityDecline"]
+        ) {
+          obj.insurance["Insurance_NWC_Acceptance__c"] = quoteForm.insurance[
+            "isIntegrityAccept"
+          ]
+            ? "A"
+            : "D";
+        } else {
+          obj.insurance["Insurance_NWC_Acceptance__c"] = "U";
+        }
 
-    //  --- insurance part : end ---
+        //  --- insurance part : end ---
+      } else {
+        obj.data[value] = quoteForm[key];
+      }
+    }
     obj.data["Opportunity__c"] = oppId;
     obj.data["Name"] = LENDER_QUOTING;
     // commissions
@@ -630,10 +656,13 @@ const mapLWCToSObject = (
   } catch (error) {
     console.error(error);
   }
+
+  if (includeInsurance) {
+    obj.data["Insurance_NWC_Is_Manually_Value__c"] =
+      quoteForm.insurance["typeRetail"] &&
+      quoteForm.insurance["typeRetail"].length > 0;
+  }
   obj.data = { ...obj.data, ...obj.insurance };
-  obj.data["Insurance_NWC_Is_Manually_Value__c"] =
-    quoteForm.insurance["typeRetail"] &&
-    quoteForm.insurance["typeRetail"].length > 0;
 
   console.log(`@@obj mapping : ${JSON.stringify(obj, null, 2)}`);
   return obj;
@@ -694,17 +723,17 @@ const resetInsurance = () => {
       term: null,
       category: null
     },
-    typeRetail: [],
-    ismvAccept: false,
-    ismvDecline: false,
-    isshortfallAccept: false,
-    isshortfallDecline: false,
-    iswarrantyAccept: false,
-    iswarrantyDecline: false,
-    isLPIAccept: false,
-    isLPIDecline: false,
-    isIntegrityAccept: false,
-    isIntegrityDecline: false
+    typeRetail: []
+    // ismvAccept: false,
+    // ismvDecline: false,
+    // isshortfallAccept: false,
+    // isshortfallDecline: false,
+    // iswarrantyAccept: false,
+    // iswarrantyDecline: false,
+    // isLPIAccept: false,
+    // isLPIDecline: false,
+    // isIntegrityAccept: false,
+    // isIntegrityDecline: false
   };
 };
 

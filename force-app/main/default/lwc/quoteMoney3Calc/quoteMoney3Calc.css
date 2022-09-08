@@ -1,51 +1,19 @@
 /* Calculators styles */
 @import "c/quoteCommonsStyles";
 
-.c-header-data {
-    padding-right: 25px;
-    padding-left: 15px;
-  }
-
-
-.headerTable {
-  font-weight: bold;
+td,
+caption {
   text-align: center;
-  border: 1px solid #e0e3e5;
-  background-color: #e6e8ea;
 }
 
-.main-content {
-margin-left: auto;
-width: 86%;
+table {
+  font-size: 12px;
 }
-.api-details .financeColumn {
-  width: 20%;
+
+.c-money3-grading-rates {
+  width: 40rem;
 }
-.api-details .resultValue {
-text-align: left;
-}
-.api-details .resultNormalValue {
-font-weight: normal;
-}
-.referenceTitle {
-  padding: 10px;
-}
-.tableDetails {
-  width: 95%;
-  background: white;
-  border: 1px solid #ddd;
-  margin-top: 15px;
-  padding: 2px;
-  padding-left: 20px;
-  padding-top: 10px;
-  padding-bottom: 10px;
-}
-.titleTableTab {
-  border: 1px solid #ddd;
-  border-bottom: transparent;
-  display: inline-block;
-  background-color: #fff;
-  position: relative;
-  padding: 6px;
-  top: 17px;
+
+.c-money3-big-table {
+  width: 60rem;
 }

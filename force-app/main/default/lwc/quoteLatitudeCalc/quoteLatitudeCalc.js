@@ -88,7 +88,7 @@ export default class QuoteLatitudeCalc extends LightningElement {
             this.category = '';
         }
         this.quoteForm.goodsType = this.category;
-        this.tableRates = CalHelper.getAllTableData(this.category);
+        this.tableRates = CalHelper.getAllTableData(this.category, this.quoteForm);
     }
 
     // Quote Fee calculation
@@ -140,8 +140,16 @@ export default class QuoteLatitudeCalc extends LightningElement {
         return CalHelper.options.vehicleConditions;
     }
 
+    get rateOptions() {
+        return CalHelper.options.rateOptions;
+    }
+
     get tableHeadings() {
         return CalHelper.options.classes;
+    }
+
+    get selectedRateOption() {
+        return this.quoteForm.rateOption;
     }
 
     get logoUrl() {
@@ -246,6 +254,11 @@ export default class QuoteLatitudeCalc extends LightningElement {
         // Vehicle category generation
         if (fldName === 'vehicleType') {
             this.vehicleCategory();
+        }
+
+         // Vehicle category generation
+         if (fldName === 'rateOption') {
+            this.tableRates = CalHelper.getAllTableData(this.category, this.quoteForm);
         }
 
         // Base Rate Calculation

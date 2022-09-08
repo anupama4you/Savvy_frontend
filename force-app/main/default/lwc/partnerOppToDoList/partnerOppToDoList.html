@@ -71,9 +71,9 @@
 </div>
 </div>-->
 
-<c-partner-opp-to-do-list-item label="Application form" item-url={appFormUrl} item-number="1" class="main-container" status={todoStatus.appFormStatus} item-type="AppForm"></c-partner-opp-to-do-list-item>
-<c-partner-opp-to-do-list-item label="Comparison Tool" item-url={compToolUrl} item-number="2" class="main-container"></c-partner-opp-to-do-list-item>
-<c-partner-opp-to-do-list-item label={quotingLabel} item-url={quotingToolUrl} item-number="3" class="main-container" preapproved={todoStatus.quotingPA} formal-approved={todoStatus.quotingFA} item-type="FullApproval"></c-partner-opp-to-do-list-item>
+<c-partner-opp-to-do-list-item label="Application form" item-url={appFormUrl} item-number="1" class="main-container" status={todoStatus.appFormStatus} item-type="AppForm" is-external={isExternal}></c-partner-opp-to-do-list-item>
+<c-partner-opp-to-do-list-item label="Comparison Tool" item-url={compToolUrl} item-number="2" class="main-container" is-external={isExternal}></c-partner-opp-to-do-list-item>
+<c-partner-opp-to-do-list-item label={quotingLabel} item-url={quotingToolUrl} item-number="3" class="main-container" preapproved={todoStatus.quotingPA} formal-approved={todoStatus.quotingFA} item-type="FullApproval" is-external={isExternal}></c-partner-opp-to-do-list-item>
 
 <template if:true={displayAllLenderButton}>
       <div class="main-container">
@@ -81,8 +81,8 @@
       </div>
     </template>
 <!-- <c-partner-opp-to-do-list-item label="YTD / Income Calculator" item-url={ytdCalcUrl} item-number="4" class="main-container" preapproved={todoStatus.ytdPA} item-type="OnlyPreapproval"></c-partner-opp-to-do-list-item> -->
-<c-partner-opp-to-do-list-item label="Servicing Calculator" item-url={servicingUrl} item-number="4" class="main-container" preapproved={todoStatus.servPA} item-type="OnlyPreapproval"></c-partner-opp-to-do-list-item>
-<c-partner-opp-to-do-list-item label="Asset Details" item-url={assetDetUrl} item-number="5" class="main-container" preapproved={todoStatus.assetPA} formal-approved={todoStatus.assetFA} item-type="FullApproval"></c-partner-opp-to-do-list-item>
+<c-partner-opp-to-do-list-item label="Servicing Calculator" item-url={servicingUrl} item-number="4" class="main-container" preapproved={todoStatus.servPA} item-type="OnlyPreapproval" is-external={isExternal}></c-partner-opp-to-do-list-item>
+<c-partner-opp-to-do-list-item label="Asset Details" item-url={assetDetUrl} item-number="5" class="main-container" preapproved={todoStatus.assetPA} formal-approved={todoStatus.assetFA} item-type="FullApproval" is-external={isExternal}></c-partner-opp-to-do-list-item>
 
 
 </div>

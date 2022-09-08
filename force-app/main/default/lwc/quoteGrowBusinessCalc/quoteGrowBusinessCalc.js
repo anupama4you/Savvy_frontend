@@ -110,6 +110,8 @@ export default class QuoteGrowBusinessCalc extends LightningElement {
                     console.log('AFTER PRICE ', JSON.stringify(this.quoteForm, null, 2));
                 });
         }
+
+        fldName === "equifaxScore" && (this.quoteForm.equifaxScore = v.toString());
     }
 
     // Calculations

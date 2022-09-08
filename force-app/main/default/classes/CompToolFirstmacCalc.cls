@@ -18,7 +18,7 @@ public class CompToolFirstmacCalc extends CompToolLenderCalcAbstract {
     
     if ('Y'.equals(this.quoteParam.residency) && this.param.assetAge == 0) {
       this.quoteParam.loanTypeDetail = 'New / Demo';
-    } else if (this.param.assetAge <= 0) {
+    } else if (this.param.assetAge <= 5) {
       this.quoteParam.loanTypeDetail = 'Used < 5 years';
     } else if (this.param.assetAge <= 7) {
       this.quoteParam.loanTypeDetail = 'Used 6-7 years';

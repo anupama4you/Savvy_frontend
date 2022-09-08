@@ -34,6 +34,7 @@ export default class QuoteWisrPLCalc extends LightningElement {
         .then((data) => {
             console.log(`CalHelper: Data loaded!`, data);
             this.quoteForm = data;
+            this.quoteForm.term = this.quoteForm.term? this.quoteForm.term.toString() : "36";
             this.tableRates = CalHelper.getTableRatesData();
             console.log('@@tableRates', JSON.stringify(this.tableRates));
             this.tableFees = CalHelper.getTableFeesData();

@@ -1472,14 +1472,14 @@
                     <ul>
                         <li>Disability as certified by a Medical Practitioner; or</li>
                         <li>Involuntary Unemployment as a result of you being made redundant, retrenched, or your employer ceases to operate;</li>
-                	</ul>
-                	then you may choose to:
+                    </ul>
+                    then you may choose to:
                     <ul>
                         <li>Receive a Monthly Payment Option Benefit; and/or</li>
                         <li>Handback your Vehicle to a Dealer.</li>
                     </ul>
-            	</p>
-            	<strong>MONTHLY PAYMENT OPTION BENEFIT</strong>
+                </p>
+                <strong>MONTHLY PAYMENT OPTION BENEFIT</strong>
                 <p>
                     You may choose to use the Monthly Payment Option Benefit as an alternative to Handback 
                     of the Vehicle to contribute towards your Monthly Repayments under your Finance Contract, 
@@ -1506,12 +1506,12 @@
                     claim payment for Handback under this Insurance cover is made.
                 </p>
                 <p>Any benefits payable under this insurance cover will be made directly to the Financier.</p>
-        	</div>
+            </div>
             <div class="modal-footer">
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
             </div>
-    	</div>
-	</div>
+        </div>
+    </div>
 </div>
 <!-- LTI - Example 2 -->
 <div class="modal fade" id="pnlLTIEx2" tabindex="-1" role="dialog" aria-labelledby="pnlLTIEx2" aria-hidden="true">

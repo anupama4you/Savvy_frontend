@@ -1,5 +1,5 @@
 <template>
-    <c-quote-container title="Finance One Commercial" is-busy={isBusy} commissions=""
+    <c-quote-container title="Finance One Commercial" is-busy={isBusy} commissions={quoteForm.commissions}
     messages={messageObj} >
         <!-- Logo -->
         <img src={logoUrl} slot="logo" class="c-lender-logo" title="Finance One Commercial" />
@@ -279,7 +279,7 @@
         <div class="c-row-details">
             <div class="c-detail-labels"><span class="c-label">Commission</span></div>
             <div class="c-detail-fields">
-                <lightning-formatted-number format-style="currency" currency-code="AUD" value={quoteForm.commision}
+                <lightning-formatted-number format-style="currency" currency-code="AUD" value={quoteForm.commission}
                     class="c-read-only-field">
                 </lightning-formatted-number>
             </div>
@@ -296,18 +296,23 @@
         <!-- end of Finance Details-->
 
         <!-- Insurances -->
-        <c-quote-insurance-form slot="insurances" opp-id="" quote-form=""></c-quote-insurance-form>
+        <c-quote-insurance-form slot="insurances" opp-id={quoteForm.oppId} quote-form={quoteForm}></c-quote-insurance-form>
 
         <!-- Table Rates -->
         <div slot="table-rates">
             <div class="c-rates-section-title">Finance One Commercial - Table Rates</div>
-            
-            <div class="slds-grid slds-gutters">
-                <div class="slds-col slds-size_12-of-12">
-                <lightning-datatable key-field="Id" data={tableRates} columns={tableRatesCols} hide-checkbox-column>
-                </lightning-datatable>
-                </div>
-            </div>
+            <table class="slds-table slds-table_bordered slds-table_col-bordered slds-wrap">
+                <tr>
+                    <td>
+                        <div class="slds-grid slds-gutters">
+                            <div class="slds-col slds-size_12-of-12">
+                            <lightning-datatable key-field="Id" data={tableRates} columns={tableRatesCols} hide-checkbox-column>
+                            </lightning-datatable>
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+            </table>  
         </div>
     </c-quote-container> 
 </template>

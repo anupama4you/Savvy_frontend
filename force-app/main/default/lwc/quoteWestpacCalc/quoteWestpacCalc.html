@@ -163,26 +163,27 @@
       </div>
       <div class="c-detail-fields">
         <lightning-radio-group label="Type Value" options={typeValueOptions} name="typeValue" data-id="typeValue-field"
-          value={typeValue} type="button" class="slds-form__item" variant="label-hidden" onchange={handleFieldChange}>
+          value={quoteForm.typeValue} type="button" class="slds-form__item" variant="label-hidden"
+          onchange={handleTypeChange}>
         </lightning-radio-group>
       </div>
     </div>
-    <!-- Residual Value -->
+    <!-- Residual Value (%) -->
     <div class="c-row-details">
-      <div class="c-detail-labels"><span class="c-label">Residual Value</span></div>
+      <div class="c-detail-labels"><span class="c-label">Residual Value (%)</span></div>
       <div class="c-detail-fields">
-        <lightning-input type="number" formatter="currency" step="0.01" name="residual" data-id="residual-field"
-          value={quoteForm.residual} label="Residual" placeholder="$" class="slds-form__item" variant="label-hidden"
-          onchange={handleFieldChange}></lightning-input>
+        <lightning-input type="number" step="0.01" name="residualPer" data-id="residualPer-field"
+          value={quoteForm.residualPer} label="residualPer" placeholder="0.00" class="slds-form__item"
+          variant="label-hidden" onchange={handleFieldChange} disabled={resDisable.per}></lightning-input>
       </div>
     </div>
     <!-- Residual Value -->
     <div class="c-row-details">
       <div class="c-detail-labels"><span class="c-label">Residual Value</span></div>
       <div class="c-detail-fields">
-        <lightning-input type="number" formatter="currency" step="0.01" name="residual" data-id="residual-field"
-          value={quoteForm.residual} label="Residual" placeholder="$" class="slds-form__item" variant="label-hidden"
-          onchange={handleFieldChange}></lightning-input>
+        <lightning-input type="number" formatter="currency" step="0.01" name="residualValue" data-id="residualValue-field"
+          value={quoteForm.residualValue} label="Residual" placeholder="$" class="slds-form__item" variant="label-hidden"
+          onchange={handleFieldChange} disabled={resDisable.val}></lightning-input>
       </div>
     </div>
     <!-- Monthly Fee -->
@@ -217,7 +218,7 @@
         <span class="c-label">Asset Year</span>
       </div>
       <div class="c-detail-fields">
-        <lightning-combobox name="assetYear" label="Asset Year" data-id="assetYear-field" value={quoteForm.assetYear}
+        <lightning-combobox name="assetAge" label="Asset Year" data-id="assetAge-field" value={quoteForm.assetAge}
           placeholder="Select a value" options={assetYearOptions} onchange={handleFieldChange} class="slds-form__item"
           variant="label-hidden" required></lightning-combobox>
       </div>
@@ -252,11 +253,29 @@
       </div>
     </div>
     <!-- Brokerage (%) -->
-    <p>Implement Later</p>
+    <div class="c-row-details">
+      <div class="c-detail-labels">
+        <span class="c-label">Brokerage (%)</span>
+      </div>
+      <lightning-input type="number" step="0.01" name="brokeragePercentage" data-id="brokeragePercentage-field"
+        value={quoteForm.brokeragePercentage} label="Brokerage" placeholder="0.00"
+        class="slds-form__item field-x-small-width" variant="label-hidden" onchange={handleFieldChange} required>
+      </lightning-input>
+      <!-- formatter="percent-fixed" -->
+    </div>
 
     <!-- Rates -->
     <!-- Base Rate -->
     <div class="c-row-details">
+      <div class="c-detail-labels"><span class="c-label">Base Rate</span></div>
+      <div class="c-detail-fields">
+        <lightning-input type="number" step="0.01" name="baseRate" data-id="baseRate-field" value={quoteForm.baseRate}
+          label="Price" placeholder="$" class="slds-form__item field-x-small-width" variant="label-hidden"
+          onchange={handleFieldChange} required>
+        </lightning-input>
+      </div>
+    </div>
+    <!-- <div class="c-row-details">
       <div class="c-detail-labels"><span class="c-label">Base Rate</span></div>
       <div class="slds-col slds-size_8-of-12 c-base-rate">
         <lightning-formatted-number value={quoteForm.baseRate} format-style="percent-fixed" minimum-fraction-digits="2"
@@ -273,9 +292,17 @@
             class="c-read-only-field"></lightning-formatted-number>
         </span>
       </div>
-    </div>
+    </div> -->
     <!-- Client Rate -->
     <div class="c-row-details">
+      <div class="c-detail-labels">
+        <span class="c-label">Client Rate</span>
+      </div>
+      <lightning-formatted-number value={quoteForm.clientRate} format-style="percent-fixed" minimum-fraction-digits="2"
+        class="c-read-only-field">
+      </lightning-formatted-number>
+    </div>
+    <!-- <div class="c-row-details">
       <div class="c-detail-labels">
         <span class="c-label">Client Rate</span>
       </div>
@@ -285,7 +312,7 @@
           class="slds-form__item field-x-small-width" variant="label-hidden" onchange={handleFieldChange} required>
         </lightning-input>
       </div>
-    </div>
+    </div> -->
     <!-- NAF -->
     <div class="c-row-details">
       <div class="c-detail-labels"><span class="c-label">NAF</span></div>

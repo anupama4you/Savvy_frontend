@@ -2,7 +2,7 @@ import { LightningElement, api, track, wire } from "lwc";
 import { displayToast } from "c/partnerJsUtils";
 import { QuoteCommons } from "c/quoteCommons";
 import { CalHelper } from "./quoteMorrisCalcHelper";
-import LENDER_LOGO from "@salesforce/resourceUrl/GrowLogo";
+import LENDER_LOGO from "@salesforce/resourceUrl/MorrisLogo";
 import FNAME_FIELD from "@salesforce/schema/Custom_Opportunity__c.Account_First_Name__c";
 import LNAME_FIELD from "@salesforce/schema/Custom_Opportunity__c.Account_Last_Name__c";
 import OPPNAME_FIELD from "@salesforce/schema/Custom_Opportunity__c.Name";
@@ -31,7 +31,7 @@ export default class QuoteMorrisCalc extends LightningElement {
         .then((data) => {
             console.log(`CalHelper: Data loaded!`, data);
             this.quoteForm = data;
-            this.quoteForm.term = this.quoteForm.term.toString();
+            this.quoteForm.term = this.quoteForm.term? this.quoteForm.term.toString() : "0";
             this.applicationFee = this.quoteForm.applicationFee;
         })
         .catch((error) => {
@@ -40,8 +40,7 @@ export default class QuoteMorrisCalc extends LightningElement {
         })
         .finally(() => {
             this.isBusy = false;
-            console.log('is busy line 52', this.isBusy, this.tableRates4);
-            this.quoteForm.assetAge = this.quoteForm.assetAge? this.quoteForm.assetAge : 1;
+            this.quoteForm.assetAge = this.quoteForm.assetAge? this.quoteForm.assetAge : "1";
             this.baseRateCalc();
         });
     }
@@ -102,18 +101,8 @@ export default class QuoteMorrisCalc extends LightningElement {
         if (fld && fld.type === "number") {
             v = Number(v);
         }
-        if (fldName !== "typeValue") {
-            this.quoteForm[fldName] = v;
-        } else {
-            this.typeValue = v;
-        }
-        if(fldName === "privateSales") {
-            if("Y" === v) {
-                this.quoteForm.applicationFee = this.quoteForm.applicationFeePrivate;
-            } else {
-                this.quoteForm.applicationFee = this.applicationFee;
-            }
-        }
+        this.quoteForm[fldName] = v;
+        
         console.log(`this.quoteForm:`, JSON.stringify(this.quoteForm, null, 2));
             
         // Base Rate Calculation
@@ -139,7 +128,7 @@ export default class QuoteMorrisCalc extends LightningElement {
     reset() {
         this.quoteForm = CalHelper.reset(this.recordId);
         console.log(
-        "🚀 ~ file: QuoteACLCalc.js ~ line 130 ~ QuoteACLCalc ~ reset ~ this.quoteForm",
+        "🚀 ~ file: quoteMorrisCalc.js ~ line 135 ~ reset ~ this.quoteForm",
         JSON.stringify(this.quoteForm, null, 2)
         );
     }
@@ -147,7 +136,7 @@ export default class QuoteMorrisCalc extends LightningElement {
     // Base Rate
     baseRateCalc() {
         this.isBaseRateBusy = true;
-        console.log('line 208', this.quoteForm.assetAge, this.quoteForm.term);
+        console.log('line 140', this.quoteForm.term);
         CalHelper.baseRates(this.quoteForm)
         .then((data) => {
             console.log(`baseRateCalc Data loaded!`);
@@ -179,7 +168,7 @@ export default class QuoteMorrisCalc extends LightningElement {
             this.messageObj = error.messages;
             QuoteCommons.fieldErrorHandler(this, this.messageObj.errors);
             console.error(
-            "QuoteACLCalc.js: get errors -- ",
+            "quoteMorrisCalc.js: get errors -- ",
             JSON.stringify(error.messages.errors, null, 2)
             );
         })
@@ -195,7 +184,7 @@ export default class QuoteMorrisCalc extends LightningElement {
         this.isCalculated = false;
         QuoteCommons.handleHasErrorClassClear(this);
         console.log(
-        "🚀 ~ file: QuoteACLCalc.js ~ line 172 ~ QuoteACLCalc ~ reset ~ this.quoteForm",
+        "🚀 ~ file: quoteMorrisCalc.js ~ line 191 ~ handleReset ~ this.quoteForm",
         JSON.stringify(this.quoteForm, null, 2)
         );
         this.baseRateCalc();

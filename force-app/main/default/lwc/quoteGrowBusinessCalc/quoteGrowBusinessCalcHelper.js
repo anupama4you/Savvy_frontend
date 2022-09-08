@@ -88,6 +88,12 @@ const getClientRateCalc = (param) => {
         (residualValue * -1),
         type
     );
+    if (param.baseRate == 0) {
+        return 0;
+    }
+    if (param.brokeragePercentage == 0) {
+        return param.baseRate;
+    }
     return (r * 12 * 100).toFixed(2);
 };
 

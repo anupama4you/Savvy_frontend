@@ -37,7 +37,7 @@
         </div>
         <div class="slds-col slds-size_1-of-12">
           <lightning-formatted-number
-            value={data.clientRate}
+            value={data.baseRate}
             maximum-fraction-digits="2"
             minimum-significant-digits="2"
           ></lightning-formatted-number
@@ -45,7 +45,7 @@
         </div>
         <div class="slds-col slds-size_1-of-12">
           <lightning-formatted-number
-            value={data.baseRate}
+            value={data.clientRate}
             maximum-fraction-digits="2"
             minimum-significant-digits="2"
           ></lightning-formatted-number
@@ -107,13 +107,26 @@
         </div>
         <div class="slds-col slds-size_1-of-12">
           <lightning-button-group class="c-actions">
-            <lightning-button
+            <!-- <lightning-button
               label="Calculate"
               onclick={handleCalculate}
               size="x-small"
               variant="brand-outline"
-            ></lightning-button>
-            <!-- <lightning-button label="Calculate" icon-name="utility:topic2" onclick={handleCalculate} size="x-small" variant="brand-outline"></lightning-button> -->
+            ></lightning-button> -->
+            <!-- <lightning-button-icon 
+              icon-name="utility:number_input" 
+              onclick={handleCalculate} 
+              size="large" 
+              alternative-text="Re-calculate"
+              variant="brand"
+            ></lightning-button-icon> -->
+            <lightning-button-icon 
+              icon-name="utility:open" 
+              onclick={handleOpenCalculator} 
+              size="large"
+              variant="brand"
+              alternative-text="Open calculator"
+            ></lightning-button-icon>
             <!-- <lightning-button-icon icon-name="utility:topic2"  size="large" variant="border"  alternative-text="Calculate" onclick={handleCalculate}></lightning-button-icon> -->
             <!-- <lightning-button label="Delete" variant="destructive" icon-name="utility:topic2"></lightning-button> -->
           </lightning-button-group>

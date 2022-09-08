@@ -105,6 +105,16 @@ const validate = (quote, messages) => {
       field: "vehicleYear",
       message: "Vehicle Year is required."
     });
+  } else {
+    let today = new Date();
+    let year = today.getFullYear();
+    let a = year - quote.vehicleYear + Number(quote.term)/12;
+    if (a > 15) {
+      errorList.push({
+        field: "vehicleYear",
+        message: `Vehicle can not be older than 15 years at term end, (current ${a} years).`
+      });
+    }
   }
   if (quote.lvr === null || !(quote.lvr > 0.0)) {
     errorList.push({

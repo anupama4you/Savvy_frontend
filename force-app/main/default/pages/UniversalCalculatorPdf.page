@@ -370,32 +370,6 @@
             </tr>
         </table>
         </apex:outputPanel>
-
-        <!-- Grow Business Loan -->
-        <apex:outputPanel layout="block" style="width:100%" rendered="{!isGrowBusiLoan}" >
-            <table width="100%">
-                <tr width="100%">
-                    <td width="25%">ABN Length</td>
-                    <td width="25%">{!abnLength}</td>
-                    <td width="25%">GST Length</td>
-                    <td width="25%">{!gstLength}</td>
-                </tr>
-                <tr width="100%">
-                    <td>Brokerage (%)</td>
-                    <td>{!brokerage}</td>
-                    <td>Base Rate (%)</td>
-                    <td>{!baseRate}
-                    </td>
-                </tr>
-                <tr width="100%">
-                    <td>Equifax Score</td>
-                    <td>{!equifaxScore}</td>
-                    <td>Property Owner</td>
-                    <td>{!propertyOwner}</td>
-                </tr>
-            </table>
-            </apex:outputPanel>
-
         <apex:outputPanel layout="block" style="width:100%" rendered="{!isGrowAssetCar}" >
         <table width="100%">
             <tr width="100%">
@@ -811,7 +785,9 @@
             </tr>
             <tr>
               <td>Vehicle Condition</td>
-              <td colspan="3">{!vehCon}</td>
+              <td>{!vehCon}</td>
+              <td>Rate Option</td>
+              <td>{!rateOption}</td>
             </tr>
         </table>
         </apex:outputPanel>

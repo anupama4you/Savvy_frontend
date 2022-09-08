@@ -107,6 +107,18 @@ private class TestLatitudeCalc {
     ctr.acceptQuoteCCI();
     ctr.acceptQuoteWRR();
     ctr.acceptQuoteNWC();
+
+    LatitudeCalculatorExtension.getSelectLoanTypeOptions();
+    ctr.getIsFixedRate();
+
+    LatitudeCalculatorExtension.TRow x = new LatitudeCalculatorExtension.TRow();
+    x.rate4 = 0.00;
+    x.comm4 = 0.00;
+    x.getVarRate1();
+    x.getVarRate2();
+    x.getVarRate3();
+    x.getVarRate4();
+
   }
 
   @isTest

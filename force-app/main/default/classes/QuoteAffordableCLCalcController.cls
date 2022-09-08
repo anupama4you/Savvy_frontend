@@ -10,7 +10,6 @@ public without sharing class QuoteAffordableCLCalcController {
         rates.put(rateObjName1, getListInterestRate(param.calcName));
         rates.put(rateObjName2, getACLUpfrontLoanFees());
         r.rateSettings = rates;
-        r.settings = QuotingCalculation.getLenderSettings(ACLCalculatorExtension.LENDER_QUOTING);
         return r;
     }
 

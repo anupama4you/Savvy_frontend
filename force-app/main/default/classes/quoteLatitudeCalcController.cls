@@ -89,7 +89,7 @@ public with sharing class quoteLatitudeCalcController {
         pdf.getParameters().put('deposit', NumberUtils.format(quote.Deposit__c));
         pdf.getParameters().put('tradeIn', NumberUtils.format(quote.Trade_In__c));
         pdf.getParameters().put('payoutOn', NumberUtils.format(quote.Payout_On__c));
-        
+        pdf.getParameters().put('rateOption', String.valueOf(quote.Rate_Options__c));
         return pdf;
 
     }

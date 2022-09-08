@@ -1,8 +1,9 @@
 import { LightningElement, api, track } from "lwc";
 
 export default class ComparisonToolResult extends LightningElement {
+  @api recordId;
   @api params;
-
+  
   @api get records() {
     return this.myRecords;
   }
@@ -13,6 +14,8 @@ export default class ComparisonToolResult extends LightningElement {
     this.loadCalculations();
   }
 
+  
+    
   myRecords;
 
   @track formData = {
@@ -52,7 +55,10 @@ export default class ComparisonToolResult extends LightningElement {
 
   handleChange(event) {
     this.formData.clientRate = event.detail.value;
-    console.log("🚀 ~ file: comparisonToolResult.js ~ line 55 ~ ComparisonToolResult ~ handleChange ~ this.formData", JSON.stringify(this.formData));
+    console.log(
+      "🚀 ~ file: comparisonToolResult.js ~ line 55 ~ ComparisonToolResult ~ handleChange ~ this.formData",
+      JSON.stringify(this.formData)
+    );
   }
 
   handleChangeSortBy(event) {
@@ -75,6 +81,7 @@ export default class ComparisonToolResult extends LightningElement {
 
   get sortByOptions() {
     return [
+      { label: "Base Rate", value: "baseRate" },
       { label: "Client Rate", value: "clientRate" },
       { label: "Payment", value: "monthlyPayment" },
       { label: "T/Comms", value: "totalCommission" }
@@ -88,9 +95,7 @@ export default class ComparisonToolResult extends LightningElement {
   handleRecalculate(event) {
     console.log(`handleRecalculating...`);
     // this.formData.recalculate = true;
-    const recs = this.template.querySelectorAll(
-      "c-comparison-tool-record"
-    );
+    const recs = this.template.querySelectorAll("c-comparison-tool-record");
     recs.forEach((rec) => {
       rec.calculate();
     });
@@ -117,7 +122,7 @@ export default class ComparisonToolResult extends LightningElement {
     const emptyCals = new Map();
     const cals = new Map();
     this.calculations.forEach((e) => {
-      if (e.result.rental > 0.00) {
+      if (e.result.rental > 0.0) {
         cals.set(e.calc.Id, e);
       } else {
         emptyCals.set(e.calc.Id, e);

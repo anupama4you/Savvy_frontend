@@ -242,10 +242,6 @@
             float: right;
             text-align: right;
         }
-        #mainContent { 
-            margin-left:auto;
-            width:86%;
-        }
         
         /*Created By: Phil Fang | Date: March 6, 2017 | Description: Styling for ERIC API integration*/
         .acceptQuoteButtons {

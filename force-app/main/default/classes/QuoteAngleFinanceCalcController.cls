@@ -11,7 +11,6 @@ public with sharing class QuoteAngleFinanceCalcController {
         rates.put(rateObjName1, getAFRate1());
         rates.put(rateObjName2, getAFRate2());
         r.rateSettings = rates;
-        r.settings = QuotingCalculation.getLenderSettings(AngleFinanceExtension.LENDER_QUOTING);
         return r;
     }
 
