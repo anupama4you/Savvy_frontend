@@ -1,5 +1,5 @@
 import { QuoteCommons } from "c/quoteCommons";
-import { CalHelper } from "./quoteLatitudePLCalcHelper";
+import { CalHelper } from "./quoteNowFinanceCalcHelper";
 
 // Validation Types: ERROR, WARNING, INFO
 /**
@@ -7,7 +7,7 @@ import { CalHelper } from "./quoteLatitudePLCalcHelper";
  * @param {Object} messages - old messages object
  * @returns
  */
-const validate = (quote, messages, isApproval) => {
+const validate = (quote, messages) => {
   const r =
     typeof messages == "undefined" || messages == null
       ? QuoteCommons.resetMessage()
@@ -16,56 +16,35 @@ const validate = (quote, messages, isApproval) => {
   let warningList = r.warnings;
 
   const baseRate = quote["baseRate"];
-  const maxDofRate = CalHelper.getDOF(quote);
-
-  console.log(`@@validation:`, JSON.stringify(quote, null, 2));
+  const maxRate = 16.5;
 
   console.log(
-    "🚀 ~ file: quoteValidations.js ~ line 17 ~ validate ~ quote.price",
-    quote.price
-  );
-  if (quote.price === null || quote.price === 0) {
+    "🚀 ~ file: quoteValidations.js ~ line 18 ~ validate ~ quote", quote);
+  let naf = CalHelper.getNetRealtimeNaf(quote);
+
+  if (quote.price === null || quote.price === 0.0) {
     errorList.push({
       field: "price",
-      message: "Finance amount should not be Zero."
+      message: "Vehicle Price cannot be Zero."
     });
   }
 
-  console.log(
-    "🚀 ~ file: quoteValidations.js ~ line 20 ~ validate ~ quote.dof",
-    quote.dof
-  );
-  if (quote.dof === null || quote.dof === 0) {
+  if (quote.applicationFee < 0.0) {
+    errorList.push({
+      field: "applicationFee",
+      message: "Application Fee cannot be below Zero."
+    });
+  }
+
+  if (quote.dof == null || quote.dof == 0.0) {
     errorList.push({
       field: "dof",
-      message: "DOF should not be Zero."
+      message: "DOF cannot be Zero."
     });
   } else if (quote.dof > quote.maxDof) {
-    errorList.push({
-      field: "DOF",
-      message: `Max DOF exceeded: ${quote.maxDof}%`
-    });
-  }
-
-  console.log(
-    "🚀 ~ file: quoteValidations.js ~ line 19 ~ validate ~ quote.ppsr",
-    quote.ppsr
-  );
-  if (quote.ppsr === null) {
-    errorList.push({
-      field: "ppsr",
-      message: "PPSR should not be null."
-    });
-  }
-
-  console.log(
-    "🚀 ~ file: quoteValidations.js ~ line 19 ~ validate ~ quote.registrationFee",
-    quote.registrationFee
-  );
-  if (quote.registrationFee === null || quote.registrationFee === 0 ) {
-    errorList.push({
-      field: "registrationFee",
-      message: "Registration Fee should not be null."
+    warningList.push({
+      field: "dof",
+      message: `Max DOF allowed is $${quote.maxDof}`
     });
   }
 
@@ -73,39 +52,62 @@ const validate = (quote, messages, isApproval) => {
     "🚀 ~ file: quoteValidations.js ~ line 21 ~ validate ~ quote.clientRate",
     quote.clientRate
   );
-  if (quote.clientRate === null || quote.clientRate == 0.0) {
+  if (quote.clientRate === null || !(quote.clientRate > 0.0)) {
     errorList.push({
       field: "clientRate",
       message: "Client Rate should not be zero."
     });
-  } else if (quote.baseRate > quote.clientRate) {
+  } else if (quote.clientRate > maxRate) {
     errorList.push({
+      field: "clientRate",
+      message: `Client Rate cannot exceed the max rate: ${maxRate}%`
+    });
+  } else if (quote.clientRate < baseRate) {
+    warningList.push({
       field: "clientRate",
       message: `Client Rate should not be below base rate`
     });
   }
 
-  console.log(
-    "🚀 ~ file: quoteValidations.js ~ line 19 ~ validate ~ quote.residual",
-    quote.residual
-  );
-  if (quote.residual > 0 && quote.term > 60) {
-    errorList.push({
-      field: "residual",
-      message: "You should not have a balloon or residual payment when the loan term is > 5 years"
+  if (quote.realtimeNaf <= 7999 && quote.term > 36) {
+    warningList.push({
+      field: "term",
+      message: "Maximum loan term should be 36 for loans up to $7.9999."
+    });
+  } else if (quote.term == 84 && (quote.realtimeNaf < 8000 || quote.realtimeNaf > 40000)) {
+    warningList.push({
+      field: "term",
+      message: `84 months for loans should be between $8.000 and $40.000.`
     });
   }
 
-  console.log(
-    "🚀 ~ file: quoteValidations.js ~ line 19 ~ validate ~ quote.loanPurpose",
-    quote.loanPurpose
-  );
+  if ('Secured' === quote.loanTypeDetail) {
+    if(quote.realtimeNaf < 15000){
+      warningList.push({
+        field: "realtimeNaf",
+        message: "Loan amount should be between $15.000 and $50.000 (Secured)"
+      });
+    }
+  } else {
+    if(quote.realtimeNaf < 5000 || quote.realtimeNaf > 40000){
+      warningList.push({
+        field: "realtimeNaf",
+        message: "Loan amount should be between $5.000 and $40.000 (Unsecured)"
+      });
+    }
+  }
+
+  if (quote.residual > 0 && quote.term > 60) {
+    errorList.push({
+      field: "residual",
+      message: "You cannot have a balloon or residual payment when the loan term is > 5 years."
+    });
+  }
+
   if (!quote.loanPurpose) {
-    const msg = isApproval ? 'The Loan Purpose needs to be inserted into the quoting tool' 
-    : 'The Loan Purpose is neccessary for any approval';
     warningList.push({
       field: "loanPurpose",
-      message: msg
+      message: "Loan Purpose could be neccessary"
     });
   }
 

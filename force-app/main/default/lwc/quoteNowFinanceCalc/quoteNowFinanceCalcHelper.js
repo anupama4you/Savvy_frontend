@@ -1,9 +1,9 @@
-import getQuotingData from "@salesforce/apex/QuoteBrandedConsumerController.getQuotingData";
-import getCreditScore from "@salesforce/apex/QuoteBrandedConsumerController.getCreditScore";
+import getQuotingData from "@salesforce/apex/QuoteNowFinanceCalcController.getQuotingData";
 import getBaseRates from "@salesforce/apex/QuoteController.getBaseRates";
 import calculateRepayments from "@salesforce/apex/QuoteController.calculateRepayments";
 import sendQuote from "@salesforce/apex/QuoteController.sendQuote";
-import save from "@salesforce/apex/QuoteBrandedConsumerController.save";
+import save from "@salesforce/apex/QuoteNowFinanceCalcController.save";
+import getNowFinanceMaxDOF from "@salesforce/apex/QuoteNowFinanceCalcController.getNowFinanceMaxDOF";
 import {
   QuoteCommons,
   CommonOptions,
@@ -15,15 +15,11 @@ import { Validations } from "./quoteValidations";
 let lenderSettings = {};
 let tableRatesData = [];
 let tableRateDataColumns = [
-  { label: "Vehicle Condition", fieldName: "Condition__c" },
-  { label: "Profile", fieldName: "Profile__c" },
-  { label: "Ranking", fieldName: "Credit_Score__c" },
-  { label: "Credit Score", fieldName: "Credit__c" },
-  { label: "Min Rate", fieldName: "Rate__c" },
-  { label: "Max Rate", fieldName: "Rate2__c" }
+  { label: "NAF", fieldName: "MasterLabel" },
+  { label: "Max DOF", fieldName: "DOF__c" },
 ];
 
-const LENDER_QUOTING = "Branded Consumer";
+const LENDER_QUOTING = "Now Finance";
 
 const QUOTING_FIELDS = new Map([
   ["loanType", "Loan_Type__c"],
@@ -37,62 +33,135 @@ const QUOTING_FIELDS = new Map([
   ["applicationFee", "Application_Fee__c"],
   ["dof", "DOF__c"],
   ["ppsr", "PPSR__c"],
+  ["residual", "Residual_Value__c"],
   ["clientRate", "Client_Rate__c"],
   ["monthlyFee", "Monthly_Fee__c"],
   ["term", "Term__c"],
   ["paymentType", "Payment__c"],
-  ["applicationId", "Application__c"]
+  ["applicationId", "Application__c"],
+  ["clientTier", "Client_Tier__c"],
+  ["assetAge", "Vehicle_Age__c"],
+  ["privateSales", "Private_Sales__c"],
+  ["loanTypeDetail", "Loan_Facility_Type__c"],
+  ["loanPurpose", "Loan_Purpose__c"],
 ]);
 
+// - TODO: need to map more fields
 const FIELDS_MAPPING_FOR_APEX = new Map([
   ...QUOTING_FIELDS,
   ["Id", "Id"],
-  ["privateSales", "Private_Sales__c"],
-  ["propertyOwner", "Client_Tier__c"],
-  ["assetAge", "Vehicle_Age__c"],
   ["baseRate", "Base_Rate__c"],
-  ["maxRate", "Manual_Max_Rate__c"]
+  ["maxRate", "Manual_Max_Rate__c"],
+  ["maxDof", "Max_DOF__c"],
+  ["realtimeNaf", "NAF__c"],
 ]);
 
-const RATE_SETTING_NAMES = ["Branded_Consumer_Rate__c"];
+const RATE_SETTING_NAMES = ["NowFinanceDOF__mdt", "Get_Capital_Rates__c"];
 
 const SETTING_FIELDS = new Map([
   ["applicationFee", "Application_Fee__c"],
   ["maxApplicationFee", "Application_Fee__c"],
-  ["dof", "DOF__c"],
-  ["maxDof", "DOF__c"],
   ["ppsr", "PPSR__c"],
   ["monthlyFee", "Monthly_Fee__c"]
 ]);
 
-const BASE_RATE_FIELDS = ["propertyOwner", "assetCondition", "creditScore"];
+const BASE_RATE_FIELDS = [
+  "loanTypeDetail"
+];
 
-const createVehicleAge = (min, max) => {
-  let opts = [];
-  for (let index = min; index < max + 1; index++) {
-    opts.push({ label: `${index}`, value: `${index}` });
-  }
-  return opts;
-};
+const MAX_DOF_FIELDS = [
+  "price",
+  "deposit",
+  "tradeIn",
+  "payoutOn",
+  "applicationFee",
+  "dof",
+  "ppsr"
+];
+
+const calculate = (quote) =>
+  new Promise((resolve, reject) => {
+    console.log(`Calculating repayments...`, JSON.stringify(quote, null, 2));
+    let res = {
+      commissions: QuoteCommons.resetResults(),
+      messages: QuoteCommons.resetMessage()
+    };
+    // Validate quote
+    res.messages = Validations.validate(quote, res.messages);
+    if (res.messages && res.messages.errors.length > 0) {
+      reject(res);
+    } else {
+      // Prepare params
+      const p = {
+        lender: LENDER_QUOTING,
+        productLoanType: quote.loanProduct,
+        clientTier: quote.clientTier,
+        vehicleYear: quote.assetAge,
+        goodsType: quote.assetType,
+        privateSales: quote.privateSales,
+        totalAmount: QuoteCommons.calcNetRealtimeNaf(quote),
+        totalInsurance: QuoteCommons.calcTotalInsuranceType(quote),
+        totalInsuranceIncome: QuoteCommons.calcTotalInsuranceIncome(quote),
+        clientRate: quote.clientRate,
+        baseRate: quote.baseRate,
+        paymentType: quote.paymentType,
+        term: quote.term,
+        dof: quote.dof,
+        monthlyFee: quote.monthlyFee,
+        residualValue: quote.residual
+      };
+
+      // Calculate
+      console.log(`@@param:`, JSON.stringify(p, null, 2));
+      calculateRepayments({
+        param: p
+      })
+        .then((data) => {
+          console.log(`@@SF:`, JSON.stringify(data, null, 2));
+          // Mapping
+          res.commissions = QuoteCommons.mapCommissionSObjectToLwc(
+            data,
+            quote.insurance
+          );
+          console.log(JSON.stringify(res.commissions, null, 2));
+          // Validate the result of commissions
+          res.messages = Validations.validatePostCalculation(
+            res.commissions,
+            res.messages
+          );
+          resolve(res);
+        })
+        .catch((error) => {
+          res.messages.errors.push({ field: "calculation", message: error });
+          reject(res);
+        });
+    }
+  });
 
 const calcOptions = {
   loanTypes: CommonOptions.loanTypes,
   paymentTypes: CommonOptions.paymentTypes,
   loanProducts: CommonOptions.fullLoanProducts,
-  privateSales: CommonOptions.yesNo,
-  propertyOwnerOptions: CommonOptions.yesNo,
-  assetConditions: [
-    { label: "New", value: "New" },
-    { label: "Demo", value: "Demo" },
-    { label: "Used", value: "Used" }
-  ],
+  privateSales: [{ label: "-- None --", value: null }, ...CommonOptions.yesNo],
   assetTypes: [
     { label: "Car", value: "Car" },
-    { label: "Motorbikes", value: "Motorbikes" },
-    { label: "Caravan", value: "Caravan" },
-    { label: "Motorhomes", value: "Motorhomes" }
+    { label: "Caravan", value: "Caravan" }
   ],
-  vehicleAges: createVehicleAge(0, 13),
+  clientTiers: [
+    { label: "A", value: "A" },
+    { label: "B", value: "B" },
+    { label: "C", value: "C" }
+  ],
+  vehicleAges: [
+    { label: "New", value: "New" },
+    { label: "Used 0-5 years", value: "Used 0-5 years" },
+    { label: "Used 6-9 years", value: "Used 6-9 years" },
+    { label: "Used 10+ years", value: "Used 10+ years" }
+  ],
+  securityOptions: [
+    { label: "Secured", value: "Secured" },
+    { label: "Unsecured", value: "Unsecured" }
+  ],
   terms: CommonOptions.terms(12, 96)
 };
 
@@ -108,55 +177,33 @@ const reset = (recordId) => {
     netDeposit: 0.0,
     tradeIn: null,
     payoutOn: null,
-    applicationFee: 395.0,
+    applicationFee: null,
     maxApplicationFee: null,
-    dof: null,
+    dof: 0.0,
     maxDof: null,
-    ppsr: 6.0,
-    term: 60,
+    ppsr: null,
+    residual: 0.0,
+    term: 36,
     monthlyFee: null,
     baseRate: 0.0,
     maxRate: 0.0,
     clientRate: null,
-    privateSales: "Y",
+    privateSales: "N",
     paymentType: "Arrears",
-    creditScore: null,
-    assetCondition: calcOptions.assetConditions[0].value,
-    propertyOwner: CommonOptions.yesNo[0].value,
+    loanTypeDetail: "Secured",
+    clientTier: calcOptions.clientTiers[0].value,
     assetAge: calcOptions.vehicleAges[0].value,
     commissions: QuoteCommons.resetResults(),
     insurance: { integrity: {} }
   };
-  //   r = QuoteCommons.mapDataToLwc(r, lenderSettings, SETTING_FIELDS);
+  r = QuoteCommons.mapDataToLwc(r, lenderSettings, SETTING_FIELDS);
   return r;
-};
-
-const rankingMapper = (rank) => {
-  let credit = "Less than 450";
-  if (rank === "4 Stars") {
-    credit = "751 - 1,200";
-  } else if (rank === "3 Stars") {
-    credit = "551 - 750";
-  } else if (rank === "2 Stars") {
-    credit = "451 - 550";
-  }
-  return credit;
-};
-
-const tableRatesHandler = (rates) => {
-  let result = [];
-  result = rates.map((rate) => {
-    rate.Rate2__c = rate.Rate__c + 2;
-    rate.Credit__c = rankingMapper(rate.Credit_Score__c);
-    return rate;
-  });
-  //   console.log("table rate handler >> ", JSON.stringify(rates, null, 2));
-  return result;
 };
 
 // Load Data
 const loadData = (recordId) =>
   new Promise((resolve, reject) => {
+    //  const fields = Array.from(QUOTING_FIELDS.values());
     const fields = [
       ...QUOTING_FIELDS.values(),
       ...QuoteCommons.COMMISSION_FIELDS.values(),
@@ -187,9 +234,7 @@ const loadData = (recordId) =>
 
         // Rate Settings
         if (quoteData.rateSettings) {
-          tableRatesData = tableRatesHandler(
-            quoteData.rateSettings[`${RATE_SETTING_NAMES[0]}`]
-          );
+          tableRatesData = quoteData.rateSettings[`${RATE_SETTING_NAMES[0]}`];
         }
         console.log(`@@data:`, JSON.stringify(data, null, 2));
         resolve(data);
@@ -197,83 +242,25 @@ const loadData = (recordId) =>
       .catch((error) => reject(error));
   });
 
-const calculate = (quote) =>
+// get maxDof
+const getMaxDof = (naf) =>
   new Promise((resolve, reject) => {
-    let res = {
-      commissions: QuoteCommons.resetResults(),
-      messages: QuoteCommons.resetMessage()
-    };
-    // Validate quote
-    res.messages = Validations.validate(quote, res.messages);
-    if (res.messages && res.messages.errors.length > 0) {
-      reject(res);
-    } else {
-      // Prepare params
-      const condition =
-        quote.assetCondition === "New" || quote.assetCondition === "Demo"
-          ? "New/Demo"
-          : "Used";
-      const p = {
-        lender: LENDER_QUOTING,
-        customerProfile:
-          quote.propertyOwner === "Y" ? "Asset Backed" : "Non Asset Backed",
-        condition: condition,
-        productLoanType: quote.loanProduct,
-        clientTier: quote.propertyOwner,
-        vehicleYear: quote.assetAge,
-        goodsType: quote.assetType,
-        privateSales: quote.privateSales,
-        totalAmount: QuoteCommons.calcNetRealtimeNaf(quote),
-        // totalInsurance: QuoteCommons.calcTotalInsuranceType(quote),
-        totalInsuranceIncome: QuoteCommons.calcTotalInsuranceIncome(quote),
-        clientRate: quote.clientRate,
-        baseRate: quote.baseRate,
-        paymentType: quote.paymentType,
-        term: quote.term,
-        dof: quote.dof,
-        monthlyFee: quote.monthlyFee
-      };
-
-      // Calculate
-      console.log(`@@param:`, JSON.stringify(p, null, 2));
-      calculateRepayments({
-        param: p
+    getNowFinanceMaxDOF({
+      naf: naf
+    })
+      .then((data) => {
+        console.log('@@getMaxDof::', data)
+        resolve(data);
       })
-        .then((data) => {
-          console.log(`@@SF:`, JSON.stringify(data, null, 2));
-          // Mapping
-          res.commissions = QuoteCommons.mapCommissionSObjectToLwc(
-            data,
-            quote.insurance
-          );
-          console.log(JSON.stringify(res.commissions, null, 2));
-          // Validate the result of commissions
-          res.messages = Validations.validatePostCalculation(
-            res.commissions,
-            res.messages
-          );
-          resolve(res);
-        })
-        .catch((error) => {
-          res.messages.errors.push({ field: "calculation", message: error });
-          reject(res);
-        });
-    }
+      .catch((error) => reject(error));
   });
 
 // Get Base Rates
 const getMyBaseRates = (quote) =>
   new Promise((resolve, reject) => {
-    const condition =
-      quote.assetCondition === "New" || quote.assetCondition === "Demo"
-        ? "New/Demo"
-        : "Used";
     const p = {
       lender: LENDER_QUOTING,
-      vedascore: quote.creditScore,
-      customerProfile:
-        quote.propertyOwner === "Y" ? "Asset Backed" : "Non Asset Backed",
-      condition: condition,
+      loanTypeDetail: quote.loanTypeDetail,
       hasMaxRate: true
     };
     console.log(`getMyBaseRates...`, JSON.stringify(p, null, 2));
@@ -289,13 +276,6 @@ const getMyBaseRates = (quote) =>
 
 const getTableRatesData = () => {
   return tableRatesData;
-};
-
-const getCreditScoreValue = async (oppId) => {
-  const creditScore = await getCreditScore({
-    oppId: oppId
-  });
-  return creditScore;
 };
 
 /**
@@ -324,7 +304,7 @@ const saveQuote = (approvalType, param, recordId) =>
           reject(error);
         });
     } else {
-      reject(new Error("QUOTE OR RECORD_ID EMPTY in SaveQuoting function"));
+      reject(new Error("QUOTE OR RECORDID EMPTY in SaveQuoting function"));
     }
   });
 
@@ -361,15 +341,16 @@ export const CalHelper = {
   options: calcOptions,
   calculate: calculate,
   load: loadData,
-  getCreditScore: getCreditScoreValue,
   reset: reset,
   baseRates: getMyBaseRates,
   BASE_RATE_FIELDS: BASE_RATE_FIELDS,
+  MAX_DOF_FIELDS: MAX_DOF_FIELDS,
   lenderSettings: lenderSettings,
   getTableRatesData: getTableRatesData,
   tableRateDataColumns: tableRateDataColumns,
   getNetRealtimeNaf: QuoteCommons.calcNetRealtimeNaf,
   getNetDeposit: QuoteCommons.calcNetDeposit,
   saveQuote: saveQuote,
-  sendEmail: sendEmail
+  sendEmail: sendEmail,
+  getMaxDof: getMaxDof
 };

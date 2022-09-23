@@ -1,8 +1,8 @@
 import { LightningElement, api, track, wire } from "lwc";
 import { displayToast } from "c/partnerJsUtils";
 import { QuoteCommons } from "c/quoteCommons";
-import { CalHelper } from "./quoteBrandedCommercialCalcHelper";
-import LENDER_LOGO from "@salesforce/resourceUrl/BrandedLogo";
+import { CalHelper } from "./quoteNowFinanceCalcHelper";
+import LENDER_LOGO from "@salesforce/resourceUrl/NowFinanceLogo";
 import FNAME_FIELD from "@salesforce/schema/Custom_Opportunity__c.Account_First_Name__c";
 import LNAME_FIELD from "@salesforce/schema/Custom_Opportunity__c.Account_Last_Name__c";
 import OPPNAME_FIELD from "@salesforce/schema/Custom_Opportunity__c.Name";
@@ -10,16 +10,14 @@ import { getRecord, getFieldValue } from "lightning/uiRecordApi";
 
 const fields = [FNAME_FIELD, LNAME_FIELD, OPPNAME_FIELD];
 
-export default class QuoteBrandedConsumerCalc extends LightningElement {
-  tableRatesCols = CalHelper.tableRateDataColumns;
+export default class QuoteNowFinanceCalc extends LightningElement {
+    tableRatesCols = CalHelper.tableRateDataColumns;
   isBusy;
   isBaseRateBusy;
   isCalculated = false;
   @api recordId; // Opportunity Id
   @track messageObj = QuoteCommons.resetMessage();
   @track quoteForm;
-  @track resDisable = { per: true, val: false };
-  @track gstOptions = [];
   // Rate Settings
   @track tableRates;
   @wire(getRecord, { recordId: "$recordId", fields })
@@ -36,9 +34,10 @@ export default class QuoteBrandedConsumerCalc extends LightningElement {
     this.reset();
     CalHelper.load(this.recordId)
       .then((data) => {
-        console.log(`Data loaded!` + data);
+        console.log(`Data loaded!`);
         this.quoteForm = data;
         this.tableRates = CalHelper.getTableRatesData();
+        this.baseRateCalc();
       })
       .catch((error) => {
         console.error(JSON.stringify(error, null, 2));
@@ -46,9 +45,6 @@ export default class QuoteBrandedConsumerCalc extends LightningElement {
       })
       .finally(() => {
         this.isBusy = false;
-        this.baseRateCalc();
-        this.productTypeChange();
-        this.gstChange();
       });
   }
 
@@ -66,14 +62,6 @@ export default class QuoteBrandedConsumerCalc extends LightningElement {
     return CalHelper.options.loanTypes;
   }
 
-  get assetConditionOptions() {
-    return CalHelper.options.assetConditions;
-  }
-
-  get goodsTypeOptions() {
-    return CalHelper.options.goodsTypes;
-  }
-
   get loanProductOptions() {
     return CalHelper.options.loanProducts;
   }
@@ -86,12 +74,12 @@ export default class QuoteBrandedConsumerCalc extends LightningElement {
     return CalHelper.options.paymentTypes;
   }
 
-  get assetYearOptions() {
-    return CalHelper.options.assetYears;
+  get assetAgeOptions() {
+    return CalHelper.options.vehicleAges;
   }
 
-  get propertyOwnerOptions() {
-    return CalHelper.options.propertyOwners;
+  get clientTierOptions() {
+    return CalHelper.options.clientTiers;
   }
 
   get termOptions() {
@@ -102,8 +90,8 @@ export default class QuoteBrandedConsumerCalc extends LightningElement {
     return CalHelper.options.privateSales;
   }
 
-  get typeValueOptions() {
-    return CalHelper.options.typeValues;
+  get securityOptions() {
+    return CalHelper.options.securityOptions;
   }
 
   // Events
@@ -132,25 +120,7 @@ export default class QuoteBrandedConsumerCalc extends LightningElement {
     if (CalHelper.BASE_RATE_FIELDS.includes(fldName)) {
       this.baseRateCalc();
     }
-
-    // Residual Value Calculation
-    if (CalHelper.RESIDUAL_VALUE_FIELDS.includes(fldName)) {
-      this.residualCalc();
-    }
-
-    // Product type change according to GST
-    if (fldName === "gst") {
-      this.productTypeChange();
-    }
-
-    // GST change according to PropertyOwner
-    if (fldName === "propertyOwner") {
-      this.gstChange();
-    }
-
     // --------------
-
-    console.log("🍔🍔 >> " + JSON.stringify(this.quoteForm, null, 2));
   }
 
   // Calculations
@@ -159,29 +129,29 @@ export default class QuoteBrandedConsumerCalc extends LightningElement {
   }
 
   get netRealtimeNaf() {
-    return CalHelper.getNetRealtimeNaf(this.quoteForm);
+    this.quoteForm.realtimeNaf = CalHelper.getNetRealtimeNaf(this.quoteForm)
+    if(this.quoteForm.realtimeNaf) {
+      this.maxDofCalc(this.quoteForm.realtimeNaf)
+    }
+    return this.quoteForm.realtimeNaf;
+  }
+
+  // get maxDof
+  maxDofCalc(naf) {
+    CalHelper.getMaxDof(naf)
+      .then((data) => {
+        this.quoteForm.maxDof = data;
+      })
+      .catch((error) => {
+        console.error(JSON.stringify(error, null, 2));
+        displayToast(this, "maxDof...", error, "error");
+      })
+      .finally(() => {
+      });
   }
 
   get disableAction() {
     return !this.isCalculated;
-  }
-
-  handleTypeChange(event) {
-    this.quoteForm.typeValue = event.target.value;
-    this.resPerDisable();
-  }
-
-  resPerDisable() {
-    let tmp;
-    this.quoteForm.typeValue === CalHelper.options.typeValues[0].value ? tmp = true : tmp = false;
-    this.resDisable.per = !tmp;
-    this.resDisable.val = tmp;
-  }
-
-  gstChange() {
-    const gstOpt = CalHelper.getGstOptions(this.quoteForm);
-    this.gstOptions = gstOpt;
-    this.quoteForm.gst = gstOpt[0].value;
   }
 
   // Reset
@@ -198,9 +168,9 @@ export default class QuoteBrandedConsumerCalc extends LightningElement {
     this.isBaseRateBusy = true;
     CalHelper.baseRates(this.quoteForm)
       .then((data) => {
-        this.quoteForm.baseRate = data.baseRate;
-        this.quoteForm.maxRate = data.maxRate;
         console.log(`Data loaded!`);
+        this.quoteForm.baseRate = data.baseRate;
+        this.quoteForm.maxRate = 16.95;
       })
       .catch((error) => {
         console.error(JSON.stringify(error, null, 2));
@@ -287,19 +257,19 @@ export default class QuoteBrandedConsumerCalc extends LightningElement {
           console.log("@@data in handleSave:", JSON.stringify(data, null, 2));
           !isNONE
             ? this.messageObj.confirms.push(
-              {
+                {
+                  field: "confirms",
+                  message: "Calculation saved successfully."
+                },
+                {
+                  fields: "confirms",
+                  message: "Product updated successfully."
+                }
+              )
+            : this.messageObj.confirms.push({
                 field: "confirms",
                 message: "Calculation saved successfully."
-              },
-              {
-                fields: "confirms",
-                message: "Product updated successfully."
-              }
-            )
-            : this.messageObj.confirms.push({
-              field: "confirms",
-              message: "Calculation saved successfully."
-            });
+              });
           // passing data to update quoteform
           this.quoteForm["Id"] = data["Id"];
         })
@@ -424,7 +394,7 @@ export default class QuoteBrandedConsumerCalc extends LightningElement {
     } else {
       this.quoteForm.commissions = {
         ...this.quoteForm.commissions,
-        insurances: null
+        insurances: 0.0
       };
     }
     this.console.log(
@@ -437,18 +407,4 @@ export default class QuoteBrandedConsumerCalc extends LightningElement {
     this.isCalculated = event.detail;
   }
   // --- insurance: end ---
-
-  residualCalc() {
-    if (this.quoteForm.typeValue === 'Value' && this.quoteForm.residualValue > 0) {
-      this.quoteForm.residualPer = CalHelper.getResiPer(this.quoteForm);
-    }
-    else if (this.quoteForm.typeValue === 'Percentage' && this.quoteForm.residualPer > 0) {
-      this.quoteForm.residualValue = CalHelper.getResiVal(this.quoteForm);
-    }
-  }
-
-  productTypeChange() {
-    this.quoteForm.productType = (this.quoteForm.gst === "ABN/GST > 1 year" || this.quoteForm.gst === "ABN > 2 yrs/GST > 1year") ? "Lite" : "Express"
-  }
-
 }

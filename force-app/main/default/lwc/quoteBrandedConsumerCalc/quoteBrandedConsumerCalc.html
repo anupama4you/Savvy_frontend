@@ -55,16 +55,13 @@
                 </lightning-combobox>
             </div>
         </div>
-
-
         <!-- Credit Score -->
         <div class="c-row-details">
             <div class="c-detail-labels"><span class="c-label">Credit Score</span></div>
             <div class="c-detail-fields">
-                <lightning-combobox name="creditScore" label="Credit Score" data-id="creditScore-field"
-                    value={quoteForm.creditScore} placeholder="Select a value" options={creditScoreOptions}
-                    onchange={handleFieldChange} class="slds-form__item" variant="label-hidden" required>
-                </lightning-combobox>
+                <lightning-input type="number" name="creditScore" data-id="creditScore-field"
+                    value={quoteForm.creditScore} label="Credit Score" placeholder="0" class="slds-form__item"
+                    variant="label-hidden" onchange={handleFieldChange} required></lightning-input>
             </div>
         </div>
         <!-- Asset Price -->
@@ -293,13 +290,13 @@
 
         <!-- Table Rates -->
         <div slot="table-rates">
-            <!-- <div class="c-rates-section-title">Pepper Consumer - Table Rates</div>
+            <div class="c-rates-section-title">Branded Consumer - Table Rates</div>
             <div class="slds-grid slds-gutters">
-                <div class="slds-col slds-size_6-of-12">
+                <div class="slds-col slds-size_12-of-12">
                     <lightning-datatable key-field="Id" data={tableRates} columns={tableRatesCols} hide-checkbox-column>
                     </lightning-datatable>
                 </div>
-            </div> -->
+            </div>
         </div>
     </c-quote-container>
 </template>

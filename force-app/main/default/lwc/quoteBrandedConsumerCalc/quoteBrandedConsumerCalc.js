@@ -37,7 +37,6 @@ export default class QuoteBrandedConsumerCalc extends LightningElement {
         console.log(`Data loaded!`);
         this.quoteForm = data;
         this.tableRates = CalHelper.getTableRatesData();
-        this.baseRateCalc();
       })
       .catch((error) => {
         console.error(JSON.stringify(error, null, 2));
@@ -45,6 +44,17 @@ export default class QuoteBrandedConsumerCalc extends LightningElement {
       })
       .finally(() => {
         this.isBusy = false;
+      });
+
+    CalHelper.getCreditScore(this.recordId)
+      .then((data) => {
+        this.quoteForm.creditScore = data;
+      })
+      .catch((error) => {
+        console.error(error);
+      })
+      .finally(() => {
+        this.baseRateCalc();
       });
   }
 
@@ -64,10 +74,6 @@ export default class QuoteBrandedConsumerCalc extends LightningElement {
 
   get assetConditionOptions() {
     return CalHelper.options.assetConditions;
-  }
-
-  get creditScoreOptions() {
-    return CalHelper.options.creditScores;
   }
 
   get loanProductOptions() {
@@ -124,8 +130,9 @@ export default class QuoteBrandedConsumerCalc extends LightningElement {
     if (CalHelper.BASE_RATE_FIELDS.includes(fldName)) {
       this.baseRateCalc();
     }
-
     // --------------
+
+    console.log("🍔🍔 >> " + JSON.stringify(this.quoteForm, null, 2));
   }
 
   // Calculations
