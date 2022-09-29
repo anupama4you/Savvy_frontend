@@ -432,8 +432,8 @@
                     required></lightning-combobox>
             </div>
         </div>
-         <!-- Rate Option -->
-         <div class="c-row-details">
+        <!-- Rate Option -->
+        <div class="c-row-details">
             <div class="c-detail-labels"><span class="c-label">Rate Option</span></div>
             <div class="c-detail-fields">
                 <lightning-combobox
@@ -509,7 +509,16 @@
         <!-- end -->
 
         <!-- Insurances -->
-        <c-quote-insurance-form slot="insurances"></c-quote-insurance-form>
+        <c-quote-insurance-form
+            slot="insurances"
+            onhandleinsurancemessage={handleInsuranceMessage}
+            oninsurancechanged={handleInsuranceChange}
+            onhandlepresentation={handleInsurancePresentation}
+            onhandledisablebutton={handleDisableButton}
+            onhandleloadinsurance={handleInsuanceLoad}
+            record-id={recordId}
+            quote-form={quoteForm}></c-quote-insurance-form>
+        <!-- insurance-income={insuranceIncome} -->
 
         <!-- Verbatim Text -->
         <div slot="more">

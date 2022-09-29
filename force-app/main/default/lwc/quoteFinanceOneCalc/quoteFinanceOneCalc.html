@@ -339,8 +339,16 @@
         <!-- end of Finance Details-->
 
         <!-- Insurances -->
-        <c-quote-insurance-form slot="insurances" opp-id={quoteForm.oppId}
+        <c-quote-insurance-form
+            slot="insurances"
+            onhandleinsurancemessage={handleInsuranceMessage}
+            oninsurancechanged={handleInsuranceChange}
+            onhandlepresentation={handleInsurancePresentation}
+            onhandledisablebutton={handleDisableButton}
+            onhandleloadinsurance={handleInsuanceLoad}
+            record-id={recordId}
             quote-form={quoteForm}></c-quote-insurance-form>
+        <!-- insurance-income={insuranceIncome} -->
 
         <!-- Table Rates -->
         <div slot="table-rates">

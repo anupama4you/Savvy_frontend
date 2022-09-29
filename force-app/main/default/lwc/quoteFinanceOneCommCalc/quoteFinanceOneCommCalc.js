@@ -18,37 +18,37 @@ export default class QuoteFinanceOneCommCalc extends LightningElement {
     isCalculated = false;
     isFullDofCalc = false;
     @api recordId; // Opportunity Id
-    @track messageObj = QuoteCommons.resetMessage(); 
+    @track messageObj = QuoteCommons.resetMessage();
     @track quoteForm;
     // Rate Settings
     @track tableRates;
-    @wire(getRecord, { recordId: "$recordId", fields }) 
+    @wire(getRecord, { recordId: "$recordId", fields })
     opp;
 
     connectedCallback() {
         this.isBusy = true;
-        this.reset(); 
+        this.reset();
         CalHelper.goodsSubTypeOptions();
         CalHelper.load(this.recordId)
             .then((data) => {
-            this.quoteForm = data;
-            this.tableRates = CalHelper.getTableRatesData();
+                this.quoteForm = data;
+                this.tableRates = CalHelper.getTableRatesData();
             })
             .catch((error) => {
-            
-            displayToast(this, "Loading...", error, "error");
+
+                displayToast(this, "Loading...", error, "error");
             })
             .finally(() => {
-            this.isBusy = false;
-            this.baseRateCalc(); 
-            this.commissionCalc();
-            this.riskFeeCalc();
+                this.isBusy = false;
+                this.baseRateCalc();
+                this.commissionCalc();
+                this.riskFeeCalc();
             });
     }
 
     // lifecycle hook - after rendering all components(child+parent), will triggered
     renderedCallback() {
-        QuoteCommons.resetValidateFields(this); 
+        QuoteCommons.resetValidateFields(this);
     }
     //Images
     get logoUrl() {
@@ -69,7 +69,7 @@ export default class QuoteFinanceOneCommCalc extends LightningElement {
     }
 
     get goodsSubTypeOptions() {
-        
+
         return CalHelper.getGoodsSubTypeOptions(this.quoteForm.goodType);
     }
 
@@ -96,87 +96,87 @@ export default class QuoteFinanceOneCommCalc extends LightningElement {
     }
 
     get netRealtimeNaf() {
-        return CalHelper.getNetRealtimeNaf(this.quoteForm);      
+        return CalHelper.getNetRealtimeNaf(this.quoteForm);
     }
-    
+
     get disableAction() {
         return !this.isCalculated;
     }
 
     // Reset
     reset() {
-    
-        this.quoteForm = CalHelper.reset(this.recordId); 
-        
+
+        this.quoteForm = CalHelper.reset(this.recordId);
+
     }
 
     // Base Rate
     baseRateCalc() {
         this.isBaseRateBusy = true;
         CalHelper.baseRates(this.quoteForm)
-        .then((data) => {
-            this.quoteForm.baseRate = data.baseRate;
-            this.quoteForm.maxRate = data.maxRate;
-            this.quoteForm.clientRate = data.clientRate;
-        })
-        .catch((error) => {
-            console.error(JSON.stringify(error, null, 2));
-            displayToast(this, "Base Rate...", error, "error");
-        })
-        .finally(() => {
-            this.isBaseRateBusy = false;
-        });
+            .then((data) => {
+                this.quoteForm.baseRate = data.baseRate;
+                this.quoteForm.maxRate = data.maxRate;
+                this.quoteForm.clientRate = data.clientRate;
+            })
+            .catch((error) => {
+                console.error(JSON.stringify(error, null, 2));
+                displayToast(this, "Base Rate...", error, "error");
+            })
+            .finally(() => {
+                this.isBaseRateBusy = false;
+            });
     }
 
     //Commission
-    commissionCalc(){
+    commissionCalc() {
         console.log('commision::', JSON.stringify(this.quoteForm, null, 2));
         CalHelper.getFOCommission(this.quoteForm)
-        .then((data) => {
-            this.quoteForm.commission = data;
-            console.log('commision::', this.quoteForm.commission);
-        })
-        .catch((error) => {
-            console.error(JSON.stringify(error, null, 2));
-            displayToast(this, "Commission...", error, "error");
-        })
+            .then((data) => {
+                this.quoteForm.commission = data;
+                console.log('commision::', this.quoteForm.commission);
+            })
+            .catch((error) => {
+                console.error(JSON.stringify(error, null, 2));
+                displayToast(this, "Commission...", error, "error");
+            })
     }
 
     //Risk Fee
-    riskFeeCalc(){
+    riskFeeCalc() {
         CalHelper.getRiskCalc(this.quoteForm)
-        .then((data) => {
-            this.quoteForm.calcRiskFee = data;
-        })
-        .catch((error) => {
-            console.error(JSON.stringify(error, null, 2));
-            displayToast(this, "Risk Fee...", error, "error");
-        })
+            .then((data) => {
+                this.quoteForm.calcRiskFee = data;
+            })
+            .catch((error) => {
+                console.error(JSON.stringify(error, null, 2));
+                displayToast(this, "Risk Fee...", error, "error");
+            })
     }
 
     //DOF and Max DOF
-    dofCalc(){
+    dofCalc() {
         CalHelper.getDOFCalc(this.quoteForm, this.isFullDofCalc)
-        .then((data) => {
-            this.quoteForm.dof = data.dof;
-            this.quoteForm.maxDof = data.maxDof;
-        })
-        .catch((error) => {
-            console.error(JSON.stringify(error, null, 2));
-            displayToast(this, "Risk Fee...", error, "error");
-        })
+            .then((data) => {
+                this.quoteForm.dof = data.dof;
+                this.quoteForm.maxDof = data.maxDof;
+            })
+            .catch((error) => {
+                console.error(JSON.stringify(error, null, 2));
+                displayToast(this, "Risk Fee...", error, "error");
+            })
     }
 
     //Application Fee
-    appFeeCalc(){
+    appFeeCalc() {
         CalHelper.getAppFeeCalc(this.quoteForm)
-        .then((data) => {
-            this.quoteForm.applicationFee = data;  
-        })
-        .catch((error) => {
-            console.error(JSON.stringify(error, null, 2));
-            displayToast(this, "Application Fee...", error, "error");
-        })
+            .then((data) => {
+                this.quoteForm.applicationFee = data;
+            })
+            .catch((error) => {
+                console.error(JSON.stringify(error, null, 2));
+                displayToast(this, "Application Fee...", error, "error");
+            })
     }
 
     // -------------
@@ -189,17 +189,17 @@ export default class QuoteFinanceOneCommCalc extends LightningElement {
         let fld = this.template.querySelector(`[data-id="${fldName}-field"]`);
         let v = event.detail ? event.detail.value : "";
         if (fld && fld.type === "number") {
-        v = Number(v);
+            v = Number(v);
         }
         this.quoteForm[fldName] = v;
         this.quoteForm["netDeposit"] = this.netDeposit;
         fldName === "term"
-        ? (this.quoteForm[fldName] = parseInt(v))
-        : (this.quoteForm[fldName] = v); 
+            ? (this.quoteForm[fldName] = parseInt(v))
+            : (this.quoteForm[fldName] = v);
 
-        if(fldName === "loanTypeDetail" && v === 'Silver'){
+        if (fldName === "loanTypeDetail" && v === 'Silver') {
             this.quoteForm.riskFee = 1995;
-        }else if(fldName === "loanTypeDetail" && v !== 'Silver'){
+        } else if (fldName === "loanTypeDetail" && v !== 'Silver') {
             this.quoteForm.riskFee = 0;
         }
 
@@ -209,50 +209,63 @@ export default class QuoteFinanceOneCommCalc extends LightningElement {
 
         // Base Rate Calculation
         if (CalHelper.BASE_RATE_FIELDS.includes(fldName)) {
-            this.baseRateCalc(); 
+            this.baseRateCalc();
         }
 
         //Commission Calculation
         if (CalHelper.COMM_FIELDS.includes(fldName)) {
-            this.commissionCalc(); 
+            this.commissionCalc();
         }
 
         //Risk Fee Calculation
         if (CalHelper.RISK_FEE_FIELDS.includes(fldName)) {
-            this.riskFeeCalc(); 
+            this.riskFeeCalc();
         }
 
         //DOF Calculation
         if (CalHelper.DOF_Calc_Fields.includes(fldName)) {
             this.isFullDofCalc = true;
-            this.dofCalc(); 
+            this.dofCalc();
         }
 
         //Application Fee Calculation
         if (CalHelper.APPFEE_Calc_Fields.includes(fldName)) {
-            this.appFeeCalc(); 
+            this.appFeeCalc();
         }
     }
 
     // Calculate
-    handleCalculate() {
+    handleCalculate(type) {
         this.isBusy = true;
         this.messageObj = QuoteCommons.resetMessage();
         CalHelper.calculate(this.quoteForm)
-        .then((data) => {
-            
-            this.quoteForm.commissions = data.commissions;
-            this.messageObj = data.messages;
-            QuoteCommons.handleHasErrorClassClear(this);
-            if (this.quoteForm.commissions) this.isCalculated = true;
-        })
-        .catch((error) => {
-            this.messageObj = error.messages;
-            QuoteCommons.fieldErrorHandler(this, this.messageObj.errors);
-        })
-        .finally(() => {
-            this.isBusy = false;
-        });
+            .then((data) => {
+                console.log("@@data:", JSON.stringify(data, null, 2));
+                this.quoteForm.commissions = data.commissions;
+                this.messageObj = data.messages;
+                QuoteCommons.handleHasErrorClassClear(this);
+                // --- insurance ---
+                if (this.quoteForm.commissions && type != "load") {
+                    this.isCalculated = true;
+                    this.template.querySelector(
+                        "c-quote-insurance-form"
+                    ).isQuoteCalculated = true;
+                }
+                // --- insurance: end ---
+            })
+            .catch((error) => {
+                if (type !== "load") {
+                    this.messageObj = error.messages;
+                    QuoteCommons.fieldErrorHandler(this, this.messageObj.errors);
+                    console.error(
+                        "quotePepperMVCalc.js: get errors -- ",
+                        JSON.stringify(error.messages.errors, null, 2)
+                    );
+                }
+            })
+            .finally(() => {
+                this.isBusy = false;
+            });
     }
 
     // Reset
@@ -263,10 +276,13 @@ export default class QuoteFinanceOneCommCalc extends LightningElement {
         this.isCalculated = false;
         this.messageObj = QuoteCommons.resetMessage();
         QuoteCommons.handleHasErrorClassClear(this);
-        
-        this.baseRateCalc(); 
+
+        this.baseRateCalc();
         this.commissionCalc();
         this.riskFeeCalc();
+        // --- insurance ---
+        this.template.querySelector("c-quote-insurance-form").resetPressed();
+        // --- insurance: end ---
     }
 
     // all Save Buttons actions
@@ -278,7 +294,9 @@ export default class QuoteFinanceOneCommCalc extends LightningElement {
             isNONE = event.target.value.toUpperCase() === "NONE";
             loanType = event.target.value.toUpperCase();
         } else {
+            // --- insurance ---
             loanType = saveType.toUpperCase();
+            // --- insurance: end ---
         }
         console.log("save type => ", loanType);
         this.isBusy = true;
@@ -310,8 +328,10 @@ export default class QuoteFinanceOneCommCalc extends LightningElement {
                 })
                 .finally(() => {
                     this.isBusy = false;
+                    // --- insurance ---
                     this.quoteForm.commissions.insurance =
                         loanType === "Send" ? 0.0 : this.quoteForm.commissions.insurance;
+                    // --- insurance: end ---
                 });
         } else {
             QuoteCommons.fieldErrorHandler(this, this.messageObj.errors);
@@ -346,4 +366,84 @@ export default class QuoteFinanceOneCommCalc extends LightningElement {
             this.isCalculated = true;
         }
     }
+
+    // --- insurance ---
+    handleInsuranceMessage(event) {
+        try {
+            this.messageObj = QuoteCommons.resetMessage();
+            this.messageObj.errors = [
+                ...this.messageObj.errors,
+                ...event.detail.errors
+            ];
+            console.log(
+                "event.detail >> " + JSON.stringify(this.messageObj.errors, null, 2)
+            );
+        } catch (error) {
+            console.error(error);
+        }
+    }
+
+    isErrorInsuranceOnly() {
+        let result = true;
+        try {
+            if (this.messageObj.errors && this.messageObj.errors.length > 0) {
+                for (const error of this.messageObj.errors) {
+                    if (error.field !== "insurance") {
+                        return false;
+                    }
+                }
+            }
+            return result;
+        } catch (error) {
+            console.error(error);
+        }
+    }
+
+    handleInsuranceChange(event) {
+        this.quoteForm.insurance = event.detail;
+        this.isCalculated = this.template.querySelector(
+            "c-quote-insurance-form"
+        ).isQuoteCalculated = false;
+
+        // comprehensive
+        const cms = QuoteCommons.handleComprehensive(this.quoteForm);
+        this.quoteForm.commissions = { ...cms };
+        // end - comprehensive
+        console.log(
+            "handle insurance change >>  " + JSON.stringify(this.quoteForm, null, 2)
+        );
+    }
+
+    handleInsurancePresentation(event) {
+        console.log(event.detail);
+        this.handleSave(null, event.detail);
+    }
+
+    handleInsuanceLoad(event) {
+        this.handleInsuranceChange(event);
+        // check if there is no acceptance
+        if (
+            this.quoteForm.insurance.ismvAccept ||
+            this.quoteForm.insurance.isshortfallAccept ||
+            this.quoteForm.insurance.iswarrantyAccept ||
+            this.quoteForm.insurance.isLPIAccept ||
+            this.quoteForm.insurance.isIntegrityAccept
+        ) {
+            this.handleCalculate("load");
+        } else {
+            this.quoteForm.commissions = {
+                ...this.quoteForm.commissions,
+                insurances: null
+            };
+        }
+        this.console.log(
+            "handleInsuanceLoad>>",
+            JSON.stringify(this.quoteForm, null, 2)
+        );
+    }
+
+    handleDisableButton(event) {
+        this.isCalculated = event.detail;
+    }
+    // --- insurance: end ---
 }

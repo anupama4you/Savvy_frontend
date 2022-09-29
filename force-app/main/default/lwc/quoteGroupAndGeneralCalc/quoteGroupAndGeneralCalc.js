@@ -1,8 +1,8 @@
 import { LightningElement, api, track, wire } from "lwc";
 import { displayToast } from "c/partnerJsUtils";
 import { QuoteCommons } from "c/quoteCommons";
-import { CalHelper } from "./quoteNowFinanceCalcHelper";
-import LENDER_LOGO from "@salesforce/resourceUrl/NowFinanceLogo";
+import { CalHelper } from "./quoteGroupAndGeneralCalcHelper";
+import LENDER_LOGO from "@salesforce/resourceUrl/GroupAndGeneralLogo";
 import FNAME_FIELD from "@salesforce/schema/Custom_Opportunity__c.Account_First_Name__c";
 import LNAME_FIELD from "@salesforce/schema/Custom_Opportunity__c.Account_Last_Name__c";
 import OPPNAME_FIELD from "@salesforce/schema/Custom_Opportunity__c.Name";
@@ -10,8 +10,7 @@ import { getRecord, getFieldValue } from "lightning/uiRecordApi";
 
 const fields = [FNAME_FIELD, LNAME_FIELD, OPPNAME_FIELD];
 
-export default class QuoteNowFinanceCalc extends LightningElement {
-  tableRatesCols = CalHelper.tableRateDataColumns;
+export default class QuoteGroupAndGeneralCalc extends LightningElement {
   isBusy;
   isBaseRateBusy;
   isCalculated = false;
@@ -20,6 +19,7 @@ export default class QuoteNowFinanceCalc extends LightningElement {
   @track quoteForm;
   // Rate Settings
   @track tableRates;
+  @track resDisable = { per: true, val: false };
   @wire(getRecord, { recordId: "$recordId", fields })
   opp;
   // -
@@ -36,8 +36,9 @@ export default class QuoteNowFinanceCalc extends LightningElement {
       .then((data) => {
         console.log(`Data loaded!`);
         this.quoteForm = data;
+        this.quoteForm.term = data.term.toString();
         this.tableRates = CalHelper.getTableRatesData();
-        this.baseRateCalc();
+        this.clientRateCalc();
       })
       .catch((error) => {
         console.error(JSON.stringify(error, null, 2));
@@ -94,6 +95,22 @@ export default class QuoteNowFinanceCalc extends LightningElement {
     return CalHelper.options.securityOptions;
   }
 
+  get abnLengthOptions() {
+    return CalHelper.options.abnLengths;
+  }
+
+  get gstOptions() {
+    return CalHelper.options.gsts;
+  }
+
+  get propertyOwnerOptions() {
+    return CalHelper.options.propertyOwners;
+  }
+
+  get typeValueOptions() {
+    return CalHelper.options.typeValues;
+  }
+
   // Events
   handleFieldChange(event) {
     console.log(`Changing value for: ${event.target.name}...`);
@@ -109,17 +126,17 @@ export default class QuoteNowFinanceCalc extends LightningElement {
     }
     this.quoteForm[fldName] = v;
     this.quoteForm["netDeposit"] = this.netDeposit;
-    fldName === "term"
-      ? (this.quoteForm[fldName] = parseInt(v))
-      : (this.quoteForm[fldName] = v);
     // --------------
     // Trigger events
     // --------------
 
     // Base Rate Calculation
     if (CalHelper.BASE_RATE_FIELDS.includes(fldName)) {
-      this.baseRateCalc();
+      this.clientRateCalc();
     }
+
+    // Residual Value Calculation
+    this.residualCalc();
     // --------------
   }
 
@@ -130,28 +147,24 @@ export default class QuoteNowFinanceCalc extends LightningElement {
 
   get netRealtimeNaf() {
     this.quoteForm.realtimeNaf = CalHelper.getNetRealtimeNaf(this.quoteForm)
-    if(this.quoteForm.realtimeNaf) {
-      this.maxDofCalc(this.quoteForm.realtimeNaf)
-    }
     return this.quoteForm.realtimeNaf;
-  }
-
-  // get maxDof
-  maxDofCalc(naf) {
-    CalHelper.getMaxDof(naf)
-      .then((data) => {
-        this.quoteForm.maxDof = data;
-      })
-      .catch((error) => {
-        console.error(JSON.stringify(error, null, 2));
-        displayToast(this, "maxDof...", error, "error");
-      })
-      .finally(() => {
-      });
   }
 
   get disableAction() {
     return !this.isCalculated;
+  }
+
+  handleTypeChange(event) {
+    this.quoteForm.typeValue = event.target.value;
+    this.resPerDisable();
+  }
+
+  resPerDisable() {
+    // console.log(`come here ${CalHelper.options.typeValues[0]}`);
+    let tmp;
+    this.quoteForm.typeValue === CalHelper.options.typeValues[0].value ? tmp = true : tmp = false;
+    this.resDisable.per = !tmp;
+    this.resDisable.val = tmp;
   }
 
   // Reset
@@ -164,21 +177,11 @@ export default class QuoteNowFinanceCalc extends LightningElement {
   }
 
   // Base Rate
-  baseRateCalc() {
+  clientRateCalc() {
     this.isBaseRateBusy = true;
-    CalHelper.baseRates(this.quoteForm)
-      .then((data) => {
-        console.log(`Data loaded!`);
-        this.quoteForm.baseRate = data.baseRate;
-        this.quoteForm.maxRate = 16.95;
-      })
-      .catch((error) => {
-        console.error(JSON.stringify(error, null, 2));
-        displayToast(this, "Base Rate...", error, "error");
-      })
-      .finally(() => {
-        this.isBaseRateBusy = false;
-      });
+    console.log('@clientRateCalcTrigger>>', JSON.stringify(this.quoteForm, null, 2))
+    this.quoteForm.clientRate = CalHelper.clientRates(this.quoteForm);
+    this.isBaseRateBusy = false;
   }
 
   // -------------
@@ -229,7 +232,7 @@ export default class QuoteNowFinanceCalc extends LightningElement {
       "🚀 ~ file: QuotePepperMVCalc.js ~ line 172 ~ QuotePepperMVCalc ~ reset ~ this.quoteForm",
       JSON.stringify(this.quoteForm, null, 2)
     );
-    this.baseRateCalc();
+    this.clientRateCalc();
     // --- insurance ---
     this.template.querySelector("c-quote-insurance-form").resetPressed();
     // --- insurance: end ---
@@ -257,19 +260,19 @@ export default class QuoteNowFinanceCalc extends LightningElement {
           console.log("@@data in handleSave:", JSON.stringify(data, null, 2));
           !isNONE
             ? this.messageObj.confirms.push(
-                {
-                  field: "confirms",
-                  message: "Calculation saved successfully."
-                },
-                {
-                  fields: "confirms",
-                  message: "Product updated successfully."
-                }
-              )
-            : this.messageObj.confirms.push({
+              {
                 field: "confirms",
                 message: "Calculation saved successfully."
-              });
+              },
+              {
+                fields: "confirms",
+                message: "Product updated successfully."
+              }
+            )
+            : this.messageObj.confirms.push({
+              field: "confirms",
+              message: "Calculation saved successfully."
+            });
           // passing data to update quoteform
           this.quoteForm["Id"] = data["Id"];
         })
@@ -407,4 +410,13 @@ export default class QuoteNowFinanceCalc extends LightningElement {
     this.isCalculated = event.detail;
   }
   // --- insurance: end ---
+
+  residualCalc() {
+    if (this.quoteForm.typeValue === 'Value' && this.quoteForm.residualValue > 0) {
+      this.quoteForm.residualPer = CalHelper.getResiPer(this.quoteForm);
+    }
+    else if (this.quoteForm.typeValue === 'Percentage' && this.quoteForm.residualPer > 0) {
+      this.quoteForm.residualValue = CalHelper.getResiVal(this.quoteForm);
+    }
+  }
 }

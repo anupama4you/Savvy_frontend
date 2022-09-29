@@ -229,7 +229,7 @@ const reset = (recordId) => {
     calcRiskFee: 0.0,
     clientRate: 0.0,
     commissions: QuoteCommons.resetResults(),
-
+    insurance: { integrity: {} }
   };
   r = QuoteCommons.mapDataToLwc(r, lenderSettings, SETTING_FIELDS);
   return r;
@@ -322,7 +322,8 @@ const loadData = (recordId) =>
     //  const fields = Array.from(QUOTING_FIELDS.values());
     const fields = [
       ...QUOTING_FIELDS.values(),
-      ...QuoteCommons.COMMISSION_FIELDS.values()
+      ...QuoteCommons.COMMISSION_FIELDS.values(),
+      ...QuoteCommons.INSURANCE_FIELDS.values()
     ];
 
     getQuotingData({
@@ -422,7 +423,8 @@ const calculate = (quote) =>
           // Calculate
 
           calculateRepayments({
-            param: p
+            param: p,
+            insuranceParam: quote.insurance
           })
             .then((data) => {
 

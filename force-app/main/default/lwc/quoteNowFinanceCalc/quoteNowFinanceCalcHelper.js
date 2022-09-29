@@ -183,7 +183,7 @@ const reset = (recordId) => {
     maxDof: null,
     ppsr: null,
     residual: 0.0,
-    term: 36,
+    term: 60,
     monthlyFee: null,
     baseRate: 0.0,
     maxRate: 0.0,

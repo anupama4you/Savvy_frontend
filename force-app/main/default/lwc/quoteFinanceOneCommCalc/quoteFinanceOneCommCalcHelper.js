@@ -15,7 +15,7 @@ import {
   CommonOptions,
   FinancialUtilities as fu
 } from "c/quoteCommons";
-import { Validations } from "./quoteValidations"; 
+import { Validations } from "./quoteValidations";
 
 // Default settings
 let lenderSettings = {};
@@ -27,13 +27,13 @@ let goodsSubTypeBoatlist = [];
 let goodsSubTypeCaravanlist = [];
 
 let tableRateDataColumns = [
-  { label: "Category", fieldName: "Category__c", fixedWidth: 140, hideDefaultActions:true },
-  { label: "Product - Base Rate", fieldName: "Product_Base_Rate__c", fixedWidth: 200, hideDefaultActions:true },
-  { label: "Base Rate", fieldName: "Base_Rate__c", fixedWidth: 130, hideDefaultActions:true },
-  { label: "Max Rate", fieldName: "Max_Rate__c", fixedWidth: 130, hideDefaultActions:true },
-  { label: "Interest Rate", fieldName: "Interest_Rate__c", fixedWidth: 400, hideDefaultActions:true },
-  { label: "Term", fieldName: "Term__c", fixedWidth: 140, hideDefaultActions:true },
-  { label: "Maximum Amount", fieldName: "Maximun_Amount__c", fixedWidth: 200, hideDefaultActions:true } 
+  { label: "Category", fieldName: "Category__c", fixedWidth: 140, hideDefaultActions: true },
+  { label: "Product - Base Rate", fieldName: "Product_Base_Rate__c", fixedWidth: 200, hideDefaultActions: true },
+  { label: "Base Rate", fieldName: "Base_Rate__c", fixedWidth: 130, hideDefaultActions: true },
+  { label: "Max Rate", fieldName: "Max_Rate__c", fixedWidth: 130, hideDefaultActions: true },
+  { label: "Interest Rate", fieldName: "Interest_Rate__c", fixedWidth: 400, hideDefaultActions: true },
+  { label: "Term", fieldName: "Term__c", fixedWidth: 140, hideDefaultActions: true },
+  { label: "Maximum Amount", fieldName: "Maximun_Amount__c", fixedWidth: 200, hideDefaultActions: true }
 ];
 
 const LENDER_QUOTING = "Finance One Commercial";
@@ -42,8 +42,8 @@ const QUOTING_FIELDS = new Map([
   ["loanType", "Loan_Type__c"],
   ["loanProduct", "Loan_Product__c"],
   ["goodType", "Goods_type__c"],
-  ["goodsSubType", "Goods_sub_type__c"], 
-  ["loanTypeDetail", "Loan_Facility_Type__c"], 
+  ["goodsSubType", "Goods_sub_type__c"],
+  ["loanTypeDetail", "Loan_Facility_Type__c"],
   ["price", "Vehicle_Price__c"],
   ["deposit", "Deposit__c"],
   ["tradeIn", "Trade_In__c"],
@@ -53,9 +53,9 @@ const QUOTING_FIELDS = new Map([
   ["ppsr", "PPSR__c"],
   ["residual", "Residual_Value__c"],
   ["term", "Term__c"],
-  ["propertyOwner", "Customer_Profile__c"], 
+  ["propertyOwner", "Customer_Profile__c"],
   ["paymentType", "Payment__c"],
-  ["riskFee", "Risk_Fee__c"], 
+  ["riskFee", "Risk_Fee__c"],
   ["monthlyFee", "Monthly_Fee__c"],
   ["clientRate", "Client_Rate__c"],
   ["brokerage", "Brokerage__c"]
@@ -66,7 +66,7 @@ const FIELDS_MAPPING_FOR_APEX = new Map([
   ...QUOTING_FIELDS,
   ["Id", "Id"],
   ["privateSales", "Private_Sales__c"],
-  ["clientTier", "Client_Tier__c"], 
+  ["clientTier", "Client_Tier__c"],
   ["assetAge", "Vehicle_Age__c"],
   ["baseRate", "Base_Rate__c"],
   ["maxRate", "Manual_Max_Rate__c"]
@@ -77,7 +77,7 @@ const RATE_SETTING_NAMES = ["FinanceOneRates__c"];
 const SETTING_FIELDS = new Map([
   ["applicationFee", "Application_Fee__c"],
   ["ppsr", "PPSR__c"],
-  ["brokerage", "Max_Brokerage__c"], 
+  ["brokerage", "Max_Brokerage__c"],
   ["monthlyFee", "Monthly_Fee__c"]
 ]);
 
@@ -117,59 +117,59 @@ const APPFEE_Calc_Fields = [
 //return asset age options 
 const goodsSubTypeOptions = () => {
   let p = ['Motor Vehicle',
-           'Motorbike',
-           'Watercraft',
-           'Recreational Asset'
-      ];
-  getGoodsSubTypes({goodTypes: p })
+    'Motorbike',
+    'Watercraft',
+    'Recreational Asset'
+  ];
+  getGoodsSubTypes({ goodTypes: p })
     .then((res) => {
-        
-        if (res.length !== 0 && res !== null) {
-          for (let key in res) {
-             //mapData.push({value:data[key], key:key});
-             if(key !== null && key === 'Car'){
-                let mapData = [];
-                res[key].forEach(function (item) {
-                  mapData.push({ label: item.label, value: item.value})
-                });
-                goodsSubTypeCarlist = mapData;
-                
-             }
 
-             if(key !== null && key === 'Motorbike'){
-                let mapData = [];
-                res[key].forEach(function (item) {
-                  mapData.push({ label: item.label, value: item.value})
-                });
-                goodsSubTypeMotorBikelist = mapData;
-                
-             }
+      if (res.length !== 0 && res !== null) {
+        for (let key in res) {
+          //mapData.push({value:data[key], key:key});
+          if (key !== null && key === 'Car') {
+            let mapData = [];
+            res[key].forEach(function (item) {
+              mapData.push({ label: item.label, value: item.value })
+            });
+            goodsSubTypeCarlist = mapData;
 
-             if(key !== null && key === 'Boat'){
-                let mapData = [];
-                res[key].forEach(function (item) {
-                  mapData.push({ label: item.label, value: item.value})
-                });
-                goodsSubTypeBoatlist = mapData;
-                
-              }
-
-              if(key !== null && key === 'Caravan'){
-                let mapData = [];
-                res[key].forEach(function (item) {
-                  mapData.push({ label: item.label, value: item.value})
-                });
-                goodsSubTypeCaravanlist = mapData;
-                
-              }
           }
-        } 
+
+          if (key !== null && key === 'Motorbike') {
+            let mapData = [];
+            res[key].forEach(function (item) {
+              mapData.push({ label: item.label, value: item.value })
+            });
+            goodsSubTypeMotorBikelist = mapData;
+
+          }
+
+          if (key !== null && key === 'Boat') {
+            let mapData = [];
+            res[key].forEach(function (item) {
+              mapData.push({ label: item.label, value: item.value })
+            });
+            goodsSubTypeBoatlist = mapData;
+
+          }
+
+          if (key !== null && key === 'Caravan') {
+            let mapData = [];
+            res[key].forEach(function (item) {
+              mapData.push({ label: item.label, value: item.value })
+            });
+            goodsSubTypeCaravanlist = mapData;
+
+          }
+        }
+      }
     })
     .catch(error => {
       console.log(error);
-        this.error = error;
+      this.error = error;
     });
-    //return null;
+  //return null;
 };
 
 //return term months
@@ -177,31 +177,31 @@ const getTerms = () => {
   let r = [];
   const terms = CommonOptions.terms(12, 84);
   terms.forEach(function (item) {
-  r.push({ label: item.label.toString(), value: item.value})
+    r.push({ label: item.label.toString(), value: item.value })
   });
   return r;
 }
 
 const calcOptions = {
-    loanTypes: CommonOptions.loanTypes,
-    loanProducts: CommonOptions.businessLoanProducts,
-    goodTypes: [
-      { label: "Car", value: "Car" },
-      { label: "Motorbike", value: "Motorbike" },
-      { label: "Boat", value: "Boat" },
-      { label: "Caravan", value: "Caravan" },
-      { label: "Truck", value: "Truck" },
-      { label: "Equipment", value: "Equipment" }
-    ],
-    loanTypeDetails: [ 
-      { label: "Platinum", value: "Platinum" },
-      { label: "Gold", value: "Gold" },
-      { label: "Silver", value: "Silver" }
+  loanTypes: CommonOptions.loanTypes,
+  loanProducts: CommonOptions.businessLoanProducts,
+  goodTypes: [
+    { label: "Car", value: "Car" },
+    { label: "Motorbike", value: "Motorbike" },
+    { label: "Boat", value: "Boat" },
+    { label: "Caravan", value: "Caravan" },
+    { label: "Truck", value: "Truck" },
+    { label: "Equipment", value: "Equipment" }
+  ],
+  loanTypeDetails: [
+    { label: "Platinum", value: "Platinum" },
+    { label: "Gold", value: "Gold" },
+    { label: "Silver", value: "Silver" }
 
-    ],
-    terms: getTerms(),
-    propertyOwners: CommonOptions.yesNo,
-    paymentTypes: CommonOptions.paymentTypes 
+  ],
+  terms: getTerms(),
+  propertyOwners: CommonOptions.yesNo,
+  paymentTypes: CommonOptions.paymentTypes
 };
 
 const reset = (recordId) => {
@@ -210,29 +210,29 @@ const reset = (recordId) => {
     loanType: calcOptions.loanTypes[0].value,
     loanProduct: calcOptions.loanProducts[0].value,
     goodType: calcOptions.goodTypes[0].value,
-    goodsSubType: null, 
-    loanTypeDetail:"Gold",
+    goodsSubType: null,
+    loanTypeDetail: "Gold",
     price: null,
     deposit: null,
     tradeIn: null,
     payoutOn: null,
-    dof: 0.0, 
+    dof: 0.0,
     maxDof: 0.0,
     residual: 0.0,
     term: 60,
-    propertyOwner:null,
+    propertyOwner: null,
     carAge: "New - 6 years old",
     residency: null,
     paymentType: "Arrears",
     baseRate: 0.0,
     maxRate: 0.0,
     riskFee: 0.0,
-    calcRiskFee:0.0,
-    brokerage:0.0,
+    calcRiskFee: 0.0,
+    brokerage: 0.0,
     clientRate: 0.0,
-    commision:0.0,
+    commision: 0.0,
     commissions: QuoteCommons.resetResults(),
-    
+    insurance: { integrity: {} }
   };
   r = QuoteCommons.mapDataToLwc(r, lenderSettings, SETTING_FIELDS);
   return r;
@@ -243,9 +243,10 @@ const loadData = (recordId) =>
   new Promise((resolve, reject) => {
     const fields = [
       ...QUOTING_FIELDS.values(),
-      ...QuoteCommons.COMMISSION_FIELDS.values()
+      ...QuoteCommons.COMMISSION_FIELDS.values(),
+      ...QuoteCommons.INSURANCE_FIELDS.values()
     ];
-    
+
     getQuotingData({
       param: {
         oppId: recordId,
@@ -255,30 +256,30 @@ const loadData = (recordId) =>
       }
     })
       .then((quoteData) => {
-        
+
         // Mapping Quote's fields
         let data = QuoteCommons.mapSObjectToLwc({
           calcName: LENDER_QUOTING,
-          defaultData: reset(recordId), 
+          defaultData: reset(recordId),
           quoteData: quoteData,
           settingFields: SETTING_FIELDS,
           quotingFields: QUOTING_FIELDS
         });
-        
+
         // Settings
-        lenderSettings = quoteData.settings; 
-        
+        lenderSettings = quoteData.settings;
+
         // Rate Settings
         if (quoteData.rateSettings) {
           tableRatesData = quoteData.rateSettings[`${RATE_SETTING_NAMES[0]}`];
         }
-        
+
         resolve(data);
 
       })
       .catch((error) => reject(error));
-      
-});
+
+  });
 
 const getTableRatesData = () => {
   return tableRatesData;
@@ -286,16 +287,16 @@ const getTableRatesData = () => {
 
 const getGoodsSubTypeOptions = (goodsType) => {
   let result = [];
-  if(goodsType === 'Car'){
+  if (goodsType === 'Car') {
     result = goodsSubTypeCarlist;
-  }else if(goodsType === 'Motorbike'){
+  } else if (goodsType === 'Motorbike') {
     result = goodsSubTypeMotorBikelist;
-  }else if(goodsType === 'Boat'){
+  } else if (goodsType === 'Boat') {
     result = goodsSubTypeBoatlist;
-  }else if(goodsType === 'Caravan'){
+  } else if (goodsType === 'Caravan') {
     result = goodsSubTypeCaravanlist;
-  }else{
-    result = [ 
+  } else {
+    result = [
       { label: "--None--", value: "" }
     ]
   }
@@ -304,7 +305,7 @@ const getGoodsSubTypeOptions = (goodsType) => {
 
 //Get total naf calculations
 const getNetRealtimeNaf = (quote) => {
-  
+
   let naf = QuoteCommons.calcNetRealtimeNaf(quote);
   let total = naf + quote.commission + quote.riskFee;
   return total;
@@ -313,7 +314,7 @@ const getNetRealtimeNaf = (quote) => {
 // Get Base Rates
 const getMyBaseRates = (quote) =>
   new Promise((resolve, reject) => {
-    
+
     const p = {
       lender: LENDER_QUOTING,
       productLoanType: quote.loanProduct,
@@ -321,16 +322,16 @@ const getMyBaseRates = (quote) =>
       brokeragePer: quote.brokerage,
       hasMaxRate: true
     };
-    
+
     getBaseRates({
       param: p
     })
       .then((rates) => {
-        
+
         resolve(rates);
       })
       .catch((error) => reject(error));
-});
+  });
 
 // Get Commission Calculations
 const getFOCommission = (quote) =>
@@ -340,7 +341,7 @@ const getFOCommission = (quote) =>
       brokeragePer: quote.brokerage,
       vehiclePrice: quote.price
     };
-    
+
     getCommissionCalc({
       param: p
     })
@@ -348,7 +349,7 @@ const getFOCommission = (quote) =>
         resolve(comm);
       })
       .catch((error) => reject(error));
-});
+  });
 
 // Get Risk Fee Calculations
 const getRiskCalc = (quote) =>
@@ -359,7 +360,7 @@ const getRiskCalc = (quote) =>
       vehiclePrice: quote.price,
       loanTypeDetail: quote.loanTypeDetail
     };
-    
+
     getRiskFeeCalc({
       param: p
     })
@@ -367,7 +368,7 @@ const getRiskCalc = (quote) =>
         resolve(riskFee);
       })
       .catch((error) => reject(error));
-});
+  });
 
 // Get DOF and Max DOF Calculations
 const getDOFCalc = (quote, isFullCalc) =>
@@ -377,7 +378,7 @@ const getDOFCalc = (quote, isFullCalc) =>
       vehiclePrice: quote.price,
       netDeposit: quote.netDeposit
     };
-    
+
     getDofCalcu({
       param: p,
       fullCalc: isFullCalc
@@ -386,7 +387,7 @@ const getDOFCalc = (quote, isFullCalc) =>
         resolve(dofs);
       })
       .catch((error) => reject(error));
-});
+  });
 
 // Get Application Fee Calculations
 const getAppFeeCalc = (quote) =>
@@ -404,13 +405,13 @@ const getAppFeeCalc = (quote) =>
         resolve(appFee);
       })
       .catch((error) => reject(error));
-});
+  });
 
 
 //Calculate Repayment
 const calculate = (quote) =>
   new Promise((resolve, reject) => {
-    
+
     let res = {
       commissions: QuoteCommons.resetResults(),
       messages: QuoteCommons.resetMessage()
@@ -433,27 +434,32 @@ const calculate = (quote) =>
       residualValue: quote.residual,
       brokeragePer: quote.brokerage,
       netDeposit: quote.netDeposit,
-      vehiclePrice: quote.price 
+      vehiclePrice: quote.price
     };
-    
+
     getFinanceOneRate({
       param: p
     })
-    .then((financeOneRates) => {
+      .then((financeOneRates) => {
         // Validate quote
-        res.messages = Validations.validate(quote, financeOneRates, lenderSettings, nafCalculations, res.messages );
+        res.messages = Validations.validate(quote, financeOneRates, lenderSettings, nafCalculations, res.messages);
         if (res.messages && res.messages.errors.length > 0) {
           reject(res);
         } else {
-          
+
           // Calculate
           calculateRepayments({
-            param: p
+            param: p,
+            insuranceParam: quote.insurance
           })
             .then((data) => {
               // Mapping
-              res.commissions = QuoteCommons.mapCommissionSObjectToLwc(data);
-              
+              res.commissions = QuoteCommons.mapCommissionSObjectToLwc(
+                data.commissions,
+                quote.insurance,
+                data.calResults
+              );
+
               // Validate the result of commissions
               res.messages = Validations.validatePostCalculation(
                 res.commissions,
@@ -467,14 +473,14 @@ const calculate = (quote) =>
             });
         }
 
-    })
-    .catch((error) => {
-      res.messages.errors.push({ field: "calculation", message: error });
-      reject(res);
-    });
+      })
+      .catch((error) => {
+        res.messages.errors.push({ field: "calculation", message: error });
+        reject(res);
+      });
   });
 
-  /**
+/**
 * -- Lee
 * @param {String} approvalType - type of approval
 * @param {Object} param - quoting form
@@ -482,27 +488,27 @@ const calculate = (quote) =>
 * @returns
 */
 const saveQuote = (approvalType, param, recordId) =>
-new Promise((resolve, reject) => {
-  if (approvalType && param && recordId) {
-    save({
-      param: QuoteCommons.mapLWCToSObject(
-        param,
-        recordId,
-        LENDER_QUOTING,
-        FIELDS_MAPPING_FOR_APEX
-      ),
-      approvalType: approvalType
-    })
-      .then((data) => {
-        resolve(data);
+  new Promise((resolve, reject) => {
+    if (approvalType && param && recordId) {
+      save({
+        param: QuoteCommons.mapLWCToSObject(
+          param,
+          recordId,
+          LENDER_QUOTING,
+          FIELDS_MAPPING_FOR_APEX
+        ),
+        approvalType: approvalType
       })
-      .catch((error) => {
-        reject(error);
-      });
-  } else {
-    reject(new Error("QUOTE OR RECORDID EMPTY in SaveQuoting function"));
-  }
-});
+        .then((data) => {
+          resolve(data);
+        })
+        .catch((error) => {
+          reject(error);
+        });
+    } else {
+      reject(new Error("QUOTE OR RECORDID EMPTY in SaveQuoting function"));
+    }
+  });
 
 /**
 *  -- Lee
@@ -511,50 +517,50 @@ new Promise((resolve, reject) => {
 * @returns
 */
 const sendEmail = (param, recordId) =>
-new Promise((resolve, reject) => {
-  if (param) {
-    console.log(`@@param in sendEmail ${JSON.stringify(param, null, 2)}`);
-    sendQuote({
-      param: QuoteCommons.mapLWCToSObject(
-        param,
-        recordId,
-        LENDER_QUOTING,
-        FIELDS_MAPPING_FOR_APEX
-      )
-    })
-      .then((data) => {
-        resolve(data);
+  new Promise((resolve, reject) => {
+    if (param) {
+      console.log(`@@param in sendEmail ${JSON.stringify(param, null, 2)}`);
+      sendQuote({
+        param: QuoteCommons.mapLWCToSObject(
+          param,
+          recordId,
+          LENDER_QUOTING,
+          FIELDS_MAPPING_FOR_APEX
+        )
       })
-      .catch((error) => {
-        reject(error);
-      });
-  } else {
-    reject(new Error(`Something wrong in sendEmail : param: ${param}`));
-  }
-});
+        .then((data) => {
+          resolve(data);
+        })
+        .catch((error) => {
+          reject(error);
+        });
+    } else {
+      reject(new Error(`Something wrong in sendEmail : param: ${param}`));
+    }
+  });
 
 export const CalHelper = {
-    options: calcOptions,
-    calculate: calculate, 
-    load: loadData,
-    reset: reset, 
-    baseRates: getMyBaseRates, 
-    getFOCommission: getFOCommission,
-    getRiskCalc: getRiskCalc,
-    getAppFeeCalc:getAppFeeCalc,
-    BASE_RATE_FIELDS: BASE_RATE_FIELDS, 
-    COMM_FIELDS: COMM_FIELDS,
-    RISK_FEE_FIELDS: RISK_FEE_FIELDS,
-    DOF_Calc_Fields:DOF_Calc_Fields,
-    APPFEE_Calc_Fields: APPFEE_Calc_Fields,
-    lenderSettings: lenderSettings,
-    getTableRatesData: getTableRatesData,
-    getDOFCalc: getDOFCalc,
-    tableRateDataColumns: tableRateDataColumns,
-    getNetRealtimeNaf: getNetRealtimeNaf,
-    goodsSubTypeOptions: goodsSubTypeOptions,
-    getGoodsSubTypeOptions: getGoodsSubTypeOptions,
-    getNetDeposit: QuoteCommons.calcNetDeposit,
-    saveQuote: saveQuote,
-    sendEmail: sendEmail
+  options: calcOptions,
+  calculate: calculate,
+  load: loadData,
+  reset: reset,
+  baseRates: getMyBaseRates,
+  getFOCommission: getFOCommission,
+  getRiskCalc: getRiskCalc,
+  getAppFeeCalc: getAppFeeCalc,
+  BASE_RATE_FIELDS: BASE_RATE_FIELDS,
+  COMM_FIELDS: COMM_FIELDS,
+  RISK_FEE_FIELDS: RISK_FEE_FIELDS,
+  DOF_Calc_Fields: DOF_Calc_Fields,
+  APPFEE_Calc_Fields: APPFEE_Calc_Fields,
+  lenderSettings: lenderSettings,
+  getTableRatesData: getTableRatesData,
+  getDOFCalc: getDOFCalc,
+  tableRateDataColumns: tableRateDataColumns,
+  getNetRealtimeNaf: getNetRealtimeNaf,
+  goodsSubTypeOptions: goodsSubTypeOptions,
+  getGoodsSubTypeOptions: getGoodsSubTypeOptions,
+  getNetDeposit: QuoteCommons.calcNetDeposit,
+  saveQuote: saveQuote,
+  sendEmail: sendEmail
 };

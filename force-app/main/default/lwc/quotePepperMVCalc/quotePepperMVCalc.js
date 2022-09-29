@@ -184,12 +184,14 @@ export default class QuotePepperMVCalc extends LightningElement {
         // --- insurance: end ---
       })
       .catch((error) => {
-        this.messageObj = error.messages;
-        QuoteCommons.fieldErrorHandler(this, this.messageObj.errors);
-        console.error(
-          "quotePepperMVCalc.js: get errors -- ",
-          JSON.stringify(error.messages.errors, null, 2)
-        );
+        if (type !== "load") {
+          this.messageObj = error.messages;
+          QuoteCommons.fieldErrorHandler(this, this.messageObj.errors);
+          console.error(
+            "quotePepperMVCalc.js: get errors -- ",
+            JSON.stringify(error.messages.errors, null, 2)
+          );
+        }
       })
       .finally(() => {
         this.isBusy = false;
@@ -333,21 +335,10 @@ export default class QuotePepperMVCalc extends LightningElement {
     this.isCalculated = this.template.querySelector(
       "c-quote-insurance-form"
     ).isQuoteCalculated = false;
+
     // comprehensive
-    let cms = { ...this.quoteForm.commissions };
-    cms.comprehensive.isMvAccept = this.quoteForm.insurance.ismvAccept;
-    if (this.quoteForm.insurance.ismvAccept) {
-      cms.comprehensive.weekly = this.quoteForm.insurance.mvRetailPrice / 52;
-      cms.comprehensive.fortnightly =
-        this.quoteForm.insurance.mvRetailPrice / 26;
-      cms.comprehensive.monthly = this.quoteForm.insurance.mvRetailPrice / 12;
-      console.log("cms ==> ", JSON.stringify(cms));
-      this.quoteForm.commissions = cms;
-    } else {
-      cms.comprehensive.weekly = 0;
-      cms.comprehensive.fortnightly = 0;
-      cms.comprehensive.monthly = 0;
-    }
+    const cms = QuoteCommons.handleComprehensive(this.quoteForm);
+    this.quoteForm.commissions = { ...cms };
     // end - comprehensive
     console.log(
       "handle insurance change >>  " + JSON.stringify(this.quoteForm, null, 2)
@@ -373,7 +364,7 @@ export default class QuotePepperMVCalc extends LightningElement {
     } else {
       this.quoteForm.commissions = {
         ...this.quoteForm.commissions,
-        insurances: 0.0
+        insurances: null
       };
     }
     this.console.log(

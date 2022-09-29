@@ -1,6 +1,6 @@
 import getQuotingData from "@salesforce/apex/quoteLatitudeCalcController.getQuotingData";
 import getBaseRates from "@salesforce/apex/QuoteController.getBaseRates";
-import calculateRepayments from "@salesforce/apex/QuoteController.calculateRepayments";
+import calculateRepayments from "@salesforce/apex/QuoteController.calculateAllRepayments";
 import save from "@salesforce/apex/quoteLatitudeCalcController.save";
 import sendQuote from "@salesforce/apex/QuoteController.sendQuote";
 import {
@@ -133,13 +133,18 @@ const calculate = (quote) =>
       // Calculate
       console.log(`@@param:`, JSON.stringify(p, null, 2));
       calculateRepayments({
-        param: p
+        param: p,
+        insuranceParam: quote.insurance
       })
         .then((data) => {
           console.log(`@@SF:`, JSON.stringify(data, null, 2));
 
           // Mapping
-          res.commissions = QuoteCommons.mapCommissionSObjectToLwc(data);
+          res.commissions = QuoteCommons.mapCommissionSObjectToLwc(
+            data.commissions,
+            quote.insurance,
+            data.calResults
+          );
           console.log(JSON.stringify(res.commissions, null, 2));
           // Validate the result of commissions
           res.messages = Validations.validatePostCalculation(res.commissions, res.messages);
@@ -245,6 +250,8 @@ const reset = (recordId) => {
     commissions: QuoteCommons.resetResults(),
     rateOption: calcOptions.rateOptions[0].value,
     registrationFee: 3.40,
+    commissions: QuoteCommons.resetResults(),
+    insurance: { integrity: {} }
   };
   r = QuoteCommons.mapDataToLwc(r, lenderSettings, SETTING_FIELDS);
   return r;
@@ -256,7 +263,8 @@ const loadData = (recordId) =>
     //  const fields = Array.from(QUOTING_FIELDS.values());
     const fields = [
       ...QUOTING_FIELDS.values(),
-      ...QuoteCommons.COMMISSION_FIELDS.values()
+      ...QuoteCommons.COMMISSION_FIELDS.values(),
+      ...QuoteCommons.INSURANCE_FIELDS.values()
     ];
     console.log(`@@fields:`, JSON.stringify(fields, null, 2));
     getQuotingData({
@@ -408,7 +416,7 @@ const calcNetRealtimeNaf = (quote) => {
 const calcDOF = (quote) => {
   quote.dof = 0;
   let naf = QuoteCommons.calcNetRealtimeNaf(quote);
-  console.log('CalcDOF::', QuoteCommons.calcNetRealtimeNaf(quote), quote.dof )
+  console.log('CalcDOF::', QuoteCommons.calcNetRealtimeNaf(quote), quote.dof)
   let r = quote.registrationFee + naf;
   console.log('calcDOF', r)
   if (r > 20000) {

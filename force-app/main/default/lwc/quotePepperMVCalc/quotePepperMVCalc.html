@@ -1,6 +1,10 @@
 <template>
-  <c-quote-container title="Pepper MV/Caravan" is-busy={isBusy} commissions={quoteForm.commissions}
-    messages={messageObj} insurance={quoteForm.insurance}>
+  <c-quote-container 
+    title="Pepper MV/Caravan" 
+    is-busy={isBusy} 
+    commissions={quoteForm.commissions}
+    messages={messageObj}
+  >
     <!-- Logo -->
     <img src={logoUrl} slot="logo" class="c-lender-logo" title="Pepper MV/Caravan" />
 
@@ -258,15 +262,17 @@
     <!-- end -->
 
     <!-- Insurances -->
-    <c-quote-insurance-form slot="insurances" onhandleinsurancemessage={handleInsuranceMessage}
-      oninsurancechanged={handleInsuranceChange} onhandlepresentation={handleInsurancePresentation}
-      onhandledisablebutton={handleDisableButton} onhandleloadinsurance={handleInsuanceLoad} record-id={recordId}
-      quote-form={quoteForm}>
-    </c-quote-insurance-form>
+    <c-quote-insurance-form 
+      slot="insurances" 
+      onhandleinsurancemessage={handleInsuranceMessage}
+      oninsurancechanged={handleInsuranceChange} 
+      onhandlepresentation={handleInsurancePresentation}
+      onhandledisablebutton={handleDisableButton} 
+      onhandleloadinsurance={handleInsuanceLoad} 
+      record-id={recordId}
+      quote-form={quoteForm}
+    ></c-quote-insurance-form>
     <!-- insurance-income={insuranceIncome} -->
-
-    <!-- Additional Content -->
-    <div slot="more">Additional content here!</div>
 
     <!-- Table Rates -->
     <div slot="table-rates">
