@@ -1,5 +1,5 @@
 import getQuotingData from "@salesforce/apex/QuoteGroupAndGeneralCalcController.getQuotingData";
-import calculateRepayments from "@salesforce/apex/QuoteController.calculateRepayments";
+import calculateRepayments from "@salesforce/apex/QuoteController.calculateAllRepayments";
 import sendQuote from "@salesforce/apex/QuoteController.sendQuote";
 import save from "@salesforce/apex/QuoteGroupAndGeneralCalcController.save";
 import {

@@ -206,7 +206,8 @@
             <div class="c-detail-fields">
                 <!-- lightning-combobox name="assetAge" label="Security" data-id="security-field" value={quoteForm.security} -->
                 <lightning-combobox name="loanTypeDetail" label="Security"
-                    data-id="loanTypeDetail-field" value={quoteForm.loanTypeDetail}
+                    data-id="loanTypeDetail-field"
+                    value={quoteForm.loanTypeDetail}
                     placeholder="Select a value" options={securityOptions}
                     onchange={handleFieldChange} class="slds-form__item"
                     variant="label-hidden" required></lightning-combobox>
@@ -274,22 +275,26 @@
         <!-- end -->
 
         <!-- Insurances -->
-        <c-quote-insurance-form slot="insurances"
+        <c-quote-insurance-form
+            slot="insurances"
             onhandleinsurancemessage={handleInsuranceMessage}
             oninsurancechanged={handleInsuranceChange}
             onhandlepresentation={handleInsurancePresentation}
             onhandledisablebutton={handleDisableButton}
-            onhandleloadinsurance={handleInsuanceLoad} record-id={recordId}
-            quote-form={quoteForm}>
-        </c-quote-insurance-form>
+            onhandleloadinsurance={handleInsuanceLoad}
+            record-id={recordId}
+            quote-form={quoteForm}></c-quote-insurance-form>
         <!-- insurance-income={insuranceIncome} -->
 
         <!-- Additional Content -->
         <div slot="more">
             <div class="slds-p-around_small">
-                <div class="slds-m-bottom_x-small"><span class="c-detail-subtitle">Loan Purpose</span></div>
-                <lightning-textarea onchange={handleFieldChange} value={quoteForm.loanPurpose} name="loanPurpose"
-                    data-id="loanPurpose-field" label="Loan Purpose" variant="label-hidden"
+                <div class="slds-m-bottom_x-small"><span
+                        class="c-detail-subtitle">Loan Purpose</span></div>
+                <lightning-textarea onchange={handleFieldChange}
+                    value={quoteForm.loanPurpose} name="loanPurpose"
+                    data-id="loanPurpose-field" label="Loan Purpose"
+                    variant="label-hidden"
                     placeholder="type the purpose of the loan here...">
                 </lightning-textarea>
             </div>

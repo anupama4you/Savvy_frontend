@@ -439,19 +439,24 @@
                         </div>
                     </div>
                 </div> -->
-                <!--<lightning-combobox name="plentiAPIUser" label="Plenti API user" data-id="plentiAPIUser-field"
+        <!--<lightning-combobox name="plentiAPIUser" label="Plenti API user" data-id="plentiAPIUser-field"
                         value={quoteForm.plentiAPIUser} placeholder="Select a value" options={plentiAPIUserOptions}
                         onchange={handleFieldChange} class="slds-form__item" variant="label-hidden">
                 </lightning-combobox>-->
-            <!-- </lightning-card>
+        <!-- </lightning-card>
         </div> -->
 
         <!-- Insurances -->
-        <c-quote-insurance-form slot="insurances" onhandleinsurancemessage={handleInsuranceMessage}
-            oninsurancechanged={handleInsuranceChange} onhandlepresentation={handleInsurancePresentation}
-            onhandledisablebutton={handleDisableButton} onhandleloadinsurance={handleInsuanceLoad} record-id={recordId}
-            quote-form={quoteForm}>
-        </c-quote-insurance-form>
+        <c-quote-insurance-form
+            slot="insurances"
+            onhandleinsurancemessage={handleInsuranceMessage}
+            oninsurancechanged={handleInsuranceChange}
+            onhandlepresentation={handleInsurancePresentation}
+            onhandledisablebutton={handleDisableButton}
+            onhandleloadinsurance={handleInsuanceLoad}
+            record-id={recordId}
+            quote-form={quoteForm}></c-quote-insurance-form>
+        <!-- insurance-income={insuranceIncome} -->
 
         <!-- More -->
 
@@ -459,11 +464,12 @@
         <div slot="table-rates">
             <div class="c-rates-section-title">Balloon payments - Table Rates</div>
             <div class="slds-grid slds-gutters">
-              <div class="slds-col slds-size_6-of-12">
-                <lightning-datatable key-field="Id" data={tableRates} columns={tableRatesCols} hide-checkbox-column>
-                </lightning-datatable>
-              </div>
+                <div class="slds-col slds-size_6-of-12">
+                    <lightning-datatable key-field="Id" data={tableRates}
+                        columns={tableRatesCols} hide-checkbox-column>
+                    </lightning-datatable>
+                </div>
             </div>
-          </div>
+        </div>
     </c-quote-container>
 </template>

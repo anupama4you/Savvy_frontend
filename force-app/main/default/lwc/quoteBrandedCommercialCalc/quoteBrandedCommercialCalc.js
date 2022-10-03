@@ -235,12 +235,14 @@ export default class QuoteBrandedConsumerCalc extends LightningElement {
         // --- insurance: end ---
       })
       .catch((error) => {
-        this.messageObj = error.messages;
-        QuoteCommons.fieldErrorHandler(this, this.messageObj.errors);
-        console.error(
-          "quotePepperMVCalc.js: get errors -- ",
-          JSON.stringify(error.messages.errors, null, 2)
-        );
+        if (type !== "load") {
+          this.messageObj = error.messages;
+          QuoteCommons.fieldErrorHandler(this, this.messageObj.errors);
+          console.error(
+            "quotePepperMVCalc.js: get errors -- ",
+            JSON.stringify(error.messages.errors, null, 2)
+          );
+        }
       })
       .finally(() => {
         this.isBusy = false;
@@ -451,4 +453,83 @@ export default class QuoteBrandedConsumerCalc extends LightningElement {
     this.quoteForm.productType = (this.quoteForm.gst === "ABN/GST > 1 year" || this.quoteForm.gst === "ABN > 2 yrs/GST > 1year") ? "Lite" : "Express"
   }
 
+  // --- insurance ---
+  handleInsuranceMessage(event) {
+    try {
+      this.messageObj = QuoteCommons.resetMessage();
+      this.messageObj.errors = [
+        ...this.messageObj.errors,
+        ...event.detail.errors
+      ];
+      console.log(
+        "event.detail >> " + JSON.stringify(this.messageObj.errors, null, 2)
+      );
+    } catch (error) {
+      console.error(error);
+    }
+  }
+
+  isErrorInsuranceOnly() {
+    let result = true;
+    try {
+      if (this.messageObj.errors && this.messageObj.errors.length > 0) {
+        for (const error of this.messageObj.errors) {
+          if (error.field !== "insurance") {
+            return false;
+          }
+        }
+      }
+      return result;
+    } catch (error) {
+      console.error(error);
+    }
+  }
+
+  handleInsuranceChange(event) {
+    this.quoteForm.insurance = event.detail;
+    this.isCalculated = this.template.querySelector(
+      "c-quote-insurance-form"
+    ).isQuoteCalculated = false;
+
+    // comprehensive
+    const cms = QuoteCommons.handleComprehensive(this.quoteForm);
+    this.quoteForm.commissions = { ...cms };
+    // end - comprehensive
+    console.log(
+      "handle insurance change >>  " + JSON.stringify(this.quoteForm, null, 2)
+    );
+  }
+
+  handleInsurancePresentation(event) {
+    console.log(event.detail);
+    this.handleSave(null, event.detail);
+  }
+
+  handleInsuanceLoad(event) {
+    this.handleInsuranceChange(event);
+    // check if there is no acceptance
+    if (
+      this.quoteForm.insurance.ismvAccept ||
+      this.quoteForm.insurance.isshortfallAccept ||
+      this.quoteForm.insurance.iswarrantyAccept ||
+      this.quoteForm.insurance.isLPIAccept ||
+      this.quoteForm.insurance.isIntegrityAccept
+    ) {
+      this.handleCalculate("load");
+    } else {
+      this.quoteForm.commissions = {
+        ...this.quoteForm.commissions,
+        insurances: null
+      };
+    }
+    this.console.log(
+      "handleInsuanceLoad>>",
+      JSON.stringify(this.quoteForm, null, 2)
+    );
+  }
+
+  handleDisableButton(event) {
+    this.isCalculated = event.detail;
+  }
+  // --- insurance: end ---
 }
