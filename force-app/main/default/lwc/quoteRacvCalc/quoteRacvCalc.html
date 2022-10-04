@@ -366,7 +366,7 @@
                     name="propertyOwner"
                     label="Property Owner"
                     data-id="propertyOwner-field"
-                    value={quoteForm.loanTypeDetail}
+                    value={quoteForm.propertyOwner}
                     placeholder="Select a value"
                     options={propertyOwnerOptions}
                     onchange={handleFieldChange}
@@ -386,7 +386,7 @@
                     name="creditScore"
                     label="Credit Score"
                     data-id="creditScore-field"
-                    value={quoteForm.loanTypeDetail}
+                    value={quoteForm.creditScore}
                     placeholder="Select a value"
                     options={creditScoreOptions}
                     onchange={handleFieldChange}
@@ -576,54 +576,45 @@
     <div class="slds-grid slds-gutters">
 
         <template if:true={tableRates}>
-                    <template for:each={tableRates} for:item="d">
-                        <div class="slds-col slds-p-horizontal_xxx-small"
-                            style="width: 20%;" key={d}>
-                            <p class="c-sub-title slds-align_absolute-center">{d.colName}</p>
+                    
                             <table>
                                 <tr>
-                                    <th class="ratesTh">0 - 3 years</th>
-                                    <th class="ratesTh">% NAF</th>
-                                    <th class="ratesTh">4 - 7 years</th>
-                                    <th class="ratesTh">% NAF</th>
-                                    <th class="ratesTh">&gt; 7 years</th>
-                                    <th class="ratesTh">% NAF</th>
+                                    <th class="ratesTh">Credit Score</th>
+                                    <th class="ratesTh">Loan Amount</th>
+                                    <th class="ratesTh">Rate 1</th>
+                                    <th class="ratesTh">Rate 2</th>
+                                    <th class="ratesTh">Rate 3</th>
+                                    <th class="ratesTh">Rate 4</th>
                                 </tr>
-                                <template for:each={d.data} for:item="r">
+                                <template for:each={tableRates} for:item="r">
                                     <tr key={r}>
                                         <td align="center">
+                                            {r.Min_Credit_Score__c} - {r.Max_Credit_Score__c}
+                                        </td>
+                                        <td align="center">
+                                            {r.Min_Loan_Amount__c} - {r.Max_Loan_Amount__c}
+                                        </td>
+                                        <td align="center">
                                             <lightning-formatted-number
-                                                value={r.comm1}
+                                                value={r.Rate_1__c}
                                                 format-style="decimal"
                                                 minimum-fraction-digits="1"></lightning-formatted-number>
                                         </td>
                                         <td align="center">
                                             <lightning-formatted-number
-                                                value={r.comm2}
+                                                value={r.Rate_2__c}
                                                 format-style="decimal"
                                                 minimum-fraction-digits="1"></lightning-formatted-number>
                                         </td>
                                         <td align="center">
                                             <lightning-formatted-number
-                                                value={r.comm3}
+                                                value={r.Rate_3__c}
                                                 format-style="decimal"
                                                 minimum-fraction-digits="1"></lightning-formatted-number>
                                         </td>
                                         <td align="center">
                                             <lightning-formatted-number
-                                                value={r.rate1}
-                                                format-style="decimal"
-                                                minimum-fraction-digits="1"></lightning-formatted-number>
-                                        </td>
-                                        <td align="center">
-                                            <lightning-formatted-number
-                                                value={r.rate2}
-                                                format-style="decimal"
-                                                minimum-fraction-digits="1"></lightning-formatted-number>
-                                        </td>
-                                        <td align="center">
-                                            <lightning-formatted-number
-                                                value={r.rate3}
+                                                value={r.Rate_4__c}
                                                 format-style="decimal"
                                                 minimum-fraction-digits="1"></lightning-formatted-number>
                                         </td>
@@ -637,8 +628,6 @@
                                 columns={tableRatesCols}
                                 hide-checkbox-column>
                             </lightning-datatable> -->
-    </div>
-    </template>
     </template>
 
 </div>

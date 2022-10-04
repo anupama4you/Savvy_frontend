@@ -43,17 +43,17 @@ public without sharing class QuoteCapitalFinanceController {
     }
 
     @AuraEnabled
-    public static Application_Quoting__c save(QuoteController.AppQuotingWraper param, String approvalType) {
+    public static Application_Quoting__c save(QuoteController.AppQuotingWraper param, String approvalType, String clientRate) {
         try {
             QuoteController.saveQuoting(param);
             Product__c p = null;
             if ( !'NONE'.equals(approvalType) ) {
                 // save pdf
                 PageReference pdf = Page.UniversalCalculatorPdf;
-                pdf = pdfHandler(param.data);
+                pdf = pdfHandler(param.data, clientRate);
                 QuoteController.savePdf(approvalType, pdf, param);
                 // save product
-                p = productHandler(param.data);
+                p = productHandler(param.data, clientRate);
                 QuoteController.saveProduct(param, p);
             }
         } catch ( Exception ex ) {
@@ -62,7 +62,7 @@ public without sharing class QuoteCapitalFinanceController {
         return param.data;
     }
 
-    private static PageReference pdfHandler(Application_Quoting__c quote) {
+    private static PageReference pdfHandler(Application_Quoting__c quote, String clientRate) {
         // pass parameters to the PDF page
         PageReference pdf = Page.UniversalCalculatorPdf;
         // pass universal variables
@@ -70,7 +70,7 @@ public without sharing class QuoteCapitalFinanceController {
         pdf.getParameters().put('lender', 'CAPITAL FINANCE CALCULATION');
         //Financial Details
         pdf.getParameters().put('loanType', quote.Loan_Type__c + '');
-        pdf.getParameters().put('productLoanType', '');
+        pdf.getParameters().put('productLoanType', 'Chattel Mortgage-Full-Doc');
         pdf.getParameters().put('carPrice', NumberUtils.format(quote.Vehicle_Price__c));
         pdf.getParameters().put('deposit', NumberUtils.format(quote.Deposit__c));
         pdf.getParameters().put('tradeIn', NumberUtils.format(quote.Trade_In__c));
@@ -82,7 +82,7 @@ public without sharing class QuoteCapitalFinanceController {
         pdf.getParameters().put('residualValue', NumberUtils.format(quote.Residual_Value__c));
         pdf.getParameters().put('baseRate', NumberUtils.format(quote.Base_Rate__c));
         pdf.getParameters().put('maxRate', NumberUtils.format(quote.Manual_Max_Rate__c));
-        pdf.getParameters().put('clientRate', NumberUtils.format(quote.Client_Rate__c));
+        pdf.getParameters().put('clientRate', clientRate);
         pdf.getParameters().put('term', quote.Term__c + '');
         pdf.getParameters().put('paymentType', quote.Payment__c + '');
         pdf.getParameters().put('clientTier', quote.Client_Tier__c + '');
@@ -104,29 +104,21 @@ public without sharing class QuoteCapitalFinanceController {
         pdf.getParameters().put('purposeType', quote.Purpose_Type__c);
         pdf.getParameters().put('loanTypeDetail', quote.Loan_Facility_Type__c);
         pdf.getParameters().put('brokeragePercentage', NumberUtils.format(quote.Brokerage__c));
-        pdf.getParameters().put('extraLabel1', quote.Extra_Label_1__c);
-        pdf.getParameters().put('extraLabel2', quote.Extra_Label_2__c);
-        pdf.getParameters().put('extraLabel3', quote.Extra_Label_3__c);
-        pdf.getParameters().put('extraLabel4', quote.Extra_Label_4__c);
-        pdf.getParameters().put('extraValue1', NumberUtils.format(quote.Extra_Value_1__c));
-        pdf.getParameters().put('extraValue2', NumberUtils.format(quote.Extra_Value_2__c));
-        pdf.getParameters().put('extraValue3', NumberUtils.format(quote.Extra_Value_3__c));
-        pdf.getParameters().put('extraValue4', NumberUtils.format(quote.Extra_Value_4__c));
         return pdf;
     }
 
-    private static Product__c productHandler(Application_Quoting__c quote) {
+    private static Product__c productHandler(Application_Quoting__c quote, String clientRate) {
         Product__c p = QuoteController.getProduct(quote.Opportunity__c);
         p.Loan_Purpose__c = 'Business Use';
         p.Lender__c = quote.Name;
         p.Quoting_Source__c = quote.Name;
         p.Repayment_Regularity__c = 'Monthly';
         p.Loan_Type__c = quote.Loan_Type__c;
-        p.Loan_Product__c = quote.Loan_Product__c;
+        p.Loan_Product__c = 'Chattel Mortgage-Full-Doc';
         p.Loan_Type_Detail__c = quote.Loan_Facility_Type__c;
         p.Loan_Term__c = quote.Term__c;
         p.Balloon_Residual_Requested__c = quote.Residual_Value__c == null || quote.Residual_Value__c == 0 ? 0:quote.Residual_Value__c;
-        p.Client_Rate__c = quote.Client_Rate__c;
+        p.Client_Rate__c = Decimal.valueOf(clientRate);
         p.Payments__c = quote.Repayment_Monthly__c > 0 ? quote.Repayment_Monthly__c : 0.00;
         p.Cost_of_Goods__c = quote.Vehicle_Price__c;
         p.DOF__c = quote.Commission_DOF__c;

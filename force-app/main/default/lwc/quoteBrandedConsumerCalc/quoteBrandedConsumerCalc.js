@@ -190,7 +190,7 @@ export default class QuoteBrandedConsumerCalc extends LightningElement {
         this.messageObj = data.messages;
         QuoteCommons.handleHasErrorClassClear(this);
         // --- insurance ---
-        if (this.quoteForm.commissions && type != "load") {
+        if (this.quoteForm.commissions && type !== "load") {
           this.isCalculated = true;
           this.template.querySelector(
             "c-quote-insurance-form"
@@ -199,12 +199,14 @@ export default class QuoteBrandedConsumerCalc extends LightningElement {
         // --- insurance: end ---
       })
       .catch((error) => {
-        this.messageObj = error.messages;
-        QuoteCommons.fieldErrorHandler(this, this.messageObj.errors);
-        console.error(
-          "quotePepperMVCalc.js: get errors -- ",
-          JSON.stringify(error.messages.errors, null, 2)
-        );
+        if (type !== "load") {
+          this.messageObj = error.messages;
+          QuoteCommons.fieldErrorHandler(this, this.messageObj.errors);
+          console.error(
+            "quoteBrandedConsumer.js: get errors -- ",
+            JSON.stringify(error.messages.errors, null, 2)
+          );
+        }
       })
       .finally(() => {
         this.isBusy = false;

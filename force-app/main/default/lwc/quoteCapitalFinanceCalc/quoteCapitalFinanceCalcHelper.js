@@ -62,7 +62,7 @@ const QUOTING_FIELDS = new Map([
     ["privateSale", "Private_Sales__c"],
     ["brokeragePercentage", "Brokerage__c"],
     ["baseRate", "Base_Rate__c"],
-    // ["clientRate", "Client_Rate__c"],
+    ["clientRate", "Client_Rate__c"],
     ["netDeposit", "Net_Deposit__c"],
 ]);
 
@@ -207,7 +207,6 @@ const reset = () => {
         tradeIn: null,
         payoutOn: null,
         applicationFee: 8.0,
-        // dof: 0.0,
         ppsr: 0.0,
         residualValue: 0.0,
         monthlyFee: 0.0,
@@ -220,8 +219,6 @@ const reset = () => {
         gstLength: calcOptions.gstLengths[0].value,
         assetAge: calcOptions.assetAges[0].value,
         propertyOwner: calcOptions.propOwns[0].value,
-
-        // clientRate: 5.04,
         commissions: QuoteCommons.resetResults(),
         typeValue: "Value",
     };
@@ -269,7 +266,6 @@ const loadData = (recordId) =>
             .catch((error) => reject(error));
     });
 
-
 const getTableRatesData = () => {
     return tableRatesData1;
 };
@@ -288,7 +284,6 @@ const getResidualValue = (quote) => {
 const getResidualPercentage = (quote) => {
     const res = (quote.residualValue / (quote.price - QuoteCommons.calcNetDeposit(quote))) * 100;
     return res.toFixed(2);
-    // return (quote.residualValue / (quote.price - QuoteCommons.calcNetDeposit(quote))) * 100;
 };
 
 // Get Base Rates
@@ -303,7 +298,6 @@ const getMyBaseRates = (quote) =>
             customerProfile: profile,
             privateSales: quote.privateSales,
             hasMaxRate: true,
-
             term: quote.term,
             brokeragePer: quote.brokeragePer,
             totalAmount: QuoteCommons.calcTotalAmount(quote),
@@ -326,8 +320,8 @@ const getMyBaseRates = (quote) =>
 const saveQuote = (approvalType, param, recordId) =>
     new Promise((resolve, reject) => {
         if (approvalType && param && recordId) {
+            const clientRate = getClientRateCalc(param);
             console.log(`HELPER SAVE ${JSON.stringify(param, null, 2)}`);
-            // param.clientRate = parseFloat(param.clientRate).toFixed(2);
             save({
                 param: QuoteCommons.mapLWCToSObject(
                     param,
@@ -335,7 +329,8 @@ const saveQuote = (approvalType, param, recordId) =>
                     LENDER_QUOTING,
                     FIELDS_MAPPING_FOR_APEX
                 ),
-                approvalType: approvalType
+                approvalType: approvalType,
+                clientRate: clientRate
             })
                 .then((data) => {
                     resolve(data);
@@ -434,7 +429,7 @@ export const CalHelper = {
     getNetDeposit: QuoteCommons.calcNetDeposit,
     saveQuote: saveQuote,
     sendEmail: sendEmail,
-    // clientRate: getClientRateCalc,
+    clientRate: getClientRateCalc,
     tableRateDataColumns: tableRateDataColumns,
     tables: tables,
     tableDatas, tableDatas,

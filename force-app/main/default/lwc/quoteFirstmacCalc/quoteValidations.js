@@ -134,7 +134,9 @@ const validate = (quote, naf, messages) => {
         } else {
           comp = 30.0;
         }
-      } else if (quote.loanTypeRD === 'Used < 5 years' 
+      } else if (
+        (quote.loanTypeRD === 'Used < 3 years' ||
+        quote.loanTypeRD === 'Used 4 - 5 years' )
         && va <= 4
       ) {
         if (quote.term === 36) {
@@ -196,8 +198,16 @@ const validate = (quote, naf, messages) => {
         message: `${quote.loanTypeRD} only available on ${cy} model cars.`
       });
     } else if (
-      quote.loanTypeRD === 'Used < 5 years' &&
-      va > 5
+      quote.loanTypeRD === 'Used < 3 years' &&
+      va > 3
+    ) {
+      let yearMinusFive = cy - 3;
+      errorList.push({
+        message: `Vehicle Year for ${quote.loanTypeRD} should be between ${yearMinusFive} and ${cy}.`
+      });
+    } else if (
+      quote.loanTypeRD === 'Used 4-5 years' &&
+      (va < 4 || va > 5)
     ) {
       let yearMinusFive = cy - 5;
       errorList.push({

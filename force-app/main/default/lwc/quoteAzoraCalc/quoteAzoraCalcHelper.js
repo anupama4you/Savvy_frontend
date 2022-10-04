@@ -27,7 +27,7 @@ const LENDER_QUOTING = "Azora Consumer";
 const QUOTING_FIELDS = new Map([
     ["loanType", "Loan_Type__c"],
     ["loanProduct", "Loan_Product__c"],
-    ["creditScore", "Loan_Facility_Type__c"],
+    // ["creditScore", "Loan_Facility_Type__c"],
     ["price", "Vehicle_Price__c"],
     ["deposit", "Deposit__c"],
     ["tradeIn", "Trade_In__c"],

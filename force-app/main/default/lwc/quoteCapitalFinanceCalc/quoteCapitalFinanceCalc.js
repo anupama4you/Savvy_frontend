@@ -6,7 +6,7 @@ import LENDER_LOGO from "@salesforce/resourceUrl/CapitalFinanceLogo";
 import FNAME_FIELD from "@salesforce/schema/Custom_Opportunity__c.Account_First_Name__c";
 import LNAME_FIELD from "@salesforce/schema/Custom_Opportunity__c.Account_Last_Name__c";
 import OPPNAME_FIELD from "@salesforce/schema/Custom_Opportunity__c.Name";
-import { getRecord, getFieldValue } from "lightning/uiRecordApi";
+import { getRecord } from "lightning/uiRecordApi";
 
 const fields = [FNAME_FIELD, LNAME_FIELD, OPPNAME_FIELD];
 
@@ -22,9 +22,6 @@ export default class QuoteCapitalFinanceCalc extends LightningElement {
     @track quoteForm;
     @track resDisable;
     // Rate Settings
-    @track tableRates;
-    @track tableRates2;
-    @track tableRates3;
     @wire(getRecord, { recordId: "$recordId", fields })
     opp;
 

@@ -276,7 +276,8 @@ const reset = (recordId) => {
     riskGrade: null,
     vehicleYear: null,
     paymentType: "Arrears",
-    commissions: QuoteCommons.resetResults()
+    commissions: QuoteCommons.resetResults(),
+    insurance: { integrity: {} }
   };
   //   console.log("before mapping: " + JSON.stringify(r, null, 2));
   r = QuoteCommons.mapDataToLwc(r, lenderSettings, SETTING_FIELDS);

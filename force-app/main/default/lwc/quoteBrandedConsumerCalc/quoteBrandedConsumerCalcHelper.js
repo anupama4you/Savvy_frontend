@@ -41,15 +41,16 @@ const QUOTING_FIELDS = new Map([
   ["monthlyFee", "Monthly_Fee__c"],
   ["term", "Term__c"],
   ["paymentType", "Payment__c"],
-  ["applicationId", "Application__c"]
+  ["applicationId", "Application__c"],
+  ["assetCondition", "Vehicle_Condition__c"],
+  ["privateSales", "Private_Sales__c"],
+  ["propertyOwner", "Client_Tier__c"],
+  ["assetAge", "Vehicle_Age__c"]
 ]);
 
 const FIELDS_MAPPING_FOR_APEX = new Map([
   ...QUOTING_FIELDS,
   ["Id", "Id"],
-  ["privateSales", "Private_Sales__c"],
-  ["propertyOwner", "Client_Tier__c"],
-  ["assetAge", "Vehicle_Age__c"],
   ["baseRate", "Base_Rate__c"],
   ["maxRate", "Manual_Max_Rate__c"]
 ]);

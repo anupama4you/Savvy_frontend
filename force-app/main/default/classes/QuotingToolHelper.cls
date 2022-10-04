@@ -832,4 +832,20 @@ public class QuotingToolHelper {
     return null;
   }
 
+  public static Product__c buildInsProduct(
+    Id oppId, String insurer, String insType, 
+    Decimal premium, Decimal comm, String payType
+  ) {
+    Id insRecTypeId = SOQLSingletonQueries.recs().recordTypes.get('Insurance');
+    Product__c r = new Product__c();
+    r.Opportunity_Name__c = oppId;
+    r.RecordTypeId = insRecTypeId;
+    r.Insurance_Type__c = insType;
+    r.Insurance_Policy_Amount__c = premium;
+    r.Insurance_Commission__c = comm;
+    r.Insurer__c = insurer;
+    r.PayType__c = payType;
+    return r;
+  }
+
 }

@@ -373,6 +373,27 @@
                 </a>
               </div>
             </lightning:layoutItem>
+              <lightning:layoutItem size="6" padding="around-medium">
+              <div style="text-align: center">
+                <a href="{!v.redirectUrlWrapper.racv}" target="_parent">
+                  <strong>Racv</strong>
+                  <br />
+                  <img
+                    src="{!$Resource.Racv}"
+                    onclick="{!c.handleClick}"
+                    style="max-width: 80%"
+                  />
+                </a>
+              </div>
+            </lightning:layoutItem>
+            <lightning:layoutItem
+              size="6"
+              smallDeviceSize="6"
+              largeDeviceSize="6"
+              mediumDeviceSize="6"
+              padding="around-medium"
+            >
+              </lightning:layoutItem>
           </lightning:layout>
         </lightning:layoutItem>
         <lightning:layoutItem

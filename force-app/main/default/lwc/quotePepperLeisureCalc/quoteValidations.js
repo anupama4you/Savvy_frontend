@@ -83,7 +83,6 @@ const validate = (quote, messages) => {
     });
   }
 
-  // TODO: PepperCalculatorLeisureExtension.cls => Line:300
   const NAF = CalHelper.getNetRealtimeNaf(quote);
   let maxNaf = 50000;
   console.log(
@@ -125,7 +124,6 @@ const validate = (quote, messages) => {
       message: `Private sales max. NAF should be $${maxNaf}`
     });
   }
-
 
   r.warnings = [].concat(QuoteCommons.uniqueArray(warningList));
   r.errors = [].concat(QuoteCommons.uniqueArray(errorList));

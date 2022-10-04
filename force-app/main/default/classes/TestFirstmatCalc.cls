@@ -235,8 +235,10 @@ private class TestFirstmatCalc {
     ctr.vehicleYear = String.valueOf(Date.today().year()-8);
     ctr.calculate();
     ctr.category = 'Standard';
-    ctr.loanTypeDetail = 'Used < 5 years';
+    ctr.loanTypeDetail = 'Used < 3 years';
     ctr.vehicleYear = String.valueOf(Date.today().year()-20);
+    ctr.calculate();
+    ctr.loanTypeDetail = 'Used 4-5 years';
     ctr.calculate();
     ctr.loanTypeDetail = 'Used 6-7 years';
     ctr.calculate();
@@ -257,7 +259,7 @@ private class TestFirstmatCalc {
     ctr.residualValue = -1;
     ctr.isValidationOk();
     ctr.residualValue = 1;
-    ctr.loanTypeDetail = 'Used < 5 years';
+    ctr.loanTypeDetail = 'Used < 3 years';
     ctr.vehicleYear = '2020';
     ctr.isValidationOk();
     ctr.term = 36;

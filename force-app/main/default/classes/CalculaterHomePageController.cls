@@ -231,6 +231,10 @@ public class CalculaterHomePageController {
           ? Page.GeneralCalculator.getUrl() + '?id=' + opportunityId
           : '/partner/s/sales-tools/quoting-tools/general?recordId='+opportunityId+'&oppName='+opp.Name;
 
+        wrap.racv = !wrap.IsBrokerPartnerUser
+          ? Page.GeneralCalculator.getUrl() + '?id=' + opportunityId
+          : '/partner/s/sales-tools/quoting-tools/racv?recordId='+opportunityId+'&oppName='+opp.Name;
+
         wrap.oppName = opp.Name;
 
 
@@ -314,6 +318,8 @@ public class CalculaterHomePageController {
         @AuraEnabled public string societyOne;
         @AuraEnabled public string westpac;
         @AuraEnabled public string apf;
+
+        @AuraEnabled public string racv;
     }
     
 

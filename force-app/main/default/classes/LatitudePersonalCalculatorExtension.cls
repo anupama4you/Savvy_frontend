@@ -74,10 +74,10 @@ public with sharing class LatitudePersonalCalculatorExtension {
             ApexPages.addMessage(new ApexPages.Message(ApexPages.Severity.ERROR,'Finance amount should not be Zero.'));
             r = false;
         }
-        if (dto.applicationFee == null || dto.applicationFee == 0.0) {
-            ApexPages.addMessage(new ApexPages.Message(ApexPages.Severity.ERROR,'Application Fee should not be Zero.'));
-            r = false;
-        }
+        // if (dto.applicationFee == null || dto.applicationFee == 0.0) {
+        //     ApexPages.addMessage(new ApexPages.Message(ApexPages.Severity.ERROR,'Application Fee should not be Zero.'));
+        //     r = false;
+        // }
         if (dto.dof == null || dto.dof == 0.0) {
             ApexPages.addMessage(new ApexPages.Message(ApexPages.Severity.ERROR,'DOF should not be Zero.'));
             r = false;
@@ -129,7 +129,7 @@ public with sharing class LatitudePersonalCalculatorExtension {
         if (!isValidationOk()) {
             return;
         }
-        System.debug('Testing values:::'+ dto);
+        
         // determine the loan type - consumer or commercial
         Boolean type = false;
         if (dto.paymentType == 'Advance') {

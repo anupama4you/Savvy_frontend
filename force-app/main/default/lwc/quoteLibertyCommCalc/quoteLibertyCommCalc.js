@@ -125,6 +125,9 @@ export default class QuoteLibertyCommCalc extends LightningElement {
       : (this.quoteForm[fldName] = v);
     if (fldName === "applicationFee") this.dofCalc();
 
+    if (fldName === "ltv") {
+      this.quoteForm[fldName] = v.toString();
+    }
     // --------------
     // Trigger events
     // --------------

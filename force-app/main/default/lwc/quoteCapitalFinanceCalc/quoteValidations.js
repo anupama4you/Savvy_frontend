@@ -1,4 +1,5 @@
 import { QuoteCommons } from "c/quoteCommons";
+import { CalHelper } from "./quoteCapitalFinanceCalcHelper";
 
 // Validation Types: ERROR, WARNING, INFO
 /**
@@ -7,6 +8,11 @@ import { QuoteCommons } from "c/quoteCommons";
  * @returns
  */
 const validate = (quote, messages) => {
+    const S_TICKET = "Small Ticket";
+    const MAX_VALUE_SMALL_TICKET = 55000;
+    const NO = "N";
+    const MAX_BROKERAGE = 8;
+
     console.log('quote for Validation is: ', JSON.stringify(quote, null, 2));
     const r =
         typeof messages == "undefined" || messages == null
@@ -14,68 +20,82 @@ const validate = (quote, messages) => {
             : messages;
     let errorList = r.errors;
     let warningList = r.warnings;
+    const realTimeNaf = CalHelper.getNetRealtimeNaf(quote);
 
     console.log(
-        "🚀 ~ file: quoteValidations.js ~ line 20 ~ validate ~ quote.price",
-        quote.price
+        "🚀 ~ file: quoteValidations.js ~ line 26 ~ validate ~ quote.loanType",
+        quote.loanType
     );
-    if (quote.price === null || !(quote.price > 0.0)) {
+    if (quote.loanType === S_TICKET && realTimeNaf > MAX_VALUE_SMALL_TICKET) {
         errorList.push({
-            field: "price",
-            message: "Car Price cannot be Zero."
+            field: "loanType",
+            message: `Small ticket only for <$${MAX_VALUE_SMALL_TICKET} NAF`
         });
     }
 
     console.log(
-        "🚀 ~ file: quoteValidations.js ~ line 31 ~ validate ~ quote.baseRate",
+        "🚀 ~ file: quoteValidations.js ~ line 37 ~ validate ~ quote.propertyOwner",
+        quote.propertyOwner
+    );
+    if (quote.propertyOwner === NO) {
+        errorList.push({
+            field: "propertyOwner",
+            message: `Non property owner by exception - check with lender`
+        });
+    }
+
+    console.log(
+        "🚀 ~ file: quoteValidations.js ~ line 48 ~ validate ~ quote.baseRate",
         quote.baseRate
     );
     if (quote.baseRate === null || quote.baseRate === 0.0) {
         errorList.push({
             field: "baseRate",
-            message: "Base Rate cannot be Zero."
+            message: `Base Rate cannot be Zero.`
         });
     }
 
     console.log(
-        "🚀 ~ file: quoteValidations.js ~ line 42 ~ validate ~ quote.brokeragePercentage",
+        "🚀 ~ file: quoteValidations.js ~ line 59 ~ validate ~ quote.baseRate",
+        quote.term
+    );
+    if (quote.term === null || quote.term === 0) {
+        errorList.push({
+            field: "term",
+            message: `Please choose an appropriate term.`
+        });
+    }
+
+    console.log(
+        "🚀 ~ file: quoteValidations.js ~ line 70 ~ validate ~ quote.baseRate",
         quote.brokeragePercentage
     );
-    if (quote.brokeragePercentage > 8) {
+    if (quote.brokeragePercentage > MAX_BROKERAGE) {
         errorList.push({
             field: "brokeragePercentage",
-            message: "Brokerage cannot be greater than 8%."
+            message: `Max ${MAX_BROKERAGE}% brokerage`
         });
     }
 
-    const ppsrObjs = [
-        { label: "ppsrLabel1", value: "ppsr1", index: "first" },
-        { label: "ppsrLabel2", value: "ppsr2", index: "second" },
-        { label: "ppsrLabel3", value: "ppsr3", index: "third" },
-        { label: "ppsrLabel4", value: "ppsr4", index: "fourth" },
-    ];
-
-    ppsrObjs.forEach(ppsrObj => {
-        console.log(
-            `🚀 ~ file: quoteValidations.js ~ line 61 ~ validate ~ quote.ppsr`,
-            ppsrObj.value
-        );
-        if (!quote[`${ppsrObj.label}`] && quote[`${ppsrObj.value}`] > 0) {
-            errorList.push({
-                field: `${ppsrObj.value}`,
-                message: `Please fill a description for the ${ppsrObj.index} detail which its value is ${quote[ppsrObj.value]} `,
-            });
-        }
-    });
+    console.log(
+        "🚀 ~ file: quoteValidations.js ~ line 81 ~ validate ~ quote.baseRate",
+        quote.abnLength
+    );
+    if (quote.abnLength === '< 2 years') {
+        errorList.push({
+            field: "abnLength",
+            message: `ABN length min 2 years required`
+        });
+    }
 
     console.log(
-        "🚀 ~ file: quoteValidations.js ~ line 73 ~ validate ~ quote.residual",
-        quote.residual
+        "🚀 ~ file: quoteValidations.js ~ line 92 ~ validate ~ quote.baseRate",
+        quote.gstLength
     );
-    if (quote.residual > 0 && quote.term > 60) {
+    if (quote.gstLength !== "> 1 day") {
         errorList.push({
-            field: "residual",
-            message: "You cannot have a balloon or residual payment when the loan term is > 5 years."
+            field: "gstLength",
+            message: `Must be GST registered`
         });
     }
 

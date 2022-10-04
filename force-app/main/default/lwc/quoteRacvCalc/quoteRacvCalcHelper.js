@@ -65,7 +65,7 @@ const FIELDS_MAPPING_FOR_APEX = new Map([
     ["Id", "Id"], ...QUOTING_FIELDS
 ]);
 
-const RATE_SETTING_NAMES = ["LatitudeRatesv3__c"];
+const RATE_SETTING_NAMES = ["Racv_Rates__c"];
 
 const SETTING_FIELDS = new Map([
     ["monthlyFee", "Monthly_Fee__c"],
@@ -77,8 +77,10 @@ const SETTING_FIELDS = new Map([
 const BASE_RATE_FIELDS = [
     "customerProfile",
     "loanTypeDetail",
-    "carAge",
-    "vehicleType"
+    "vehicleType",
+    "propertyOwner",
+    "creditScore",
+    "carAge"
 ];
 
 const DOF_CALC_FIELDS = [
@@ -172,7 +174,13 @@ const calcOptions = {
         { label: "12", value: "12" },
         { label: "13", value: "13" },
         { label: "14", value: "14" },
-        { label: "15+", value: "15" }
+        { label: "15", value: "15" },
+        { label: "16", value: "16" },
+        { label: "17", value: "17" },
+        { label: "18", value: "18" },
+        { label: "19", value: "19" },
+        { label: "20+", value: "20" }
+
     ],
     propertyOwnerOpt: [
         { label: "--None--", value: "" },
@@ -280,15 +288,18 @@ const loadData = (recordId) =>
                 // Settings
                 lenderSettings = quoteData.settings;
 
-                console.log('lenderSettings:::', JSON.stringify(lenderSettings, null, 2))
+                console.log('quoteData Racv-->>', quoteData);
+                console.log('quoteData.rateSettings:::', JSON.stringify(quoteData.rateSettings, null, 2));
+                console.log('lenderSettings Racv:::', JSON.stringify(lenderSettings, null, 2));
 
                 // Rate Settings
                 if (quoteData.rateSettings) {
                     tableRatesData = quoteData.rateSettings[`${RATE_SETTING_NAMES[0]}`];
 
-                    // console.log(`@@tableData:`, JSON.stringify(tableRatesData, null, 2));
+                     console.log(`@@tableData:`, JSON.stringify(tableRatesData, null, 2));
 
                 }
+                console.log('tableRatesData-->>',tableRatesData);
                 console.log(`@@data:`, JSON.stringify(data, null, 2));
                 resolve(data);
             })
@@ -305,8 +316,10 @@ const getMyBaseRates = (quote) =>
             customerProfile: profile,
             loanTypeDetail: quote.loanTypeDetail,
             goodsType: quote.category,
-            carAge: quote.carAge,
-            hasMaxRate: true
+            propertyOwner: quote.propertyOwner,
+            creditScore: quote.creditScore,
+            hasMaxRate: true,
+            carAge: quote.carAge
         };
         console.log(`getMyBaseRates...`, JSON.stringify(p, null, 2));
         getBaseRates({
@@ -334,14 +347,13 @@ const getQuoteFees = (quote) => {
 // Get Single table out using #category and #class
 const getSingleTable = (category, class_) => {
 
-    let fieldsList = { "comm1": [], "comm2": [], "comm3": [], "rate1": [], "rate2": [], "rate3": [] }
+    let fieldsList = { "score": [], "loanAmount": [], "hg3": [], "hl3": [], "nhg3": [], "nhl3": [] }
 
     if (category) {
         // devide the data into categories
         tableRatesData.forEach((obj, key, map) => {
 
-            if (obj.Category__c === category) {
-                if (obj.Class__c === class_) {
+            if (obj.Asset_Type__c === category) {
                     console.log(`getSingleTable...`, JSON.stringify(obj, null, 2));
 
                     if (obj.Asset_Age__c == '0 - 3 years') {
@@ -354,7 +366,6 @@ const getSingleTable = (category, class_) => {
                         fieldsList.rate2.push(obj.Rate__c);
                         fieldsList.rate3.push(obj.Comm__c);
                     }
-                }
             }
         });
 
@@ -385,13 +396,23 @@ const getAllTableData = (category) => {
     console.log('category-->'+category);
     console.log('calcOptions.classes[0].value-->'+calcOptions.classes[1].value);
     // empty the array
-    formattedTableData.splice(0, formattedTableData.length);
+    console.log('tableRatesData-->>',tableRatesData);
+
+    formattedTableData = [];
+    tableRatesData.forEach((obj, key, map) => {
+
+        if (obj.Asset_Type__c === category) {
+                formattedTableData.push(obj);
+        }
+    });
+    /*formattedTableData.splice(0, formattedTableData.length);
     // Borrower Type 1 
     formattedTableData.push({ data: getSingleTable(category, calcOptions.classes[1].value), colName: calcOptions.classes[1].value });
     // Borrower Type 2
     formattedTableData.push({ data: getSingleTable(category, calcOptions.classes[2].value), colName: calcOptions.classes[2].value });
     // Borrower Type 3
     formattedTableData.push({ data: getSingleTable(category, calcOptions.classes[3].value), colName: calcOptions.classes[3].value });    
+    */
     return formattedTableData;
 };
 

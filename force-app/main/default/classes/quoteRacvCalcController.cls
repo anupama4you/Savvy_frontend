@@ -9,17 +9,17 @@ public class quoteRacvCalcController {
         // Lender settings
         // Rate Settings
         String rateObjName = param.rateSettings != null && !param.rateSettings.isEmpty() 
-        ? param.rateSettings.get(0) : 'LatitudeRatesv3__c';
+        ? param.rateSettings.get(0) : 'Racv_Rates__c';
           
-        Map<String, List<LatitudeRatesv3__c>> rates = new Map<String, List<LatitudeRatesv3__c>>();
+        Map<String, List<Racv_Rates__c>> rates = new Map<String, List<Racv_Rates__c>>();
         rates.put(rateObjName, getRates());
         r.rateSettings = rates;
 
         return r;
     }
 
-    private static List<LatitudeRatesv3__c> getRates() {
-        List<LatitudeRatesv3__c> d = LatitudeRatesv3__c.getAll().values();
+    private static List<Racv_Rates__c> getRates() {
+        List<Racv_Rates__c> d = Racv_Rates__c.getAll().values();
         d.sort();
         return d;
     }

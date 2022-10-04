@@ -155,7 +155,8 @@ const resetResults = () => {
     monthlyPayment: null,
     fortnightlyPayment: null,
     weeklyPayment: null,
-    comprehensive: { monthly: 0, fortnightly: 0, weekly: 0, isMvAccept: false }
+    comprehensive: { monthly: 0, fortnightly: 0, weekly: 0, isMvAccept: false },
+    calResults: []
   };
 };
 
@@ -259,13 +260,15 @@ const mapDataToLwc = (obj, data, DataFields, insurance) => {
   return r;
 };
 
-const mapCommissionSObjectToLwc = (data, insurance) => {
-  return mapDataToLwc(
+const mapCommissionSObjectToLwc = (data, insurance, results) => {
+  let comms = mapDataToLwc(
     resetResults(),
     data,
     COMMISSION_CALCULATION_FIELDS,
     insurance
   );
+  comms.calResults = results? results : [];
+  return comms;
   // console.log("🚀 ~ file: QuoteCommons.js ~ line 107 ~ mapCommissionSObjectToLwc ~ data", JSON.stringify(data));
   // let r = resetResults();
   // if (data) {
@@ -542,8 +545,8 @@ const mapLWCToSObject = (
   ];
   console.log("include insurance >> " + includeInsurance);
   let obj = includeInsurance
-    ? { data: {}, results: { commissions: {} }, insurance: {} }
-    : { data: {}, results: { commissions: {} } };
+    ? { data: {}, results: { commissions: {} }, calcResults: [], insurance: {} }
+    : { data: {}, results: { commissions: {} }, calcResults: [] };
   // data
   console.log(`@@quote form : ${JSON.stringify(quoteForm, null, 2)}`);
   const FULL_FIELDS_MAPPING = includeInsurance
@@ -650,9 +653,12 @@ const mapLWCToSObject = (
     obj.data["Name"] = LENDER_QUOTING;
     // commissions
     for (const [key, value] of COMMISSION_FIELDS) {
-      obj.results["commissions"][value] = quoteForm["commissions"][key];
+      // obj.results["commissions"][value] = quoteForm["commissions"][key];
       obj.data[value] = quoteForm["commissions"][key];
     }
+    // Calc Results
+    obj.calcResults = quoteForm.commissions.calResults;
+
   } catch (error) {
     console.error(error);
   }
@@ -723,18 +729,41 @@ const resetInsurance = () => {
       term: null,
       category: null
     },
-    typeRetail: []
-    // ismvAccept: false,
+    typeRetail: [],
+    ismvAccept: false,
     // ismvDecline: false,
-    // isshortfallAccept: false,
+    isshortfallAccept: false,
     // isshortfallDecline: false,
-    // iswarrantyAccept: false,
+    iswarrantyAccept: false,
     // iswarrantyDecline: false,
-    // isLPIAccept: false,
+    isLPIAccept: false,
     // isLPIDecline: false,
     // isIntegrityAccept: false,
     // isIntegrityDecline: false
   };
+};
+/**
+ * Lee - 14/09/2022
+ * @param {object} quoteForm - quoteForm
+ * @returns - commission with comprehensive part
+ */
+const handleComprehensive = (quoteForm) => {
+  try {
+    let cms = { ...quoteForm.commissions };
+    cms.comprehensive.isMvAccept = quoteForm.insurance.ismvAccept;
+    if (quoteForm.insurance.ismvAccept) {
+      cms.comprehensive.weekly = quoteForm.insurance.mvRetailPrice / 52;
+      cms.comprehensive.fortnightly = quoteForm.insurance.mvRetailPrice / 26;
+      cms.comprehensive.monthly = quoteForm.insurance.mvRetailPrice / 12;
+    } else {
+      cms.comprehensive.weekly = 0;
+      cms.comprehensive.fortnightly = 0;
+      cms.comprehensive.monthly = 0;
+    }
+    return cms;
+  } catch (error) {
+    console.error(error);
+  }
 };
 
 const QuoteCommons = {
@@ -758,7 +787,8 @@ const QuoteCommons = {
   createTermOptions: createTermOptions,
   calcTotalInsuranceIncome: calcTotalInsuranceIncome,
   getInsurancePayment: getInsurancePayment,
-  resetInsurance: resetInsurance
+  resetInsurance: resetInsurance,
+  handleComprehensive: handleComprehensive
 };
 
 export { QuoteCommons, CommonOptions, FinancialUtilities, VALIDATION_OPTIONS };

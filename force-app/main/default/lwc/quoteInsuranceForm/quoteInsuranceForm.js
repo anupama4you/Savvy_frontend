@@ -19,11 +19,9 @@ export default class QuoteInsuranceForm extends NavigationMixin(
   isEnableAccept = true;
   isReadOnly = false;
   isSent = false;
-  retailPriceManually = false;
-  typeRetail = [];
+    typeRetail = [];
   typeOfAsset = "";
-  // insuranceIncome = { retailPrice: 0, commission: 0 };
-  quoteNaf;
+    quoteNaf;
   customerChoiceStatus = "None";
   @track insuranceForm;
   @track isCalculateGAPBusy = false;
@@ -310,14 +308,19 @@ export default class QuoteInsuranceForm extends NavigationMixin(
     };
     this.typeRetail = [...this.insuranceForm.typeRetail];
     if (this.insuranceForm.LPIType) {
-      this.isDisplayLPIInput = this.insuranceForm.LPIType === "Eric";
+      this.isDisplayLPIInput =
+        this.insuranceForm.LPIType === "Eric" ||
+        (!this.insuranceForm.isLPIAccept && !this.insuranceForm.isLPIDecline);
     }
     if (this.insuranceForm.warrantyType) {
       this.isDisplayIntegrityOpts =
         this.insuranceForm.warrantyType === "Integrity";
     }
     if (this.insuranceForm.shortfallType) {
-      this.isDisplayInput = this.insuranceForm.shortfallType === "Eric";
+      this.isDisplayInput =
+        this.insuranceForm.shortfallType === "Eric" ||
+        (!this.insuranceForm.isshortfallAccept &&
+          !this.insuranceForm.isshortfallDecline);
     }
     this.insuranceForm.LPIRetailPrice = this.insuranceForm.LPIRetailPrice
       ? parseFloat(this.insuranceForm.LPIRetailPrice)
@@ -347,7 +350,6 @@ export default class QuoteInsuranceForm extends NavigationMixin(
       this.insuranceForm.isIntegrityAccept ||
       this.insuranceForm.isIntegrityDecline;
     this.isShortfallReadOnly = this.insuranceForm.isshortfallAccept;
-
     if (this.isSent) {
       this.isMvReadOnly = true;
       this.isLPIReadOnly = true;
@@ -375,8 +377,7 @@ export default class QuoteInsuranceForm extends NavigationMixin(
     this.isDisplayAssetType = "label-hidden";
     this.isEnableAccept = true;
     this.isReadOnly = false;
-    this.retailPriceManually = false;
-    // this.insuranceIncome = { retailPrice: 0, commission: 0 };
+    this.typeRetail = [];    
     this.isSent = false;
   }
 

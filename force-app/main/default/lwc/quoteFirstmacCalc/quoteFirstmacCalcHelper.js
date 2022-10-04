@@ -107,7 +107,8 @@ const calcOptions = {
   loanTypeRDs: [
     { label: "New Green Car", value: "New Green Car" },
     { label: "New / Demo", value: "New / Demo" },
-    { label: "Used < 5 years", value: "Used < 5 years" },
+    { label: "Used < 3 years", value: "Used < 3 years" },
+    { label: "Used 4-5 years", value: "Used 4-5 years" },
     { label: "Used 6-7 years", value: "Used 6-7 years" },
     { label: "Used 8-12 years", value: "Used 8-12 years" }
   ],

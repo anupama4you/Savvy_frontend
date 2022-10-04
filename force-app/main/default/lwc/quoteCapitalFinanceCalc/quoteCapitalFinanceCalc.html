@@ -2,7 +2,6 @@
   <c-quote-container title="Capital Finance" is-busy={isBusy} messages={messageObj} commissions={quoteForm.commissions}>
     <!-- Logo -->
     <img src={logoUrl} slot="logo" class="c-lender-logo" title="General" />
-
     <!-- Buttons -->
     <lightning-button label="Calculate" slot="actions" onclick={handleCalculate}></lightning-button>
     <lightning-button label="Reset" slot="actions" onclick={handleReset}></lightning-button>
@@ -19,7 +18,6 @@
     </lightning-button>
     <lightning-button label="Send quote" slot="actions" disabled={disableAction} onclick={handleSendQuote}>
     </lightning-button>
-
     <!-- Finance Details -->
     <!-- Loan Type -->
     <div class="c-row-details">
@@ -41,12 +39,6 @@
           variant="label-hidden">
         </lightning-combobox>
       </div>
-      <!-- <div class="c-detail-fields">
-        <lightning-combobox name="loanProduct" label="Asset Type" data-id="loanProduct-field"
-          value={quoteForm.loanProduct} placeholder="Select a value" options={loanProductOptions}
-          onchange={handleFieldChange} class="slds-form__item" variant="label-hidden">
-        </lightning-combobox>
-      </div> -->
     </div>
     <!-- Car Price -->
     <div class="c-row-details">
@@ -175,7 +167,6 @@
         </lightning-combobox>
       </div>
     </div>
-    <!-- ****** -->
     <!-- Interest rate (%) -->
     <div class="c-row-details">
       <div class="c-detail-labels">
@@ -186,7 +177,6 @@
         variant="label-hidden" onchange={handleFieldChange} required>
       </lightning-input>
     </div>
-
     <!-- ABN Length -->
     <div class="c-row-details">
       <div class="c-detail-labels"><span class="c-label">ABN Length</span></div>
@@ -197,14 +187,6 @@
         </lightning-combobox>
       </div>
     </div>
-    <!-- <div class="c-row-details">
-      <div class="c-detail-labels"><span class="c-label">ABN Length</span></div>
-      <div class="c-detail-fields">
-        <lightning-combobox name="paymentType" label="Payment" data-id="paymentType-field" value={quoteForm.paymentType}
-          placeholder="Select a value" options={paymentTypeOptions} onchange={handleFieldChange} class="slds-form__item"
-          variant="label-hidden" required></lightning-combobox>
-      </div>
-    </div> -->
     <!-- GST Length -->
     <div class="c-row-details">
       <div class="c-detail-labels"><span class="c-label">GST Length</span></div>
@@ -245,8 +227,6 @@
         </lightning-combobox>
       </div>
     </div>
-
-
     <!-- Brokerage (%) -->
     <div class="c-row-details">
       <div class="c-detail-labels">
@@ -265,9 +245,6 @@
       <lightning-formatted-number value={quoteForm.baseRate} format-style="percent-fixed" minimum-fraction-digits="2"
         class="c-read-only-field">
       </lightning-formatted-number>
-      <!-- <lightning-formatted-number value={clientRate} format-style="percent-fixed" minimum-fraction-digits="2"
-        class="c-read-only-field">
-      </lightning-formatted-number> -->
     </div>
     <!-- NAF -->
     <div class="c-row-details">
@@ -278,7 +255,6 @@
         </lightning-formatted-number>
       </div>
     </div>
-
     <!-- Table Rates -->
     <div slot="table-rates">
       <div class="c-rates-section-title">New Motor Vehicles (&lt; 4.5 tonne GVM) &lt; 4 years old</div>
@@ -309,7 +285,5 @@
         </div>
       </div>
     </div>
-
-
   </c-quote-container>
 </template>

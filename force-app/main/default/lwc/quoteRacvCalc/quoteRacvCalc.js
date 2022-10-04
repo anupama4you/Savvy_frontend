@@ -79,9 +79,9 @@ export default class QuoteLatitudeCalc extends LightningElement {
     vehicleCategory() {
         console.log('vehicle type:::', this.quoteForm.vehicleType)
         if (this.quoteForm.vehicleType) {
-            this.category = 'Car/Motorbike';
-            if ('BOAT' === this.quoteForm.vehicleType || 'CARAVAN' === this.quoteForm.vehicleType || 'MOTORHOME' === this.quoteForm.vehicleType || 'TRAILER' === this.quoteForm.vehicleType) {
-                this.category = 'Boats, Personal Watercraft, Caravans, Camper Trailers, Motorhomes';
+            this.category = 'Car/Caravans';
+            if ('MOTORBIKE' === this.quoteForm.vehicleType || 'BOAT' === this.quoteForm.vehicleType) {
+                this.category = 'Personal/Bike/Boats';
             }
             this.quoteForm.category = this.category;
         } else {
@@ -89,6 +89,7 @@ export default class QuoteLatitudeCalc extends LightningElement {
         }
         this.quoteForm.goodsType = this.category;
         this.tableRates = CalHelper.getAllTableData(this.category);
+        console.log('this.tableRates-->>',this.tableRates);
     }
 
     // Quote Fee calculation
