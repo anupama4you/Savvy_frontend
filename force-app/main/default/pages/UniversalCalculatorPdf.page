@@ -560,7 +560,7 @@
         </table>
         </apex:outputPanel>
         <!-- Liberty Options -->
-        <apex:outputPanel layout="block" style="width:100%" rendered="{!IF(rateOption = null,false,true)}" >
+        <!-- <apex:outputPanel layout="block" style="width:100%" rendered="{!IF(rateOption = null,false,true)}" >
         <table width="100%">
             <tr width="100%">
                 <td width="25%">
@@ -591,7 +591,7 @@
                 </td>
             </tr>
         </table>
-        </apex:outputPanel>
+        </apex:outputPanel> -->
         <!-- Finance One -->
         <apex:outputPanel layout="block" style="width:100%" rendered="{!isFinanceOne}" >
         <table width="100%">
@@ -613,8 +613,15 @@
             </tr>
             <tr width="100%">
                 <td width="25%">Brokerage (%)</td>
-                <td colspan="3">{!brokeragePercentage}</td>
+                <td width="25%">{!brokeragePercentage}</td>
+                <td width="25%">Propery Owner</td>
+                <td width="25%">{!propertyOwner}</td>
             </tr> 
+            <tr width="100%">
+              <td width="25%">Rate Add ON's</td>
+              <td width="25%">{!rateOption}</td>
+              <td colspan="2">&nbsp;</td>
+            </tr>
         </table>
         </apex:outputPanel>
         <apex:outputPanel layout="block" style="width:100%" rendered="{!isAzora}" >
@@ -693,6 +700,26 @@
             <tr>
                 <td>Loan Purpose</td>
                 <td>{!loanPurpose}</td>
+            </tr>
+        </table>
+        </apex:outputPanel>
+        <!-- Krisp -->
+        <apex:outputPanel layout="block" style="width:100%" rendered="{!isKrisp}" >
+        <table width="100%">
+            <tr width="100%">
+                <td width="25%">Profile</td>
+                <td width="25%">{!customerProfile}</td>
+                <td width="25%">Customer Grading</td>
+                <td width="25%">{!rateType}</td>
+            </tr>
+            <tr>
+                <td>Risk Fee</td>
+                <td>{!riskFee}</td>
+                <td colspan="2">&nbsp;</td>
+            </tr>
+            <tr with="100%">
+                <td>Loan Purpose</td>
+                <td colspan="3">{!loanPurpose}</td>
             </tr>
         </table>
         </apex:outputPanel>

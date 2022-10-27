@@ -22,11 +22,14 @@ public class TestApplicationQuotingTriggerService {
         reloadApplication();
         reloadAccount();    
 		
-		newList.add(quoting);
+		    newList.add(quoting);
         quotingAux.Id = quoting.Id;
         quotingAux.Name = 'Pepper MV';
         oldMap.put(quotingAux.Id, quotingAux);
         ApplicationQuotingService.authorizationChecker(newList, oldMap);
+
+        createQuoting('Personal');
+        ApplicationQuotingService.removeOlderQuotings(newList);
         
         ApplicationQuotingTriggerHandler handler = new ApplicationQuotingTriggerHandler();
         handler.onBeforeInsert(null);

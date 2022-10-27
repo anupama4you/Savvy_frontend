@@ -24,10 +24,6 @@ export default class QuoteBrandedConsumerCalc extends LightningElement {
   opp;
   // -
 
-  // --- Insurance ---
-
-  // --- Insurance: end ---
-
   connectedCallback() {
     console.log(`connectedCallback... ${this.opp.data}`);
     this.isBusy = true;
@@ -130,6 +126,9 @@ export default class QuoteBrandedConsumerCalc extends LightningElement {
     if (CalHelper.BASE_RATE_FIELDS.includes(fldName)) {
       this.baseRateCalc();
     }
+
+    // Insurances
+    QuoteCommons.calculateInsurances(this, fldName);
     // --------------
 
     console.log("🍔🍔 >> " + JSON.stringify(this.quoteForm, null, 2));
@@ -253,19 +252,19 @@ export default class QuoteBrandedConsumerCalc extends LightningElement {
           console.log("@@data in handleSave:", JSON.stringify(data, null, 2));
           !isNONE
             ? this.messageObj.confirms.push(
-                {
-                  field: "confirms",
-                  message: "Calculation saved successfully."
-                },
-                {
-                  fields: "confirms",
-                  message: "Product updated successfully."
-                }
-              )
-            : this.messageObj.confirms.push({
+              {
                 field: "confirms",
                 message: "Calculation saved successfully."
-              });
+              },
+              {
+                fields: "confirms",
+                message: "Product updated successfully."
+              }
+            )
+            : this.messageObj.confirms.push({
+              field: "confirms",
+              message: "Calculation saved successfully."
+            });
           // passing data to update quoteform
           this.quoteForm["Id"] = data["Id"];
         })
@@ -350,21 +349,10 @@ export default class QuoteBrandedConsumerCalc extends LightningElement {
     this.isCalculated = this.template.querySelector(
       "c-quote-insurance-form"
     ).isQuoteCalculated = false;
+
     // comprehensive
-    let cms = { ...this.quoteForm.commissions };
-    cms.comprehensive.isMvAccept = this.quoteForm.insurance.ismvAccept;
-    if (this.quoteForm.insurance.ismvAccept) {
-      cms.comprehensive.weekly = this.quoteForm.insurance.mvRetailPrice / 52;
-      cms.comprehensive.fortnightly =
-        this.quoteForm.insurance.mvRetailPrice / 26;
-      cms.comprehensive.monthly = this.quoteForm.insurance.mvRetailPrice / 12;
-      console.log("cms ==> ", JSON.stringify(cms));
-      this.quoteForm.commissions = cms;
-    } else {
-      cms.comprehensive.weekly = 0;
-      cms.comprehensive.fortnightly = 0;
-      cms.comprehensive.monthly = 0;
-    }
+    const cms = QuoteCommons.handleComprehensive(this.quoteForm);
+    this.quoteForm.commissions = { ...cms };
     // end - comprehensive
     console.log(
       "handle insurance change >>  " + JSON.stringify(this.quoteForm, null, 2)
@@ -376,7 +364,7 @@ export default class QuoteBrandedConsumerCalc extends LightningElement {
     this.handleSave(null, event.detail);
   }
 
-  handleInsuanceLoad(event) {
+  handleInsuranceLoad(event) {
     this.handleInsuranceChange(event);
     // check if there is no acceptance
     if (
@@ -402,5 +390,7 @@ export default class QuoteBrandedConsumerCalc extends LightningElement {
   handleDisableButton(event) {
     this.isCalculated = event.detail;
   }
+
+
   // --- insurance: end ---
 }

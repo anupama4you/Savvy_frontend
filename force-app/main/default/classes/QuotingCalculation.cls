@@ -116,6 +116,7 @@ public without sharing class QuotingCalculation {
         'AFS Consumer'.equals(param.lender) ||
         'AFS Commercial'.equals(param.lender) ||
         'Latitude'.equals(param.lender) ||
+         'Racv'.equals(param.lender) ||
         LatitudePersonalCalculatorExtension.LENDER_QUOTING.equals(
           param.lender
         ) ||
@@ -154,7 +155,9 @@ public without sharing class QuotingCalculation {
         r = calculateBranded(param);
       } else if ('Branded Commercial'.equals(param.lender)) {
         r = calculateBrandedCommercial(param);
-      }
+      } else if ('Krisp'.equals(param.lender)) {
+        r = calculateKrisp(param);
+      } 
     }
     return r;
   }
@@ -1537,7 +1540,9 @@ public without sharing class QuotingCalculation {
       } else if ('Latitude'.equals(param.lender)) {
         r = getRateLatitudeBaseRate(param, false);
       } else if ('Racv'.equals(param.lender)) {
-        r = getRateRacvBaseRate(param, false);
+          system.debug('::: Racv :::: - QuotingCalculation');
+        r = getRacvBaseRate(param);//getRateRacvBaseRate(param, false);
+          system.debug(':::: Racv :::: baserate ::::'+r);
       }else if ('Green Light'.equals(param.lender)) {
         r = getRateGreenLightBaseRate(param);
       } else if (
@@ -1554,6 +1559,10 @@ public without sharing class QuotingCalculation {
         Money3CalculatorExtension.LENDER_QUOTING.equals(param.lender)
       ) {
         r = getMoney3BaseRate(param);
+      } else if (
+        KrispCalcExtension.LENDER_QUOTING.equals(param.lender)
+      ) {
+        r = getKrispBaseRate(param);
       } else if ('Affordable'.equals(param.lender)) {
         r = getAffordableBaseRate(param, false);
       } else if('Shift Asset'.equals(param.lender)){
@@ -1580,7 +1589,7 @@ public without sharing class QuotingCalculation {
         r = getBrandedConsumerBaseRate(param, false);
       } else if ('Branded Commercial'.equals(param.lender)) {
       r = getBrandedCommercialBaseRate(param, false);
-    }
+      } 
     }
     return r;
   }
@@ -3065,6 +3074,11 @@ public without sharing class QuotingCalculation {
       } else {
         r = rate.Base_Rate__c;
       }
+      
+      if ('Y'.equals(param.interestType)) {
+        r += 2.0;
+      }
+
     }
     return r;
   }
@@ -3583,7 +3597,7 @@ public without sharing class QuotingCalculation {
       } else if ('Latitude'.equals(param.lender)) {
         r = getRateLatitudeBaseRate(param, true);
       } else if ('Racv'.equals(param.lender)) {
-        r = getRateRacvBaseRate(param, true);
+        r = getRateRacvBaseRate(param, true);//getMaximunBaseRate(param);//getRateRacvBaseRate(param, true);
       }else if ('AFS Consumer'.equals(param.lender)) {
         r = getAFSConsumerBaseRate(param, true);
       } else if ('AFS Commercial'.equals(param.lender)) {
@@ -4787,15 +4801,28 @@ public without sharing class QuotingCalculation {
         CalcParam param,
         Boolean isMaxRate
     ) {
+        /*
+        String VechicleType =  param.assetType; 		//VechicleType,  //vehicleType
+        Integer VechicleAge = param.carAge;				//integer VechicleAge, //carAge
+        String VechicleCondition = param.condition;		//String VechicleCondition, //condition - vehCon
+        String PropertyOwner = param.propertyOwner;		//String PropertyOwner, //propertyOwner
+        String creditScore = param.creditScore;			//String creditScore, //creditScore
+        Decimal loanAmt = param.totalAmount;
+         */ 
         Decimal r = 0.00;
-        r = getRacvRatesByClass(
+        r = getRacvBaseRate(param);
+        /*r = getRacvRatesByClass(
             param.goodsType,
             param.carAge,
             param.creditScore,
             param.propertyOwner,
             param.totalAmount
-        );
-        return r;
+        );*/
+        if(r>0){
+            return r+1.5;
+        }else{
+                return r;
+            }
     }
 
   private static Decimal getRateLatitudePLBaseRate(
@@ -6701,5 +6728,220 @@ public without sharing class QuotingCalculation {
       }
       return r;
     }
+    //Racv Base Rate Calculate
+    private static decimal getRacvBaseRate(	QuotingCalculation.CalcParam param ){
+	
+    system.debug(':::: Param getRacvBaseRate ::::'+param);
+    
+    String VechicleType =  param.assetType; 		//VechicleType,  //vehicleType
+    Integer VechicleAge = param.carAge;				//integer VechicleAge, //carAge
+    String VechicleCondition = param.condition;		//String VechicleCondition, //condition - vehCon
+    String PropertyOwner = param.propertyOwner;		//String PropertyOwner, //propertyOwner
+    String creditScore = param.creditScore;			//String creditScore, //creditScore
+    Decimal loanAmt = param.totalAmount;				//Decimal loanAmt){ //totalAmount
+
+        
+	system.debug(':::: VechicleType :::::'+VechicleType);
+	system.debug(':::: VechicleAge :::::'+VechicleAge);
+	system.debug(':::: VechicleCondition :::::'+VechicleCondition);
+	system.debug(':::: PropertyOwner :::::'+PropertyOwner);
+	system.debug(':::: creditScore :::::'+creditScore);
+	system.debug(':::: loanAmt :::::'+loanAmt);
+
+	Integer creditScoreMin, creditScoreMax;									
+	if( VechicleAge == null){
+		VechicleAge = 0;
+	}
+	if( !String.isblank(creditScore) && creditScore.endsWith('+')){
+		creditScoreMin = integer.valueof(creditScore.removeEnd('+'));
+		creditScoreMax = 9999;
+	}else if(!String.isblank(creditScore) && creditScore.contains('-')){
+		List<String> creditScorePoint =  creditScore.split('-');
+		creditScoreMin = integer.valueof(creditScorePoint[0]);
+		creditScoreMax = integer.valueof(creditScorePoint[1]);
+	}
+        system.debug('@@@ creditScoreMin '+creditScoreMin);
+        system.debug('@@@ creditScoreMax '+creditScoreMax);
+	Decimal Rate1 = 0.00, Rate2 = 0.00, Rate3 = 0.00, Rate4 = 0.00;
+	//Set the rate here 
+	//credit score and loan amount
+
+	List<Racv_Rates__c> racvRates = Racv_Rates__c.getAll().values();
+	/*
+		
+		Asset_Type__c
+		Min_Credit_Score__c
+		Max_Credit_Score__c
+		Min_Loan_Amount__c
+		Max_Loan_Amount__c
+		Rate_1__c
+		Rate_2__c
+		Rate_3__c
+		Rate_4__c
+
+	*/
+
+
+	for(Racv_Rates__c racv : racvRates){
+		if( racv.Min_Credit_Score__c != null && racv.Min_Credit_Score__c >= creditScoreMin && 
+			racv.Max_Credit_Score__c != null && racv.Max_Credit_Score__c <= creditScoreMax && 
+			racv.Min_Loan_Amount__c != null && loanAmt >= racv.Min_Loan_Amount__c && 
+			racv.Max_Loan_Amount__c != null && loanAmt <= racv.Max_Loan_Amount__c
+		){
+			Rate1 = racv.Rate_1__c != null ? racv.Rate_1__c : 0;
+			Rate2 = racv.Rate_2__c != null ? racv.Rate_2__c : 0;
+			Rate3 = racv.Rate_3__c != null ? racv.Rate_3__c : 0;
+			Rate4 = racv.Rate_4__c != null ? racv.Rate_4__c : 0;
+		}
+	}
+        system.debug('@@@ Rate1 --'+Rate1);
+        system.debug('@@@ Rate2 --'+Rate2);
+        system.debug('@@@ Rate3 --'+Rate3);
+        system.debug('@@@ Rate4 --'+Rate4);
+        
+	if( !String.isBlank(VechicleType) && (VechicleType == 'CAR' || VechicleType == 'CARAVAN')){
+        SYSTEM.debug('@@@@@ VechicleType - if @@@@@'+VechicleType);
+		if(( !String.isblank(PropertyOwner) &&  PropertyOwner == 'YES') && ( !String.isblank(VechicleCondition) && VechicleCondition == 'NEW') && VechicleAge <= 3 ){
+			SYSTEM.debug('@@@@@ VechicleType - if - Rate1 @@@@@'+Rate1);
+            return Rate1;
+		}else if(( !String.isblank(PropertyOwner) &&  PropertyOwner == 'YES') && ( !String.isblank(VechicleCondition) && VechicleCondition == 'USED') && VechicleAge > 3 ){
+			SYSTEM.debug('@@@@@ VechicleType - if - Rate2 @@@@@'+Rate2);
+            return Rate2;
+		}else if(( !String.isblank(PropertyOwner) &&  PropertyOwner == 'NO') && ( !String.isblank(VechicleCondition) && VechicleCondition == 'NEW') && VechicleAge <= 3 ){
+			SYSTEM.debug('@@@@@ VechicleType - if - Rate3 @@@@@'+Rate3);
+            return Rate3;
+		}else if(( !String.isblank(PropertyOwner) &&  PropertyOwner == 'NO') && ( !String.isblank(VechicleCondition) && VechicleCondition == 'USED') && VechicleAge > 3 ){
+			SYSTEM.debug('@@@@@ VechicleType - if - Rate4 @@@@@'+Rate4);
+            return Rate4;
+		}
+	}else if( !String.isBlank(VechicleType) && (VechicleType == 'BOAT' || VechicleType == 'BOAT (or Personal Watercraft)' || VechicleType == 'MOTORBIKE') ){
+		SYSTEM.debug('@@@@@ VechicleType - else if @@@@@'+VechicleType);
+		if( !String.isblank(PropertyOwner) &&  PropertyOwner == 'YES'){
+            SYSTEM.debug('@@@@@ VechicleType - else if - Rate1 @@@@@'+Rate1);
+			return Rate1;
+		}else if(!String.isblank(PropertyOwner) &&  PropertyOwner == 'NO'){
+            SYSTEM.debug('@@@@@ VechicleType - else if - Rate2 @@@@@'+Rate2);
+			return Rate2;
+		}else if( !String.isblank(VechicleCondition) && (VechicleCondition == 'NEW' || VechicleCondition == 'USED') ){
+            SYSTEM.debug('@@@@@ VechicleType - else if - Rate3 @@@@@'+Rate3);
+			return Rate3;
+		}else if( !String.isblank(VechicleCondition) && (VechicleCondition == 'NEW' || VechicleCondition == 'USED') ){
+            SYSTEM.debug('@@@@@ VechicleType - else if - Rate4 @@@@@'+Rate4);
+			return Rate4;
+		}
+	}else{
+        SYSTEM.debug('@@@@@ VechicleType - else 0.00 @@@@@');
+		return 0.00;
+	}
+        return 0.00;
+}
+
+/*
+* calculate baserate of Krisp calculator 
+* Anupama - 2013/10/24
+*/
+public static Decimal getKrispBaseRate(CalcParam param) {
+  if (param != null && String.isNotBlank(param.riskGrade)) {
+    if ('Platinum'.equals(param.riskGrade)) {
+      return 19.95;
+    } else if ('Gold'.equals(param.riskGrade)) {
+      return 22.0;
+    } else if ('Silver'.equals(param.riskGrade)) {
+      return 25.0;
+    } else if ('Bronze'.equals(param.riskGrade)) {
+      return 28.0;
+    } else if ('Micro Motor'.equals(param.riskGrade)) {
+      return 24.95;
+    } else if ('Mini PL'.equals(param.riskGrade)) {
+      return 28.0;
+    }
+  }
+  return 0.0;
+}
+
+/*
+* calculation of Krisp calculator 
+* Anupama - 2013/10/24
+*/
+private static Application_Quoting_Result__c calculateKrisp(
+    CalcParam param
+  ) {
+    Application_Quoting_Result__c r = new Application_Quoting_Result__c();
+    r.Payment_Calc_Type__c = 'DF';
+    r.NAF__c = param.getNaf();
+
+    //param.baseRate = param.clientRate;
+
+    // calculate the payment rate based on client rate, which is determined by consultants
+    Decimal realRate = param.clientRate / 100;
+    Decimal futureValue = FinancialUtilities.fv(realRate / 12, 12, 1000);
+
+    Decimal rate = FinancialUtilities.rate(
+      1000,
+      12,
+      0,
+      futureValue,
+      realRate / 12,
+      false
+    );
+
+    // calculate the monthly payment based on client rate
+    r.Rental__c = FinancialUtilities.pmt(
+      param.getNaf(),
+      rate,
+      param.term,
+      param.residualValue,
+      param.getPaymentTypeBoolean()
+    );
+    // r.Rental__c = FinancialUtilities.pmt(param.getNaf(), rate, param.term, param.residualValue, param.getPaymentTypeBoolean());
+
+    r.Rental__c = r.Rental__c.setScale(2);
+
+    // calculate the estimated commission
+    r.Estimated_Commission__c = 0.0;
+    if (param.amountBaseComm != null) {
+      r.Estimated_Commission__c =
+        param.amountBaseComm *
+        getKrispCommPercentage(param) /
+        100;
+    }
+    //calculate the insurance income
+    r.Insurance_Income__c = param.totalInsuranceIncome;
+    r.Insurance_Income__c = r.Insurance_Income__c / 1.1;
+    r.Insurance_Income__c = r.Insurance_Income__c.setScale(2);
+
+    // calculate the dof without GST
+    r.DOF__c = param.dof / 1.1;
+    r.DOF__c = r.DOF__c.setScale(2);
+
+    // calculate the monthly payment
+    r.Monthly_Payment__c = r.Rental__c + param.monthlyFee;
+    r.Monthly_Payment__c = r.Monthly_Payment__c.setScale(2);
+    r.recalculateFormulas();
+    return r;
+  }
+
+  /*
+  * Krisp comm percentage calclation
+  * Anupama - 2013/10/24
+  */
+  public static Decimal getKrispCommPercentage(CalcParam param) {
+    Decimal r = 0.0;
+    if (
+      param != null && String.isNotBlank(param.customerProfile) &&
+      String.isNotBlank(param.riskGrade) &&
+      'Asset Finance'.equals(param.customerProfile) &&
+      param.amountBaseComm > 10000
+    ) {
+      if ('Platinum'.equals(param.riskGrade)) {
+        r = 4.0;
+      } else if ('Gold'.equals(param.riskGrade)) {
+        r = 3.0;
+      } else if ('Silver'.equals(param.riskGrade)) {
+        r = 2.0;
+      }
+    }
+    return r;
+  }
 
 }

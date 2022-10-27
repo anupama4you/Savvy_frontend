@@ -62,7 +62,7 @@
       <div class="c-detail-fields">
         <lightning-input type="number" formatter="currency" step="0.01" name="price" data-id="price-field"
           value={quoteForm.price} label="Price" placeholder="$" class="slds-form__item" variant="label-hidden"
-          onchange={handleFieldChange} required></lightning-input>
+          onchange={handleFieldChange} max-length="11" required></lightning-input>
       </div>
     </div>
     <!-- Deposit -->
@@ -71,7 +71,7 @@
       <div class="c-detail-fields">
         <lightning-input type="number" formatter="currency" step="0.01" name="deposit" data-id="deposit-field"
           value={quoteForm.deposit} label="Deposit" placeholder="$" class="slds-form__item" variant="label-hidden"
-          onchange={handleFieldChange}></lightning-input>
+          onchange={handleFieldChange} max-length="11"></lightning-input>
       </div>
     </div>
     <!-- Trade In -->
@@ -80,7 +80,7 @@
       <div class="c-detail-fields">
         <lightning-input type="number" formatter="currency" step="0.01" name="tradeIn" data-id="tradeIn-field"
           value={quoteForm.tradeIn} label="Trade In" placeholder="$" class="slds-form__item" variant="label-hidden"
-          onchange={handleFieldChange}></lightning-input>
+          onchange={handleFieldChange} max-length="11"></lightning-input>
       </div>
     </div>
     <!-- Payout On Trade In -->
@@ -91,7 +91,7 @@
       <div class="c-detail-fields">
         <lightning-input type="number" formatter="currency" step="0.01" name="payoutOn" data-id="payoutOn-field"
           value={quoteForm.payoutOn} label="Payout On Trade In" placeholder="$" class="slds-form__item"
-          variant="label-hidden" onchange={handleFieldChange}></lightning-input>
+          variant="label-hidden" onchange={handleFieldChange} max-length="11"></lightning-input>
       </div>
     </div>
     <!-- Net Deposit -->
@@ -112,7 +112,7 @@
       <div class="c-detail-fields">
         <lightning-input type="number" formatter="currency" step="0.01" name="applicationFee"
           data-id="applicationFee-field" value={quoteForm.applicationFee} label="Application Fee" placeholder="$"
-          class="slds-form__item field-x-small-width" variant="label-hidden" onchange={handleFieldChange} required>
+          class="slds-form__item field-x-small-width" variant="label-hidden" onchange={handleFieldChange} max-length="7" required>
         </lightning-input>
         <span class="c-max-details">
           Max.
@@ -127,7 +127,7 @@
       <div class="c-detail-fields">
         <lightning-input type="number" formatter="currency" step="0.01" name="dof" data-id="dof-field"
           value={quoteForm.dof} label="DOF" placeholder="$" class="slds-form__item field-x-small-width"
-          variant="label-hidden" onchange={handleFieldChange} required></lightning-input>
+          variant="label-hidden" onchange={handleFieldChange} max-length="7" required></lightning-input>
         <span class="c-max-details">
           Max.
           <lightning-formatted-number value={quoteForm.maxDof} format-style="currency" currency-code="AUD"
@@ -141,7 +141,7 @@
       <div class="c-detail-fields">
         <lightning-input type="number" formatter="currency" step="0.01" name="residual" data-id="residual-field"
           value={quoteForm.residual} label="Residual" placeholder="$" class="slds-form__item" variant="label-hidden"
-          onchange={handleFieldChange}></lightning-input>
+          onchange={handleFieldChange} max-length="11"></lightning-input>
       </div>
     </div>
     <!-- PPSR -->
@@ -150,7 +150,7 @@
       <div class="c-detail-fields">
         <lightning-input type="number" formatter="currency" step="0.01" name="ppsr" data-id="ppsr-field"
           value={quoteForm.ppsr} label="PPSR" placeholder="$" class="slds-form__item field-x-small-width"
-          variant="label-hidden" onchange={handleFieldChange}></lightning-input>
+          variant="label-hidden" onchange={handleFieldChange} max-length="4"></lightning-input>
       </div>
     </div>
     <!-- Monthly Fee -->
@@ -161,7 +161,7 @@
       <div class="c-detail-fields">
         <lightning-input type="number" formatter="currency" step="0.01" name="monthlyFee" data-id="monthlyFee-field"
           value={quoteForm.monthlyFee} label="Monthly Fee" placeholder="$" class="slds-form__item field-x-small-width"
-          variant="label-hidden" onchange={handleFieldChange}></lightning-input>
+          variant="label-hidden" onchange={handleFieldChange} max-length="5"></lightning-input>
       </div>
     </div>
     <!-- Additional Details -->
@@ -247,7 +247,7 @@
       <div class="c-detail-fields">
         <lightning-input type="number" formatter="percent-fixed" step="0.01" name="clientRate"
           data-id="clientRate-field" value={quoteForm.clientRate} label="Client Rate" placeholder="0.00%"
-          class="slds-form__item field-x-small-width" variant="label-hidden" onchange={handleFieldChange} required>
+          class="slds-form__item field-x-small-width" variant="label-hidden" onchange={handleFieldChange} max-length="5" required>
         </lightning-input>
       </div>
     </div>
@@ -259,6 +259,12 @@
           class="c-read-only-field c-naf-field"></lightning-formatted-number>
       </div>
     </div>
+    <!-- end -->
+
+    <!-- API Details -->
+    <c-quote-api-details 
+      slot="lender-api" responses={apiDetails} hide-message
+    ></c-quote-api-details>
     <!-- end -->
 
     <!-- Insurances -->

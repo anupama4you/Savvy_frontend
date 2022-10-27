@@ -14,10 +14,6 @@
 
         <!-- Buttons -->
         <lightning-button
-            label="Liberty Application"
-            slot="actions"
-            onclick={handleCalculate}></lightning-button>
-        <lightning-button
             label="Calculate"
             slot="actions"
             onclick={handleCalculate}></lightning-button>
@@ -507,6 +503,12 @@
         </div>
         <!-- end -->
 
+        <!-- API Details -->
+        <c-quote-api-details 
+          slot="lender-api" responses={apiDetails} hide-message
+        ></c-quote-api-details>
+        <!-- end -->
+        
         <!-- Insurances -->
         <c-quote-insurance-form
             slot="insurances"

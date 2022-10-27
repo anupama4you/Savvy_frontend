@@ -56,7 +56,7 @@ public without sharing class QuoteWisrPLCalcController {
     public static PageReference pdfHandler(Application_Quoting__c quote){
 
         // pass parameters to the PDF page
-        PageReference pdf = Page.UniversalCalculatorPdf;
+        PageReference pdf = QuoteController.createPdf(quote);
         
         // pass universal variables
         pdf.getParameters().put('id',quote.Opportunity__c);
@@ -75,19 +75,6 @@ public without sharing class QuoteWisrPLCalcController {
         pdf.getParameters().put('paymentType', quote.Payment__c+'');
         pdf.getParameters().put('baseRate', NumberUtils.format(quote.Base_Rate__c));
         pdf.getParameters().put('clientRate', NumberUtils.format(quote.Client_Rate__c));
-        
-        // ---- commissions -----
-        pdf.getParameters().put('estimatedCommission', NumberUtils.format(quote.Commission_Estimation__c));
-        pdf.getParameters().put('insuranceIncome', NumberUtils.format(quote.Commission_Insurance_Income__c));
-        pdf.getParameters().put('dofResult', NumberUtils.format(quote.Commission_DOF__c));
-        pdf.getParameters().put('totalCommission', NumberUtils.format(quote.Commission_Total_GST_Exc__c));
-        pdf.getParameters().put('totalCommissionGst', NumberUtils.format(quote.Commission_Total_GST_Inc__c));
-        pdf.getParameters().put('naf', NumberUtils.format(quote.NAF__c));
-        pdf.getParameters().put('rental', NumberUtils.format(quote.Rental__c));
-        pdf.getParameters().put('monthlyPayment', NumberUtils.format(quote.Repayment_Monthly__c));
-        pdf.getParameters().put('fortnightlyPayment', NumberUtils.format(quote.Repayment_Fortnightly__c));
-        pdf.getParameters().put('weeklyPayment', NumberUtils.format(quote.Repayment_Weekly__c));
-        // ---- end commissions -----
 
         return pdf;
     }

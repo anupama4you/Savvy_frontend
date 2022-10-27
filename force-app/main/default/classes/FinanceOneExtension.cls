@@ -207,6 +207,9 @@ public class FinanceOneExtension extends QuotingExtension {
         } else if ('Consumer Loan'.equals(productLoanType) && 
                    ('Gold'.equals(loanTypeDetail) || 'Platinum'.equals(loanTypeDetail))) {
           r = 995.0;
+          if ('Gold'.equals(loanTypeDetail) && (nc + r) > 12000) {
+            r = 1195.0;
+          }
         } else {
             if ((nc + 995.0) >= 5000 && (nc + 995.0) <= 12000) {
                 r = 995.0;

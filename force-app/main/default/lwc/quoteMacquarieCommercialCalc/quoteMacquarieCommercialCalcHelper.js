@@ -158,8 +158,7 @@ const calculate = (quote) =>
 
         lender: LENDER_QUOTING,
         totalAmount: QuoteCommons.calcTotalAmount(quote),
-        totalInsurance: QuoteCommons.calcTotalInsuranceType(quote),
-        totalInsuranceIncome: QuoteCommons.calcTotalInsuranceType(quote),
+        totalInsurance: QuoteCommons.calcTotalInsuranceIncome(quote),
         clientRate: quote.clientRate,
         baseRate: quote.baseRate,
         paymentType: quote.paymentType,

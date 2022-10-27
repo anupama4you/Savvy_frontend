@@ -142,6 +142,8 @@ public with sharing class BlankCalculatorEstension {
         p = Page.Westpac;
       } else if ('APF'.equals(lender)) {
         p = Page.APF;
+      } else if ('Krisp'.equals(lender)) {
+        p = Page.KrispCalc;
       }
       if (p != null) {
         p.getParameters().put('id', opp.Id);

@@ -1,5 +1,5 @@
 import { api, LightningElement, track, wire } from "lwc";
-import LENDER_LOGO from "@salesforce/resourceUrl/LatitudeLogo3";
+import LENDER_LOGO from "@salesforce/resourceUrl/Racv";
 import { QuoteCommons } from "c/quoteCommons";
 import { CalHelper } from "./quoteRacvCalcHelper";
 import { getRecord } from 'lightning/uiRecordApi';
@@ -27,6 +27,8 @@ export default class QuoteLatitudeCalc extends LightningElement {
             .then((data) => {
                 console.log(`Data loaded!`);
                 this.quoteForm = data;
+                if (this.tableRates == undefined)
+                    this.tableRates = CalHelper.getAllTableData(this.category);
                 console.log(`Data loaded!`, JSON.stringify(this.quoteForm));
             })
             .catch((error) => {
@@ -53,12 +55,31 @@ export default class QuoteLatitudeCalc extends LightningElement {
         this.isBaseRateBusy = true;
 
         console.log('baseRateCalc::', this.quoteForm.goodsType, this.quoteForm.loanTypeDetail, this.quoteForm.carAge);
+
+        console.log('vehicleType::', JSON.stringify(this.quoteForm.vehicleType, null, 2));
+        console.log('carAge::', JSON.stringify(this.quoteForm.carAge, null, 2));
+        console.log('VechicleCondition::', JSON.stringify(this.quoteForm.vehCon, null, 2));
+        console.log('propertyOwner::', JSON.stringify(this.quoteForm.propertyOwner, null, 2));
+        console.log('creditScore::', JSON.stringify(this.quoteForm.creditScore, null, 2));
+        console.log('total::', JSON.stringify(this.quoteForm.totalAmount, null, 2));
+
+        var vehecleCon = this.quoteForm.vehCon;
+        var totalval = CalHelper.getNetRealtimeNaf(this.quoteForm);
+        console.log('vehecleCon ::', JSON.stringify(vehecleCon, null, 2));
+        console.log('total ::', JSON.stringify(totalval, null, 2));
         console.log('quote form::', JSON.stringify(this.quoteForm, null, 2));
         CalHelper.baseRates(this.quoteForm)
             .then((data) => {
-                console.log(`Data loaded!`);
+                console.log('@@@@ data.baseRate @@@@' + data.baseRate);
+                console.log('@@@@ data.maxRate @@@@' + data.maxRate);
+                console.log('@@@@ totalval @@@@' + totalval);
+                console.log('@@@@ this.quoteForm.vehCon @@@@' + this.quoteForm.vehCon);
+                //console.log(`Data loaded!`);
                 this.quoteForm.baseRate = data.baseRate;
                 this.quoteForm.maxRate = data.maxRate;
+                this.quoteForm.totalAmount = totalval;
+                this.quoteForm.condition = this.quoteForm.vehCon;
+                //console.log('this.quoteForm.condition :::' + this.quoteForm.condition);
             })
             .catch((error) => {
                 console.error(JSON.stringify(error, null, 2));
@@ -89,7 +110,7 @@ export default class QuoteLatitudeCalc extends LightningElement {
         }
         this.quoteForm.goodsType = this.category;
         this.tableRates = CalHelper.getAllTableData(this.category);
-        console.log('this.tableRates-->>',this.tableRates);
+        console.log('this.tableRates-->>', this.tableRates);
     }
 
     // Quote Fee calculation
@@ -125,11 +146,11 @@ export default class QuoteLatitudeCalc extends LightningElement {
         return CalHelper.options.classes;
     }
 
-    get propertyOwnerOptions(){
+    get propertyOwnerOptions() {
         return CalHelper.options.propertyOwnerOpt;
     }
 
-    get creditScoreOptions(){
+    get creditScoreOptions() {
         return CalHelper.options.creditScoreOpt;
     }
 

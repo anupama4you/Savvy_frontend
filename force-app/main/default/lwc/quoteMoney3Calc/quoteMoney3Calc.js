@@ -110,11 +110,11 @@ export default class QuoteMoney3Calc extends LightningElement {
     return this.quoteForm["customerProfile"] === null
       ? CalHelper.options.noneOption
       : this.quoteForm["customerProfile"] == "Asset Finance"
-      ? [
+        ? [
           ...CalHelper.options.customerGradings,
           { label: "Micro Motor", value: "Micro Motor" }
         ]
-      : [
+        : [
           ...CalHelper.options.customerGradings,
           { label: "Mini PL", value: "Mini PL" }
         ];
@@ -137,9 +137,7 @@ export default class QuoteMoney3Calc extends LightningElement {
       fldName === "term"
         ? (this.quoteForm[fldName] = parseInt(v))
         : (this.quoteForm[fldName] = v);
-      // --------------
-      // Trigger events
-      // --------------
+      // -------------- Trigger events --------------
       if (fldName === "customerProfile")
         this.quoteForm["customerGrading"] = null;
       if (fldName === "customerProfile" || fldName === "customerGrading") {
@@ -160,6 +158,9 @@ export default class QuoteMoney3Calc extends LightningElement {
       console.log(
         "🚀🚀 quoteform >> " + JSON.stringify(this.quoteForm, null, 2)
       );
+      // Insurances
+      QuoteCommons.calculateInsurances(this, fldName);
+      // --------------
     } catch (error) {
       console.error(error);
     }
@@ -254,13 +255,15 @@ export default class QuoteMoney3Calc extends LightningElement {
           // --- insurance: end ---
         })
         .catch((error) => {
-          console.error(`error from QuoteMoney3Calc ${error}`);
-          this.messageObj = error.messages;
-          QuoteCommons.fieldErrorHandler(this, this.messageObj.errors);
-          console.error(
-            "quoteMoney3Calc.js: get errors -- ",
-            JSON.stringify(error.messages.errors, null, 2)
-          );
+          if (type !== "load") {
+            console.error(`error from QuoteMoney3Calc ${error}`);
+            this.messageObj = error.messages;
+            QuoteCommons.fieldErrorHandler(this, this.messageObj.errors);
+            console.error(
+              "quoteMoney3Calc.js: get errors -- ",
+              JSON.stringify(error.messages.errors, null, 2)
+            );
+          }
         })
         .finally(() => {
           this.isBusy = false;
@@ -278,11 +281,7 @@ export default class QuoteMoney3Calc extends LightningElement {
     this.isCalculated = false;
     this.messageObj = QuoteCommons.resetMessage();
     QuoteCommons.handleHasErrorClassClear(this);
-    /*console.log(
-        "🚀 ~ file: QuotePepperMVCalc.js ~ line 172 ~ QuotePepperMVCalc ~ reset ~ this.quoteForm",
-        JSON.stringify(this.quoteForm, null, 2)
-        );*/
-    // this.calculateParams(false, true);
+
     // --- insurance ---
     this.template.querySelector("c-quote-insurance-form").resetPressed();
     // --- insurance: end ---
@@ -314,19 +313,19 @@ export default class QuoteMoney3Calc extends LightningElement {
           console.log("@@data in handleSave:", JSON.stringify(data, null, 2));
           !isNONE
             ? this.messageObj.confirms.push(
-                {
-                  field: "confirms",
-                  message: "Calculation saved successfully."
-                },
-                {
-                  fields: "confirms",
-                  message: "Product updated successfully."
-                }
-              )
-            : this.messageObj.confirms.push({
+              {
                 field: "confirms",
                 message: "Calculation saved successfully."
-              });
+              },
+              {
+                fields: "confirms",
+                message: "Product updated successfully."
+              }
+            )
+            : this.messageObj.confirms.push({
+              field: "confirms",
+              message: "Calculation saved successfully."
+            });
           // passing data to update quoteform
           this.quoteForm["Id"] = data["Id"];
         })
@@ -349,7 +348,7 @@ export default class QuoteMoney3Calc extends LightningElement {
   // Send Email - CURRENTLY DISABLE DUE UNFINISHED COMMON COMPS
   handleSendQuote() {
     this.isBusy = true;
-    if (!this.messageObj.errors.length > 0) {
+    if (!this.messageObj.errors.length > 0 || this.isErrorInsuranceOnly()) {
       this.messageObj = QuoteCommons.resetMessage();
       CalHelper.sendEmail(this.quoteForm, this.recordId)
         .then((data) => {
@@ -411,6 +410,7 @@ export default class QuoteMoney3Calc extends LightningElement {
     this.isCalculated = this.template.querySelector(
       "c-quote-insurance-form"
     ).isQuoteCalculated = false;
+
     // comprehensive
     let cms = { ...this.quoteForm.commissions };
     cms.comprehensive.isMvAccept = this.quoteForm.insurance.ismvAccept;

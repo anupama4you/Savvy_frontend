@@ -7,7 +7,7 @@ import LENDER_LOGO from "@salesforce/resourceUrl/PepperLogo";
 import FNAME_FIELD from "@salesforce/schema/Custom_Opportunity__c.Account_First_Name__c";
 import LNAME_FIELD from "@salesforce/schema/Custom_Opportunity__c.Account_Last_Name__c";
 import OPPNAME_FIELD from "@salesforce/schema/Custom_Opportunity__c.Name";
-import { getRecord, getFieldValue } from "lightning/uiRecordApi";
+import { getRecord } from "lightning/uiRecordApi";
 
 const fields = [FNAME_FIELD, LNAME_FIELD, OPPNAME_FIELD];
 
@@ -21,6 +21,8 @@ export default class QuotePepperLeisureCalc extends LightningElement {
     @track quoteForm;
     // Rate Settings
     @track tableRates;
+    // Api details
+    @track apiDetails = [];
     @wire(getRecord, { recordId: "$recordId", fields })
     opp;
 
@@ -30,9 +32,10 @@ export default class QuotePepperLeisureCalc extends LightningElement {
         this.reset();
         CalHelper.load(this.recordId)
             .then((data) => {
-                console.log(`Data loaded! ${JSON.stringify(data, null, 2)}`);
-                this.quoteForm = data;
-                this.tableRates = CalHelper.getTableRatesData();
+              // console.log(`Data loaded! ${JSON.stringify(data, null, 2)}`);
+              this.quoteForm = data;
+              this.tableRates = CalHelper.getTableRatesData();
+              this.apiDetails = CalHelper.getApiResponses();
             })
             .catch((error) => {
                 console.error(JSON.stringify(error, null, 2));
@@ -108,13 +111,17 @@ export default class QuotePepperLeisureCalc extends LightningElement {
         fldName === "term"
             ? (this.quoteForm[fldName] = parseInt(v))
             : (this.quoteForm[fldName] = v);
-        console.log(`this.quoteForm:`, JSON.stringify(this.quoteForm, null, 2));
+        // console.log(`this.quoteForm:`, JSON.stringify(this.quoteForm, null, 2));
         fldName === "assetType" && this.subtypeDisabled &&
             (this.quoteForm.assetSubtype = this.assetSubtypeOptions[0].value);
         // Base Rate Calculation
         if (CalHelper.BASE_RATE_FIELDS.includes(fldName)) {
             this.baseRateCalc();
         }
+
+        // Insurances
+        QuoteCommons.calculateInsurances(this, fldName);
+        // --------------
     }
 
     // Calculations
@@ -132,29 +139,24 @@ export default class QuotePepperLeisureCalc extends LightningElement {
 
     // Reset
     reset() {
-        this.quoteForm = CalHelper.reset();
-        console.log(
-            "🚀 ~ file: QuotePepperMVCalc.js ~ line 113 ~ QuotePepperMVCalc ~ reset ~ this.quoteForm",
-            JSON.stringify(this.quoteForm, null, 2)
-        );
+      this.quoteForm = CalHelper.reset();
     }
 
     // Base Rate
     baseRateCalc() {
-        this.isBaseRateBusy = true;
-        CalHelper.baseRates(this.quoteForm)
-            .then((data) => {
-                console.log(`Data loaded!`);
-                this.quoteForm.baseRate = data.baseRate;
-                this.quoteForm.maxRate = data.maxRate;
-            })
-            .catch((error) => {
-                console.error(JSON.stringify(error, null, 2));
-                displayToast(this, "Base Rate...", error, "error");
-            })
-            .finally(() => {
-                this.isBaseRateBusy = false;
-            });
+      this.isBaseRateBusy = true;
+      CalHelper.baseRates(this.quoteForm)
+        .then((data) => {
+          this.quoteForm.baseRate = data.baseRate;
+          this.quoteForm.maxRate = data.maxRate;
+        })
+        .catch((error) => {
+            console.error(JSON.stringify(error, null, 2));
+            displayToast(this, "Base Rate...", error, "error");
+        })
+        .finally(() => {
+            this.isBaseRateBusy = false;
+        });
     }
 
     // -------------
@@ -167,7 +169,7 @@ export default class QuotePepperLeisureCalc extends LightningElement {
         this.messageObj = QuoteCommons.resetMessage();
         CalHelper.calculate(this.quoteForm)
             .then((data) => {
-                console.log("@@data:", JSON.stringify(data, null, 2));
+                // console.log("@@data:", JSON.stringify(data, null, 2));
                 this.quoteForm.commissions = data.commissions;
                 this.messageObj = data.messages;
                 QuoteCommons.handleHasErrorClassClear(this);
@@ -202,10 +204,6 @@ export default class QuotePepperLeisureCalc extends LightningElement {
         this.messageObj = QuoteCommons.resetMessage();
         this.isCalculated = false;
         QuoteCommons.handleHasErrorClassClear(this);
-        console.log(
-            "🚀 ~ file: QuotePepperLeisureCalc.js ~  QuotePepperLeisureCalc ~ reset ~ this.quoteForm",
-            JSON.stringify(this.quoteForm, null, 2)
-        );
         this.baseRateCalc();
         // --- insurance ---
         this.template.querySelector("c-quote-insurance-form").resetPressed();
@@ -231,7 +229,7 @@ export default class QuotePepperLeisureCalc extends LightningElement {
             this.messageObj = QuoteCommons.resetMessage();
             CalHelper.saveQuote(loanType, this.quoteForm, this.recordId)
                 .then((data) => {
-                    console.log("@@data in handleSave:", JSON.stringify(data, null, 2));
+                    // console.log("@@data in handleSave:", JSON.stringify(data, null, 2));
                     !isNONE
                         ? this.messageObj.confirms.push(
                             {
@@ -269,14 +267,14 @@ export default class QuotePepperLeisureCalc extends LightningElement {
     // Send Email
     handleSendQuote() {
         this.isBusy = true;
-        if (!this.messageObj.errors.length > 0) {
+        if (!this.messageObj.errors.length > 0 || this.isErrorInsuranceOnly()) {
             this.messageObj = QuoteCommons.resetMessage();
             CalHelper.sendEmail(this.quoteForm, this.recordId)
                 .then((data) => {
-                    console.log(
-                        "@@data in handle send quote :",
-                        JSON.stringify(data, null, 2)
-                    );
+                    // console.log(
+                    //     "@@data in handle send quote :",
+                    //     JSON.stringify(data, null, 2)
+                    // );
                     this.messageObj.infos.push({
                         field: "infos",
                         message: "Email has been sent to customer."

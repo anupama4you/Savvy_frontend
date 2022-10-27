@@ -208,6 +208,10 @@ export default class QuoteFinanceOneCalc extends LightningElement {
         if (CalHelper.APPFEE_Calc_Fields.includes(fldName)) {
             this.appFeeCalc();
         }
+
+        // Insurances
+        QuoteCommons.calculateInsurances(this, fldName);
+        // --------------
     }
 
     // Calculate

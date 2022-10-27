@@ -248,6 +248,9 @@ export default class QuoteLibertyLeisureCalc extends LightningElement {
 
         // DOF calculation
         if (fldName === "applicationFee") this.dofCalc();
+
+        // Insurances
+        QuoteCommons.calculateInsurances(this, fldName);
         // --------------
     }
 

@@ -4,7 +4,7 @@ import getCommissionCalc from "@salesforce/apex/QuoteFinanceOneCommController.ge
 import getRiskFeeCalc from "@salesforce/apex/QuoteFinanceOneCommController.getRiskFeeCalc";
 import getGoodsSubTypes from "@salesforce/apex/QuoteFinanceOneCommController.getGoodsSubTypes";
 import getDofCalcu from "@salesforce/apex/QuoteFinanceOneCommController.getDofCalcu";
-import calculateRepayments from "@salesforce/apex/QuoteFinanceOneCommController.calculateRepayments";
+import calculateRepayments from "@salesforce/apex/QuoteController.calculateAllRepayments";
 import getFinanceOneRate from "@salesforce/apex/QuoteFinanceOneCommController.getFinanceOneRate";
 import getApplicationFeeCalc from "@salesforce/apex/QuoteFinanceOneCommController.getApplicationFeeCalc";
 import sendQuote from "@salesforce/apex/QuoteController.sendQuote";
@@ -58,7 +58,8 @@ const QUOTING_FIELDS = new Map([
   ["riskFee", "Risk_Fee__c"],
   ["monthlyFee", "Monthly_Fee__c"],
   ["clientRate", "Client_Rate__c"],
-  ["brokerage", "Brokerage__c"]
+  ["brokerage", "Brokerage__c"],
+  ["rateOption", "Rate_Options__c"],
 ]);
 
 // - TODO: need to map more fields
@@ -69,7 +70,8 @@ const FIELDS_MAPPING_FOR_APEX = new Map([
   ["clientTier", "Client_Tier__c"],
   ["assetAge", "Vehicle_Age__c"],
   ["baseRate", "Base_Rate__c"],
-  ["maxRate", "Manual_Max_Rate__c"]
+  ["maxRate", "Manual_Max_Rate__c"],
+  ["netDeposit", "Net_Deposit__c"]
 ]);
 
 const RATE_SETTING_NAMES = ["FinanceOneRates__c"];
@@ -84,7 +86,8 @@ const SETTING_FIELDS = new Map([
 const BASE_RATE_FIELDS = [
   "brokerage",
   "loanProduct",
-  "loanTypeDetail"
+  "loanTypeDetail",
+  "rateOption"
 ];
 
 const COMM_FIELDS = [
@@ -200,7 +203,12 @@ const calcOptions = {
 
   ],
   terms: getTerms(),
-  propertyOwners: CommonOptions.yesNo,
+  propertyOwners: [
+    { label: "--None--", value: "" },
+    { label: "Yes", value: "Y" },
+    { label: "No", value: "N" },
+  ],
+  rateOptions: CommonOptions.yesNo,
   paymentTypes: CommonOptions.paymentTypes
 };
 
@@ -210,7 +218,7 @@ const reset = (recordId) => {
     loanType: calcOptions.loanTypes[0].value,
     loanProduct: calcOptions.loanProducts[0].value,
     goodType: calcOptions.goodTypes[0].value,
-    goodsSubType: null,
+    goodsSubType: '',
     loanTypeDetail: "Gold",
     price: null,
     deposit: null,
@@ -220,7 +228,7 @@ const reset = (recordId) => {
     maxDof: 0.0,
     residual: 0.0,
     term: 60,
-    propertyOwner: null,
+    propertyOwner: '',
     carAge: "New - 6 years old",
     residency: null,
     paymentType: "Arrears",
@@ -231,6 +239,7 @@ const reset = (recordId) => {
     brokerage: 0.0,
     clientRate: 0.0,
     commision: 0.0,
+    rateOption: 'N',
     commissions: QuoteCommons.resetResults(),
     insurance: { integrity: {} }
   };
@@ -295,18 +304,23 @@ const getGoodsSubTypeOptions = (goodsType) => {
     result = goodsSubTypeBoatlist;
   } else if (goodsType === 'Caravan') {
     result = goodsSubTypeCaravanlist;
-  } else {
-    result = [
-      { label: "--None--", value: "" }
-    ]
-  }
+  } 
+  result.unshift({ label: "--None--", value: "" });
   return result;
 };
+
+// calculate NAF commission
+const getNafCommission = (quote) => {
+  let r = 0.0;
+  r += quote.price;
+  r -= QuoteCommons.calcNetDeposit(quote);
+  return r;
+}
 
 //Get total naf calculations
 const getNetRealtimeNaf = (quote) => {
 
-  let naf = QuoteCommons.calcNetRealtimeNaf(quote);
+  let naf = QuoteCommons.calcTotalAmount(quote);
   let total = naf + quote.commission + quote.riskFee;
   return total;
 };
@@ -320,7 +334,8 @@ const getMyBaseRates = (quote) =>
       productLoanType: quote.loanProduct,
       loanTypeDetail: quote.loanTypeDetail,
       brokeragePer: quote.brokerage,
-      hasMaxRate: true
+      hasMaxRate: true,
+      interestType: quote.rateOption
     };
 
     getBaseRates({
@@ -417,13 +432,14 @@ const calculate = (quote) =>
       messages: QuoteCommons.resetMessage()
     };
     let nafCalculations = getNetRealtimeNaf(quote);
+    let nafCommission = getNafCommission(quote);
     // Prepare params
     const p = {
       lender: LENDER_QUOTING,
       productLoanType: quote.loanProduct,
       loanTypeDetail: quote.loanTypeDetail,
       totalAmount: nafCalculations,
-      totalInsurance: QuoteCommons.calcTotalInsuranceType(quote, "Q"),
+      totalInsurance: QuoteCommons.calcTotalInsuranceIncome(quote),
       totalInsuranceIncome: QuoteCommons.calcTotalInsuranceIncome(quote),
       clientRate: quote.clientRate,
       baseRate: quote.baseRate,
@@ -434,7 +450,8 @@ const calculate = (quote) =>
       residualValue: quote.residual,
       brokeragePer: quote.brokerage,
       netDeposit: quote.netDeposit,
-      vehiclePrice: quote.price
+      vehiclePrice: quote.price,
+      nafCommission: nafCommission,
     };
 
     getFinanceOneRate({

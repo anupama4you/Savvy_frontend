@@ -50,7 +50,7 @@ const INSURANCE_FIELDS = new Map([
   ["mvRetailPrice", "Insurance_MV_Retail_Price__c"],
   ["mvCommission", "Insurance_MV_Income__c"],
   ["ismvAccept", "Insurance_MV_Acceptance__c"],
-  // // INTEGRITY & WARRANTY
+  // INTEGRITY & WARRANTY
   ["warrantyType", "Insurance_Warranty_Options__c"],
   ["typeRetail", "Insurance_NWC_Is_Manually_Value__c"],
   // INTEGRITY
@@ -73,7 +73,7 @@ const INSURANCE_FIELDS = new Map([
 
 const createTermOptions = (min, max) => {
   let r = [];
-  for (let i = min; i < max; ) {
+  for (let i = min; i <= max; ) {
     r.push({ label: i, value: i });
     i += 12;
   }
@@ -145,16 +145,16 @@ const CommonOptions = {
 
 const resetResults = () => {
   return {
-    commission: null,
-    dof: null,
-    insurances: null,
-    totalCommissionGSTExc: null,
-    totalCommissionGSTInc: null,
-    naf: null,
-    rental: null,
-    monthlyPayment: null,
-    fortnightlyPayment: null,
-    weeklyPayment: null,
+    commission: 0.0,
+    dof: 0.0,
+    insurances: 0.0,
+    totalCommissionGSTExc: 0.0,
+    totalCommissionGSTInc: 0.0,
+    naf: 0.0,
+    rental: 0.0,
+    monthlyPayment: 0.0,
+    fortnightlyPayment: 0.0,
+    weeklyPayment: 0.0,
     comprehensive: { monthly: 0, fortnightly: 0, weekly: 0, isMvAccept: false },
     calResults: []
   };
@@ -171,10 +171,10 @@ const mapSObjectToLwc = ({
     // Default values
     let r = defaultData;
     // Default from Settings
-    console.log(`@@settings...`);
+    // console.log(`@@settings...`);
     settingFields.forEach((value, key, map) => {
       r[`${key}`] = quoteData.settings[`${value}`];
-      console.log(`{${key}: ${value}} | `, quoteData.settings[`${value}`]);
+      // console.log(`{${key}: ${value}} | `, quoteData.settings[`${value}`]);
     });
     if (quoteData.data) {
       // Validate same calculator
@@ -183,7 +183,7 @@ const mapSObjectToLwc = ({
         // Set Finance Detail Values
         quotingFields.forEach((value, key, map) => {
           r[`${key}`] = quoteData.data[`${value}`];
-          console.log(`{${key}: ${value}} | `, quoteData.data[`${value}`]);
+          // console.log(`{${key}: ${value}} | `, quoteData.data[`${value}`]);
           if (typeof quoteData.data[`${value}`] == "undefined")
             r[`${key}`] = null;
         });
@@ -211,8 +211,8 @@ const mapSObjectToLwc = ({
             if (key.includes("LPI")) r.insurance["isLPIDecline"] = true;
             if (key.includes("shortfall"))
               r.insurance["isshortfallDecline"] = true;
-            if (key.includes("Integrity"))
-              r.insurance["isIntegrityDecline"] = true;
+            // if (key.includes("Integrity"))
+            //   r.insurance["isIntegrityDecline"] = true;
           } else if (key.startsWith("integrity.")) {
             let k = key.slice(key.indexOf(".") + 1, key.length);
             if (
@@ -232,10 +232,26 @@ const mapSObjectToLwc = ({
           ]
             ? ["Yes"]
             : [];
-          if (r.insurance.LPIType === "Liberty LFI")
+          if (r.insurance.LPIType === "Liberty LFI") {
             r.insurance.LPITerm = "(Loan Term)";
+          }
         }
       });
+      // Insurance settings
+      r.insurance.isOnlyPayByTheMonth =
+        quoteData.settings &&
+        quoteData.settings.InsPayTypeOptions__c === "OnlyPayByTheMonth";
+      
+      // Integrity acceptance
+      if (
+        quoteData.data.Insurance_Warranty_Options__c === "Integrity" &&
+        quoteData.data.Insurance_NWC_Acceptance__c === "A"
+      ) {
+        r.insurance.iswarrantyAccept = true;
+      }
+    }
+    if (quoteData.opp) {
+      r[`opp`] = quoteData.opp;
     }
     return r;
   } catch (error) {
@@ -248,7 +264,7 @@ const mapDataToLwc = (obj, data, DataFields, insurance) => {
   if (data && DataFields) {
     DataFields.forEach((value, key, map) => {
       r[`${key}`] = data[`${value}`];
-      console.log(`{${key}: ${value}} | `, data[`${value}`]);
+      // console.log(`{${key}: ${value}} | `, data[`${value}`]);
     });
   }
   if (insurance) {
@@ -340,22 +356,26 @@ const calcTotalInsuranceType = (quote, calcType = "Q") => {
             (quote.insurance.iswarrantyAccept &&
               quote.insurance.warrantyPBM === "Financed") ||
             quote.insurance.isIntegrityAccept
-          )
+          ) {
             r += parseFloat(
               quote.insurance.warrantyRetailPrice
                 ? quote.insurance.warrantyRetailPrice
                 : 0.0
             );
+            console.log("warranty >> ", r);
+          }
           // LPI
           if (
             quote.insurance.isLPIAccept &&
             quote.insurance.LPIPBM === "Financed"
-          )
+          ) {
             r += parseFloat(
               quote.insurance.LPIRetailPrice
                 ? quote.insurance.LPIRetailPrice
                 : 0.0
             );
+            console.log("lpi >> ", r);
+          }
           // mv
           if (
             quote.insurance.ismvAccept &&
@@ -379,6 +399,7 @@ const calcTotalInsuranceType = (quote, calcType = "Q") => {
           break;
       }
     }
+
     return r;
   } catch (error) {
     console.error(error);
@@ -536,6 +557,7 @@ const mapLWCToSObject = (
   QUOTE_FIELDS_MAPPING
 ) => {
   const includeInsurance = quoteForm.insurance ? true : false;
+  console.log("🚀 ~ file: quoteCommons.js ~ line 544 ~ includeInsurance", includeInsurance);
   const isIntegrity = quoteForm.insurance?.warrantyType === "Integrity";
   const INTEGRITY_FIELDS = [
     "warrantyRetailPrice",
@@ -543,12 +565,12 @@ const mapLWCToSObject = (
     "warrantyPBM",
     "warrantyTerm"
   ];
-  console.log("include insurance >> " + includeInsurance);
+  // console.log("include insurance >> " + includeInsurance);
   let obj = includeInsurance
     ? { data: {}, results: { commissions: {} }, calcResults: [], insurance: {} }
     : { data: {}, results: { commissions: {} }, calcResults: [] };
   // data
-  console.log(`@@quote form : ${JSON.stringify(quoteForm, null, 2)}`);
+  console.log(`@@mapLWCToSObject-quote form : ${JSON.stringify(quoteForm, null, 2)}`);
   const FULL_FIELDS_MAPPING = includeInsurance
     ? [...QUOTE_FIELDS_MAPPING, ...INSURANCE_FIELDS]
     : [...QUOTE_FIELDS_MAPPING];
@@ -562,23 +584,54 @@ const mapLWCToSObject = (
         if ([...INSURANCE_FIELDS.keys()].includes(key)) {
           // obj.insurance[value] = quoteForm.insurance[key];
           // key inside the insurance fields
-          if (isIntegrity) {
-            if (key.startsWith("integrity.")) {
+          if (isIntegrity && key.startsWith("integrity.")) {
+            // if (key.startsWith("integrity.")) {
               let k = key.slice(key.indexOf(".") + 1, key.length);
               if (INTEGRITY_FIELDS.includes(k)) {
                 obj.insurance[value] = quoteForm.insurance[`${k}`];
               } else {
                 obj.insurance[value] = quoteForm.insurance["integrity"][`${k}`]; // >> type, term, category
               }
-            } else if (!INTEGRITY_FIELDS.includes(key)) {
-              console.log("key >> " + key + " |  value >> " + value);
+            // } else if (!INTEGRITY_FIELDS.includes(key)) {
+            //   console.log("key >> " + key + " |  value >> " + value);
+            //   obj.insurance[value] = quoteForm.insurance[key];
+            // }
+          } else {
+            if (
+              key === "LPITerm" &&
+              quoteForm.insurance[key] === "(Loan Term)"
+            ) {
+              obj.insurance[value] = `${quoteForm["term"]}` + "";
+            } else {
               obj.insurance[value] = quoteForm.insurance[key];
             }
-          } else {
-            obj.insurance[value] = quoteForm.insurance[key];
           }
+        } else {
+          obj.data[value] = quoteForm[key];
         }
-        obj.data[value] = quoteForm[key];
+        // if (key === "LPITerm") {
+        //   console.log(
+        //     `@@LPITerm:`,
+        //     quoteForm.insurance[key],
+        //     quoteForm["term"],
+        //     value
+        //   );
+        // }
+        // if (key === "LPITerm" && quoteForm.insurance[key] === '(Loan Term)') {
+        //   obj.data[value] = `${quoteForm["term"]}` + "";
+        //   console.log(`🚀 ~ file: quoteCommons.js ~ line 597 ~ obj.data[${value}]`, obj.data[value]);
+        // } else {
+        //   obj.data[value] = quoteForm[key];
+        // }
+
+        console.log(
+          `[${key}]`,
+          value,
+          `: `,
+          obj.data[value]
+        );
+        
+
         // mv
         if (
           quoteForm.insurance["ismvAccept"] ||
@@ -658,7 +711,6 @@ const mapLWCToSObject = (
     }
     // Calc Results
     obj.calcResults = quoteForm.commissions.calResults;
-
   } catch (error) {
     console.error(error);
   }
@@ -667,6 +719,9 @@ const mapLWCToSObject = (
     obj.data["Insurance_NWC_Is_Manually_Value__c"] =
       quoteForm.insurance["typeRetail"] &&
       quoteForm.insurance["typeRetail"].length > 0;
+
+    // raw insurances
+    obj.rawInsuranceParam = quoteForm.insurance;
   }
   obj.data = { ...obj.data, ...obj.insurance };
 
@@ -740,6 +795,8 @@ const resetInsurance = () => {
     // isLPIDecline: false,
     // isIntegrityAccept: false,
     // isIntegrityDecline: false
+    isOnlyPayByTheMonth: false,
+    lastAction: null
   };
 };
 /**
@@ -766,6 +823,36 @@ const handleComprehensive = (quoteForm) => {
   }
 };
 
+const calculateInsurances = (comp, fieldName, extraFields) => {
+  console.log(
+    "🚀 ~ file: quoteCommons.js ~ line 792 ~ calculateInsurances ~ calculateInsurances",
+    calculateInsurances
+  );
+  if (comp) {
+    let nafFields = [
+      "price",
+      "deposit",
+      "tradeIn",
+      "payoutOn",
+      "applicationFee",
+      "dof",
+      "ppsr",
+      "riskFee"
+    ];
+    if (extraFields && Array.isArray(extraFields) && extraFields.length > 0) {
+      nafFields = [...nafFields, ...extraFields];
+    }
+    const ins = comp.template.querySelectorAll("c-quote-insurance-form");
+    ins.forEach((a) => {
+      a.isQuoteCalculated = false;
+      if (nafFields.includes(fieldName)) {
+        a.recalculateProducts();
+      }
+    });
+    
+  }
+}
+
 const QuoteCommons = {
   resetResults: resetResults,
   COMMISSION_FIELDS: COMMISSION_FIELDS,
@@ -788,7 +875,8 @@ const QuoteCommons = {
   calcTotalInsuranceIncome: calcTotalInsuranceIncome,
   getInsurancePayment: getInsurancePayment,
   resetInsurance: resetInsurance,
-  handleComprehensive: handleComprehensive
+  handleComprehensive: handleComprehensive,
+  calculateInsurances: calculateInsurances
 };
 
 export { QuoteCommons, CommonOptions, FinancialUtilities, VALIDATION_OPTIONS };

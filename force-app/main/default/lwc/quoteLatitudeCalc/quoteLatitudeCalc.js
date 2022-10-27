@@ -27,6 +27,7 @@ export default class QuoteLatitudeCalc extends LightningElement {
             .then((data) => {
                 console.log(`Data loaded!`);
                 this.quoteForm = data;
+                this.apiDetails = CalHelper.getApiResponses();
                 console.log(`Data loaded!`, JSON.stringify(this.quoteForm));
             })
             .catch((error) => {
@@ -37,7 +38,7 @@ export default class QuoteLatitudeCalc extends LightningElement {
                 this.isBusy = false;
                 this.vehicleCategory();
                 this.baseRateCalc();
-                this.dofCalc();
+                this.dofCalc(true);
             });
 
         console.log('recordID::', this.recordId)
@@ -70,9 +71,11 @@ export default class QuoteLatitudeCalc extends LightningElement {
     }
 
     // DOF calculation
-    dofCalc() {
-        this.quoteForm.dof = CalHelper.getDOF(this.quoteForm);
-        this.quoteForm.maxDof = this.quoteForm.dof;
+    dofCalc(onlyMax) {
+      console.log(`@@DOF calculated 1:`, onlyMax, this.quoteForm.maxDof, this.quoteForm.dof);
+      this.quoteForm.maxDof = CalHelper.getDOF(this.quoteForm);
+      this.quoteForm.dof = onlyMax ? this.quoteForm.dof : this.quoteForm.maxDof;
+      console.log(`@@DOF calculated 2:`, onlyMax, this.quoteForm.maxDof, this.quoteForm.dof);
     }
 
     // Category generation
@@ -271,8 +274,12 @@ export default class QuoteLatitudeCalc extends LightningElement {
 
         // DOF calculation
         if (CalHelper.DOF_CALC_FIELDS.includes(fldName)) {
-            this.dofCalc();
+            this.dofCalc(false);
         }
+
+        // Insurances
+        QuoteCommons.calculateInsurances(this, fldName);
+        // --------------
 
         // --------------
     }

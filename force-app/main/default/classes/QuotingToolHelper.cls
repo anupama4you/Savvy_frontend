@@ -410,11 +410,12 @@ public class QuotingToolHelper {
         List<Application_Quoting__c> r = null;
         String wh = null;
         if (appId != null && oppId == null) {
-            wh = 'WHERE Application__c = :appId ';
+            // wh = 'WHERE Application__c = :appId ';
+            wh = 'WHERE Opportunity__c IN (Select Id From Custom_Opportunity__c Where Application__c = :appId) ';
         } else if (oppId != null) {
             wh = 'WHERE Opportunity__c = :oppId ';
         }
-        
+        // System.debug('@@wh: ' + wh);
         if (String.isNotBlank(wh)) {
             r = Database.query(APP_QUOTING_SOQL + wh + 'ORDER BY LastModifiedDate DESC');
         }
@@ -449,8 +450,11 @@ public class QuotingToolHelper {
             return null;
         }
     }
-    
     public static void saveApplicationQuoting(Application_Quoting__c obj) {
+      saveApplicationQuoting(obj, false);
+    }
+
+    public static void saveApplicationQuoting(Application_Quoting__c obj, Boolean isPortal) {
         Boolean isUpdateApp = false;
         if (obj.Id == null) {
           isUpdateApp = true;
@@ -459,10 +463,22 @@ public class QuotingToolHelper {
           upsert obj;
         } catch (Exception e) {
           String errMsg = e.getMessage();
+          String msg1 = null;
+          String msg2 = e.getStackTraceString();
           if (errMsg.contains('UNABLE_TO_LOCK_ROW')) {
             ApexPages.addMessage(new ApexPages.Message(ApexPages.Severity.ERROR, 'Quoting tools error. Some data could not be saved properly. Please reload this page and try to save your data again.'));
           }
-          ApexPages.addMessage(new ApexPages.Message(ApexPages.Severity.ERROR, e.getStackTraceString()));
+          if (isPortal) {
+            errMsg = String.isNotBlank(msg1) ? msg1 : '';
+            errMsg += ' Error: [' + e.getMessage() + ']';
+            throw new GenericException(errMsg);
+          } else {
+            if (String.isNotBlank(msg1)) {
+              ApexPages.addMessage(new ApexPages.Message(ApexPages.Severity.ERROR, msg1));
+              ApexPages.addMessage(new ApexPages.Message(ApexPages.Severity.ERROR, msg2));
+            }
+
+          }
         }
         // if (isUpdateApp && obj.Application__c != null) {
         //     try {

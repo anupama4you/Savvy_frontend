@@ -10,8 +10,8 @@
         <!-- Column headers -->
         <thead>
           <tr>
-            <td class="inTableTitle">Type</td>
-            <td class="inTableTitle">Product</td>
+            <td class="inTableTitle" width="15%">Type</td>
+            <td class="inTableTitle" width="20%">Product</td>
             <td class="inTableTitle">Retail Price</td>
             <td class="inTableTitle">Commission</td>
             <td class="inTableTitle">Financed/PBM</td>
@@ -26,12 +26,12 @@
           <tr>
             <td class={mvAcceptCSS} align="start">
               <template if:true={isMvReadOnly}>
-                <lightning-formatted-text value={insuranceForm.mvType}></lightning-formatted-text>
+                <lightning-formatted-text value={mvLabelType}></lightning-formatted-text>
               </template>
               <template if:false={isMvReadOnly}>
                 <lightning-combobox name="mvType" label="MV Type" data-id="mvType-field" value={insuranceForm.mvType}
                   placeholder="Select a value" options={mvOptions} onchange={handleFieldChange}
-                  class="field-x-medium-width slds-form__item" variant="label-hidden">
+                  class="slds-form__item" variant="label-hidden">
                 </lightning-combobox>
               </template>
             </td>
@@ -42,7 +42,7 @@
               <template if:false={isMvReadOnly}>
                 <lightning-combobox name="mvProduct" label="Mv Product" data-id="mvProduct-field"
                   value={insuranceForm.mvProduct} placeholder="Select a value" options={mvProductOptions}
-                  onchange={handleFieldChange} class="slds-form__item field-small-width" variant="label-hidden">
+                  onchange={handleFieldChange} class="slds-form__item" variant="label-hidden">
                 </lightning-combobox>
               </template>
             </td>
@@ -54,7 +54,7 @@
               <template if:false={isMvReadOnly}>
                 <lightning-input type="number" name="mvRetailPrice" label="mvRetailPrice"
                   value={insuranceForm.mvRetailPrice} data-id="mvRetailPrice-field"
-                  class="slds-form__item field-large-width" variant="label-hidden" formatter="currency" step="0.01"
+                  class="slds-form__item field-small-width" variant="label-hidden" formatter="currency" step="0.01"
                   placeholder="$0.00" onchange={handleFieldChange}></lightning-input>
               </template>
 
@@ -96,12 +96,12 @@
           <tr>
             <td class={shortfallAcceptCSS} align="start">
               <template if:true={isShortfallReadOnly}>
-                <lightning-formatted-text value={insuranceForm.shortfallType}></lightning-formatted-text>
+                <lightning-formatted-text value={shortfallLabelType}></lightning-formatted-text>
               </template>
               <template if:false={isShortfallReadOnly}>
                 <lightning-combobox name="shortfallType" label="Shortfall Type" data-id="shortfallType-field"
                   value={insuranceForm.shortfallType} placeholder="Select a value" options={shortfallOptions}
-                  onchange={handleFieldChange} class="field-medium-width slds-form__item" variant="label-hidden">
+                  onchange={handleFieldChange} class="slds-form__item" variant="label-hidden">
                 </lightning-combobox>
               </template>
             </td>
@@ -112,7 +112,7 @@
               <template if:false={isShortfallReadOnly}>
                 <lightning-combobox name="shortfallProduct" label="Shortfall Product" data-id="shortfallProduct-field"
                   value={insuranceForm.shortfallProduct} placeholder="Select a value" options={shortfallProductOptions}
-                  onchange={handleFieldChange} class="slds-form__item field-small-width" variant="label-hidden"
+                  onchange={handleFieldChange} class="slds-form__item" variant="label-hidden"
                   read-only={isReadOnly}>
                 </lightning-combobox>
               </template>
@@ -126,7 +126,7 @@
                 <template if:false={isShortfallReadOnly}>
                   <lightning-input type="number" name="shortfallRetailPrice" label="shortfallRetailPrice"
                     value={insuranceForm.shortfallRetailPrice} data-id="shortfallRetailPrice-field"
-                    class="slds-form__item field-medium-width" variant="label-hidden" formatter="currency" step="0.01"
+                    class="slds-form__item field-small-width" variant="label-hidden" formatter="currency" step="0.01"
                     placeholder="$0.00" onchange={handleFieldChange}></lightning-input>
                 </template>
               </template>
@@ -168,12 +168,14 @@
             </td>
             <td class={shortfallAcceptCSS} align="center">
               <template if:true={isShortfallReadOnly}>
-                <lightning-formatted-text value={insuranceForm.shortfallPBM}></lightning-formatted-text>
+                <div style="text-align: center;">
+                  <lightning-formatted-text value={insuranceForm.shortfallPBM}></lightning-formatted-text>
+                </div>
               </template>
               <template if:false={isShortfallReadOnly}>
                 <lightning-combobox name="shortfallPBM" label="Shortfall PBM" data-id="shortfallPBM-field"
                   value={insuranceForm.shortfallPBM} placeholder="Select a value" options={pbmOptions}
-                  onchange={handleFieldChange} class="slds-form__item field-x_small-width" variant="label-hidden">
+                  onchange={handleFieldChange} class="slds-form__item field-x-small-width-cbx" variant="label-hidden">
                 </lightning-combobox>
               </template>
 
@@ -199,12 +201,12 @@
           <tr>
             <td class={LPIAcceptCSS} align="start">
               <template if:true={isLPIReadOnly}>
-                <lightning-formatted-text value={insuranceForm.LPIType}></lightning-formatted-text>
+                <lightning-formatted-text value={lpiLabelType}></lightning-formatted-text>
               </template>
               <template if:false={isLPIReadOnly}>
                 <lightning-combobox name="LPIType" label="LPI Type" data-id="LPIType-field"
                   value={insuranceForm.LPIType} placeholder="Select a value" options={LPIOptions}
-                  onchange={handleFieldChange} class="field-medium-width slds-form__item" variant="label-hidden">
+                  onchange={handleFieldChange} class="slds-form__item" variant="label-hidden">
                 </lightning-combobox>
               </template>
 
@@ -216,7 +218,7 @@
               <template if:false={isLPIReadOnly}>
                 <lightning-combobox name="LPIProduct" label="LPI Product" data-id="LPIProduct-field"
                   value={insuranceForm.LPIProduct} placeholder="Select a value" options={LPIProductOptions}
-                  onchange={handleFieldChange} class="slds-form__item field-small-width" variant="label-hidden">
+                  onchange={handleFieldChange} class="slds-form__item" variant="label-hidden">
                 </lightning-combobox>
               </template>
             </td>
@@ -236,7 +238,7 @@
                 <template if:true={isDisplayLPIInput}>
                   <lightning-input type="number" name="LPIRetailPrice" label="LPIRetailPrice"
                     value={insuranceForm.LPIRetailPrice} data-id="LPIRetailPrice-field"
-                    class="slds-form__item field-medium-width" variant="label-hidden" formatter="currency" step="0.01"
+                    class="slds-form__item field-small-width" variant="label-hidden" formatter="currency" step="0.01"
                     placeholder="$0.00" onchange={handleFieldChange}></lightning-input>
                 </template>
                 <template if:false={isDisplayLPIInput}>
@@ -290,28 +292,32 @@
             </td>
             <td class={LPIAcceptCSS} align="center">
               <template if:true={isLPIReadOnly}>
-                <lightning-formatted-text value={insuranceForm.LPIPBM}></lightning-formatted-text>
+                <div style="text-align: center;">
+                  <lightning-formatted-text value={insuranceForm.LPIPBM}></lightning-formatted-text>
+                </div>
               </template>
               <template if:false={isLPIReadOnly}>
                 <lightning-combobox name="LPIPBM" label="LPI PBM" data-id="LPIPBM-field" value={insuranceForm.LPIPBM}
                   placeholder="Select a value" options={pbmOptions} onchange={handleFieldChange}
-                  class="slds-form__item field-x_small-width" variant="label-hidden">
+                  class="slds-form__item field-x-small-width-cbx" variant="label-hidden">
                 </lightning-combobox>
               </template>
             </td>
             <td class={LPIAcceptCSS} align="center">
               <template if:true={isLPIReadOnly}>
-                <lightning-formatted-text value={insuranceForm.LPITerm}></lightning-formatted-text>
+                <div style="text-align: center;">
+                  <lightning-formatted-text value={insuranceForm.LPITerm}></lightning-formatted-text>
+                </div>
               </template>
               <template if:false={isLPIReadOnly}>
                 <template if:true={isDisplayLPIInput}>
                   <lightning-combobox name="LPITerm" label="LPI Term" data-id="LPITerm-field"
                     value={insuranceForm.LPITerm} placeholder="Select a value" options={LPITerms}
-                    onchange={handleFieldChange} class="field-x_small-width slds-form__item" variant="label-hidden">
+                    onchange={handleFieldChange} class="field-x-small-width-cbx slds-form__item" variant="label-hidden">
                   </lightning-combobox>
                 </template>
                 <template if:false={isDisplayLPIInput}>
-                  <lightning-formatted-text value={insuranceForm.LPITerm} class="c-read-only-field">
+                  <lightning-formatted-text value={insuranceForm.LPITerm}>
                   </lightning-formatted-text>
                 </template>
               </template>
@@ -334,9 +340,8 @@
           <tr>
             <td class={warrantyAcceptCSS} align="start">
               <template if:true={isWarrantyReadOnly}>
-
                 <div class="slds-m-bottom_xx-small">
-                  <lightning-formatted-text value={insuranceForm.warrantyType}>
+                  <lightning-formatted-text value={warrantyLabelType}>
                   </lightning-formatted-text>
                 </div>
                 <template if:true={isDisplayIntegrityOpts}>
@@ -348,7 +353,7 @@
               <template if:false={isWarrantyReadOnly}>
                 <lightning-combobox name="warrantyType" label={assetType} data-id="warrantyType-field"
                   value={insuranceForm.warrantyType} placeholder="Select a value" options={warrantyOptions}
-                  onchange={handleFieldChange} class="field-medium-width slds-form__item" variant={isDisplayAssetType}>
+                  onchange={handleFieldChange} class="slds-form__item" variant={isDisplayAssetType}>
                 </lightning-combobox>
               </template>
             </td>
@@ -368,7 +373,7 @@
                     <lightning-combobox name="integrity type" label="Product Type" data-id="warrantyProduct-field"
                       value={insuranceForm.integrity.type} placeholder="Select a value"
                       options={warrantyProductIntegrityOptions} onchange={handleFieldChange}
-                      class="slds-form__item field-small-width">
+                      class="slds-form__item">
                     </lightning-combobox>
                   </template>
                 </div>
@@ -386,7 +391,7 @@
                     <lightning-combobox name="integrity category" label="Category" data-id="warrantyProduct-field"
                       value={insuranceForm.integrity.category} placeholder="Select a value"
                       options={warrantyProductIntegrityCategoryOptions} onchange={handleFieldChange}
-                      class="slds-form__item field-small-width">
+                      class="slds-form__item">
                     </lightning-combobox>
                   </template>
 
@@ -405,13 +410,15 @@
                     <lightning-combobox name="integrity term" label="Term" data-id="warrantyProduct-field"
                       value={insuranceForm.integrity.term} placeholder="Select a value"
                       options={warrantyProductIntegrityTermOptions} onchange={handleFieldChange}
-                      class="slds-form__item field-small-width">
+                      class="slds-form__item">
                     </lightning-combobox>
                   </template>
                 </div>
                 <template if:false={isWarrantyReadOnly}>
                   <lightning-checkbox-group name="typeRetail" label="Retail price manually" options={options}
-                    value={typeRetail} onchange={handleFieldChange} variant="label-hidden" class="inTableText">
+                    value={typeRetail} onchange={handleFieldChange} 
+                    variant="label-hidden" 
+                    class="field-manual-price-check">
                   </lightning-checkbox-group>
                 </template>
 
@@ -424,7 +431,7 @@
                   <lightning-combobox name="warrantyProduct" label="Warranty Product" data-id="warrantyProduct-field"
                     value={insuranceForm.warrantyProduct} placeholder="Select a value"
                     options={warrantyProductEricOptions} onchange={handleFieldChange}
-                    class="slds-form__item field-small-width" variant="label-hidden" read-only={isWarrantyReadOnly}>
+                    class="slds-form__item" variant="label-hidden" read-only={isWarrantyReadOnly}>
                   </lightning-combobox>
                 </template>
 
@@ -440,7 +447,7 @@
                 <template if:false={isWarrantyReadOnly}>
                   <lightning-input type="number" name="warrantyRetailPrice" label="warrantyRetailPrice"
                     value={insuranceForm.warrantyRetailPrice} placeholder="$0.00" data-id="warrantyRetailPrice-field"
-                    class="slds-form__item field-medium-width" variant="label-hidden" formatter="currency" step="0.01"
+                    class="slds-form__item field-small-width" variant="label-hidden" formatter="currency" step="0.01"
                     onchange={handleFieldChange}></lightning-input>
                 </template>
               </template>
@@ -468,7 +475,6 @@
                     class="slds-form__item field-x-small-width" variant="label-hidden" formatter="currency" step="0.01"
                     onchange={handleFieldChange}></lightning-input>
                 </template>
-
               </template>
               <template if:false={isDisplayIntegrityInput}>
                 <lightning-formatted-number value={insuranceForm.warrantyCommission} format-style="currency"
@@ -484,19 +490,22 @@
 
             <td class={warrantyAcceptCSS} align="center">
               <template if:true={isDisplayIntegrityOpts}>
-                <lightning-formatted-text value={insuranceForm.warrantyPBM}></lightning-formatted-text>
+                <div style="text-align: center;">
+                  <lightning-formatted-text value={insuranceForm.warrantyPBM}></lightning-formatted-text>
+                </div>
               </template>
               <template if:false={isDisplayIntegrityOpts}>
                 <template if:true={isWarrantyReadOnly}>
-                  <lightning-formatted-text value={insuranceForm.warrantyPBM}></lightning-formatted-text>
+                  <div style="text-align: center;">
+                    <lightning-formatted-text value={insuranceForm.warrantyPBM}></lightning-formatted-text>
+                  </div>
                 </template>
                 <template if:false={isWarrantyReadOnly}>
                   <lightning-combobox name="warrantyPBM" label="Warranty PBM" data-id="warrantyPBM-field"
                     value={insuranceForm.warrantyPBM} placeholder="Select a value" options={pbmOptions}
-                    onchange={handleFieldChange} class="slds-form__item field-x_small-width" variant="label-hidden">
+                    onchange={handleFieldChange} class="slds-form__item field-x-small-width-cbx" variant="label-hidden">
                   </lightning-combobox>
                 </template>
-
               </template>
             </td>
             <td class={warrantyAcceptCSS} style="text-align:center;" align="center">

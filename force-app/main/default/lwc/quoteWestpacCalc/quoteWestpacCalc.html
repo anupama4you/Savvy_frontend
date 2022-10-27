@@ -181,9 +181,10 @@
     <div class="c-row-details">
       <div class="c-detail-labels"><span class="c-label">Residual Value</span></div>
       <div class="c-detail-fields">
-        <lightning-input type="number" formatter="currency" step="0.01" name="residualValue" data-id="residualValue-field"
-          value={quoteForm.residualValue} label="Residual" placeholder="$" class="slds-form__item" variant="label-hidden"
-          onchange={handleFieldChange} disabled={resDisable.val}></lightning-input>
+        <lightning-input type="number" formatter="currency" step="0.01" name="residualValue"
+          data-id="residualValue-field" value={quoteForm.residualValue} label="Residual" placeholder="$"
+          class="slds-form__item" variant="label-hidden" onchange={handleFieldChange} disabled={resDisable.val}>
+        </lightning-input>
       </div>
     </div>
     <!-- Monthly Fee -->
@@ -275,24 +276,7 @@
         </lightning-input>
       </div>
     </div>
-    <!-- <div class="c-row-details">
-      <div class="c-detail-labels"><span class="c-label">Base Rate</span></div>
-      <div class="slds-col slds-size_8-of-12 c-base-rate">
-        <lightning-formatted-number value={quoteForm.baseRate} format-style="percent-fixed" minimum-fraction-digits="2"
-          class="c-read-only-field"></lightning-formatted-number>
-        <template if:true={isBaseRateBusy}>
-          <span class="c-status-icon">
-            <lightning-dynamic-icon type="eq" option="play" alternative-text="Recording in progress">
-            </lightning-dynamic-icon>
-          </span>
-        </template>
-        <span class="c-max-rate">
-          Max.
-          <lightning-formatted-number value={quoteForm.maxRate} format-style="percent-fixed" minimum-fraction-digits="2"
-            class="c-read-only-field"></lightning-formatted-number>
-        </span>
-      </div>
-    </div> -->
+
     <!-- Client Rate -->
     <div class="c-row-details">
       <div class="c-detail-labels">
@@ -302,17 +286,7 @@
         class="c-read-only-field">
       </lightning-formatted-number>
     </div>
-    <!-- <div class="c-row-details">
-      <div class="c-detail-labels">
-        <span class="c-label">Client Rate</span>
-      </div>
-      <div class="c-detail-fields">
-        <lightning-input type="number" formatter="percent-fixed" step="0.01" name="clientRate"
-          data-id="clientRate-field" value={quoteForm.clientRate} label="Client Rate" placeholder="0.00%"
-          class="slds-form__item field-x-small-width" variant="label-hidden" onchange={handleFieldChange} required>
-        </lightning-input>
-      </div>
-    </div> -->
+
     <!-- NAF -->
     <div class="c-row-details">
       <div class="c-detail-labels"><span class="c-label">NAF</span></div>
@@ -323,7 +297,11 @@
     </div>
 
     <!-- Insurances -->
-    <!-- <c-quote-insurance-form slot="insurances"></c-quote-insurance-form> -->
+    <c-quote-insurance-form slot="insurances" onhandleinsurancemessage={handleInsuranceMessage}
+      oninsurancechanged={handleInsuranceChange} onhandlepresentation={handleInsurancePresentation}
+      onhandledisablebutton={handleDisableButton} onhandleloadinsurance={handleInsuanceLoad} record-id={recordId}
+      quote-form={quoteForm}>
+    </c-quote-insurance-form>
 
   </c-quote-container>
 </template>

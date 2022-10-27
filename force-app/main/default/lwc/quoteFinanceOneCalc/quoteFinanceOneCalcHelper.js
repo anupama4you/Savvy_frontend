@@ -1,7 +1,7 @@
 import getQuotingData from "@salesforce/apex/QuoteFinanceOneController.getQuotingData";
 import getBaseRates from "@salesforce/apex/QuoteController.getBaseRates";
 import getRiskFeeCalc from "@salesforce/apex/QuoteFinanceOneController.getRiskFeeCalc";
-import calculateRepayments from "@salesforce/apex/QuoteFinanceOneController.calculateRepayments";
+import calculateRepayments from "@salesforce/apex/QuoteController.calculateAllRepayments";
 import getGoodsSubTypes from "@salesforce/apex/QuoteFinanceOneCommController.getGoodsSubTypes";
 import getDofCalcu from "@salesforce/apex/QuoteFinanceOneController.getDofCalcu";
 import getFinanceOneRate from "@salesforce/apex/QuoteFinanceOneCommController.getFinanceOneRate";
@@ -164,7 +164,7 @@ const goodsSubTypeOptions = () => {
 
 //Get total naf calculations
 const getNetRealtimeNaf = (quote) => {
-  let naf = QuoteCommons.calcNetRealtimeNaf(quote);
+  let naf = QuoteCommons.calcTotalAmount(quote);
   let total = naf + quote.riskFee;
   return total;
 };
@@ -197,7 +197,11 @@ const calcOptions = {
     { label: "Economy", value: "Economy" }
   ],
   terms: getTerms(),
-  propertyOwners: CommonOptions.yesNo,
+  propertyOwners: [
+    { label: "--None--", value: "" },
+    { label: "Yes", value: "Y" },
+    { label: "No", value: "N" },
+  ],
   paymentTypes: CommonOptions.paymentTypes
 };
 
@@ -207,7 +211,7 @@ const reset = (recordId) => {
     loanType: calcOptions.loanTypes[0].value,
     loanProduct: calcOptions.loanProducts[0].value,
     goodType: calcOptions.goodTypes[0].value,
-    goodsSubType: null,
+    goodsSubType: '',
     loanTypeDetail: "Gold",
     price: null,
     deposit: null,
@@ -219,7 +223,7 @@ const reset = (recordId) => {
     ppsr: 0.0,
     residual: 0.0,
     term: 60,
-    propertyOwner: null,
+    propertyOwner: '',
     carAge: "New - 6 years old",
     residency: null,
     paymentType: "Arrears",
@@ -243,9 +247,7 @@ const getMyBaseRates = (quote) =>
       productLoanType: quote.loanProduct,
       loanTypeDetail: quote.loanTypeDetail,
       hasMaxRate: true,
-
     };
-
     getBaseRates({
       param: p
     })
@@ -255,6 +257,14 @@ const getMyBaseRates = (quote) =>
       })
       .catch((error) => reject(error));
   });
+
+// calculate NAF commission
+const getNafCommission = (quote) => {
+  let r = 0.0;
+  r += quote.price;
+  r -= QuoteCommons.calcNetDeposit(quote);
+  return r;
+}
 
 // Get Risk Fee Calculations
 const getRiskCalc = (quote) =>
@@ -373,11 +383,8 @@ const getGoodsSubTypeOptions = (goodsType) => {
     result = goodsSubTypeBoatlist;
   } else if (goodsType === 'Caravan') {
     result = goodsSubTypeCaravanlist;
-  } else {
-    result = [
-      { label: "--None--", value: "" }
-    ]
   }
+  result.unshift({ label: "--None--", value: "" });
   return result;
 };
 
@@ -390,14 +397,14 @@ const calculate = (quote) =>
       messages: QuoteCommons.resetMessage()
     };
     let nafCalculations = getNetRealtimeNaf(quote);
+    let nafCommission = getNafCommission(quote);
     // Prepare params
     const p = {
       lender: LENDER_QUOTING,
       productLoanType: quote.loanProduct,
       loanTypeDetail: quote.loanTypeDetail,
       totalAmount: nafCalculations,
-      totalInsurance: QuoteCommons.calcTotalInsuranceType(quote, "Q"),
-      totalInsuranceIncome: QuoteCommons.calcTotalInsuranceIncome(quote),
+      totalInsurance: QuoteCommons.calcTotalInsuranceIncome(quote),
       clientRate: quote.clientRate,
       baseRate: quote.baseRate,
       paymentType: quote.paymentType,
@@ -406,8 +413,11 @@ const calculate = (quote) =>
       monthlyFee: quote.monthlyFee,
       residualValue: quote.residual,
       netDeposit: quote.netDeposit,
-      vehiclePrice: quote.price
+      vehiclePrice: quote.price,
+      nafCommission: nafCommission
     };
+
+    console.log('tobeCalculated>>', JSON.stringify(p, null, 2))
 
     getFinanceOneRate({
       param: p
@@ -429,7 +439,11 @@ const calculate = (quote) =>
             .then((data) => {
 
               // Mapping
-              res.commissions = QuoteCommons.mapCommissionSObjectToLwc(data);
+              res.commissions = QuoteCommons.mapCommissionSObjectToLwc(
+                data.commissions,
+                quote.insurance,
+                data.calResults
+              );
 
               // Validate the result of commissions
               res.messages = Validations.validatePostCalculation(

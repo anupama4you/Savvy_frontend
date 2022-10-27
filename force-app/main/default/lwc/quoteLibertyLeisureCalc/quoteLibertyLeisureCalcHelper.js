@@ -110,7 +110,7 @@ const calculate = (quote) =>
         productLoanType: quote.loanProduct,
         customerProfile: profile,
         totalAmount: totalAmount,
-        totalInsurance: QuoteCommons.calcTotalInsuranceType(quote),
+        totalInsurance: QuoteCommons.calcTotalInsuranceIncome(quote),
         clientRate: quote.clientRate,
         baseRate: quote.baseRate,
         paymentType: quote.paymentType,
@@ -338,7 +338,7 @@ const getMyBaseRates = (quote) =>
 
 // custom calculations for NAF generations
 const calcNetRealtimeNaf = (quote) => {
-  let netRealtimeNaf = QuoteCommons.calcNetRealtimeNaf(quote) - quote.dof;
+  let netRealtimeNaf = QuoteCommons.calcTotalAmount(quote) - quote.dof;
   let eqFee = calculateEQFee(quote, false);
   return netRealtimeNaf + eqFee;
 }

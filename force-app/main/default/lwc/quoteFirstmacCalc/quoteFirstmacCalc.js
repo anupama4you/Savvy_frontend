@@ -150,10 +150,14 @@ export default class QuoteFirstmacCalc extends LightningElement {
         if (CalHelper.BASE_RATE_FIELDS.includes(fldName)) {
             this.baseRateCalc();
         }
+
+        // Insurances
+        QuoteCommons.calculateInsurances(this, fldName);
+        // --------------
     }
 
     // Calculate
-    handleCalculate() {
+    handleCalculate(type) {
         this.isBusy = true;
         this.messageObj = QuoteCommons.resetMessage();
         CalHelper.calculate(this.quoteForm)
@@ -162,11 +166,25 @@ export default class QuoteFirstmacCalc extends LightningElement {
                 this.quoteForm.commissions = data.commissions;
                 this.messageObj = data.messages;
                 QuoteCommons.handleHasErrorClassClear(this);
-                if (this.quoteForm.commissions) this.isCalculated = true;
+
+                // --- insurance ---
+                if (this.quoteForm.commissions && type != "load") {
+                    this.isCalculated = true;
+                    this.template.querySelector(
+                        "c-quote-insurance-form"
+                    ).isQuoteCalculated = true;
+                }
+                // --- insurance: end ---
             })
             .catch((error) => {
-                this.messageObj = error.messages;
-                QuoteCommons.fieldErrorHandler(this, this.messageObj.errors);
+                if (type !== "load") {
+                    this.messageObj = error.messages;
+                    QuoteCommons.fieldErrorHandler(this, this.messageObj.errors);
+                    console.error(
+                        "quotePepperMVCalc.js: get errors -- ",
+                        JSON.stringify(error.messages.errors, null, 2)
+                    );
+                }
             })
             .finally(() => {
                 this.isBusy = false;
@@ -179,12 +197,21 @@ export default class QuoteFirstmacCalc extends LightningElement {
     }
 
     // all Save Buttons actions
-    handleSave(event) {
-        console.log(`event detail : ${event.target.value.toUpperCase()}`);
-        const isNONE = event.target.value.toUpperCase() === "NONE";
+    handleSave(event, saveType) {
+        let isNONE;
+        let loanType;
+        if (event) {
+            console.log(`event detail : ${event.target.value.toUpperCase()}`);
+            isNONE = event.target.value.toUpperCase() === "NONE";
+            loanType = event.target.value.toUpperCase();
+        } else {
+            // --- insurance ---
+            loanType = saveType.toUpperCase();
+            // --- insurance: end ---
+        }
+        console.log("save type => ", loanType);
         this.isBusy = true;
-        const loanType = event.target.value.toUpperCase();
-        if (!this.messageObj.errors.length > 0) {
+        if (!this.messageObj.errors.length > 0 || this.isErrorInsuranceOnly()) {
             this.messageObj = QuoteCommons.resetMessage();
             CalHelper.saveQuote(loanType, this.quoteForm, this.recordId)
                 .then((data) => {
@@ -212,6 +239,10 @@ export default class QuoteFirstmacCalc extends LightningElement {
                 })
                 .finally(() => {
                     this.isBusy = false;
+                    // --- insurance ---
+                    this.quoteForm.commissions.insurance =
+                        loanType === "Send" ? 0.0 : this.quoteForm.commissions.insurance;
+                    // --- insurance: end ---
                 });
         } else {
             QuoteCommons.fieldErrorHandler(this, this.messageObj.errors);
@@ -229,13 +260,16 @@ export default class QuoteFirstmacCalc extends LightningElement {
         this.messageObj = QuoteCommons.resetMessage();
         QuoteCommons.handleHasErrorClassClear(this);
         this.baseRateCalc();
+        // --- insurance ---
+        this.template.querySelector("c-quote-insurance-form").resetPressed();
+        // --- insurance: end ---
     }
 
 
     // Send Email
     handleSendQuote() {
         this.isBusy = true;
-        if (!this.messageObj.errors.length > 0) {
+        if (!this.messageObj.errors.length > 0 || this.isErrorInsuranceOnly()) {
             this.messageObj = QuoteCommons.resetMessage();
             CalHelper.sendEmail(this.quoteForm, this.recordId)
                 .then((data) => {
@@ -259,5 +293,88 @@ export default class QuoteFirstmacCalc extends LightningElement {
             this.isCalculated = true;
         }
     }
+
+
+    // --- insurance ---
+    handleInsuranceMessage(event) {
+        try {
+            this.messageObj = QuoteCommons.resetMessage();
+            this.messageObj.errors = [
+                ...this.messageObj.errors,
+                ...event.detail.errors
+            ];
+            console.log(
+                "event.detail >> " + JSON.stringify(this.messageObj.errors, null, 2)
+            );
+        } catch (error) {
+            console.error(error);
+        }
+    }
+
+    isErrorInsuranceOnly() {
+        let result = true;
+        try {
+            if (this.messageObj.errors && this.messageObj.errors.length > 0) {
+                for (const error of this.messageObj.errors) {
+                    if (error.field !== "insurance") {
+                        return false;
+                    }
+                }
+            }
+            return result;
+        } catch (error) {
+            console.error(error);
+        }
+    }
+
+    handleInsuranceChange(event) {
+        this.quoteForm.insurance = event.detail;
+        this.isCalculated = this.template.querySelector(
+            "c-quote-insurance-form"
+        ).isQuoteCalculated = false;
+
+        // comprehensive
+        const cms = QuoteCommons.handleComprehensive(this.quoteForm);
+        this.quoteForm.commissions = { ...cms };
+        // end - comprehensive
+        console.log(
+            "handle insurance change >>  " + JSON.stringify(this.quoteForm, null, 2)
+        );
+    }
+
+    handleInsurancePresentation(event) {
+        console.log(event.detail);
+        this.handleSave(null, event.detail);
+    }
+
+    handleInsuranceLoad(event) {
+        this.handleInsuranceChange(event);
+        // check if there is no acceptance
+        if (
+            this.quoteForm.insurance.ismvAccept ||
+            this.quoteForm.insurance.isshortfallAccept ||
+            this.quoteForm.insurance.iswarrantyAccept ||
+            this.quoteForm.insurance.isLPIAccept ||
+            this.quoteForm.insurance.isIntegrityAccept
+        ) {
+            this.handleCalculate("load");
+        } else {
+            this.quoteForm.commissions = {
+                ...this.quoteForm.commissions,
+                insurances: null
+            };
+        }
+        this.console.log(
+            "handleInsuranceLoad>>",
+            JSON.stringify(this.quoteForm, null, 2)
+        );
+    }
+
+    handleDisableButton(event) {
+        this.isCalculated = event.detail;
+    }
+
+    // --- insurance: end ---
+
 
 }

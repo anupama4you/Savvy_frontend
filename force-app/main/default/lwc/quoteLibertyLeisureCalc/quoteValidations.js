@@ -108,7 +108,7 @@ const validate = (quote, settings, messages, isApproval) => {
   if ('AAA' === quote.riskGrade) {
     if (!quote.creditScore) {
       errorList.push({
-        field: "riskGrade",
+        field: "creditScore",
         message: "Credit Score value is required."
       });
     } else if (!Number.isInteger(quote.creditScore)) {

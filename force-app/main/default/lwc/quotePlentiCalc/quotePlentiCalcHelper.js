@@ -1,8 +1,7 @@
 import getQuotingData from "@salesforce/apex/QuoteManager.getQuotingData";
-//import getDefaultBrokerage from "@salesforce/apex/QuoteGreenLightController.getDefaultBrokeragePercentage";
 import getBaseRates from "@salesforce/apex/QuoteManager.getBaseRates";
 import getCalcFees from "@salesforce/apex/QuoteManager.getFees";
-import calculateRepayments from "@salesforce/apex/QuotePlentiController.calculateRepayments";
+import calculateRepayments from "@salesforce/apex/QuoteController.calculateAllRepayments";
 import sendQuote from "@salesforce/apex/QuoteController.sendQuote";
 //import getRateSetterRate from "@salesforce/apex/QuoteManager.getRateSetterRate";
 import save from "@salesforce/apex/QuotePlentiController.save";
@@ -15,6 +14,9 @@ import { Validations } from "./quoteValidations";
 
 // Default settings
 let lenderSettings = {};
+// API Responses
+let apiResponses = {};
+// Rates
 let tableRatesData = [];
 let tableRateDataColumns = [
   { label: "Profile", fieldName: "Profile__c", type: "text" },
@@ -50,6 +52,7 @@ const QUOTING_FIELDS = new Map([
   ["clientRate", "Client_Rate__c"],
   ["applicationId", "Application__c"],
   ["clientTier", "Client_Tier__c"],
+  ["privateSales", "Private_Sales__c"],
   ["customerProfile", "Customer_Profile__c"],
   ["vehicleCondition", "Vehicle_Condition__c"],
   ["greenCar", "Green_Car__c"],
@@ -111,7 +114,8 @@ const calculate = (quote) =>
         lender: LENDER_QUOTING,
         totalAmount: QuoteCommons.calcTotalAmount(quote),
         totalInsurance: QuoteCommons.calcTotalInsuranceType(quote),
-        totalInsuranceIncome: QuoteCommons.calcTotalInsuranceType(quote),
+        // totalInsuranceIncome: QuoteCommons.calcTotalInsuranceType(quote),
+        totalInsuranceIncome: QuoteCommons.calcTotalInsuranceIncome(quote),
         baseRate: quote.baseRate,
         clientRate: quote.clientRate,
         paymentType: quote.paymentType,
@@ -132,12 +136,18 @@ const calculate = (quote) =>
       console.log(`Calculating repayments...`, JSON.stringify(quote, null, 2));
       console.log(`@@param:`, JSON.stringify(p, null, 2));
       calculateRepayments({
-        param: p
+        param: p,
+        insuranceParam: quote.insurance
       })
         .then((data) => {
           console.log(`@@SF:`, JSON.stringify(data, null, 2));
           // Mapping
-          res.commissions = QuoteCommons.mapCommissionSObjectToLwc(data);
+          res.commissions = QuoteCommons.mapCommissionSObjectToLwc(
+            data.commissions,
+            quote.insurance,
+            data.calResults
+          );
+
           // Validate for results
           res.messages = Validations.validatePostCalculation(res.commissions, res.messages);
           resolve(res);
@@ -237,7 +247,8 @@ const reset = (recordId) => {
     baseRate: 0.0,
     clientRate: null,
     commissions: QuoteCommons.resetResults(),
-    brokerage: 5
+    brokerage: 5,
+    insurance: { integrity: {} }
   };
   r = QuoteCommons.mapDataToLwc(r, lenderSettings, SETTING_FIELDS);
   return r;
@@ -248,7 +259,8 @@ const loadData = (recordId) =>
   new Promise((resolve, reject) => {
     const fields = [
       ...QUOTING_FIELDS.values(),
-      ...QuoteCommons.COMMISSION_FIELDS.values()
+      ...QuoteCommons.COMMISSION_FIELDS.values(),
+      ...QuoteCommons.INSURANCE_FIELDS.values()
     ];
     getQuotingData({
       param: {
@@ -271,11 +283,17 @@ const loadData = (recordId) =>
 
         // Settings
         lenderSettings = quoteData.settings;
+        // API  responses
+        apiResponses = quoteData.apiResponses;
         // Rate Settings
         if (quoteData.rateSettings) {
           tableRatesData = quoteData.rateSettings[`${RATE_SETTING_NAMES[0]}`];
-          console.log('tableRatesData==>' + JSON.stringify(tableRatesData));
+          console.log("tableRatesData==>" + JSON.stringify(tableRatesData));
         }
+
+        // Validate for results
+        data.messages = Validations.validatePostLoading(data);
+        
         //console.log(`@@data:`, JSON.stringify(data, null, 2));
         resolve(data);
       })
@@ -308,6 +326,10 @@ const getMyBaseRates = (quote) =>
       })
       .catch((error) => reject(error));
   });
+
+  const getApiResponses = () => {
+    return apiResponses;
+  };
 
 //get fees calculations
 const calcFees = (quote) => {
@@ -387,7 +409,8 @@ export const CalHelper = {
   load: loadData,
   reset: reset,
   baseRates: getMyBaseRates,
-  calcFees, calcFees,
+  calcFees,
+  calcFees,
   BASE_RATE_FIELDS: BASE_RATE_FIELDS,
   CALC_FEES_FIELDS: CALC_FEES_FIELDS,
   lenderSettings: lenderSettings,
@@ -396,5 +419,6 @@ export const CalHelper = {
   getNetRealtimeNaf: QuoteCommons.calcNetRealtimeNaf,
   getNetDeposit: QuoteCommons.calcNetDeposit,
   saveQuote: saveQuote,
-  sendEmail: sendEmail
+  sendEmail: sendEmail,
+  getApiResponses: getApiResponses
 };

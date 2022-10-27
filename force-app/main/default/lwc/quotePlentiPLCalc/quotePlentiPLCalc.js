@@ -23,6 +23,8 @@ export default class QuotePlentiPLCalc extends LightningElement {
   // Rate Settings
   @track tableRates;
   @track tableRates2;
+  // Api details
+  @track apiDetails = [];
   @wire(getRecord, { recordId: "$recordId", fields })
   opp;
 
@@ -38,6 +40,7 @@ export default class QuotePlentiPLCalc extends LightningElement {
         this.quoteForm = data;
         this.tableRates = CalHelper.getTableRatesData();
         this.tableRates2 = CalHelper.getTableRatesData2();
+        this.apiDetails = CalHelper.getApiResponses();
       })
       .catch((error) => {
         console.error(JSON.stringify(error, null, 2));

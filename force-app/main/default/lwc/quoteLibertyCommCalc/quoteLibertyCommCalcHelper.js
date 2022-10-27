@@ -1,6 +1,6 @@
 import getQuotingData from "@salesforce/apex/QuoteLibertyCommercialController.getQuotingData";
 import getBaseRates from "@salesforce/apex/QuoteController.getBaseRates";
-import calculateRepayments from "@salesforce/apex/QuoteController.calculateRepayments";
+import calculateRepayments from "@salesforce/apex/QuoteController.calculateAllRepayments";
 import sendQuote from "@salesforce/apex/QuoteController.sendQuote";
 import save from "@salesforce/apex/QuoteLibertyCommercialController.save";
 import {
@@ -65,7 +65,8 @@ const SETTING_FIELDS = new Map([
   ["dof", "DOF__c"],
   ["maxDof", "DOF__c"],
   ["ppsr", "PPSR__c"],
-  ["monthlyFee", "Monthly_Fee__c"]
+  ["monthlyFee", "Monthly_Fee__c"],
+  ["maxRate", "Manual_Max_Rate__c"],
 ]);
 
 const BASE_RATE_FIELDS = [
@@ -105,8 +106,8 @@ const calculate = (quote) =>
         vehicleYear: quote.assetAge,
         goodsType: quote.assetType,
         privateSales: quote.privateSales,
-        totalAmount: calcNetRealtimeNaf(quote),
-        totalInsurance: QuoteCommons.calcTotalInsuranceType(quote),
+        totalAmount: calcNetForCalculate(quote),
+        totalInsurance: QuoteCommons.calcTotalInsuranceIncome(quote),
         clientRate: quote.clientRate,
         baseRate: quote.baseRate,
         paymentType: quote.paymentType,
@@ -118,12 +119,17 @@ const calculate = (quote) =>
       // Calculate
       console.log(`@@param:`, JSON.stringify(p, null, 2));
       calculateRepayments({
-        param: p
+        param: p,
+        insuranceParam: quote.insurance
       })
         .then((data) => {
           console.log(`@@SF:`, JSON.stringify(data, null, 2));
           // Mapping
-          res.commissions = QuoteCommons.mapCommissionSObjectToLwc(data);
+          res.commissions = QuoteCommons.mapCommissionSObjectToLwc(
+            data.commissions,
+            quote.insurance,
+            data.calResults
+          );
           console.log(JSON.stringify(res.commissions, null, 2));
           // Validate the result of commissions
           res.messages = Validations.validatePostCalculation(
@@ -290,7 +296,8 @@ const loadData = (recordId) =>
   new Promise((resolve, reject) => {
     const fields = [
       ...QUOTING_FIELDS.values(),
-      ...QuoteCommons.COMMISSION_FIELDS.values()
+      ...QuoteCommons.COMMISSION_FIELDS.values(),
+      ...QuoteCommons.INSURANCE_FIELDS.values()
     ];
     console.log(`@@fields:`, JSON.stringify(fields, null, 2));
     getQuotingData({
@@ -363,13 +370,17 @@ const getMyBaseRates = (quote) =>
 // custom calculations for NAF generations
 const calcNetRealtimeNaf = (quote) => {
   let eqFee = 0;
-  try {
-    let netRealtimeNaf = QuoteCommons.calcNetRealtimeNaf(quote) - quote.dof;
-    eqFee = calculateEQFee(quote, false);
-    return netRealtimeNaf + eqFee;
-  } catch (error) {
-    console.error(error);
-  }
+  let netRealtimeNaf = QuoteCommons.calcNetRealtimeNaf(quote) - quote.dof;
+  eqFee = calculateEQFee(quote, false);
+  return netRealtimeNaf + eqFee;
+};
+
+// custom calculations for NAF calculations
+const calcNetForCalculate = (quote) => {
+  let eqFee = 0;
+  let netRealtimeNaf = QuoteCommons.calcTotalAmount(quote) - quote.dof;
+  eqFee = calculateEQFee(quote, false);
+  return netRealtimeNaf + eqFee;
 };
 
 const calculateEQFee = (quote, excInsurances) => {

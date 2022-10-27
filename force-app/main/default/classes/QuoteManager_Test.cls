@@ -1,5 +1,7 @@
 @isTest(SeeAllData=true)
 public class QuoteManager_Test {
+  private final static String LENDER_QUOTING = 'Macquarie Consumer';
+
     @isTest static void testClass() {
         
         QuotingCalculation.CalcParam param = new QuotingCalculation.CalcParam();
@@ -120,6 +122,90 @@ public class QuoteManager_Test {
         List<QuoteWrapper.Picklist>  pickValDep = QuoteManager.getDependentPickListValue('Macquarie Commercial', 'Goods SubType','Chattel Mortgage-Full-Doc','LIFES' );
         pickValDep = QuoteManager.getDependentPickListValue('Macquarie Commercial', 'Loan Frequency','Chattel Mortgage-Full-Doc','' );
         pickValDep = QuoteManager.getDependentPickListValue('Macquarie Consumer', 'Goods Type','','' );
-        
     }
+
+    @isTest
+  static void testSave() {
+    Test.startTest();
+    String approvalType = 'NONE';
+    Map<String, Application_Quoting_Result__c> res = new Map<String, Application_Quoting_Result__c>();
+    Application_Quoting__c appQuote = buildAppQuote();
+    Application_Quoting_Result__c appQuoteResult = QuoteControllerTest.buildAppQuoteResult(
+      appQuote.Id
+    );
+    res.put('commissions', appQuoteResult);
+    QuoteController.AppQuotingWraper param = new QuoteController.AppQuotingWraper();
+    param.data = appQuote;
+    param.results = res;
+    QuoteManager.save(param, approvalType, LENDER_QUOTING);
+    approvalType = 'PRE-APPROVAL';
+    QuoteManager.save(param, approvalType, LENDER_QUOTING);
+
+    try {
+      QuoteManager.save(null, approvalType, null);
+    } catch (GenericException ex) {
+    }
+
+    test.stopTest();
+  }
+
+  @isTest 
+  static void quoteWrapperClass() {
+    QuoteWrapper w = new QuoteWrapper();
+    QuoteWrapper.Table wt = new QuoteWrapper.Table();
+    wt.Profile = null;
+    wt.Tier = null;
+    wt.Min_Equifax_Score = null;
+    wt.Overs = null;
+    wt.Rate0 = null;
+    wt.Rate1 = null;
+    wt.Rate2 = null;
+    wt.Rate3 = null;
+    wt.Rate4 = null;
+    wt.Name = null;
+    wt.Rate = null;
+    wt.Type = null;
+    wt.Min = null;
+    wt.Max = null;
+    wt.X6 = null;
+    wt.X9 = null;
+    wt.X12 = null;
+    wt.X18 = null;
+    wt.X24 = null;
+    wt.X36 = null;
+    wt.X48 = null;
+    wt.X60 = null;
+    wt.Product = null;
+    wt.Year = null;
+    wt.R1 = null;
+    wt.R2 = null;
+    wt.R3 = null;
+    
+    QuoteWrapper.Picklist wp = new QuoteWrapper.Picklist();
+    wp.label= null;
+    wp.value= null;
+  }
+
+  // --------------------
+  // Supporting functions
+  // --------------------
+  
+  private static Application_Quoting__c buildAppQuote() {
+    Application_Quoting__c q = QuoteControllerTest.buildAppQuoting();
+    Custom_Opportunity__c opp = Test_DataGeneratorHelper.buildOpp(false);
+    Application__c app = Test_DataGeneratorHelper.buildCarApp(false);
+
+    q.Opportunity__c = opp.id;
+    q.Application__c = app.id;
+    q.Name = LENDER_QUOTING;
+
+    q.PPSR__c = 8.0;
+    q.Registration_Fee__c = 0.0;
+
+    insert q;
+    return q;
+  }
+
+
+
 }

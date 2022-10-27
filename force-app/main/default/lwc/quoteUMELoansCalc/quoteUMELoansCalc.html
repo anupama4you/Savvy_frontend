@@ -41,7 +41,6 @@
         </lightning-combobox>
       </div>
     </div>
-
     <!-- Car Price -->
     <div class="c-row-details">
       <div class="c-detail-labels"><span class="c-label">Price</span></div>
@@ -92,7 +91,6 @@
         </lightning-formatted-number>
       </div>
     </div>
-
     <!-- Application Fee -->
     <div class="c-row-details">
       <div class="c-detail-labels">
@@ -111,7 +109,6 @@
         </span>
       </div>
     </div>
-
     <!-- DOF -->
     <div class="c-row-details">
       <div class="c-detail-labels"><span class="c-label">DOF</span></div>
@@ -125,11 +122,9 @@
           <lightning-formatted-number value={maxDOF} format-style="currency" currency-code="AUD"
             class="c-read-only-field">
           </lightning-formatted-number>
-          <!-- value={quoteForm.maxDof} -->
         </span>
       </div>
     </div>
-
     <!-- PPSR -->
     <div class="c-row-details">
       <div class="c-detail-labels"><span class="c-label">PPSR</span></div>
@@ -139,7 +134,6 @@
           variant="label-hidden" onchange={handleFieldChange}></lightning-input>
       </div>
     </div>
-
     <!-- Residual Value -->
     <div class="c-row-details">
       <div class="c-detail-labels"><span class="c-label">Residual Value</span></div>
@@ -149,7 +143,6 @@
           variant="label-hidden" onchange={handleFieldChange}></lightning-input>
       </div>
     </div>
-
     <!-- Monthly Fee -->
     <div class="c-row-details">
       <div class="c-detail-labels">
@@ -206,13 +199,11 @@
           class="c-read-only-field c-naf-field"></lightning-formatted-number>
       </div>
     </div>
-
     <!-- Insurances -->
     <c-quote-insurance-form slot="insurances" onhandleinsurancemessage={handleInsuranceMessage}
       oninsurancechanged={handleInsuranceChange} onhandlepresentation={handleInsurancePresentation}
       onhandledisablebutton={handleDisableButton} onhandleloadinsurance={handleInsuanceLoad} record-id={recordId}
       quote-form={quoteForm}>
     </c-quote-insurance-form>
-
   </c-quote-container>
 </template>

@@ -12,13 +12,13 @@ const validate = (insurance, quote) => {
     const r = QuoteCommons.resetMessage();
     let errorList = r.errors;
     let warningList = r.warnings;
-    if (!("applicationId" in quote)) {
-      errorList.push({
-        field: "insurance",
-        message:
-          "Insurance: Please create an Application before creating a Quote."
-      });
-    }
+    // if (!("applicationId" in quote)) {
+    //   errorList.push({
+    //     field: "insurance",
+    //     message:
+    //       "Insurance: Please create an Application before creating a Quote."
+    //   });
+    // }
     for (const fieldName in quote) {
       const element = quote[fieldName];
       switch (fieldName) {
@@ -31,94 +31,110 @@ const validate = (insurance, quote) => {
       }
     }
 
+    let hasProducts = false;
     for (const fieldName in insurance) {
       const element = insurance[fieldName];
       switch (fieldName) {
         case "mvType":
-          if (
-            element &&
-            (!insurance.mvProduct ||
+          if (element && element.length > 0) {
+            hasProducts = true;
+            if (
+              !insurance.mvProduct ||
               !insurance.mvRetailPrice ||
-              !insurance.mvCommission)
-          ) {
-            errorList.push({
-              field: "mv",
-              message: `${element}, Please complete the Product, Retail Price and Commission fields.`
-            });
+              !insurance.mvCommission
+            ) {
+              errorList.push({
+                field: "mv",
+                message: `${element}, Please complete the Product, Retail Price and Commission fields.`
+              });
+            }
           }
           break;
         case "shortfallType":
-          if (
-            element &&
-            (!insurance.shortfallProduct ||
+          if (element && element.length > 0) {
+            hasProducts = true;
+            if (
+              (!element.includes("Eric") && !insurance.shortfallProduct) ||
               !insurance.shortfallRetailPrice ||
-              !insurance.shortfallCommission)
-          ) {
-            errorList.push({
-              field: "shortfall",
-              message: `${element},  Please complete the Product, Retail Price and Commission fields.`
-            });
+              !insurance.shortfallCommission ||
+              !insurance.shortfallPBM
+            ) {
+              errorList.push({
+                field: "shortfall",
+                message: `${element},  Please complete the Product, Retail Price, Commission fields and Financed/PBM.`
+              });
+            }
           }
           break;
         case "LPIType":
-          if (
-            element &&
-            (!insurance.LPIProduct ||
+          if (element && element.length > 0) {
+            hasProducts = true;
+            if (
+              !insurance.LPIProduct ||
               !insurance.LPIRetailPrice ||
-              !insurance.LPICommission)
-          ) {
-            errorList.push({
-              field: "LPI",
-              message: `${element},  Please complete the Product, Retail Price and Commission fields.`
-            });
-          }
-
-          if (element && element.includes("Eric")) {
-            if (!insurance.LPITerm) {
+              !insurance.LPICommission ||
+              !insurance.LPIPBM
+            ) {
               errorList.push({
                 field: "LPI",
-                message: `${element},  Please select a term.`
+                message: `${element},  Please complete the Product, Retail Price, Commission fields and Financed/PBM.`
               });
             }
-            if (!insurance.LPIPBM) {
-              errorList.push({
-                field: "LPI",
-                message: `${element},  Please select either Financed or PBM.`
-              });
+
+            if (element.includes("Eric")) {
+              if (!insurance.LPITerm) {
+                errorList.push({
+                  field: "LPI",
+                  message: `${element},  Please select a term.`
+                });
+              }
+              // if (!insurance.LPIPBM) {
+              //   errorList.push({
+              //     field: "LPI",
+              //     message: `${element},  Please select either Financed or PBM.`
+              //   });
+              // }
             }
           }
           break;
 
         case "warrantyType":
-          if (element === "Integrity") {
-            console.log("warranty type >>", element);
-            if (!insurance.integrity.term) {
+          if (element && element.length > 0) {
+            hasProducts = true;
+            if (element === "Integrity") {
               console.log("warranty type >>", element);
-              errorList.push({
-                field: "warranty",
-                message: `${element},  Please select a term.`
-              });
-            }
-            if (
-              element &&
-              (!insurance.integrity.type || !insurance.integrity.category)
-            ) {
-              errorList.push({
-                field: "warranty",
-                message: `${element},  Please complete the Product, Retail Price and Commission fields.`
-              });
-            }
-          } else {
-            if (
-              element &&
-              (!insurance.warrantyProduct ||
+              if (!insurance.integrity.term) {
+                console.log("warranty type >>", element);
+                errorList.push({
+                  field: "warranty",
+                  message: `${element},  Please select a term.`
+                });
+              }
+              if (
+                element &&
+                (
+                  !insurance.integrity.type ||
+                  !insurance.integrity.category ||
+                  !insurance.warrantyPBM
+                )
+              ) {
+                errorList.push({
+                  field: "warranty",
+                  message: `${element},  Please complete the Product, Retail Price, Commission and Financed/PBM fields.`
+                });
+              }
+            } else {
+              if (
+                !insurance.warrantyProduct ||
                 !insurance.warrantyRetailPrice ||
-                !insurance.warrantyCommission)
-            ) {
-              errorList.push({
-                field: "warranty",
-                message: `${element},  Please complete the Product, Retail Price and Commission fields.`
-              });
+                !insurance.warrantyCommission ||
+                !insurance.warrantyPBM
+              ) {
+                errorList.push({
+                  field: "warranty",
+                  message: `${element},  Please complete the Product, Retail Price, Commission and Financed/PBM fields.`
+                });
+              }
             }
           }
           break;
@@ -127,6 +143,14 @@ const validate = (insurance, quote) => {
           break;
       }
     }
+
+    if (!hasProducts) {
+      errorList.push({
+        field: "",
+        message: `Please choose what Insurance Products are going to be presented.`
+      });
+    }
+
     r.warnings = [].concat(QuoteCommons.uniqueArray(warningList));
     r.errors = [].concat(QuoteCommons.uniqueArray(errorList));
     console.log("r", r);

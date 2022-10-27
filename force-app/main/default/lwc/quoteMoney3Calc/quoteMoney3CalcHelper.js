@@ -1,7 +1,7 @@
 import getQuotingData from "@salesforce/apex/QuoteMoney3Controller.getQuotingData";
 import profileOnChangeAction from "@salesforce/apex/QuoteMoney3Controller.profileOnChangeAction";
 import getBaseRates from "@salesforce/apex/QuoteController.getBaseRates";
-import calculateRepayments from "@salesforce/apex/QuoteController.calculateRepayments";
+import calculateRepayments from "@salesforce/apex/QuoteController.calculateAllRepayments";
 import sendQuote from "@salesforce/apex/QuoteController.sendQuote";
 import save from "@salesforce/apex/QuoteMoney3Controller.save";
 import {
@@ -95,7 +95,8 @@ const calculate = (quote) =>
       // Prepare params
       const p = {
         lender: LENDER_QUOTING,
-        totalAmount: calculateRealTimeNaf(quote),
+        // totalAmount: calculateRealTimeNaf(quote),
+        totalAmount: calculateTotalAmount(quote),
         // totalInsurance: QuoteCommons.calcTotalInsuranceType(quote),
         totalInsuranceIncome: QuoteCommons.calcTotalInsuranceIncome(quote),
         clientRate: quote.clientRate,
@@ -112,14 +113,16 @@ const calculate = (quote) =>
       console.log(`Calculating repayments...`, JSON.stringify(quote, null, 2));
       console.log(`@@param:`, JSON.stringify(p, null, 2));
       calculateRepayments({
-        param: p
+        param: p,
+        insuranceParam: quote.insurance
       })
         .then((data) => {
           console.log(`@@SF:`, JSON.stringify(data, null, 2));
           // Mapping
           res.commissions = QuoteCommons.mapCommissionSObjectToLwc(
-            data,
-            quote.insurance
+            data.commissions,
+            quote.insurance,
+            data.calResults
           );
           // Validate for results
           res.messages = Validations.validatePostCalculation(
@@ -143,7 +146,7 @@ const calculate = (quote) =>
 //return term months
 const getTerms = (min, max, interval) => {
   let r = [];
-  for (let i = min; i < max + interval; ) {
+  for (let i = min; i < max + interval;) {
     r.push({ label: i.toString(), value: i });
     i += interval;
   }
@@ -238,7 +241,8 @@ const loadData = (recordId) =>
   new Promise((resolve, reject) => {
     const fields = [
       ...QUOTING_FIELDS.values(),
-      ...QuoteCommons.COMMISSION_FIELDS.values()
+      ...QuoteCommons.COMMISSION_FIELDS.values(),
+      ...QuoteCommons.INSURANCE_FIELDS.values()
     ];
     console.log(`@@fields:`, JSON.stringify(fields, null, 2));
     getQuotingData({
@@ -372,12 +376,19 @@ const sendEmail = (param, recordId) =>
 
 // re-write calculate total amount
 const calculateRealTimeNaf = (quote) => {
-  const naf =
-    QuoteCommons.calcNetRealtimeNaf(quote) +
-    (quote.riskFee ? parseFloat(quote.riskFee) : 0);
-  console.log("naf >> " + naf);
+  // const naf =
+  //   QuoteCommons.calcNetRealtimeNaf(quote) +
+  //   (quote.riskFee ? parseFloat(quote.riskFee) : 0);
+  // console.log("naf >> " + naf);
   return (
     QuoteCommons.calcNetRealtimeNaf(quote) +
+    (quote.riskFee ? parseFloat(quote.riskFee) : 0)
+  );
+};
+
+const calculateTotalAmount = (quote) => {
+  return (
+    QuoteCommons.calcTotalAmount(quote) +
     (quote.riskFee ? parseFloat(quote.riskFee) : 0)
   );
 };

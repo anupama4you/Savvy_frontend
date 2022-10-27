@@ -1,6 +1,6 @@
 import getQuotingData from "@salesforce/apex/QuoteWisrVLCalcController.getQuotingData";
 import getBaseRates from "@salesforce/apex/QuoteController.getBaseRates";
-import calculateRepayments from "@salesforce/apex/QuoteController.calculateRepayments";
+import calculateRepayments from "@salesforce/apex/QuoteController.calculateAllRepayments";
 import { QuoteCommons, CommonOptions } from "c/quoteCommons";
 import { Validations } from "./quoteValidations";
 import sendQuote from "@salesforce/apex/QuoteController.sendQuote";
@@ -45,13 +45,14 @@ const QUOTING_FIELDS = new Map([
   ["privateSaleFee", "Registration_Fee__c"],
   ["vehicleYear", "Vehicle_Age__c"],
   ["clientRate", "Client_Rate__c"],
+  ["appFeeManualInput", "App_Fee_Manual_Input__c"],
+  ["dofManualInput", "DOF_Manual_Input__c"]
 ]);
 
 // - TODO: need to map more fields
 const FIELDS_MAPPING_FOR_APEX = new Map([
   ...QUOTING_FIELDS,
   ["Id", "Id"],
-  ["privateSales", "Private_Sales__c"],
 ]);
 
 const RATE_SETTING_NAMES = ["Rate Table"];
@@ -62,9 +63,7 @@ const SETTING_FIELDS = new Map([
   ["applicationFee", "Application_Fee__c"],
   ["monthlyFee", "Monthly_Fee__c"],
   ["ppsr", "PPSR__c"],
-  ["privateSaleFee", "Private_Sale_Fee__c"],
-  ["vehicleYear", "Vehicle_Age__c"],
-  ["clientRate", "Client_Rate__c"],
+  ["privateSaleFee", "Registration_Fee__c"]
 ]);
 
 const BASE_RATE_FIELDS = [
@@ -86,6 +85,19 @@ const APPLICATION_FEE_DOF_FIELDS = [
   "privateSales"
 ];
 
+//Overwrite for adding privateSaleFee
+const getTotalAmount = (quote) => {
+  let r = QuoteCommons.calcTotalAmount(quote);
+  if (
+    quote &&
+    ('Y' === quote.privateSales || 'Refinance' === quote.loanType) && 
+    (quote.privateSaleFee > 0.00)
+  ) {
+    r += quote.privateSaleFee;
+  }
+  return r;
+};
+
 const calculate = (quote) =>
   new Promise((resolve, reject) => {
     console.log(`Calculating repayments...`, JSON.stringify(quote, null, 2));
@@ -104,8 +116,7 @@ const calculate = (quote) =>
       const p = {
         lender: LENDER_QUOTING,
         totalAmount: getTotalAmount(quote), //overwrite for privateSaleFee
-        totalInsurance: QuoteCommons.calcTotalInsuranceType(quote),
-        totalInsuranceIncome: QuoteCommons.calcTotalInsuranceType(quote),
+        totalInsurance: QuoteCommons.calcTotalInsuranceIncome(quote),
         loanType: quote.loanType,
         productLoanType: quote.loanProduct,
         clientRate: quote.clientRate,
@@ -121,18 +132,23 @@ const calculate = (quote) =>
         ltv: quote.lvr,
         privateSales: quote.privateSales,
         vehicleYear: quote.vehicleYear,
-        commRate: (quote.creditScore>=850 || quote.term === 36)? 3.0 : 4.0
+        commRate: (quote.creditScore >= 850 || quote.term === 36) ? 3.0 : 4.0
       };
 
       // Calculate
       console.log(`@@param:`, JSON.stringify(p, null, 2));
       calculateRepayments({
-        param: p
+        param: p,
+        insuranceParam: quote.insurance
       })
         .then((data) => {
           console.log(`@@SF:`, JSON.stringify(data, null, 2));
           // Mapping
-          res.commissions = QuoteCommons.mapCommissionSObjectToLwc(data);
+          res.commissions = QuoteCommons.mapCommissionSObjectToLwc(
+            data.commissions,
+            quote.insurance,
+            data.calResults
+          );
           console.log(JSON.stringify(res.commissions, null, 2));
           // Validate the result of commissions
           res.messages = Validations.validatePostCalculation(res.commissions, res.messages);
@@ -145,74 +161,66 @@ const calculate = (quote) =>
     }
   });
 
-  //Overwrite for adding privateSaleFee
-  const getTotalAmount = (quote) => {
-    let r = QuoteCommons.calcTotalAmount(quote);
-    if(('Y' === quote.privateSales || 'Refinance' === quote.loanType) && (quote.privateSaleFee > 0.00)) {
-      r += quote.privateSaleFee;
-    }  
-    return r;
-  };
-  //Overwrite for adding privateSaleFee
-  const getNaf = (quote) => {
-    let r = QuoteCommons.calcNetRealtimeNaf(quote);
-    if(('Y' === quote.privateSales || 'Refinance' === quote.loanType) && (quote.privateSaleFee > 0.00)) {
-      r += quote.privateSaleFee;
-    }
-    console.log(' getNaf...', r, )  
-    return r;
-  };
+const calcNetRealtimeNaf = (quote) => {
+  let r = getTotalAmount(quote);
+  r += QuoteCommons.calcTotalInsuranceType(quote);
+  return r;
+};
 
-  const createVehicleYears = () => {
-    let r = [];
-    let today = new Date();
-    let year = today.getFullYear();
-    r.push({ label: "--None--", value: "" });
-    for (let i = year; i >= (year-15); i--) {
-      r.push({ label: i.toString(), value: i.toString() });
-    }
-    return r;
-  };
+const createVehicleYears = () => {
+  let r = [];
+  let today = new Date();
+  let year = today.getFullYear();
+  r.push({ label: "--None--", value: "" });
+  for (let i = year; i >= (year - 15); i--) {
+    r.push({ label: i.toString(), value: i.toString() });
+  }
+  return r;
+};
 
-  const createClientRateOptions = (quote) => {
-    let r = [];
-    r.push({ label: "--None--", value: "" });
-    if(quote.baseRate>0 && quote.maxRate) {
-      let baseRate = Number(quote.baseRate);
-      let maxRate = Number(quote.maxRate);
-      for (let i = baseRate; i <= maxRate; i+=0.25) {
-        r.push({ label: i, value: i });
-      }
+const createClientRateOptions = (quote) => {
+  let r = [];
+  r.push({ label: "--None--", value: "" });
+  if (quote.baseRate > 0 && quote.maxRate) {
+    let baseRate = Number(quote.baseRate);
+    let maxRate = Number(quote.maxRate);
+    for (let i = baseRate; i <= maxRate; i += 0.25) {
+      r.push({ label: i, value: i });
     }
-    return r;
-  };
+  }
+  return r;
+};
 
-  const calcOptions = {
-    loanTypes: CommonOptions.loanTypes,
-    paymentTypes: CommonOptions.paymentTypes,
-    loanProducts: CommonOptions.fullLoanProducts,
-    privateSales: CommonOptions.yesNo,
-    terms: [
-      { label: 36, value: 36 },
-      { label: 60, value: 60 },
-      { label: 84, value: 84 }
-    ],
-    profiles: [
-      { label: "--None--", value: "" },
-      { label: "Renter, Boarder, Living at home with parents", value: "Renter, Boarder, Living at home with parents" },
-      { label: "Home owner", value: "Home owner" },
-    ],
-    vehicleYears: createVehicleYears(),
-  };
+const calcOptions = {
+  loanTypes: CommonOptions.loanTypes,
+  paymentTypes: CommonOptions.paymentTypes,
+  loanProducts: CommonOptions.fullLoanProducts,
+  privateSales: CommonOptions.yesNo,
+  terms: [
+    { label: 36, value: 36 },
+    { label: 60, value: 60 },
+    { label: 84, value: 84 }
+  ],
+  profiles: [
+    { label: "--None--", value: "" },
+    { label: "Renter/Boarder/Parents", value: "Renter, Boarder, Living at home with parents" },
+    { label: "Home owner", value: "Home owner" },
+  ],
+  vehicleYears: createVehicleYears(),
+};
 
 // Reset
 const reset = (recordId) => {
   let r = {
-    oppId : recordId,
-    quoteName : LENDER_QUOTING,
+    oppId: recordId,
+    quoteName: LENDER_QUOTING,
     loanType: calcOptions.loanTypes[0].value,
     loanProduct: calcOptions.loanProducts[0].value,
     price: 0,
+    deposit: null,
+    netDeposit: 0.0,
+    tradeIn: null,
+    payoutOn: null,
     applicationFee: null,
     maxApplicationFee: 0,
     dof: null,
@@ -226,11 +234,14 @@ const reset = (recordId) => {
     maxRate: 0.0,
     clientRate: "",
     paymentType: "Arrears",
-    loanPurpose: '',
+    loanPurpose: "",
     privateSales: "N",
     vehicleYear: "",
     privateSaleFee: 0,
-    commissions: QuoteCommons.resetResults()
+    appFeeManualInput: false,
+    dofManualInput: false,
+    commissions: QuoteCommons.resetResults(),
+    insurance: { integrity: {} }
   };
   console.log('Helper reset...');
   console.log('obj:::', r, 'lenderSettings:::', lenderSettings, 'SETTING_FIELDS:::', SETTING_FIELDS);
@@ -244,7 +255,8 @@ const loadData = (recordId) =>
     //  const fields = Array.from(QUOTING_FIELDS.values());
     const fields = [
       ...QUOTING_FIELDS.values(),
-      ...QuoteCommons.COMMISSION_FIELDS.values()
+      ...QuoteCommons.COMMISSION_FIELDS.values(),
+      ...QuoteCommons.INSURANCE_FIELDS.values()
     ];
     console.log('oppId', recordId,
       'fields', fields,
@@ -283,7 +295,7 @@ const loadData = (recordId) =>
       .catch((error) => reject(error));
   });
 
-const getWisrVLMaxAppFee = (naf) => { 
+const getWisrVLMaxAppFee = (naf) => {
   let r = 0.0;
   if (naf < 10000) {
     r = 495.0;
@@ -308,7 +320,7 @@ const getWisrVLMaxAppFee = (naf) => {
 };
 
 // Wiser VL - fees 
-const getWisrVLMaxDOF = (baseAmount) =>  { 
+const getWisrVLMaxDOF = (baseAmount) => {
   // amount -> asset proice - net deposit
   let r = 0.0;
   if (baseAmount >= 50000) {
@@ -330,7 +342,7 @@ const getWisrVLMaxDOF = (baseAmount) =>  {
 }
 
 const getBaseAmountForDOF = (price, netDeposit) => {
-  return price? Number(price) - Number(netDeposit) : 0;
+  return price ? Number(price) - Number(netDeposit) : 0;
 }
 
 // Get Max Fees
@@ -338,7 +350,7 @@ const getMyMaxFees = (quote) => {
   let r = {};
   try {
     r = {
-      maxApplicationFee: getWisrVLMaxAppFee(getNaf(quote)), 
+      maxApplicationFee: getWisrVLMaxAppFee(calcNetRealtimeNaf(quote)),
       maxDof: getWisrVLMaxDOF(getBaseAmountForDOF(quote.price, QuoteCommons.calcNetDeposit(quote)))
     };
     console.log('getMyMaxFees...', r);
@@ -404,7 +416,7 @@ const saveQuote = (approvalType, param, recordId) =>
     } else {
       reject(new Error("QUOTE OR RECORDID EMPTY in SaveQuoting function"));
     }
-});
+  });
 
 /**
 *  -- Lee
@@ -433,7 +445,7 @@ const sendEmail = (param, recordId) =>
     } else {
       reject(new Error(`Something wrong in sendEmail : param: ${param}`));
     }
-});
+  });
 
 export const CalHelper = {
   options: calcOptions,
@@ -448,7 +460,7 @@ export const CalHelper = {
   getTableRatesData: getTableRatesData,
   createClientRateOptions: createClientRateOptions,
   tableRateDataColumns: tableRateDataColumns,
-  getNetRealtimeNaf: getNaf,
+  getNetRealtimeNaf: calcNetRealtimeNaf,
   getNetDeposit: QuoteCommons.calcNetDeposit,
   saveQuote: saveQuote,
   sendEmail: sendEmail

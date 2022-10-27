@@ -1,7 +1,7 @@
-import getQuotingData from "@salesforce/apex/quoteLatitudeCalcController.getQuotingData";
+import getQuotingData from "@salesforce/apex/QuoteLatitudeCalcController.getQuotingData";
 import getBaseRates from "@salesforce/apex/QuoteController.getBaseRates";
 import calculateRepayments from "@salesforce/apex/QuoteController.calculateAllRepayments";
-import save from "@salesforce/apex/quoteLatitudeCalcController.save";
+import save from "@salesforce/apex/QuoteLatitudeCalcController.save";
 import sendQuote from "@salesforce/apex/QuoteController.sendQuote";
 import {
   QuoteCommons,
@@ -12,6 +12,9 @@ import { Validations } from "./quoteValidations";
 
 // Default settings
 let lenderSettings = {};
+// API Responses
+let apiResponses = {};
+// Rates
 let tableRatesData = [];
 let allTableRatesData = { 'Diamond Plus': null, 'Diamond': null, 'Sapphire': null, 'Ruby': null, 'Emerald': null };
 let rates3List = [];
@@ -106,17 +109,16 @@ const calculate = (quote) =>
       console.log('quote::', quote)
       // Prepare params
       const profile = quote.securedUnsecured === "Secured" ? "Secured" : "Unsecured";
-      // new total calculated amount
-      const totalAmount = calcNetRealtimeNaf(quote);
-      // commRate is constant for eastimated Commission
+      // commRate is constant for estimated Commission
       const commR = 2.25;
       const p = {
         lender: LENDER_QUOTING,
         productLoanType: quote.loanProduct,
         customerProfile: profile,
         privateSales: quote.privateSales,
-        totalAmount: totalAmount,
-        totalInsurance: QuoteCommons.calcTotalInsuranceType(quote),
+        totalAmount: calcTotalAmount(quote),
+        // totalInsurance: QuoteCommons.calcTotalInsuranceType(quote),
+        // totalInsuranceIncome: QuoteCommons.calcTotalInsuranceIncome(quote),
         clientRate: quote.clientRate,
         baseRate: quote.baseRate,
         paymentType: quote.paymentType,
@@ -243,7 +245,7 @@ const reset = (recordId) => {
     dof: null,
     maxDof: null,
     residual: null,
-    term: calcOptions.terms[0].value,
+    term: 60,
     privateSales: calcOptions.privateSales[1].value,
     paymentType: calcOptions.paymentTypes[0].value,
     loanTypeDetail: calcOptions.classes[0].value,
@@ -289,14 +291,19 @@ const loadData = (recordId) =>
         // Settings
         lenderSettings = quoteData.settings;
 
-        console.log('lenderSettings:::', JSON.stringify(lenderSettings, null, 2))
+        // API  responses
+        apiResponses = quoteData.apiResponses;
+
+        console.log(
+          "lenderSettings:::",
+          JSON.stringify(lenderSettings, null, 2)
+        );
 
         // Rate Settings
         if (quoteData.rateSettings) {
           tableRatesData = quoteData.rateSettings[`${RATE_SETTING_NAMES[0]}`];
 
           // console.log(`@@tableData:`, JSON.stringify(tableRatesData, null, 2));
-
         }
         console.log(`@@data:`, JSON.stringify(data, null, 2));
         resolve(data);
@@ -405,19 +412,28 @@ const getAllTableData = (category, quote) => {
   return formattedTableData;
 };
 
+const getApiResponses = () => {
+  return apiResponses;
+};
+
 // custom calculations for NAF generations
 const calcNetRealtimeNaf = (quote) => {
-  let netRealtimeNaf = QuoteCommons.calcNetRealtimeNaf(quote);
-  console.log('variables', netRealtimeNaf);
-  let r = quote.registrationFee + netRealtimeNaf;
+  let r = calcTotalAmount(quote);
+  r += QuoteCommons.calcTotalInsuranceType(quote);
   return r;
 }
 
+// custom calculations for NAF generations
+const calcTotalAmount = (quote) => {
+  let r = QuoteCommons.calcTotalAmount(quote);
+  // console.log('variables', netRealtimeNaf);
+  r += quote.registrationFee > 0 ? quote.registrationFee : 0.0;
+  return r;
+};
+
 const calcDOF = (quote) => {
-  quote.dof = 0;
-  let naf = QuoteCommons.calcNetRealtimeNaf(quote);
+  let r = calcNetRealtimeNaf(quote) - quote.dof;
   console.log('CalcDOF::', QuoteCommons.calcNetRealtimeNaf(quote), quote.dof)
-  let r = quote.registrationFee + naf;
   console.log('calcDOF', r)
   if (r > 20000) {
     r = 1650.00;
@@ -430,7 +446,7 @@ const calcDOF = (quote) => {
     r = 0;
   }
   console.log('calcNetRealtimeDOF', r)
-  return r;
+  return Number((Math.round(r * 100) / 100).toFixed(2));
 }
 
 /**
@@ -517,5 +533,6 @@ export const CalHelper = {
   DOF_CALC_FIELDS: DOF_CALC_FIELDS,
   getAllTableData: getAllTableData,
   saveQuote: saveQuote,
-  sendEmail: sendEmail
+  sendEmail: sendEmail,
+  getApiResponses: getApiResponses
 };

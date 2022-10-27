@@ -307,6 +307,11 @@ export default class QuoteMacquarieConsumerCalc extends LightningElement {
             })
             .catch((error) => reject(error));
 
+
+        console.log('fieldChange>>', this.quoteForm.assetYear);
+
+        // Insurances
+        QuoteCommons.calculateInsurances(this, fldName);
         // --------------
     }
 
@@ -372,21 +377,6 @@ export default class QuoteMacquarieConsumerCalc extends LightningElement {
         this.quoteForm.maxDof = ((this.quoteForm.dof != null) ? (NAF - this.quoteForm.dof) : NAF) * 0.08;
         console.log("NAF ==>" + NAF);
         console.log("maxDof ==>" + this.quoteForm.maxDof);
-        /*CalHelper.calcFees(this.quoteForm) 
-        .then((data) => {
-            console.log('==> calcFees data ', JSON.stringify(data));
-            this.quoteForm.applicationFee = data.applicationFee;
-            this.quoteForm.maxApplicationFee = data.maxApplicationFee;
-            this.quoteForm.dof = data.dof;
-            rhis.quoteForm.maxDof = data.maxDof;
-        })
-        .catch((error) => {
-            console.error(JSON.stringify(error, null, 2));
-            //displayToast(this, "Calc Fees...", error, "error");
-        })
-        .finally(() => {
-            //this.isBaseRateBusy = false;
-        });*/
     }
 
     // -------------
@@ -463,6 +453,8 @@ export default class QuoteMacquarieConsumerCalc extends LightningElement {
         this.isBusy = true;
         if (!this.messageObj.errors.length > 0 || this.isErrorInsuranceOnly()) {
             this.messageObj = QuoteCommons.resetMessage();
+            // LTV type change
+            this.quoteForm.ltv = this.quoteForm.ltv.toString();
             CalHelper.saveQuote(loanType, this.quoteForm, this.recordId)
                 .then((data) => {
                     console.log("@@data in handleSave:", JSON.stringify(data, null, 2));

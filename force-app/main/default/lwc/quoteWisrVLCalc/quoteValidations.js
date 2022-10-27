@@ -77,7 +77,7 @@ const validate = (quote, messages) => {
     });
   }
   if (quote.term === 84 && quote.creditScore < 640) {
-    errorList.push({
+    warningList.push({
       field: "term",
       message: "7 year terms only for scores >= 640."
     });

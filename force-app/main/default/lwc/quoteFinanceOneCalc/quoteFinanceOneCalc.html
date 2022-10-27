@@ -287,23 +287,13 @@
         </div>
         <!-- Rates -->
         <!-- Max Rate -->
-        <div class="c-row-details">
-            <div class="c-detail-labels"><span class="c-label">Max Rate</span></div>
-            <div class="c-detail-fields">
-                <lightning-formatted-number format-style="percent-fixed"
-                    minimum-fraction-digits="2" value={quoteForm.maxRate}
-                    class="c-read-only-field">
-                </lightning-formatted-number>
-            </div>
-        </div>
-        <!-- Base Rate -->
+         <!-- Base Rate -->
         <div class="c-row-details">
             <div class="c-detail-labels"><span class="c-label">Base Rate</span></div>
-            <div class="c-detail-fields">
-                <lightning-formatted-number format-style="percent-fixed"
-                    minimum-fraction-digits="2" value={quoteForm.baseRate}
-                    class="c-read-only-field">
-                </lightning-formatted-number>
+            <div class="slds-col slds-size_8-of-12 c-base-rate">
+                <lightning-formatted-number value={quoteForm.baseRate}
+                    format-style="percent-fixed" minimum-fraction-digits="2"
+                    class="c-read-only-field"></lightning-formatted-number>
                 <template if:true={isBaseRateBusy}>
                     <span class="c-status-icon">
                         <lightning-dynamic-icon type="eq" option="play"
@@ -311,6 +301,12 @@
                         </lightning-dynamic-icon>
                     </span>
                 </template>
+                <span class="c-max-rate">
+                    Max.
+                    <lightning-formatted-number value={quoteForm.maxRate}
+                        format-style="percent-fixed" minimum-fraction-digits="2"
+                        class="c-read-only-field"></lightning-formatted-number>
+                </span>
             </div>
         </div>
         <!-- Client Rate -->
@@ -321,7 +317,7 @@
                     step="0.01" name="clientRate" value={quoteForm.clientRate}
                     data-id="clientRate-field" label="Client Rate"
                     placeholder="0.00%"
-                    class="slds-form__item field-x-small-width"
+                    class="slds-form__item"
                     variant="label-hidden" onchange={handleFieldChange}>
                 </lightning-input>
             </div>

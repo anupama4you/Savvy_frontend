@@ -20,13 +20,11 @@ export default class QuotePepperMVCalc extends LightningElement {
   @track quoteForm;
   // Rate Settings
   @track tableRates;
+  // Api details
+  @track apiDetails = [];
   @wire(getRecord, { recordId: "$recordId", fields })
   opp;
   // -
-
-  // --- Insurance ---
-
-  // --- Insurance: end ---
 
   connectedCallback() {
     console.log(`connectedCallback... ${this.opp.data}`);
@@ -37,6 +35,7 @@ export default class QuotePepperMVCalc extends LightningElement {
         console.log(`Data loaded!`);
         this.quoteForm = data;
         this.tableRates = CalHelper.getTableRatesData();
+        this.apiDetails = CalHelper.getApiResponses();
         this.baseRateCalc();
       })
       .catch((error) => {
@@ -95,9 +94,9 @@ export default class QuotePepperMVCalc extends LightningElement {
     console.log(`Changing value for: ${event.target.name}...`);
     const fldName = event.target.name;
     this.isCalculated = false;
-    this.template.querySelector(
-      "c-quote-insurance-form"
-    ).isQuoteCalculated = false;
+    // this.template.querySelector(
+    //   "c-quote-insurance-form"
+    // ).isQuoteCalculated = false;
     let fld = this.template.querySelector(`[data-id="${fldName}-field"]`);
     let v = event.detail ? event.detail.value : "";
     if (fld && fld.type === "number") {
@@ -117,6 +116,8 @@ export default class QuotePepperMVCalc extends LightningElement {
       this.baseRateCalc();
     }
 
+    // Insurances
+    QuoteCommons.calculateInsurances(this, fldName);
     // --------------
   }
 
@@ -136,10 +137,10 @@ export default class QuotePepperMVCalc extends LightningElement {
   // Reset
   reset() {
     this.quoteForm = CalHelper.reset(this.recordId);
-    console.log(
-      "🚀 ~ file: QuotePepperMVCalc.js ~ line 113 ~ QuotePepperMVCalc ~ reset ~ this.quoteForm",
-      JSON.stringify(this.quoteForm, null, 2)
-    );
+    // console.log(
+    //   "🚀 ~ file: QuotePepperMVCalc.js ~ line 113 ~ QuotePepperMVCalc ~ reset ~ this.quoteForm",
+    //   JSON.stringify(this.quoteForm, null, 2)
+    // );
   }
 
   // Base Rate
@@ -147,7 +148,7 @@ export default class QuotePepperMVCalc extends LightningElement {
     this.isBaseRateBusy = true;
     CalHelper.baseRates(this.quoteForm)
       .then((data) => {
-        console.log(`Data loaded!`);
+        // console.log(`Data loaded!`);
         this.quoteForm.baseRate = data.baseRate;
         this.quoteForm.maxRate = data.maxRate;
       })
@@ -170,7 +171,7 @@ export default class QuotePepperMVCalc extends LightningElement {
     this.messageObj = QuoteCommons.resetMessage();
     CalHelper.calculate(this.quoteForm)
       .then((data) => {
-        console.log("@@data:", JSON.stringify(data, null, 2));
+        // console.log("@@data:", JSON.stringify(data, null, 2));
         this.quoteForm.commissions = data.commissions;
         this.messageObj = data.messages;
         QuoteCommons.handleHasErrorClassClear(this);
@@ -350,7 +351,7 @@ export default class QuotePepperMVCalc extends LightningElement {
     this.handleSave(null, event.detail);
   }
 
-  handleInsuanceLoad(event) {
+  handleInsuranceLoad(event) {
     this.handleInsuranceChange(event);
     // check if there is no acceptance
     if (
@@ -368,7 +369,7 @@ export default class QuotePepperMVCalc extends LightningElement {
       };
     }
     this.console.log(
-      "handleInsuanceLoad>>",
+      "handleInsuranceLoad>>",
       JSON.stringify(this.quoteForm, null, 2)
     );
   }
@@ -376,5 +377,7 @@ export default class QuotePepperMVCalc extends LightningElement {
   handleDisableButton(event) {
     this.isCalculated = event.detail;
   }
+
   // --- insurance: end ---
+
 }

@@ -1,9 +1,8 @@
 import getQuotingData from "@salesforce/apex/QuoteBOQController.getQuotingData";
 import getBaseRates from "@salesforce/apex/QuoteController.getBaseRates";
-import calculateRepayments from "@salesforce/apex/QuoteController.calculateRepayments";
+import calculateRepayments from "@salesforce/apex/QuoteController.calculateAllRepayments";
 import sendQuote from "@salesforce/apex/QuoteController.sendQuote";
 import save from "@salesforce/apex/QuoteBOQController.save";
-
 import {
     QuoteCommons,
     CommonOptions,
@@ -55,9 +54,7 @@ const FIELDS_MAPPING_FOR_APEX = new Map([
     ...QUOTING_FIELDS,
     ["Id", "Id"],
     ["privateSales", "Private_Sales__c"],
-    // ["clientTier", "Client_Tier__c"],
     ["assetAge", "Vehicle_Age__c"],
-    // ["baseRate", "Base_Rate__c"],
     ["maxRate", "Manual_Max_Rate__c"]
 ]);
 
@@ -114,11 +111,11 @@ const calculate = (quote) =>
             reject(res);
         } else {
             // Prepare params
-            // let profile = "COMMERCIAL";
             const p = {
                 lender: LENDER_QUOTING,
                 totalAmount: QuoteCommons.calcTotalAmount(quote),
-                totalInsurance: QuoteCommons.calcTotalInsuranceType(quote),
+                // totalInsurance: QuoteCommons.calcTotalInsuranceType(quote),
+                totalInsuranceIncome: QuoteCommons.calcTotalInsuranceIncome(quote),
                 clientRate: quote.clientRate,
                 baseRate: quote.baseRate,
                 paymentType: quote.paymentType,
@@ -133,12 +130,18 @@ const calculate = (quote) =>
             // Calculate
             console.log(`@@param:`, JSON.stringify(p, null, 2));
             calculateRepayments({
-                param: p
+                param: p,
+                insuranceParam: quote.insurance
             })
                 .then((data) => {
                     console.log(`@@SF:`, JSON.stringify(data, null, 2));
                     // Mapping
-                    res.commissions = QuoteCommons.mapCommissionSObjectToLwc(data);
+                    res.commissions = QuoteCommons.mapCommissionSObjectToLwc(
+                        data.commissions,
+                        quote.insurance,
+                        data.calResults
+                    );
+
                     console.log(JSON.stringify(res.commissions, null, 2));
                     // Validate the result of commissions
                     res.messages = Validations.validatePostCalculation(res.commissions, res.messages);
@@ -229,8 +232,9 @@ const baseRateMapping = () => {
 };
 
 // Reset
-const reset = () => {
+const reset = (recordId) => {
     let r = {
+        oppId: recordId,
         loanType: calcOptions.loanTypes[0].value,
         loanProduct: calcOptions.loanProducts[0].value,
         riskGrade: calcOptions.riskGrades[0].value,
@@ -256,7 +260,8 @@ const reset = () => {
         baseRate: 0.0,
         maxRate: 0.0,
         clientRate: null,
-        commissions: QuoteCommons.resetResults()
+        commissions: QuoteCommons.resetResults(),
+        insurance: { integrity: {} }
     };
     r = QuoteCommons.mapDataToLwc(r, lenderSettings, SETTING_FIELDS);
     return r;
@@ -267,7 +272,8 @@ const loadData = (recordId) =>
     new Promise((resolve, reject) => {
         const fields = [
             ...QUOTING_FIELDS.values(),
-            ...QuoteCommons.COMMISSION_FIELDS.values()
+            ...QuoteCommons.COMMISSION_FIELDS.values(),
+            ...QuoteCommons.INSURANCE_FIELDS.values()
         ];
         getQuotingData({
             param: {
@@ -282,7 +288,7 @@ const loadData = (recordId) =>
                 // Mapping Quote's fields
                 let data = QuoteCommons.mapSObjectToLwc({
                     calcName: LENDER_QUOTING,
-                    defaultData: reset(),
+                    defaultData: reset(recordId),
                     quoteData: quoteData,
                     settingFields: SETTING_FIELDS,
                     quotingFields: QUOTING_FIELDS,

@@ -2,7 +2,7 @@ import getQuotingData from "@salesforce/apex/QuoteGreenLightController.getQuotin
 import getBaseRates from "@salesforce/apex/QuoteGreenLightController.getBaseRates";
 import getCalcFees from "@salesforce/apex/QuoteGreenLightController.getFees";
 import getGreenlightRates from "@salesforce/apex/QuoteGreenLightController.getGreenlight";
-import calculateRepayments from "@salesforce/apex/QuoteGreenLightController.calculateRepayments";
+import calculateRepayments from "@salesforce/apex/QuoteController.calculateAllRepayments";
 import sendQuote from "@salesforce/apex/QuoteController.sendQuote";
 import save from "@salesforce/apex/QuoteGreenLightController.save";
 import {
@@ -118,7 +118,7 @@ const QUOTING_FIELDS = new Map([
   ["clientRate", "Client_Rate__c"],
   ["applicationId", "Application__c"],
   ["clientTier", "Client_Tier__c"],
-  ["brokeragePer", "Brokerage__c"]
+  ["brokerage", "Brokerage__c"]
 ]);
 
 // - TODO: need to map more fields
@@ -147,12 +147,22 @@ const BASE_RATE_FIELDS = ["clientTier", "vehicleYear", "assetType", "lvr"];
 
 const CALC_FEES_FIELDS = ["price", "deposit", "tradeIn", "payoutOn"];
 
+// calculate NAF commission
+const getNafCommission = (quote) => {
+  let r = 0.0;
+  r += quote.price;
+  r -= QuoteCommons.calcNetDeposit(quote);
+  return r;
+}
+
 const calculate = (quote) =>
   new Promise((resolve, reject) => {
     let res = {
       commissions: QuoteCommons.resetResults(),
       messages: QuoteCommons.resetMessage()
     };
+
+    let nafCommission = getNafCommission(quote);
 
     // Prepare params
     const p = {
@@ -164,7 +174,7 @@ const calculate = (quote) =>
       assetType: quote.assetType,
       privateSales: quote.privateSales,
       totalAmount: QuoteCommons.calcTotalAmount(quote),
-      totalInsurance: QuoteCommons.calcTotalInsuranceType(quote, "Q"),
+      totalInsurance: QuoteCommons.calcTotalInsuranceIncome(quote),
       totalInsuranceIncome: QuoteCommons.calcTotalInsuranceIncome(quote),
       clientRate: quote.clientRate,
       baseRate: quote.baseRate,
@@ -177,7 +187,8 @@ const calculate = (quote) =>
       maxRate: quote.maxRate,
       brokeragePer: quote.brokerage,
       netDeposit: quote.netDeposit,
-      vehiclePrice: quote.price
+      vehiclePrice: quote.price,
+      amountBaseComm: nafCommission
     };
 
     getGreenlightRates({
@@ -191,11 +202,16 @@ const calculate = (quote) =>
         } else {
           // Calculate
           calculateRepayments({
-            param: p
+            param: p,
+            insuranceParam: quote.insurance
           })
             .then((data) => {
               // Mapping
-              res.commissions = QuoteCommons.mapCommissionSObjectToLwc(data);
+              res.commissions = QuoteCommons.mapCommissionSObjectToLwc(
+                data.commissions,
+                quote.insurance,
+                data.calResults
+              );
 
               // Validate the result of commissions
               res.messages = Validations.validatePostCalculation(
@@ -293,8 +309,9 @@ const reset = (recordId) => {
     paymentType: "Arrears",
     clientTier: "Platinum",
     lvr: null,
+    brokerage: 5,
     commissions: QuoteCommons.resetResults(),
-    brokerage: 5
+    insurance: { integrity: {} },
   };
   r = QuoteCommons.mapDataToLwc(r, lenderSettings, SETTING_FIELDS);
   return r;
@@ -306,7 +323,8 @@ const loadData = (recordId) =>
     //  const fields = Array.from(QUOTING_FIELDS.values());
     const fields = [
       ...QUOTING_FIELDS.values(),
-      ...QuoteCommons.COMMISSION_FIELDS.values()
+      ...QuoteCommons.COMMISSION_FIELDS.values(),
+      ...QuoteCommons.INSURANCE_FIELDS.values()
     ];
 
     getQuotingData({

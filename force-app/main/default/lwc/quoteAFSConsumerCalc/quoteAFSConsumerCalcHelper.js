@@ -1,6 +1,7 @@
 import getQuotingData from "@salesforce/apex/QuoteAFSConsumerController.getQuotingData";
 import getApplications from "@salesforce/apex/QuoteAFSConsumerController.getApplications";
 import getBaseRates from "@salesforce/apex/QuoteAFSConsumerController.getBaseRates";
+// import calculateRepayments from "@salesforce/apex/QuoteController.calculateAllRepayments";
 import calculateRepayments from "@salesforce/apex/QuoteAFSConsumerController.calculateRepayments";
 import sendQuote from "@salesforce/apex/QuoteController.sendQuote";
 import save from "@salesforce/apex/QuoteAFSConsumerController.save";
@@ -295,7 +296,8 @@ const reset = (recordId) => {
     maxRate: 0.0,
     baseRate: 0.0,
     clientRate: null,
-    commissions: QuoteCommons.resetResults()
+    commissions: QuoteCommons.resetResults(),
+    insurance: { integrity: {} }
   };
   r = QuoteCommons.mapDataToLwc(r, lenderSettings, SETTING_FIELDS);
   return r;
@@ -307,7 +309,8 @@ const loadData = (recordId) =>
     //  const fields = Array.from(QUOTING_FIELDS.values());
     const fields = [
       ...QUOTING_FIELDS.values(),
-      ...QuoteCommons.COMMISSION_FIELDS.values()
+      ...QuoteCommons.COMMISSION_FIELDS.values(),
+      ...QuoteCommons.INSURANCE_FIELDS.values()
     ];
 
     getQuotingData({
@@ -353,12 +356,18 @@ const getTableRatesData = (planType, assetType) => {
   return res;
 };
 
+const totalAmount = (quote) => {
+  return QuoteCommons.calcTotalAmount(quote) + (quote.rrfee ? quote.rrfee : 0);
+}
+
 const calculate = (quote) =>
   new Promise((resolve, reject) => {
     let res = {
       commissions: QuoteCommons.resetResults(),
       messages: QuoteCommons.resetMessage()
     };
+
+    console.log('data before Controller: ', JSON.stringify(quote, null, 2));
 
     // Validate quote
     res.messages = Validations.validate(quote, res.messages, applicationValue);
@@ -368,8 +377,8 @@ const calculate = (quote) =>
       // Prepare params
       const p = {
         lender: LENDER_QUOTING,
-        totalAmount: getNetRealtimeNaf(quote),
-        totalInsurance: QuoteCommons.calcTotalInsuranceType(quote, "Q"),
+        totalAmount: totalAmount(quote),
+        // totalAmount: QuoteCommons.calcTotalAmount(quote),
         totalInsuranceIncome: QuoteCommons.calcTotalInsuranceIncome(quote),
         clientRate: quote.clientRate,
         baseRate: quote.baseRate,
@@ -389,13 +398,16 @@ const calculate = (quote) =>
 
       // Calculate
       calculateRepayments({
-        param: p
+        param: p,
+        insuranceParam: quote.insurance
       })
         .then((data) => {
+          console.log('data after Controller: ', JSON.stringify(data, null, 2));
           // Mapping
           res.commissions = QuoteCommons.mapCommissionSObjectToLwc(
-            data,
-            quote.insurance
+            data.commissions,
+            quote.insurance,
+            data.calResults
           );
 
           // Validate the result of commissions

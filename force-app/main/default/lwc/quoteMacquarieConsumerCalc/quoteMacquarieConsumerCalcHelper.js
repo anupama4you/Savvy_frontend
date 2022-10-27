@@ -1,10 +1,7 @@
 import getQuotingData from "@salesforce/apex/QuoteManager.getQuotingData";
-//import getDefaultBrokerage from "@salesforce/apex/QuoteGreenLightController.getDefaultBrokeragePercentage";
 import getBaseRates from "@salesforce/apex/QuoteManager.getBaseRates";
-import getCalcFees from "@salesforce/apex/QuoteManager.getFees";
 import calculateRepayments from "@salesforce/apex/QuoteController.calculateAllRepayments";
 import sendQuote from "@salesforce/apex/QuoteController.sendQuote";
-//import getRateSetterRate from "@salesforce/apex/QuoteManager.getRateSetterRate";
 import save from "@salesforce/apex/QuoteManager.save";
 import {
   QuoteCommons,
@@ -73,7 +70,6 @@ const FIELDS_MAPPING_FOR_APEX = new Map([
   ["Id", "Id"],
   ["privateSales", "Private_Sales__c"],
   ["clientTier", "Client_Tier__c"],
-  ["assetAge", "Vehicle_Age__c"],
   ["baseRate", "Base_Rate__c"],
   ["maxRate", "Manual_Max_Rate__c"]
 ]);
@@ -148,8 +144,7 @@ const calculate = (quote) =>
 
         lender: LENDER_QUOTING,
         totalAmount: QuoteCommons.calcTotalAmount(quote),
-        totalInsurance: QuoteCommons.calcTotalInsuranceType(quote),
-        totalInsuranceIncome: QuoteCommons.calcTotalInsuranceType(quote),
+        totalInsurance: QuoteCommons.calcTotalInsuranceIncome(quote),
         clientRate: quote.clientRate,
         baseRate: quote.baseRate,
         paymentType: quote.paymentType,
@@ -431,39 +426,6 @@ const getMyBaseRates = (quote) =>
       .catch((error) => reject(error));
   });
 
-//get fees calculations
-const calcFees = (quote) =>/*
-  new Promise((resolve, reject) => { //not used in plenti
-
-    const dofVal = lenderSettings.DOF__c ? lenderSettings.DOF__c : 0;
-    const appFeeVal = lenderSettings.Application_Fee__c ? lenderSettings.Application_Fee__c : 0;
-
-    const p = {
-      totalAmount: quote.netDeposit,
-      vehiclePrice: quote.price
-    };
-    const l = {
-      dof: dofVal,
-      applicationFee: appFeeVal
-    };
-
-    console.log('==> getFeesCalculations param ', JSON.stringify(p));
-    console.log('==> getFeesCalculations lender ', JSON.stringify(l));
-    
-    getCalcFees({
-      param: p,
-      lenderSettings: l,
-      onlyMax: false
-    })
-      .then((fees) => {
-        console.log('==> getFeesCalculations fees ', JSON.stringify(fees));
-        resolve(fees);
-      })
-      .catch((error) => reject(error));
-});*/ {
-  return null;
-}
-
 
 const getTableRatesData = () => {
   return tableRatesData;
@@ -486,7 +448,8 @@ const saveQuote = (approvalType, param, recordId) =>
           LENDER_QUOTING,
           FIELDS_MAPPING_FOR_APEX
         ),
-        approvalType: approvalType
+        approvalType: approvalType,
+        lender: LENDER_QUOTING
       })
         .then((data) => {
           resolve(data);
@@ -534,7 +497,6 @@ export const CalHelper = {
   load: loadData,
   reset: reset,
   baseRates: getMyBaseRates,
-  calcFees, calcFees,
   BASE_RATE_FIELDS: BASE_RATE_FIELDS,
   CALC_FEES_FIELDS: CALC_FEES_FIELDS,
   lenderSettings: lenderSettings,

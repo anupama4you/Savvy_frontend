@@ -1,6 +1,6 @@
 import getQuotingData from "@salesforce/apex/QuoteAffordableCLCalcController.getQuotingData";
 import getBaseRates from "@salesforce/apex/QuoteController.getBaseRates";
-import calculateRepayments from "@salesforce/apex/QuoteController.calculateRepayments";
+import calculateRepayments from "@salesforce/apex/QuoteController.calculateAllRepayments";
 import { QuoteCommons, CommonOptions } from "c/quoteCommons";
 import { Validations } from "./quoteValidations";
 import sendQuote from "@salesforce/apex/QuoteController.sendQuote";
@@ -75,7 +75,7 @@ const RATES_AND_FEES_FIELDS = [
 ];
 
 const getTotalAmount = (quote) => {
-  return QuoteCommons.calcTotalAmount(quote) + quote.riskFee;
+  return QuoteCommons.calcNetRealtimeNaf(quote) + quote.riskFee;
 }
 
 const calculate = (quote) =>
@@ -92,12 +92,12 @@ const calculate = (quote) =>
       reject(res);
       console.log('ling 76', res);
     } else {
-      let affordableFees= getAffordableFees(quote.clientRate);
+      let affordableFees = getAffordableFees(quote.clientRate);
       // Prepare params
       const p = {
         lender: LENDER_QUOTING,
-        totalAmount: getTotalAmount(quote),
-        totalInsurance: QuoteCommons.calcTotalInsuranceType(quote),
+        totalAmount: QuoteCommons.calcTotalAmount(quote) + quote.riskFee,
+        totalInsurance: QuoteCommons.calcTotalInsuranceIncome(quote),
         totalInsuranceIncome: QuoteCommons.calcTotalInsuranceType(quote),
         clientRate: quote.clientRate,
         term: quote.term,
@@ -115,12 +115,17 @@ const calculate = (quote) =>
       // Calculate
       console.log(`@@param:`, JSON.stringify(p, null, 2));
       calculateRepayments({
-        param: p
+        param: p,
+        insuranceParam: quote.insurance
       })
         .then((data) => {
           console.log(`@@SF:`, JSON.stringify(data, null, 2));
           // Mapping
-          res.commissions = QuoteCommons.mapCommissionSObjectToLwc(data);
+          res.commissions = QuoteCommons.mapCommissionSObjectToLwc(
+            data.commissions,
+            quote.insurance,
+            data.calResults
+          );
           console.log(JSON.stringify(res.commissions, null, 2));
           // Validate the result of commissions
           res.messages = Validations.validatePostCalculation(res.commissions, res.messages);
@@ -133,64 +138,64 @@ const calculate = (quote) =>
     }
   });
 
-  const createVehicleYears = () => {
-    let r = [];
-    let today = new Date();
-    let year = today.getFullYear();
-    r.push({ label: "--None--", value: "" });
-    for (let i = year; i >= (year-15); i--) {
-      r.push({ label: i.toString(), value: i.toString() });
-    }
-    return r;
-  };
+const createVehicleYears = () => {
+  let r = [];
+  let today = new Date();
+  let year = today.getFullYear();
+  r.push({ label: "--None--", value: "" });
+  for (let i = year; i >= (year - 15); i--) {
+    r.push({ label: i.toString(), value: i.toString() });
+  }
+  return r;
+};
 
-  const createClientRateOptions = (quote) => {
-    let r = [];
-    r.push({ label: "--None--", value: "" });
-    if(quote.baseRate>0 && quote.maxRate) {
-      let baseRate = Number(quote.baseRate);
-      let maxRate = Number(quote.maxRate);
-      for (let i = baseRate; i <= maxRate; i+=0.25) {
-        r.push({ label: i, value: i });
-      }
+const createClientRateOptions = (quote) => {
+  let r = [];
+  r.push({ label: "--None--", value: "" });
+  if (quote.baseRate > 0 && quote.maxRate) {
+    let baseRate = Number(quote.baseRate);
+    let maxRate = Number(quote.maxRate);
+    for (let i = baseRate; i <= maxRate; i += 0.25) {
+      r.push({ label: i, value: i });
     }
-    return r;
-  };
+  }
+  return r;
+};
 
-  const calcOptions = {
-    loanTypes: CommonOptions.loanTypes,
-    paymentTypes: CommonOptions.paymentTypes,
-    loanProducts: CommonOptions.fullLoanProducts,
-    terms: [
-      { label: "--None--", value: "" },
-      { label: 24, value: 24 },
-      { label: 36, value: 36 },
-      { label: 48, value: 48 },
-      { label: 60, value: 60 },
-    ],
-    vehicleYears: createVehicleYears(),
-    commissionTypes: [
-      { label: "Calculated", value: "Calculated" },
-      { label: "Manual", value: "Manual" },
-    ],
-    repaymentTypes: [
-      { label: "--None--", value: "" },
-      { label: "Weekly", value: "Weekly" },
-      { label: "Fortnightly", value: "Fortnightly" },
-    ],
-    creditScores: [
-      { label: "--None--", value: "" },
-      { label: "500+", value: "500+" },
-      { label: "400-499", value: "400-499" },
-      { label: "300-399", value: "300-399" },
-    ]
-  };
+const calcOptions = {
+  loanTypes: CommonOptions.loanTypes,
+  paymentTypes: CommonOptions.paymentTypes,
+  loanProducts: CommonOptions.fullLoanProducts,
+  terms: [
+    { label: "--None--", value: "" },
+    { label: 24, value: 24 },
+    { label: 36, value: 36 },
+    { label: 48, value: 48 },
+    { label: 60, value: 60 },
+  ],
+  vehicleYears: createVehicleYears(),
+  commissionTypes: [
+    { label: "Calculated", value: "Calculated" },
+    { label: "Manual", value: "Manual" },
+  ],
+  repaymentTypes: [
+    { label: "--None--", value: "" },
+    { label: "Weekly", value: "Weekly" },
+    { label: "Fortnightly", value: "Fortnightly" },
+  ],
+  creditScores: [
+    { label: "--None--", value: "" },
+    { label: "500+", value: "500+" },
+    { label: "400-499", value: "400-499" },
+    { label: "300-399", value: "300-399" },
+  ]
+};
 
 // Reset
 const reset = (recordId) => {
   let r = {
-    oppId : recordId,
-    quoteName : LENDER_QUOTING,
+    oppId: recordId,
+    quoteName: LENDER_QUOTING,
     loanType: calcOptions.loanTypes[0].value,
     loanProduct: calcOptions.loanProducts[0].value,
     price: 0,
@@ -210,7 +215,8 @@ const reset = (recordId) => {
     repayment: "",
     commissionType: "Calculated",
     riskFeeTotal: 0,
-    commissions: QuoteCommons.resetResults()
+    commissions: QuoteCommons.resetResults(),
+    insurance: { integrity: {} }
   };
   console.log('Helper reset...');
   console.log('obj:::', r, 'lenderSettings:::', lenderSettings, 'SETTING_FIELDS:::', SETTING_FIELDS);
@@ -224,7 +230,8 @@ const loadData = (recordId) =>
     //  const fields = Array.from(QUOTING_FIELDS.values());
     const fields = [
       ...QUOTING_FIELDS.values(),
-      ...QuoteCommons.COMMISSION_FIELDS.values()
+      ...QuoteCommons.COMMISSION_FIELDS.values(),
+      ...QuoteCommons.INSURANCE_FIELDS.values()
     ];
     console.log('oppId', recordId,
       'fields', fields,
@@ -285,18 +292,18 @@ const getMyBaseRates = (quote) =>
       .then((rates) => {
         console.log(`@@SF:`, JSON.stringify(rates, null, 2));
         console.log('calcRiskFee...');
-        let myRate = (quote.clientRate === 0 || quote.clientRate === "")? rates.maxRate : quote.clientRate;
+        let myRate = (quote.clientRate === 0 || quote.clientRate === "") ? rates.maxRate : quote.clientRate;
         let riskFeeTotal = 0, maxApplicationFee = quote.maxApplicationFee, applicationFee = quote.applicationFee;
         let affordableFees = getAffordableFees(myRate);
         if (affordableFees.Establishment_Fee__c > 0 && affordableFees.Establishment_Fee__c != quote.maxApplicationFee) {
           maxApplicationFee = affordableFees.Establishment_Fee__c;
           if (quote.applicationFee === "" || quote.applicationFee === 0 || quote.applicationFee > maxApplicationFee) {
-              applicationFee = maxApplicationFee;
+            applicationFee = maxApplicationFee;
           }
         }
         console.log('line 295', getNaf(quote));
-        if(quote.term !== "") {
-            riskFeeTotal = (myRate/100 * affordableFees.Risk_Fee_Interest_Rate_Of_NAF__c/100) * (quote.term/12) * getNaf(quote);
+        if (quote.term !== "") {
+          riskFeeTotal = (myRate / 100 * affordableFees.Risk_Fee_Interest_Rate_Of_NAF__c / 100) * (quote.term / 12) * getNaf(quote);
         }
         resolve({
           maxRate: rates.maxRate,
@@ -319,10 +326,10 @@ const getAclUpfrontLoanFees = () => {
 
 const getAffordableFees = (rate) => {
   let affordableFees = {};
-  if (aclUpfrontLoanFees.length>0) {
+  if (aclUpfrontLoanFees.length > 0) {
     aclUpfrontLoanFees.forEach(x => {
       if (rate >= x.Min_Interest_Rate__c && rate <= x.Max_Interest_Rate__c) {
-          affordableFees = x;
+        affordableFees = x;
       }
     });
   }
@@ -357,7 +364,7 @@ const saveQuote = (approvalType, param, recordId) =>
     } else {
       reject(new Error("QUOTE OR RECORDID EMPTY in SaveQuoting function"));
     }
-});
+  });
 
 /**
 *  -- Lee
@@ -386,7 +393,7 @@ const sendEmail = (param, recordId) =>
     } else {
       reject(new Error(`Something wrong in sendEmail : param: ${param}`));
     }
-});
+  });
 
 export const CalHelper = {
   options: calcOptions,

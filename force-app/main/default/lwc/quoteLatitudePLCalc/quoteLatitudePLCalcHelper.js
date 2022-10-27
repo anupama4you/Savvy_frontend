@@ -1,19 +1,17 @@
-import getQuotingData from "@salesforce/apex/quoteLatitudePLCalcController.getQuotingData";
+import getQuotingData from "@salesforce/apex/QuoteLatitudePLCalcController.getQuotingData";
 import getBaseRates from "@salesforce/apex/QuoteController.getBaseRates";
 import calculateRepayments from "@salesforce/apex/QuoteController.calculateRepayments";
-import save from "@salesforce/apex/quoteLatitudePLCalcController.save";
+import save from "@salesforce/apex/QuoteLatitudePLCalcController.save";
 import sendQuote from "@salesforce/apex/QuoteController.sendQuote";
 import {
   QuoteCommons,
-  CommonOptions,
-  FinancialUtilities as fu
+  CommonOptions
 } from "c/quoteCommons";
 import { Validations } from "./quoteValidations";
 
 // Default settings
 let lenderSettings = {};
 let tableRatesData = [];
-let riskGradeOptionsData = [];
 let tableRateDataColumns = [
   { label: "Risk Grade", fieldName: "Risk_Grade__c" },
   {

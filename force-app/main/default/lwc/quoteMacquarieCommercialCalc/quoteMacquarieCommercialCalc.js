@@ -288,7 +288,6 @@ export default class QuoteMacquarieCommercialCalc extends LightningElement {
             }
         }
 
-
         //CommRate
         getRateSetterRate({
             param: this.quoteForm
@@ -301,6 +300,8 @@ export default class QuoteMacquarieCommercialCalc extends LightningElement {
 
         console.log('quoteform::', JSON.stringify(this.quoteForm, null, 2));
 
+        // Insurances
+        QuoteCommons.calculateInsurances(this, fldName);
         // --------------
     }
 

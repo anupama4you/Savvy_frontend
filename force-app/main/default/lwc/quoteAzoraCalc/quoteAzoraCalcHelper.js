@@ -1,6 +1,6 @@
 import getQuotingData from "@salesforce/apex/QuoteAzoraController.getQuotingData";
 import getBaseRates from "@salesforce/apex/QuoteController.getBaseRates";
-import calculateRepayments from "@salesforce/apex/QuoteController.calculateRepayments";
+import calculateRepayments from "@salesforce/apex/QuoteController.calculateAllRepayments";
 import sendQuote from "@salesforce/apex/QuoteController.sendQuote";
 import save from "@salesforce/apex/QuoteAzoraController.save";
 import {
@@ -27,7 +27,7 @@ const LENDER_QUOTING = "Azora Consumer";
 const QUOTING_FIELDS = new Map([
     ["loanType", "Loan_Type__c"],
     ["loanProduct", "Loan_Product__c"],
-    // ["creditScore", "Loan_Facility_Type__c"],
+    ["creditScore", "Loan_Facility_Type__c"],
     ["price", "Vehicle_Price__c"],
     ["deposit", "Deposit__c"],
     ["tradeIn", "Trade_In__c"],
@@ -79,12 +79,9 @@ const calculate = (quote) =>
             let profile = "Azora Consumer";
             const p = {
                 lender: LENDER_QUOTING,
-                // totalAmount: QuoteCommons.calcTotalAmount(quote),
-                // * NOW confused about the total amount and NAF, NAF  = total +- insurance *
-                //  CHECK `quoteCommon.js` calcTotalInsuranceType() and calcNetRealtimeNaf();
-                // NAF AND Total amount all uses the NAF to calculate.
                 totalAmount: netRealTimeNaf(quote),
-                totalInsurance: QuoteCommons.calcTotalInsuranceType(quote),
+                // totalInsurance: QuoteCommons.calcTotalInsuranceType(quote),
+                totalInsuranceIncome: QuoteCommons.calcTotalInsuranceIncome(quote),
                 riskFeeBase: quote.riskFee,
                 clientRate: quote.clientRate,
                 repaymentType: quote.repaymentType,
@@ -100,12 +97,17 @@ const calculate = (quote) =>
             // Calculate
             console.log(`@@Cal:`, JSON.stringify(p, null, 2));
             calculateRepayments({
-                param: p
+                param: p,
+                insuranceParam: quote.insurance
             })
                 .then((data) => {
                     console.log(`@@SF:`, JSON.stringify(data, null, 2));
                     // Mapping
-                    res.commissions = QuoteCommons.mapCommissionSObjectToLwc(data);
+                    res.commissions = QuoteCommons.mapCommissionSObjectToLwc(
+                        data.commissions,
+                        quote.insurance,
+                        data.calResults
+                    );
                     console.log(JSON.stringify(res.commissions, null, 2));
                     // Validate the result of commissions
                     res.messages = Validations.validatePostCalculation(res.commissions, res.messages);
@@ -153,7 +155,8 @@ const reset = () => {
         repaymentType: "Monthly",
         riskFee: 0.0,
         clientRate: null,
-        commissions: QuoteCommons.resetResults()
+        commissions: QuoteCommons.resetResults(),
+        insurance: { integrity: {} }
     };
     r = QuoteCommons.mapDataToLwc(r, lenderSettings, SETTING_FIELDS);
     return r;
@@ -164,7 +167,8 @@ const loadData = (recordId) =>
     new Promise((resolve, reject) => {
         const fields = [
             ...QUOTING_FIELDS.values(),
-            ...QuoteCommons.COMMISSION_FIELDS.values()
+            ...QuoteCommons.COMMISSION_FIELDS.values(),
+            ...QuoteCommons.INSURANCE_FIELDS.values()
         ];
         getQuotingData({
             param: {
@@ -296,9 +300,6 @@ export const CalHelper = {
     lenderSettings: lenderSettings,
     getTableRatesData: getTableRatesData,
     tableRateDataColumns: tableRateDataColumns,
-    // * NOW confused about the total amount and NAF, NAF  = total +- insurance *
-    //  CHECK `quoteCommon.js` calcTotalInsuranceType() and calcNetRealtimeNaf();
-    // NAF AND Total amount all uses the NAF to calculate.
     getNetRealtimeNaf: netRealTimeNaf,
     getNetDeposit: QuoteCommons.calcNetDeposit,
     saveQuote: saveQuote,

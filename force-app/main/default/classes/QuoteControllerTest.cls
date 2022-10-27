@@ -12,6 +12,9 @@ public class QuoteControllerTest {
     quoObj.rateSettings = null;
     quoObj.additionalProcess = null;
     quoObj.calcResults = null;
+    quoObj.apiResponses = null;
+    quoObj.opp = null;
+    quoObj.rawInsuranceParam = null;
 
     QuoteController.QuotingDataParam quoDataObj = new QuoteController.QuotingDataParam();
     quoDataObj.oppId = null;
@@ -62,6 +65,9 @@ public class QuoteControllerTest {
     quoObj = QuoteController.getQuotingData(quoDataObj);
 
     QuoteController.loadRateSettings(new List<String>{ 'PepperRate__c' });
+
+    // API responses
+    QuoteController.getMostRecentApiResponses(o.Id, 'Pepper', 'Pepper MV');
 
     Test.stopTest();
   }
@@ -127,8 +133,20 @@ public class QuoteControllerTest {
     param.data.Opportunity__c = opp.Id;
     insert param.data;
 
+    param.rawInsuranceParam = buildInsuranceParam();
+    param.rawInsuranceParam.lastAction = 'RE-CREATE';
+
     Test.startTest();
     QuoteController.sendQuote(param);
+
+    // Send presentation
+    param.additionalProcess = new List<String> {'SEND'};
+    param.insurance = InsuranceQuoteUtils.createDefaultInsuranceQuote(opp, param.data);
+    QuoteController.sendQuote(param);
+
+    // Insurance quote
+    QuoteController.getInsuranceQuote(param.data.Id);
+
     Test.stopTest();
   }
 
@@ -156,6 +174,36 @@ public class QuoteControllerTest {
     Test.stopTest();
   }
 
+  @isTest(SeeAllData=true)
+  static void getOpps() {
+    Application__c app = Test_DataGeneratorHelper.buildCarApp(true);
+    Custom_Opportunity__c opp = Test_DataGeneratorHelper.tstOpportunity;
+    
+    Test.startTest();
+
+    QuoteController.getOpportunityById(opp.Id);
+    QuoteController.getOpportunityById(null);
+
+    QuoteController.getOpportunity(opp.Id, new List<String>{
+        'ApplicationServicing__c',
+        'ApplicationServicing__r.Is_Splitting_Expenses__c'
+      });
+    try {
+      QuoteController.getOpportunity(opp.Id, new List<String>{
+          'NONEXISTINGFIELD__c'
+        });
+    } catch (Exception e) {}
+    QuoteController.getOpportunity(null, null);
+
+    Test.stopTest();
+  }
+
+
+
+  // --------------------
+  // Supporting functions
+  // --------------------
+  
   public static QuoteController.InsuranceParam buildInsuranceParam() {
     QuoteController.InsuranceParam insObj = new QuoteController.InsuranceParam();
     insObj.mvType = null;
@@ -194,6 +242,7 @@ public class QuoteControllerTest {
     insObj.isshortfallAccept = true;
     insObj.iswarrantyAccept = true;
     insObj.isLPIAccept = true;
+    insObj.lastAction = null;
 
     insObj.integrity = new QuoteController.IntegrityParam();
     insObj.integrity.type = null;

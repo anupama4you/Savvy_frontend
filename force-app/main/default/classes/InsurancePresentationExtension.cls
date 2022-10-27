@@ -83,10 +83,17 @@ public class InsurancePresentationExtension {
 
     public InsurancePresentationExtension() {
       String paramTmp = System.currentPageReference().getParameters().get('P');
+      String paramId = System.currentPageReference().getParameters().get('id');
+      System.debug('@@paramId: ' + paramId + ' | ' + paramTmp);
       this.resetDiaplayingOptions();
-      if (!String.isBlank(paramTmp)) {
+      if (String.isNotBlank(paramTmp) || String.isNotBlank(paramId)) {
         try {
-          this.appId = CryptoUtils.decrypt(paramTmp);
+          if (String.isNotBlank(paramTmp)) {
+            this.appId = CryptoUtils.decrypt(paramTmp);
+          } else if (String.isNotBlank(paramId)) {
+            this.o = InsuranceQuoteUtils.getOpportunityForInsuranceQuote(paramId);
+            this.appId = this.o.Application__c;
+          }
           loadData();
         } catch (SecurityException e) {
           System.debug(e.getMessage());
@@ -135,7 +142,8 @@ public class InsurancePresentationExtension {
         this.integrityQ5Sel = null;
         
         //Load quoting
-        this.quoting = QuotingToolHelper.getApplicationQuoting(this.appId);
+        Id oppId = this.o != null? this.o.Id : null;
+        this.quoting = QuotingToolHelper.getApplicationQuoting(oppId, this.appId);
         if (this.quoting != null) {
           // Load Lender Settings
           lenderSettings = QuotingCalculation.getLenderSettings(this.quoting.Name);

@@ -216,6 +216,18 @@ const validate = (quote, messages) => {
             message: "Please select a Green car option"
         });
     }
+
+    if (
+      quote.opp &&
+      quote.opp.Application__c &&
+      quote.opp.Application__r.No_of_People__c === 2
+    ) {
+      warningList.push({
+        field: "clientTier",
+        message: `Joined applications are not allowed by Plenti`
+      });
+    }
+    
     r.warnings = [].concat(QuoteCommons.uniqueArray(warningList));
     r.errors = [].concat(QuoteCommons.uniqueArray(errorList));
     return r;
@@ -241,9 +253,34 @@ const validatePostCalculation = (quote, messages) => {
     return r;
 };
 
+const validatePostLoading = (quote, messages) => {
+  const r =
+    typeof messages == "undefined" || messages == null
+      ? QuoteCommons.resetMessage()
+      : messages;
+  let errorList = r.errors;
+  let warningList = r.warnings;
+
+  if (
+    quote.opp &&
+    quote.opp.Application__c &&
+    quote.opp.Application__r.No_of_People__c === 2
+  ) {
+    warningList.push({
+      field: "clientTier",
+      message: `Joined applications are not allowed by Plenti`
+    });
+  }
+
+  r.warnings = [].concat(QuoteCommons.uniqueArray(warningList));
+  r.errors = [].concat(QuoteCommons.uniqueArray(errorList));
+  return r;
+};
+
 const Validations = {
-    validate: validate,
-    validatePostCalculation: validatePostCalculation
+  validate: validate,
+  validatePostCalculation: validatePostCalculation,
+  validatePostLoading: validatePostLoading
 };
 
 export { Validations };

@@ -12,6 +12,9 @@ import { Validations } from "./quoteValidations";
 
 // Default settings
 let lenderSettings = {};
+// API Responses
+let apiResponses = {};
+// Rates
 let tableRatesData = [];
 let tableRateDataColumns = [
   { label: "Product", fieldName: "Product__c" },
@@ -96,9 +99,9 @@ const calculate = (quote) =>
         vehicleYear: quote.assetAge,
         goodsType: quote.assetType,
         privateSales: quote.privateSales,
-        totalAmount: QuoteCommons.calcNetRealtimeNaf(quote),
+        totalAmount: QuoteCommons.calcTotalAmount(quote),
         // totalInsurance: QuoteCommons.calcTotalInsuranceType(quote),
-        totalInsuranceIncome: QuoteCommons.calcTotalInsuranceIncome(quote),
+        // totalInsuranceIncome: QuoteCommons.calcTotalInsuranceIncome(quote),
         clientRate: quote.clientRate,
         baseRate: quote.baseRate,
         paymentType: quote.paymentType,
@@ -204,7 +207,7 @@ const loadData = (recordId) =>
       ...QuoteCommons.COMMISSION_FIELDS.values(),
       ...QuoteCommons.INSURANCE_FIELDS.values()
     ];
-    console.log(`@@fields:`, JSON.stringify(fields, null, 2));
+    // console.log(`@@fields:`, JSON.stringify(fields, null, 2));
     getQuotingData({
       param: {
         oppId: recordId,
@@ -226,6 +229,9 @@ const loadData = (recordId) =>
 
         // Settings
         lenderSettings = quoteData.settings;
+
+        // API  responses
+        apiResponses = quoteData.apiResponses;
 
         // Rate Settings
         if (quoteData.rateSettings) {
@@ -262,6 +268,10 @@ const getMyBaseRates = (quote) =>
       .catch((error) => reject(error));
   });
 
+const getApiResponses = () => {
+  return apiResponses;
+};
+
 const getTableRatesData = () => {
   return tableRatesData;
 };
@@ -276,13 +286,15 @@ const getTableRatesData = () => {
 const saveQuote = (approvalType, param, recordId) =>
   new Promise((resolve, reject) => {
     if (approvalType && param && recordId) {
-      save({
-        param: QuoteCommons.mapLWCToSObject(
+      const p = QuoteCommons.mapLWCToSObject(
           param,
           recordId,
           LENDER_QUOTING,
           FIELDS_MAPPING_FOR_APEX
-        ),
+        );
+      console.log(`@@save-param:`, JSON.stringify(p, null, 2));
+      save({
+        param: p,
         approvalType: approvalType
       })
         .then((data) => {
@@ -338,5 +350,6 @@ export const CalHelper = {
   getNetRealtimeNaf: QuoteCommons.calcNetRealtimeNaf,
   getNetDeposit: QuoteCommons.calcNetDeposit,
   saveQuote: saveQuote,
-  sendEmail: sendEmail
+  sendEmail: sendEmail,
+  getApiResponses: getApiResponses
 };

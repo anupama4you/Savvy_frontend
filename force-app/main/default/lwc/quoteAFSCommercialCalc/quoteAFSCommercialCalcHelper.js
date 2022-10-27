@@ -107,11 +107,16 @@ const calculate = (quote) =>
         } else {
           // Calculate
           calculateRepayments({
-            param: p
+            param: p,
+            insuranceParam: quote.insurance
           })
             .then((data) => {
               // Mapping
-              res.commissions = QuoteCommons.mapCommissionSObjectToLwc(data);
+              res.commissions = QuoteCommons.mapCommissionSObjectToLwc(
+                data.commissions,
+                quote.insurance,
+                data.calResults
+              );
 
               // Validate the result of commissions
               res.messages = Validations.validatePostCalculation(
@@ -185,7 +190,8 @@ const reset = (recordId) => {
     clientRate: null,
     residency: null,
     gst: null,
-    commissions: QuoteCommons.resetResults()
+    commissions: QuoteCommons.resetResults(),
+    insurance: { integrity: {} }
   };
   r = QuoteCommons.mapDataToLwc(r, lenderSettings, SETTING_FIELDS);
   return r;
@@ -197,7 +203,8 @@ const loadData = (recordId) =>
     //  const fields = Array.from(QUOTING_FIELDS.values());
     const fields = [
       ...QUOTING_FIELDS.values(),
-      ...QuoteCommons.COMMISSION_FIELDS.values()
+      ...QuoteCommons.COMMISSION_FIELDS.values(),
+      ...QuoteCommons.INSURANCE_FIELDS.values()
     ];
 
     getQuotingData({

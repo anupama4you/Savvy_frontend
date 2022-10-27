@@ -130,6 +130,17 @@ const validate = (quote, messages) => {
     }
   }
 
+  console.log(
+    "🚀 ~ file: quoteValidations.js ~ line 17 ~ validate ~ quote.loanPurpose",
+    quote.loanPurpose
+  );
+  if (!quote.loanPurpose) {
+    warningList.push({
+      field: "loanPurpose",
+      message: "Loan Purpose could be neccessary"
+    });
+  }
+
   r.warnings = [].concat(QuoteCommons.uniqueArray(warningList));
   r.errors = [].concat(QuoteCommons.uniqueArray(errorList));
   return r;

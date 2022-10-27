@@ -235,6 +235,18 @@ public class CalculaterHomePageController {
           ? Page.GeneralCalculator.getUrl() + '?id=' + opportunityId
           : '/partner/s/sales-tools/quoting-tools/racv?recordId='+opportunityId+'&oppName='+opp.Name;
 
+        wrap.Krisp = !wrap.IsBrokerPartnerUser
+        ? Page.GeneralCalculator.getUrl() + '?id=' + opportunityId
+        : '/partner/s/sales-tools/quoting-tools/krisp?recordId='+opportunityId+'&oppName='+opp.Name;
+
+        wrap.BrandedConsumer = !wrap.IsBrokerPartnerUser
+        ? Page.GeneralCalculator.getUrl() + '?id=' + opportunityId
+        : '/partner/s/sales-tools/quoting-tools/branded-consumer?recordId='+opportunityId+'&oppName='+opp.Name;
+
+        wrap.BrandedCommercial = !wrap.IsBrokerPartnerUser
+        ? Page.GeneralCalculator.getUrl() + '?id=' + opportunityId
+        : '/partner/s/sales-tools/quoting-tools/branded-commercial?recordId='+opportunityId+'&oppName='+opp.Name;
+
         wrap.oppName = opp.Name;
 
 
@@ -299,6 +311,9 @@ public class CalculaterHomePageController {
         @AuraEnabled public string Affordable;//Page.ACLCalculator; ////Affordable Car Loan
         @AuraEnabled public string Pepper_PL;//Page.ACLCalculator;//Affordable Car Loan
         @AuraEnabled public string CarStart;//Page.CarStartFinanceCalculator;
+        @AuraEnabled public string Krisp;//Page.KrispCalculator;
+        @AuraEnabled public string BrandedConsumer;//Page.BrandedConsumer;
+        @AuraEnabled public string BrandedCommercial;//Page.BrandedCommercial;
 
         @AuraEnabled public string GrowBusiness;
         @AuraEnabled public string ShiftODR;

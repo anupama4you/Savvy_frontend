@@ -69,7 +69,6 @@ export default class QuoteFinanceOneCommCalc extends LightningElement {
     }
 
     get goodsSubTypeOptions() {
-
         return CalHelper.getGoodsSubTypeOptions(this.quoteForm.goodType);
     }
 
@@ -87,6 +86,10 @@ export default class QuoteFinanceOneCommCalc extends LightningElement {
 
     get paymentTypeOptions() {
         return CalHelper.options.paymentTypes;
+    }
+
+    get rateOptions() {
+        return CalHelper.options.rateOptions;
     }
 
     // Calculations
@@ -232,6 +235,10 @@ export default class QuoteFinanceOneCommCalc extends LightningElement {
         if (CalHelper.APPFEE_Calc_Fields.includes(fldName)) {
             this.appFeeCalc();
         }
+
+        // Insurances
+        QuoteCommons.calculateInsurances(this, fldName);
+        // --------------
     }
 
     // Calculate

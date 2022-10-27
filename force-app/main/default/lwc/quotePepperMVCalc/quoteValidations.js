@@ -59,43 +59,17 @@ const validate = (quote, messages) => {
     });
   }
 
-  // const baseRate = quote["baseRate"];
-  // const maxRate = quote["maxRate"];
-  // for (const fieldName in quote) {
-  //   const element = quote[fieldName];
-  //   switch (fieldName) {
-  //     case "commission":
-  //       if (element < 0)
-  //         warningList.push({
-  //           field: "commission",
-  //           message:
-  //             "The commission is below zero. Please make adjustment to make sure commission is above zero."
-  //         });
-  //       break;
-  //     case "clientRate":
-  //       console.log("client rate: ", element);
-  //       if (element <= 0 || element === null)
-  //         errorList.push({
-  //           field: "clientRate",
-  //           message: "Client Rate must be a POSITIVE number and cannot be ZERO"
-  //         });
-  //       if (element < baseRate && element !== null) {
-  //         warningList.push({
-  //           field: "clientRate",
-  //           message: "Client Rate should not be below base rate"
-  //         });
-  //       }
-  //       if (element > maxRate && element !== null) {
-  //         errorList.push({
-  //           field: "clientRate",
-  //           message: `Client Rate cannot exceed the max rate: ${maxRate}%`
-  //         });
-  //       }
-  //       break;
-  //     default:
-  //       break;
-  //   }
-  // }
+  if (
+    quote.clientTier === "C" &&
+    quote.opp &&
+    quote.opp.ApplicationServicing__r &&
+    quote.opp.ApplicationServicing__r.Is_Splitting_Expenses__c === true
+  ) {
+    warningList.push({
+      field: "clientTier",
+      message: `Pepper cannot split expenses with Tier C`
+    });
+  }
 
   r.warnings = [].concat(QuoteCommons.uniqueArray(warningList));
   r.errors = [].concat(QuoteCommons.uniqueArray(errorList));

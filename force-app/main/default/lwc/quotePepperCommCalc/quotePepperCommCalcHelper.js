@@ -1,6 +1,6 @@
 import getQuotingData from "@salesforce/apex/QuotePepperCommController.getQuotingData";
 import getBaseRates from "@salesforce/apex/QuoteController.getBaseRates";
-import calculateRepayments from "@salesforce/apex/QuoteController.calculateRepayments";
+import calculateRepayments from "@salesforce/apex/QuoteController.calculateAllRepayments";
 import sendQuote from "@salesforce/apex/QuoteController.sendQuote";
 import save from "@salesforce/apex/QuotePepperCommController.save";
 import {
@@ -12,6 +12,9 @@ import { Validations } from "./quoteValidations";
 
 // Default settings
 let lenderSettings = {};
+// API Responses
+let apiResponses = {};
+// Rates
 let tableRatesData = [];
 let tableRatesData2 = [];
 let tableRatesData3 = [];
@@ -34,31 +37,32 @@ let tableRateDataColumns3 = [
 const LENDER_QUOTING = "Pepper Commercial";
 
 const QUOTING_FIELDS = new Map([
-    ["loanType", "Loan_Type__c"],
-    ["loanProduct", "Loan_Product__c"],
-    ["assetType", "Goods_type__c"],
-    ["price", "Vehicle_Price__c"],
-    ["deposit", "Deposit__c"],
-    ["tradeIn", "Trade_In__c"],
-    ["payoutOn", "Payout_On__c"],
-    ["applicationFee", "Application_Fee__c"],
-    ["dof", "DOF__c"],
-    ["residual", "Residual_Value__c"],
-    ["ppsr", "PPSR__c"],
-    ["monthlyFee", "Monthly_Fee__c"],
-    ["term", "Term__c"],
-    ["clientRate", "Client_Rate__c"],
-    ["paymentType", "Payment__c"]
+  ["loanType", "Loan_Type__c"],
+  ["loanProduct", "Loan_Product__c"],
+  ["assetType", "Goods_type__c"],
+  ["price", "Vehicle_Price__c"],
+  ["deposit", "Deposit__c"],
+  ["netDeposit", "Net_Deposit__c"],
+  ["tradeIn", "Trade_In__c"],
+  ["payoutOn", "Payout_On__c"],
+  ["applicationFee", "Application_Fee__c"],
+  ["dof", "DOF__c"],
+  ["residual", "Residual_Value__c"],
+  ["ppsr", "PPSR__c"],
+  ["monthlyFee", "Monthly_Fee__c"],
+  ["term", "Term__c"],
+  ["clientRate", "Client_Rate__c"],
+  ["paymentType", "Payment__c"],
+  ["privateSales", "Private_Sales__c"],
+  ["clientTier", "Client_Tier__c"],
+  ["assetAge", "Vehicle_Age__c"],
+  ["baseRate", "Base_Rate__c"],
+  ["maxRate", "Manual_Max_Rate__c"]
 ]);
 
 const FIELDS_MAPPING_FOR_APEX = new Map([
     ...QUOTING_FIELDS,
-    ["Id", "Id"],
-    ["privateSales", "Private_Sales__c"],
-    ["clientTier", "Client_Tier__c"],
-    ["assetAge", "Vehicle_Age__c"],
-    ["baseRate", "Base_Rate__c"],
-    ["maxRate", "Manual_Max_Rate__c"]
+    ["Id", "Id"],    
 ]);
 
 
@@ -100,7 +104,8 @@ const calculate = (quote) =>
             const p = {
                 lender: LENDER_QUOTING,
                 totalAmount: QuoteCommons.calcTotalAmount(quote),
-                totalInsurance: QuoteCommons.calcTotalInsuranceType(quote),
+                // totalInsurance: QuoteCommons.calcTotalInsuranceType(quote),
+                totalInsuranceIncome: QuoteCommons.calcTotalInsuranceIncome(quote),
                 clientRate: quote.clientRate,
                 baseRate: quote.baseRate,
                 paymentType: quote.paymentType,
@@ -119,12 +124,17 @@ const calculate = (quote) =>
             // Calculate
             console.log(`@@param:`, JSON.stringify(p, null, 2));
             calculateRepayments({
-                param: p
+                param: p,
+                insuranceParam: quote.insurance
             })
                 .then((data) => {
                     console.log(`@@SF:`, JSON.stringify(data, null, 2));
                     // Mapping
-                    res.commissions = QuoteCommons.mapCommissionSObjectToLwc(data);
+                    res.commissions = QuoteCommons.mapCommissionSObjectToLwc(
+                        data.commissions,
+                        quote.insurance,
+                        data.calResults
+                    );
                     console.log(JSON.stringify(res.commissions, null, 2));
                     // Validate the result of commissions
                     res.messages = Validations.validatePostCalculation(res.commissions, res.messages);
@@ -187,7 +197,8 @@ const reset = () => {
         baseRate: 0.0,
         maxRate: 0.0,
         clientRate: null,
-        commissions: QuoteCommons.resetResults()
+        commissions: QuoteCommons.resetResults(),
+        insurance: { integrity: {} }
     };
     r = QuoteCommons.mapDataToLwc(r, lenderSettings, SETTING_FIELDS);
     return r;
@@ -198,7 +209,8 @@ const loadData = (recordId) =>
     new Promise((resolve, reject) => {
         const fields = [
             ...QUOTING_FIELDS.values(),
-            ...QuoteCommons.COMMISSION_FIELDS.values()
+            ...QuoteCommons.COMMISSION_FIELDS.values(),
+            ...QuoteCommons.INSURANCE_FIELDS.values()
         ];
         getQuotingData({
             param: {
@@ -209,26 +221,32 @@ const loadData = (recordId) =>
             }
         })
             .then((quoteData) => {
-                console.log(`@@SF Get Data:`, JSON.stringify(quoteData, null, 2));
-                // Mapping Quote's fields
-                let data = QuoteCommons.mapSObjectToLwc({
-                    calcName: LENDER_QUOTING,
-                    defaultData: reset(),
-                    quoteData: quoteData,
-                    settingFields: SETTING_FIELDS,
-                    quotingFields: QUOTING_FIELDS
-                });
+              console.log(`@@SF Get Data:`, JSON.stringify(quoteData, null, 2));
+              // Mapping Quote's fields
+              let data = QuoteCommons.mapSObjectToLwc({
+                calcName: LENDER_QUOTING,
+                defaultData: reset(),
+                quoteData: quoteData,
+                settingFields: SETTING_FIELDS,
+                quotingFields: QUOTING_FIELDS
+              });
 
-                // Settings
-                lenderSettings = quoteData.settings;
+              // Settings
+              lenderSettings = quoteData.settings;
 
-                // Rate Settings
-                if (quoteData.rateSettings) {
-                    tableRatesData = quoteData.rateSettings[`${RATE_SETTING_NAMES[0]}`];
-                    tableRatesData2 = quoteData.rateSettings[`${RATE_SETTING_NAMES[1]}`];
-                    tableRatesData3 = quoteData.rateSettings[`${RATE_SETTING_NAMES[2]}`];
-                }
-                resolve(data);
+              // API  responses
+              apiResponses = quoteData.apiResponses;
+
+              // Rate Settings
+              if (quoteData.rateSettings) {
+                tableRatesData =
+                  quoteData.rateSettings[`${RATE_SETTING_NAMES[0]}`];
+                tableRatesData2 =
+                  quoteData.rateSettings[`${RATE_SETTING_NAMES[1]}`];
+                tableRatesData3 =
+                  quoteData.rateSettings[`${RATE_SETTING_NAMES[2]}`];
+              }
+              resolve(data);
             })
             .catch((error) => reject(error));
     });
@@ -270,6 +288,10 @@ const getTableRatesData2 = () => {
 
 const getTableRatesData3 = () => {
     return tableRatesData3;
+};
+
+const getApiResponses = () => {
+  return apiResponses;
 };
 
 const saveQuote = (approvalType, param, recordId) =>
@@ -322,21 +344,22 @@ const sendEmail = (param, recordId) =>
 
 
 export const CalHelper = {
-    options: calcOptions,
-    calculate: calculate,
-    load: loadData,
-    reset: reset,
-    baseRates: getMyBaseRates,
-    BASE_RATE_FIELDS: BASE_RATE_FIELDS,
-    lenderSettings: lenderSettings,
-    getTableRatesData: getTableRatesData,
-    getTableRatesData2: getTableRatesData2,
-    getTableRatesData3: getTableRatesData3,
-    tableRateDataColumns: tableRateDataColumns,
-    tableRateDataColumns2: tableRateDataColumns2,
-    tableRateDataColumns3: tableRateDataColumns3,
-    getNetRealtimeNaf: QuoteCommons.calcNetRealtimeNaf,
-    getNetDeposit: QuoteCommons.calcNetDeposit,
-    saveQuote: saveQuote,
-    sendEmail: sendEmail,
+  options: calcOptions,
+  calculate: calculate,
+  load: loadData,
+  reset: reset,
+  baseRates: getMyBaseRates,
+  BASE_RATE_FIELDS: BASE_RATE_FIELDS,
+  lenderSettings: lenderSettings,
+  getTableRatesData: getTableRatesData,
+  getTableRatesData2: getTableRatesData2,
+  getTableRatesData3: getTableRatesData3,
+  tableRateDataColumns: tableRateDataColumns,
+  tableRateDataColumns2: tableRateDataColumns2,
+  tableRateDataColumns3: tableRateDataColumns3,
+  getNetRealtimeNaf: QuoteCommons.calcNetRealtimeNaf,
+  getNetDeposit: QuoteCommons.calcNetDeposit,
+  saveQuote: saveQuote,
+  sendEmail: sendEmail,
+  getApiResponses: getApiResponses
 };

@@ -1,9 +1,7 @@
 public class quoteRacvCalcController {
 	
     @AuraEnabled
-    public static QuoteController.AppQuotingWraper getQuotingData(
-        QuoteController.QuotingDataParam param
-    ) {
+    public static QuoteController.AppQuotingWraper getQuotingData(QuoteController.QuotingDataParam param) {
         QuoteController.AppQuotingWraper r = QuoteController.getQuotingData(param); 
 
         // Lender settings
@@ -17,7 +15,7 @@ public class quoteRacvCalcController {
 
         return r;
     }
-
+	@testvisible
     private static List<Racv_Rates__c> getRates() {
         List<Racv_Rates__c> d = Racv_Rates__c.getAll().values();
         d.sort();
@@ -27,10 +25,12 @@ public class quoteRacvCalcController {
     @AuraEnabled
     public static Application_Quoting__c save(QuoteController.AppQuotingWraper param, String approvalType){
        try {
+           System.debug('::: save RACV');
             QuoteController.saveQuoting(param);
             Product__c p = null;
             if (!'NONE'.equals(approvalType)) {
                 // save pdf
+                system.debug(':::: Application_Quoting__c save ::::');
                 PageReference pdf = Page.UniversalCalculatorPdf;
                 pdf = pdfHandler(param.data);
                 QuoteController.savePdf(approvalType, pdf, param);

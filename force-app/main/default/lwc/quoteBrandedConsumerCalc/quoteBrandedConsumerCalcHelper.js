@@ -1,7 +1,7 @@
 import getQuotingData from "@salesforce/apex/QuoteBrandedConsumerController.getQuotingData";
 import getCreditScore from "@salesforce/apex/QuoteBrandedConsumerController.getCreditScore";
 import getBaseRates from "@salesforce/apex/QuoteController.getBaseRates";
-import calculateRepayments from "@salesforce/apex/QuoteController.calculateRepayments";
+import calculateRepayments from "@salesforce/apex/QuoteController.calculateAllRepayments";
 import sendQuote from "@salesforce/apex/QuoteController.sendQuote";
 import save from "@salesforce/apex/QuoteBrandedConsumerController.save";
 import {
@@ -160,7 +160,7 @@ const loadData = (recordId) =>
   new Promise((resolve, reject) => {
     const fields = [
       ...QUOTING_FIELDS.values(),
-      ...QuoteCommons.COMMISSION_FIELDS.values(),
+      ...QuoteCommons.COMMISSION_FIELDS.values(),                                                                                            
       ...QuoteCommons.INSURANCE_FIELDS.values()
     ];
     console.log(`@@fields:`, JSON.stringify(fields, null, 2));
@@ -224,9 +224,9 @@ const calculate = (quote) =>
         vehicleYear: quote.assetAge,
         goodsType: quote.assetType,
         privateSales: quote.privateSales,
-        totalAmount: QuoteCommons.calcNetRealtimeNaf(quote),
-        // totalInsurance: QuoteCommons.calcTotalInsuranceType(quote),
-        totalInsuranceIncome: QuoteCommons.calcTotalInsuranceIncome(quote),
+        totalAmount: QuoteCommons.calcTotalAmount(quote),
+        totalInsurance: QuoteCommons.calcTotalInsuranceIncome(quote),
+        // totalInsuranceIncome: QuoteCommons.calcTotalInsuranceIncome(quote),
         clientRate: quote.clientRate,
         baseRate: quote.baseRate,
         paymentType: quote.paymentType,
@@ -238,14 +238,16 @@ const calculate = (quote) =>
       // Calculate
       console.log(`@@param:`, JSON.stringify(p, null, 2));
       calculateRepayments({
-        param: p
+        param: p,
+        insuranceParam: quote.insurance
       })
         .then((data) => {
           console.log(`@@SF:`, JSON.stringify(data, null, 2));
           // Mapping
           res.commissions = QuoteCommons.mapCommissionSObjectToLwc(
-            data,
-            quote.insurance
+            data.commissions,
+            quote.insurance,
+            data.calResults
           );
           console.log(JSON.stringify(res.commissions, null, 2));
           // Validate the result of commissions

@@ -33,17 +33,23 @@ const QUOTING_FIELDS = new Map([
   ["applicationFee", "Application_Fee__c"],
   ["dof", "DOF__c"],
   ["ppsr", "PPSR__c"],
-  ["term", "Term__c"]
 ]);
 
 const noneOption = [{ label: "-- None --", value: null }];
 
-const getPBMOptions = () => {
-  return [
-    ...noneOption,
-    { label: "Financed", value: "Financed" },
-    { label: "PBM", value: "PBM" }
-  ];
+const getPBMOptions = (isOnlyPbm) => {
+  if (isOnlyPbm === true) {
+    return [
+      ...noneOption,
+      { label: "PBM", value: "PBM" }
+    ];
+  } else {
+    return [
+      ...noneOption,
+      { label: "Financed", value: "Financed" },
+      { label: "PBM", value: "PBM" }
+    ];
+  }
 };
 
 const getMVOptions = () => {
@@ -296,29 +302,38 @@ const calculatingLPI = (
 ) =>
   new Promise((resolve, reject) => {
     console.log("LPITERM --> " + LPITerm);
-    const term = LPITerm === "(Long Term)" ? quoteForm.term : LPITerm;
+    const term = LPITerm === "(Loan Term)" ? quoteForm.term : LPITerm;
     if (LPIType && LPIType.includes("Liberty") && LPIProduct) {
-      console.log(
-        "calculating ... LPI >> ",
-        QuoteCommons.mapLWCToSObject(
-          quoteForm,
-          quoteForm.oppId,
-          null,
-          QUOTING_FIELDS
-        )
-      );
 
-      console.log("LPITERM --> " + term + "  type of term --> " + typeof term);
+      let fields = [...QUOTING_FIELDS];
+      if (quoteForm.eqfee > 0) {
+        fields.push(["eqfee", "Risk_Fee__c"]);
+      }
+      console.log(`@@LPI fields:`, JSON.stringify(fields));
+
+      const qt = QuoteCommons.mapLWCToSObject(
+        quoteForm,
+        quoteForm.oppId,
+        null,
+        fields
+      );
+      
+      if (
+        qt && qt.data &&
+        quoteForm.name && 
+        quoteForm.name.includes('Liberty') 
+      ) {
+        qt.data.DOF__c = 0.0;
+        qt.data.Risk_Fee__c = 0.0;
+      }
+
+      console.log("calculating ... LPI >> ", JSON.stringify(qt, null, 2));
+
       calculateLPI({
         oppId: quoteForm.oppId,
         term: parseFloat(term),
         cciLevel: LPIProduct,
-        data: QuoteCommons.mapLWCToSObject(
-          quoteForm,
-          quoteForm.oppId,
-          null,
-          QUOTING_FIELDS
-        ).data,
+        data: qt.data,
         warrantyRetailPrice: warrantyRetailPrice,
         iswarrantyAccept: iswarrantyAccept || isIntegrityAccept
       })
@@ -431,6 +446,12 @@ const resetInsuranceAccept = (insuranceForm) => {
   return insuranceForm;
 };
 
+  const validatePresentation = (insuranceForm, quoteForm) => {
+    let r = QuoteCommons.resetMessage();
+    r = { ...Validations.validate(insuranceForm, quoteForm) };
+    return r;
+  }
+
 export const InsuranceHelper = {
   RESET_FIELDS: RESET_FIELDS,
   getMVOptions: getMVOptions,
@@ -446,5 +467,6 @@ export const InsuranceHelper = {
   load: load,
   gettingPresentationStatus: gettingPresentationStatus,
   sendPresentation: sendPresentation,
-  resetInsuranceAccept: resetInsuranceAccept
+  resetInsuranceAccept: resetInsuranceAccept,
+  validatePresentation: validatePresentation
 };

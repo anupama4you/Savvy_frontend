@@ -3,9 +3,7 @@ import { InsuranceHelper } from "./quoteInsuranceFormHelper";
 import { QuoteCommons } from "c/quoteCommons";
 import { NavigationMixin, CurrentPageReference } from "lightning/navigation";
 
-export default class QuoteInsuranceForm extends NavigationMixin(
-  LightningElement
-) {
+export default class QuoteInsuranceForm extends NavigationMixin(LightningElement) {
   isMvReadOnly = false;
   isLPIReadOnly = false;
   isWarrantyReadOnly = false;
@@ -19,17 +17,20 @@ export default class QuoteInsuranceForm extends NavigationMixin(
   isEnableAccept = true;
   isReadOnly = false;
   isSent = false;
-    typeRetail = [];
+  typeRetail = [];
   typeOfAsset = "";
-    quoteNaf;
+  quoteNaf;
   customerChoiceStatus = "None";
+
   @track insuranceForm;
   @track isCalculateGAPBusy = false;
   @track isCalculateLPIBusy = false;
   @track isCalculateWarrantyBusy = false;
+
   @api isQuoteCalculated = false;
   @api recordId;
   @api quoteForm;
+
   @api resetPressed() {
     this.reset();
     console.log(
@@ -80,7 +81,7 @@ export default class QuoteInsuranceForm extends NavigationMixin(
       ? "accept inTableText"
       : this.insuranceForm.ismvDecline
       ? "decline inTableText"
-      : "inTableText";
+      : "";
   }
 
   get shortfallAcceptCSS() {
@@ -88,7 +89,7 @@ export default class QuoteInsuranceForm extends NavigationMixin(
       ? "accept inTableText"
       : this.insuranceForm.isshortfallDecline
       ? "decline inTableText"
-      : "inTableText";
+      : "";
   }
 
   get LPIAcceptCSS() {
@@ -96,7 +97,7 @@ export default class QuoteInsuranceForm extends NavigationMixin(
       ? "accept inTableText"
       : this.insuranceForm.isLPIDecline
       ? "decline inTableText"
-      : "inTableText";
+      : "";
   }
 
   get warrantyAcceptCSS() {
@@ -106,7 +107,7 @@ export default class QuoteInsuranceForm extends NavigationMixin(
       : this.insuranceForm.iswarrantyDecline ||
         this.insuranceForm.isIntegrityDecline
       ? "decline inTableText"
-      : "inTableText";
+      : "";
   }
 
   get mvProductOptions() {
@@ -208,7 +209,7 @@ export default class QuoteInsuranceForm extends NavigationMixin(
   }
 
   get pbmOptions() {
-    return InsuranceHelper.getPBMOptions();
+    return InsuranceHelper.getPBMOptions(this.isOnlyPayByTheMonth);
   }
 
   get warrantyProductEricOptions() {
@@ -284,7 +285,7 @@ export default class QuoteInsuranceForm extends NavigationMixin(
   }
 
   getLPIPayment({ LPIRetailPrice, LPITerm, LPIPBM }) {
-    const term = LPITerm === "(Long Term)" ? this.quoteForm.term : LPITerm;
+    const term = LPITerm === "(Loan Term)" ? this.quoteForm.term : LPITerm;
     return QuoteCommons.getInsurancePayment(LPIRetailPrice, term, LPIPBM);
   }
 
@@ -297,10 +298,10 @@ export default class QuoteInsuranceForm extends NavigationMixin(
   }
 
   loadSavedRecords() {
-    console.log(
-      "quote form finally >>>  ",
-      JSON.stringify(this.quoteForm, null, 2)
-    );
+    // console.log(
+    //   "quote form finally >>>  ",
+    //   JSON.stringify(this.quoteForm, null, 2)
+    // );
     this.quoteNaf = QuoteCommons.calcNetRealtimeNaf(this.quoteForm);
     this.insuranceForm = { ...this.quoteForm.insurance };
     this.insuranceForm.integrity = {
@@ -311,6 +312,9 @@ export default class QuoteInsuranceForm extends NavigationMixin(
       this.isDisplayLPIInput =
         this.insuranceForm.LPIType === "Eric" ||
         (!this.insuranceForm.isLPIAccept && !this.insuranceForm.isLPIDecline);
+      if (this.insuranceForm.LPIType.includes("Liberty")) {
+        this.isDisplayLPIInput = false;
+      }
     }
     if (this.insuranceForm.warrantyType) {
       this.isDisplayIntegrityOpts =
@@ -321,6 +325,9 @@ export default class QuoteInsuranceForm extends NavigationMixin(
         this.insuranceForm.shortfallType === "Eric" ||
         (!this.insuranceForm.isshortfallAccept &&
           !this.insuranceForm.isshortfallDecline);
+      if (this.insuranceForm.shortfallType.includes("Liberty")) {
+        this.isDisplayInput = false;
+      }
     }
     this.insuranceForm.LPIRetailPrice = this.insuranceForm.LPIRetailPrice
       ? parseFloat(this.insuranceForm.LPIRetailPrice)
@@ -377,7 +384,7 @@ export default class QuoteInsuranceForm extends NavigationMixin(
     this.isDisplayAssetType = "label-hidden";
     this.isEnableAccept = true;
     this.isReadOnly = false;
-    this.typeRetail = [];    
+    this.typeRetail = [];
     this.isSent = false;
   }
 
@@ -408,7 +415,7 @@ export default class QuoteInsuranceForm extends NavigationMixin(
           break;
         case "LPI":
           this.isDisplayLPIInput = isERIC || changedValue === null;
-          this.insuranceForm.LPITerm = isLIBERTY ? "(Long Term)" : null;
+          this.insuranceForm.LPITerm = isLIBERTY ? "(Loan Term)" : null;
           console.log("LPI --> ", this.insuranceForm.LPITerm);
           break;
         case "warranty":
@@ -488,7 +495,13 @@ export default class QuoteInsuranceForm extends NavigationMixin(
       this.insuranceForm.LPIType.includes("Liberty")
     ) {
       this.isCalculateLPIBusy = true;
-      InsuranceHelper.calculatingLPI(this.insuranceForm, quoteForm)
+      // quoteForm.oppId = this.recordId;
+      let q = { ...quoteForm };
+      if (!q.oppId || q.oppId.length === 0) {
+        q.oppId = this.recordId;
+      }
+      console.log("🚀 ~ file: quoteInsuranceForm.js ~ line 493 ~ QuoteInsuranceForm ~ handleCalculatingLPI ~ quoteForm", JSON.stringify(q));
+      InsuranceHelper.calculatingLPI(this.insuranceForm, q)
         .then((data) => {
           this.insuranceForm.LPIRetailPrice = data["cci"];
           this.insuranceForm.LPICommission = data["cciIncome"];
@@ -509,13 +522,26 @@ export default class QuoteInsuranceForm extends NavigationMixin(
 
   // calculating for Warranty
   handleCalculatingWarranty() {
+
+    if (this.insuranceForm.warrantyType === "Integrity") {
+      // Resetting values
+      this.insuranceForm.warrantyRetailPrice = 0.0;
+      this.insuranceForm.warrantyCommission = 0.0;
+    }
+    
     if (
       this.insuranceForm.integrity.type &&
       this.insuranceForm.integrity.term &&
       this.insuranceForm.integrity.category
     ) {
       this.isCalculateWarrantyBusy = true;
-      InsuranceHelper.calculatingNWC(this.insuranceForm, this.quoteForm)
+
+      let q = { ...this.quoteForm };
+      if (!q.oppId || q.oppId.length === 0) {
+        q.oppId = this.recordId;
+      }
+
+      InsuranceHelper.calculatingNWC(this.insuranceForm, q)
         .then((data) => {
           console.log(
             "calculate warranty (nwc)   >>> ",
@@ -557,9 +583,10 @@ export default class QuoteInsuranceForm extends NavigationMixin(
         this.rowHandler(changedValue, rowType);
         console.log(`go into rowhandler`);
       }
-      if (fldName === "integrity type")
+      if (fldName === "integrity type") {
         this.insuranceForm.integrity.category =
           this.insuranceForm.integrity.term = null;
+      }
 
       if (fldName.includes("integrity")) {
         if (fldName.includes("type"))
@@ -569,7 +596,12 @@ export default class QuoteInsuranceForm extends NavigationMixin(
         if (fldName.includes("term"))
           this.insuranceForm.integrity.term = changedValue;
       } else {
-        this.insuranceForm[`${fldName}`] = changedValue;
+        if (fldName.includes("Price") || fldName.includes("Commission")) {
+          this.insuranceForm[`${fldName}`] =
+            changedValue.length > 0 ? Number(changedValue) : null;
+        } else {
+          this.insuranceForm[`${fldName}`] = changedValue;
+        }
       }
 
       if (fldName === "typeRetail") {
@@ -789,25 +821,8 @@ export default class QuoteInsuranceForm extends NavigationMixin(
     }
   }
 
-  sendPresentation() {
-    try {
-      console.log("handle send");
-      this.dispatchEvent(
-        new CustomEvent("handleinsurancemessage", {
-          detail: { ...QuoteCommons.resetMessage() }
-        })
-      );
-      this.isSent = true;
-      this.isMvReadOnly = true;
-      this.isLPIReadOnly = true;
-      this.isWarrantyReadOnly = true;
-      this.isShortfallReadOnly = true;
-    } catch (error) {
-      console.error(error);
-    }
-  }
-
   handleReQuote() {
+    console.log(`@@handleReQuote A: `, JSON.stringify(this.insuranceForm, null, 2));
     this.isSent = false;
     this.isMvReadOnly = false;
     this.isLPIReadOnly = false;
@@ -821,20 +836,59 @@ export default class QuoteInsuranceForm extends NavigationMixin(
     this.insuranceForm.isLPIAccept = false;
     this.insuranceForm.iswarrantyDecline = false;
     this.insuranceForm.iswarrantyAccept = false;
+    this.insuranceForm.isIntegrityAccept = false;
+    this.insuranceForm.isIntegrityDecline = false;
     this.isQuoteCalculated = false;
+
+    this.isDisplayInput = !this.insuranceForm.shortfallType.includes("Liberty");
+    this.isDisplayLPIInput = !this.insuranceForm.LPIType.includes("Liberty");
+
+    console.log(`@@handleReQuote B: `, JSON.stringify(this.insuranceForm, null, 2));
+
+    this.insuranceForm.lastAction = 'RE-CREATE';
+
     this.dispatchEvent(
       new CustomEvent("handledisablebutton", {
         detail: false
+      })
+    );
+    console.log(`@@insurancechanged...`);
+    this.dispatchEvent(
+      new CustomEvent("insurancechanged", {
+        detail: this.insuranceForm
       })
     );
   }
 
   handleSendPresentation() {
     console.log("Sending Presentation to Customer... ");
-    this.sendPresentation();
+
+    const messages = InsuranceHelper.validatePresentation(
+      this.insuranceForm,
+      this.quoteForm
+    );
+    if (messages && messages.errors.length > 0) {
+      this.dispatchEvent(
+        new CustomEvent("handleinsurancemessage", {
+          detail: { ...messages }
+        })
+      );
+      return;
+    }
+
+    // Change status
+    this.isSent = true;
+    this.isMvReadOnly = true;
+    this.isLPIReadOnly = true;
+    this.isWarrantyReadOnly = true;
+    this.isShortfallReadOnly = true;
+
     this.insuranceForm = {
       ...InsuranceHelper.resetInsuranceAccept(this.insuranceForm)
     };
+
+    this.customerChoiceStatus = 'Sent';
+
     this.dispatchEvent(
       new CustomEvent("handlepresentation", {
         detail: "Send"
@@ -894,5 +948,50 @@ export default class QuoteInsuranceForm extends NavigationMixin(
     //     })
     //     .catch((err) => console.log(err));
     // }
+  }
+
+  @api recalculateProducts() {
+    console.log(`Insurance: recalculateProducts...`, this.quoteForm.price);
+    this.handleCalculatingLPI(this.quoteForm);
+  }
+
+  get isOnlyPayByTheMonth() {
+    return (
+      this.quoteForm &&
+      this.quoteForm.insurance &&
+      this.quoteForm.insurance.isOnlyPayByTheMonth
+    );
+  }
+
+  get mvLabelType() {
+    return this.insuranceForm &&
+      this.insuranceForm.mvType &&
+      this.insuranceForm.mvType.length > 0
+      ? this.insuranceForm.mvType
+      : "MV [not selected]";
+  }
+
+  get shortfallLabelType() {
+    return this.insuranceForm &&
+      this.insuranceForm.shortfallType &&
+      this.insuranceForm.shortfallType.length > 0
+      ? this.insuranceForm.shortfallType
+      : "Shortfall [not selected]";
+  }
+
+  get lpiLabelType() {
+    return this.insuranceForm &&
+      this.insuranceForm.LPIType &&
+      this.insuranceForm.LPIType.length > 0
+      ? this.insuranceForm.LPIType
+      : "LPI [not selected]";
+  }
+
+  get warrantyLabelType() {
+    return this.insuranceForm &&
+      this.insuranceForm.warrantyType &&
+      this.insuranceForm.warrantyType.length > 0
+      ? this.insuranceForm.warrantyType
+      : "Warranty [not selected]";
   }
 }

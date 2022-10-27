@@ -1,4 +1,4 @@
-public with sharing class quoteLatitudePLCalcController {
+public without sharing class QuoteLatitudePLCalcController {
     @AuraEnabled
     public static QuoteController.AppQuotingWraper getQuotingData(
         QuoteController.QuotingDataParam param

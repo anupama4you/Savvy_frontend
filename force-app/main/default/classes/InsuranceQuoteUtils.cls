@@ -1466,7 +1466,7 @@ public without sharing class InsuranceQuoteUtils {
  			SELECT Name, Application__r.Entity_Name__c, Application_AssetDetail__r.Type__c, Application__r.Type_of_Asset__c, 
  			       Application__r.Application_Type__c, Application_AssetDetail__r.Rego__c, Application_AssetDetail__r.Rego_State__c,
  			       Application_AssetDetail__r.Engine_No__c, Application_AssetDetail__r.VIN__c, Application__r.Mode_of_Employment_1__c,
-             OwnerId
+             OwnerId, Application__c
  			FROM Custom_Opportunity__c WHERE Id = :oppId
  		];
  		if (!r.isEmpty()) {

@@ -52,18 +52,18 @@ const validate = (quote, messages) => {
       message: "Risk Fee should be entered."
     });
   } else if(quote.riskFeeTotal > 0 && quote.riskFee < quote.riskFeeTotal) {
-    errorList.push({
+    warningList.push({
       field: "riskFee",
       message: `Risk fee is below that the calculated fee $${quote.riskFeeTotal}.`
     });
   }
   if(quote.riskFeeTotal > 0 && quote.riskFee > quote.riskFeeTotal){
-    errorList.push({
+    warningList.push({
       field: "riskFee",
       message: `Risk fee should not be greater than Risk fee calculated $${quote.riskFeeTotal}.`
     });
   } else if (quote.clientRate < 10 && quote.riskFee > quote.riskFeeTotal) {
-    errorList.push({
+    warningList.push({
       field: "riskFee",
       message: `Not Risk fee calculated for client rates below 9.99%.`
     });

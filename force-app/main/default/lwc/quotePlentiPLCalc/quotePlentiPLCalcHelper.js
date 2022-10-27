@@ -15,6 +15,9 @@ import { Validations } from "./quoteValidations";
 
 // Default settings
 let lenderSettings = {};
+// API Responses
+let apiResponses = {};
+// Rates
 let tableRatesData = [];
 let tableRateDataColumns = [
   { label: "Name", fieldName: "Name", type: "text" },
@@ -395,6 +398,9 @@ const loadData = (recordId) =>
 
         // Settings
         lenderSettings = quoteData.settings;
+        // API  responses
+        apiResponses = quoteData.apiResponses;
+
         //console.log(`quoteData:`, JSON.stringify(quoteData, null, 10));
         //console.log(`quoted.rateSettings:`, JSON.stringify(quoteData.rateSettings));
         // Rate Settings
@@ -433,6 +439,10 @@ const getMyBaseRates = (quote) =>
       })
       .catch((error) => reject(error));
   });
+
+  const getApiResponses = () => {
+    return apiResponses;
+  };
 
 //get fees calculations
 const calcFees = (quote) =>
@@ -545,5 +555,6 @@ export const CalHelper = {
   getNetRealtimeNaf: QuoteCommons.calcNetRealtimeNaf,
   getNetDeposit: QuoteCommons.calcNetDeposit,
   saveQuote: saveQuote,
-  sendEmail: sendEmail
+  sendEmail: sendEmail,
+  getApiResponses: getApiResponses
 };

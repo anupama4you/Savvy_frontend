@@ -139,7 +139,15 @@ const getQuotingPageName = (calcName) => {
       pageName = "PARTNER_QT_Group_General__c";
     } else if (calcName === "Commercial Equity Group") {
       pageName = "PARTNER_QT_Commercial_Equity_Group__c";
-    }
+    } else if (calcName === "Krisp") {
+      pageName = "PARTNER_QT_Krisp__c";
+    } else if (calcName === "Branded Consumer") {
+      pageName = "PARTNER_QT_BRANDED_Consumer__c";
+    } else if (calcName === "Branded Commercial") {
+      pageName = "PARTNER_QT_branded_commercial__c";
+    } else if (calcName === "Racv") {
+      pageName = "PARTNER_QT_Racv__c";
+    } 
   }
 
   return pageName;

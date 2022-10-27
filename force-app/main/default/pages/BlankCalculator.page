@@ -338,6 +338,13 @@
               <apex:image url="{!$Resource.APFLogo}" height="40" />
             </apex:outputLink>
           </td>
+          <td align="center" valign="Top">
+            <apex:outputLink value="{!$Page.KrispCalc}?id={!o.Id}">
+              <strong>Krisp</strong>
+              <br/>
+              <apex:image url="{!$Resource.KrispLogo}" height="40" />
+            </apex:outputLink>
+          </td>
           <td colspan="2"></td>
         </tr>
         <!--New Calculators -->

@@ -135,6 +135,8 @@ export default class QuoteCarStartFinanceCalc extends LightningElement {
 
     console.log('quoteForm>>', JSON.stringify(this.quoteForm, null, 2))
 
+    // Insurances
+    QuoteCommons.calculateInsurances(this, fldName);
     // --------------
   }
 
@@ -166,12 +168,11 @@ export default class QuoteCarStartFinanceCalc extends LightningElement {
     this.isBaseRateBusy = true;
     CalHelper.baseRates(this.quoteForm)
       .then((data) => {
-        console.log(`Data loaded!`);
+        console.log(`Data loaded!`, JSON.stringify(data, null, 2));
         this.quoteForm.baseRate = data.baseRate;
         this.quoteForm.maxRate = data.maxRate;
         if (this.quoteForm.loanTypeDetail) {
           const result = this.tableRates.filter(data => data.Type_of_Finance__c == this.quoteForm.loanTypeDetail);
-          console.log('result::', JSON.stringify(result, null, 2));
           this.quoteForm.maxDof = result[0].Dof_Max__c ? result[0].Dof_Max__c : null;
           this.quoteForm.maxApplicationFee = result[0].App_Fee__c;
           this.quoteForm.maxRiskFee = result[0].Risk_Fee_Max__c;
@@ -224,7 +225,7 @@ export default class QuoteCarStartFinanceCalc extends LightningElement {
           this.messageObj = error.messages;
           QuoteCommons.fieldErrorHandler(this, this.messageObj.errors);
           console.error(
-            "quoteCarStartFinanceCalc.js: get errors -- ",
+            "quotePepperMVCalc.js: get errors -- ",
             JSON.stringify(error.messages.errors, null, 2)
           );
         }
@@ -253,7 +254,7 @@ export default class QuoteCarStartFinanceCalc extends LightningElement {
   }
 
   // all Save Buttons actions
-  handleSave(event) {
+  handleSave(event, saveType) {
     let isNONE;
     let loanType;
     if (event) {
@@ -382,11 +383,12 @@ export default class QuoteCarStartFinanceCalc extends LightningElement {
   }
 
   handleInsurancePresentation(event) {
+    console.log('handlePresentation>>')
     console.log(event.detail);
     this.handleSave(null, event.detail);
   }
 
-  handleInsuanceLoad(event) {
+  handleInsuranceLoad(event) {
     this.handleInsuranceChange(event);
     // check if there is no acceptance
     if (
@@ -412,6 +414,8 @@ export default class QuoteCarStartFinanceCalc extends LightningElement {
   handleDisableButton(event) {
     this.isCalculated = event.detail;
   }
+
+
   // --- insurance: end ---
 
 }

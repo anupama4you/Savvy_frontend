@@ -80,7 +80,8 @@ const BASE_RATE_FIELDS = [
     "vehicleType",
     "propertyOwner",
     "creditScore",
-    "carAge"
+    "carAge",
+    "vehCon"
 ];
 
 const DOF_CALC_FIELDS = [
@@ -296,10 +297,10 @@ const loadData = (recordId) =>
                 if (quoteData.rateSettings) {
                     tableRatesData = quoteData.rateSettings[`${RATE_SETTING_NAMES[0]}`];
 
-                     console.log(`@@tableData:`, JSON.stringify(tableRatesData, null, 2));
+                    console.log(`@@tableData:`, JSON.stringify(tableRatesData, null, 2));
 
                 }
-                console.log('tableRatesData-->>',tableRatesData);
+                console.log('tableRatesData-->>', tableRatesData);
                 console.log(`@@data:`, JSON.stringify(data, null, 2));
                 resolve(data);
             })
@@ -309,7 +310,7 @@ const loadData = (recordId) =>
 // Get Base Rates
 const getMyBaseRates = (quote) =>
     new Promise((resolve, reject) => {
-        console.log(`quote inserted...`, JSON.stringify(quote, null, 2));
+        console.log('quote inserted...', JSON.stringify(quote, null, 2));
         const profile = quote.category;
         const p = {
             lender: LENDER_QUOTING,
@@ -319,9 +320,12 @@ const getMyBaseRates = (quote) =>
             propertyOwner: quote.propertyOwner,
             creditScore: quote.creditScore,
             hasMaxRate: true,
-            carAge: quote.carAge
+            carAge: quote.carAge,
+            totalAmount: quote.totalAmount,
+            condition: quote.vehCon,
+            assetType: quote.vehicleType
         };
-        console.log(`getMyBaseRates...`, JSON.stringify(p, null, 2));
+        console.log('getMyBaseRates...', JSON.stringify(p, null, 2));
         getBaseRates({
                 param: p
             })
@@ -354,18 +358,18 @@ const getSingleTable = (category, class_) => {
         tableRatesData.forEach((obj, key, map) => {
 
             if (obj.Asset_Type__c === category) {
-                    console.log(`getSingleTable...`, JSON.stringify(obj, null, 2));
+                console.log(`getSingleTable...`, JSON.stringify(obj, null, 2));
 
-                    if (obj.Asset_Age__c == '0 - 3 years') {
-                        fieldsList.comm1.push(obj.Rate__c);
-                        fieldsList.comm2.push(obj.Comm__c);
-                    } else if (obj.Asset_Age__c == '4 - 7 years') {
-                        fieldsList.comm3.push(obj.Rate__c);
-                        fieldsList.rate1.push(obj.Comm__c);
-                    } else if (obj.Asset_Age__c == '> 7 years') {
-                        fieldsList.rate2.push(obj.Rate__c);
-                        fieldsList.rate3.push(obj.Comm__c);
-                    }
+                if (obj.Asset_Age__c == '0 - 3 years') {
+                    fieldsList.comm1.push(obj.Rate__c);
+                    fieldsList.comm2.push(obj.Comm__c);
+                } else if (obj.Asset_Age__c == '4 - 7 years') {
+                    fieldsList.comm3.push(obj.Rate__c);
+                    fieldsList.rate1.push(obj.Comm__c);
+                } else if (obj.Asset_Age__c == '> 7 years') {
+                    fieldsList.rate2.push(obj.Rate__c);
+                    fieldsList.rate3.push(obj.Comm__c);
+                }
             }
         });
 
@@ -393,16 +397,18 @@ const getSingleTable = (category, class_) => {
 
 // Get all tables data
 const getAllTableData = (category) => {
-    console.log('category-->'+category);
-    console.log('calcOptions.classes[0].value-->'+calcOptions.classes[1].value);
+    console.log('category-->' + category);
+    console.log('calcOptions.classes[0].value-->' + calcOptions.classes[1].value);
     // empty the array
-    console.log('tableRatesData-->>',tableRatesData);
+    console.log('tableRatesData-->>', tableRatesData);
 
     formattedTableData = [];
     tableRatesData.forEach((obj, key, map) => {
 
-        if (obj.Asset_Type__c === category) {
-                formattedTableData.push(obj);
+        if (category != '' && obj.Asset_Type__c === category) {
+            formattedTableData.push(obj);
+        } else if (category == '') {
+            formattedTableData.push(obj);
         }
     });
     /*formattedTableData.splice(0, formattedTableData.length);

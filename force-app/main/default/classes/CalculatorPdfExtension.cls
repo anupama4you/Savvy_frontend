@@ -653,6 +653,14 @@ public class CalculatorPdfExtension {
         return r;
     }
 
+    public Boolean getIsKrisp() {
+        Boolean r = false;
+        if (!String.isBlank(lender) && lender.containsIgnoreCase('Krisp')) {
+            r = true;
+        }
+        return r;
+    }
+
     public Boolean getIsAPF() {
         Boolean r = false;
         if (!String.isBlank(lender) && lender.containsIgnoreCase('APF')) {

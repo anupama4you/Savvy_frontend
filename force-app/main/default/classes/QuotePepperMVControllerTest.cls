@@ -45,6 +45,10 @@ public class QuotePepperMVControllerTest {
     test.stopTest();
   }
 
+  // --------------------
+  // Supporting functions
+  // --------------------
+  
   private static Application_Quoting__c buildAppQuote() {
     Application_Quoting__c q = QuoteControllerTest.buildAppQuoting();
     Custom_Opportunity__c opp = Test_DataGeneratorHelper.buildOpp(false);

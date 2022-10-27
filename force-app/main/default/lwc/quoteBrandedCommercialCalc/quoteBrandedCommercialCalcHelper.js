@@ -2,7 +2,7 @@ import getQuotingData from "@salesforce/apex/QuoteBrandedCommercialCalcControlle
 //import getDefaultBrokerage from "@salesforce/apex/QuoteGreenLightController.getDefaultBrokeragePercentage";
 import getBaseRates from "@salesforce/apex/QuoteController.getBaseRates";
 import getCalcFees from "@salesforce/apex/QuoteManager.getFees";
-import calculateRepayments from "@salesforce/apex/QuoteController.calculateRepayments";
+import calculateRepayments from "@salesforce/apex/QuoteController.calculateAllRepayments";
 import sendQuote from "@salesforce/apex/QuoteController.sendQuote";
 //import getRateSetterRate from "@salesforce/apex/QuoteManager.getRateSetterRate";
 import save from "@salesforce/apex/QuoteBrandedCommercialCalcController.save";
@@ -145,8 +145,8 @@ const calculate = (quote) =>
         vehicleYear: quote.assetYear,
         goodsType: quote.assetType,
         privateSales: quote.privateSales,
-        totalAmount: QuoteCommons.calcNetRealtimeNaf(quote),
-        // totalInsurance: QuoteCommons.calcTotalInsuranceType(quote),
+        totalAmount: QuoteCommons.calcTotalAmount(quote),
+        totalInsurance: QuoteCommons.calcTotalInsuranceIncome(quote),
         totalInsuranceIncome: QuoteCommons.calcTotalInsuranceIncome(quote),
         clientRate: quote.clientRate,
         baseRate: quote.baseRate,

@@ -1,6 +1,6 @@
 import getQuotingData from "@salesforce/apex/QuoteMetroController.getQuotingData";
 import getBaseRates from "@salesforce/apex/QuoteController.getBaseRates";
-import calculateRepayments from "@salesforce/apex/QuoteController.calculateRepayments";
+import calculateRepayments from "@salesforce/apex/QuoteController.calculateAllRepayments";
 import sendQuote from "@salesforce/apex/QuoteController.sendQuote";
 import save from "@salesforce/apex/QuoteMetroController.save";
 import {
@@ -123,7 +123,7 @@ const calculate = (quote) =>
         lender: LENDER_QUOTING,
         productLoanType: quote.loanProduct,
         privateSales: quote.privateSales,
-        totalAmount: calcNetRealtimeNaf(quote),
+        totalAmount: QuoteCommons.calcTotalAmount(quote),
         totalInsurance: QuoteCommons.calcTotalInsuranceType(quote),
         clientRate: quote.clientRate,
         baseRate: quote.baseRate,
@@ -137,12 +137,17 @@ const calculate = (quote) =>
       // Calculate
       console.log(`@@param:`, JSON.stringify(p, null, 2));
       calculateRepayments({
-        param: p
+        param: p,
+        insuranceParam: quote.insurance
       })
         .then((data) => {
           console.log(`@@SF:`, JSON.stringify(data, null, 2));
           // Mapping
-          res.commissions = QuoteCommons.mapCommissionSObjectToLwc(data);
+          res.commissions = QuoteCommons.mapCommissionSObjectToLwc(
+            data.commissions,
+            quote.insurance,
+            data.calResults
+          );
           console.log(JSON.stringify(res.commissions, null, 2));
           // Validate the result of commissions
           res.messages = Validations.validatePostCalculation(
@@ -219,7 +224,8 @@ const reset = (recordId) => {
     brokerage: 0.0,
     baseRate: 0.0,
     clientRate: 0.0,
-    commissions: QuoteCommons.resetResults()
+    commissions: QuoteCommons.resetResults(),
+    insurance: { integrity: {} }
   };
   //   console.log("before mapping: " + JSON.stringify(r, null, 2));
   r = QuoteCommons.mapDataToLwc(r, lenderSettings, SETTING_FIELDS);
@@ -233,7 +239,8 @@ const loadData = (recordId) =>
     try {
       const fields = [
         ...QUOTING_FIELDS.values(),
-        ...QuoteCommons.COMMISSION_FIELDS.values()
+        ...QuoteCommons.COMMISSION_FIELDS.values(),
+        ...QuoteCommons.INSURANCE_FIELDS.values()
       ];
       console.log(`@@fields:`, JSON.stringify(fields, null, 2));
       getQuotingData({
@@ -251,7 +258,7 @@ const loadData = (recordId) =>
             calcName: LENDER_QUOTING,
             defaultData: reset(recordId),
             quoteData: quoteData,
-            settingFields: SETTING_FIELDS,
+            settingFields: SETTING_FIELDS,          
             quotingFields: QUOTING_FIELDS
           });
 

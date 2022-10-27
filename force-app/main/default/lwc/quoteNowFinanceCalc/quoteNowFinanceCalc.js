@@ -120,6 +120,9 @@ export default class QuoteNowFinanceCalc extends LightningElement {
     if (CalHelper.BASE_RATE_FIELDS.includes(fldName)) {
       this.baseRateCalc();
     }
+
+    // Insurances
+    QuoteCommons.calculateInsurances(this, fldName);
     // --------------
   }
 
@@ -130,7 +133,7 @@ export default class QuoteNowFinanceCalc extends LightningElement {
 
   get netRealtimeNaf() {
     this.quoteForm.realtimeNaf = CalHelper.getNetRealtimeNaf(this.quoteForm)
-    if(this.quoteForm.realtimeNaf) {
+    if (this.quoteForm.realtimeNaf) {
       this.maxDofCalc(this.quoteForm.realtimeNaf)
     }
     return this.quoteForm.realtimeNaf;
@@ -259,19 +262,19 @@ export default class QuoteNowFinanceCalc extends LightningElement {
           console.log("@@data in handleSave:", JSON.stringify(data, null, 2));
           !isNONE
             ? this.messageObj.confirms.push(
-                {
-                  field: "confirms",
-                  message: "Calculation saved successfully."
-                },
-                {
-                  fields: "confirms",
-                  message: "Product updated successfully."
-                }
-              )
-            : this.messageObj.confirms.push({
+              {
                 field: "confirms",
                 message: "Calculation saved successfully."
-              });
+              },
+              {
+                fields: "confirms",
+                message: "Product updated successfully."
+              }
+            )
+            : this.messageObj.confirms.push({
+              field: "confirms",
+              message: "Calculation saved successfully."
+            });
           // passing data to update quoteform
           this.quoteForm["Id"] = data["Id"];
         })

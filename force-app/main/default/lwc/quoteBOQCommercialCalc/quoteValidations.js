@@ -42,7 +42,7 @@ const validate = (quote, messages) => {
     );
     if (term > MAX_TERM) {
         errorList.push({
-            field: "clientRate",
+            field: "term",
             message: `Term cannot be longer than five years.`
         });
     }
@@ -141,7 +141,7 @@ const validate = (quote, messages) => {
     );
     if (residualValue > ZERO && term > MAX_TERM) {
         errorList.push({
-            field: "residualValue",
+            field: "term",
             message: `You cannot have a balloon or residual payment when the loan term is > 5 years.`
         });
     }

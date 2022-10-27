@@ -32,13 +32,13 @@ export default class QuoteWisrPLCalc extends LightningElement {
         this.reset();
         CalHelper.load(this.recordId)
         .then((data) => {
-            console.log(`CalHelper: Data loaded!`, data);
-            this.quoteForm = data;
-            this.quoteForm.term = this.quoteForm.term? this.quoteForm.term.toString() : "36";
-            this.tableRates = CalHelper.getTableRatesData();
-            console.log('@@tableRates', JSON.stringify(this.tableRates));
-            this.tableFees = CalHelper.getTableFeesData();
-            console.log('@@tableFees', JSON.stringify(this.tableFees));
+          console.log(`CalHelper: Data loaded!`, JSON.stringify(data, null, 2));
+          this.quoteForm = data;
+          // this.quoteForm.term = this.quoteForm.term? this.quoteForm.term.toString() : "36";
+          this.tableRates = CalHelper.getTableRatesData();
+          // console.log('@@tableRates', JSON.stringify(this.tableRates));
+          this.tableFees = CalHelper.getTableFeesData();
+          // console.log('@@tableFees', JSON.stringify(this.tableFees));
         })
         .catch((error) => {
             console.error(JSON.stringify(error, null, 2));
@@ -103,7 +103,9 @@ export default class QuoteWisrPLCalc extends LightningElement {
         if (fld && fld.type === "number") {
             v = Number(v);
         }
-        this.quoteForm[fldName] = v;
+        fldName === "term"
+          ? (this.quoteForm[fldName] = parseInt(v))
+          : (this.quoteForm[fldName] = v);
         console.log(`this.quoteForm:`, JSON.stringify(this.quoteForm, null, 2));
         // --------------
         // Trigger events

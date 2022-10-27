@@ -108,12 +108,12 @@ const validatePostCalculation = (quote, messages) => {
     let errorList = r.errors;
     let warningList = r.warnings;
 
-    if (quote.commission === null || !(quote.commission > 0.0)) {
-        warningList.push({
-            field: "Commissions and Repayments",
-            message: `The commission is below zero. Please make adjustment to make sure commission is above zero.`
-        });
-    }
+    // if (quote.commission === null || !(quote.commission > 0.0)) {
+    //     warningList.push({
+    //         field: "Commissions and Repayments",
+    //         message: `The commission is below zero. Please make adjustment to make sure commission is above zero.`
+    //     });
+    // }
 
     r.warnings = [].concat(QuoteCommons.uniqueArray(warningList));
     r.errors = [].concat(QuoteCommons.uniqueArray(errorList));

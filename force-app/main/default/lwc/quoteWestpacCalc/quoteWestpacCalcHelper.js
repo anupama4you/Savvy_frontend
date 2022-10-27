@@ -1,6 +1,6 @@
 import getQuotingData from "@salesforce/apex/QuoteWestpacController.getQuotingData";
 import getBaseRates from "@salesforce/apex/QuoteController.getBaseRates";
-import calculateRepayments from "@salesforce/apex/QuoteController.calculateRepayments";
+import calculateRepayments from "@salesforce/apex/QuoteController.calculateAllRepayments";
 import sendQuote from "@salesforce/apex/QuoteController.sendQuote";
 import save from "@salesforce/apex/QuoteWestpacController.save";
 import {
@@ -123,8 +123,6 @@ const getClientRateCalc = (param) => {
 };
 
 const getBaseAmountPmtCalc = (param, per) => {
-    // console.log('##CALCULATE: ', JSON.stringify(param, null, 2));
-    // console.log(`AAAAA`);
     let r = 0;
     param.price && (r += param.price);
     r += QuoteCommons.calcTotalInsuranceType(param);
@@ -145,8 +143,8 @@ const calculate = (quote) =>
             reject(res);
         } else {
             // Prepare params
-            let profile = "Westpac";
             const p = {
+                totalInsuranceIncome: QuoteCommons.calcTotalInsuranceIncome(quote),
                 lender: LENDER_QUOTING,
                 totalAmount: QuoteCommons.calcTotalAmount(quote),
                 totalInsurance: QuoteCommons.calcTotalInsuranceType(quote),
@@ -167,12 +165,17 @@ const calculate = (quote) =>
             // Calculate
             console.log(`@@param:`, JSON.stringify(p, null, 2));
             calculateRepayments({
-                param: p
+                param: p,
+                insuranceParam: quote.insurance
             })
                 .then((data) => {
                     console.log(`@@SF:`, JSON.stringify(data, null, 2));
                     // Mapping
-                    res.commissions = QuoteCommons.mapCommissionSObjectToLwc(data);
+                    res.commissions = QuoteCommons.mapCommissionSObjectToLwc(
+                        data.commissions,
+                        quote.insurance,
+                        data.calResults
+                    );
                     console.log(JSON.stringify(res.commissions, null, 2));
                     // Validate the result of commissions
                     res.messages = Validations.validatePostCalculation(res.commissions, res.messages);
@@ -246,8 +249,9 @@ const monthlyProduct = [
 ];
 
 // Reset
-const reset = () => {
+const reset = (recordId) => {
     let r = {
+        oppId: recordId,
         loanType: calcOptions.loanTypes[0].value,
         loanProduct: calcOptions.loanProducts[0].value,
         loanFrequency: calcOptions.loanFrequencies[0].value,
@@ -262,7 +266,7 @@ const reset = () => {
         residualValue: 0.0,
         residualPer: 0.0,
         ppsr: null,
-        monthlyFee: null,
+        monthlyFee: 0.0,
         maxDof: null,
         term: 60,
         clientTier: calcOptions.clientTiers[0].value,
@@ -271,11 +275,13 @@ const reset = () => {
         // assetAge: calcOptions.vehicleAges[0].value,
         privateSales: "N",
         paymentType: "Arrears",
+        brokeragePercentage: 0.0,
         baseRate: 0.0,
         maxRate: 0.0,
         clientRate: null,
         commissions: QuoteCommons.resetResults(),
         typeValue: "Value",
+        insurance: { integrity: {} }
     };
     r = QuoteCommons.mapDataToLwc(r, lenderSettings, SETTING_FIELDS);
     return r;
@@ -286,7 +292,8 @@ const loadData = (recordId) =>
     new Promise((resolve, reject) => {
         const fields = [
             ...QUOTING_FIELDS.values(),
-            ...QuoteCommons.COMMISSION_FIELDS.values()
+            ...QuoteCommons.COMMISSION_FIELDS.values(),
+            ...QuoteCommons.INSURANCE_FIELDS.values()
         ];
         getQuotingData({
             param: {
@@ -301,7 +308,7 @@ const loadData = (recordId) =>
                 // Mapping Quote's fields
                 let data = QuoteCommons.mapSObjectToLwc({
                     calcName: LENDER_QUOTING,
-                    defaultData: reset(),
+                    defaultData: reset(recordId),
                     quoteData: quoteData,
                     settingFields: SETTING_FIELDS,
                     quotingFields: QUOTING_FIELDS

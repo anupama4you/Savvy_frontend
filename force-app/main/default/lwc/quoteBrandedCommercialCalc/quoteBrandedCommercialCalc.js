@@ -148,6 +148,8 @@ export default class QuoteBrandedConsumerCalc extends LightningElement {
       this.gstChange();
     }
 
+    // Insurances
+    QuoteCommons.calculateInsurances(this, fldName);
     // --------------
 
     console.log("🍔🍔 >> " + JSON.stringify(this.quoteForm, null, 2));

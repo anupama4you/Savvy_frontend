@@ -58,14 +58,15 @@ export default class QuoteUMELoansCalc extends LightningElement {
         fldName === "term"
             ? (this.quoteForm[fldName] = parseInt(v))
             : (this.quoteForm[fldName] = v);
-        // this.quoteForm.dof = 
-        console.log(`this.quoteForm:`, JSON.stringify(this.quoteForm, null, 2));
         if (CalHelper.DOF_SETTING_NAMES.includes(fldName)) {
-            console.log(`into DOF part`);
             this.quoteForm.dof = this.maxDOF;
-            this.quoteForm.maxDof = this.maxDOF;
-
         }
+        console.log(`this.quoteForm:`, JSON.stringify(this.quoteForm, null, 2));
+
+        // Insurances
+        QuoteCommons.calculateInsurances(this, fldName);
+        // --------------
+        
     }
 
     // Reset
@@ -134,10 +135,6 @@ export default class QuoteUMELoansCalc extends LightningElement {
 
     // all Save Buttons actions
     handleSave(event, saveType) {
-        // console.log(`event detail : ${event.target.value.toUpperCase()}`);
-        // const isNONE = event.target.value.toUpperCase() === "NONE";
-        // this.isBusy = true;
-        // const loanType = event.target.value.toUpperCase();
         let isNONE;
         let loanType;
         if (event) {
@@ -193,7 +190,7 @@ export default class QuoteUMELoansCalc extends LightningElement {
     // Send Email
     handleSendQuote() {
         this.isBusy = true;
-        if (!this.messageObj.errors.length > 0) {
+        if (!this.messageObj.errors.length > 0 || this.isErrorInsuranceOnly()) {
             this.messageObj = QuoteCommons.resetMessage();
             CalHelper.sendEmail(this.quoteForm, this.recordId)
                 .then((data) => {

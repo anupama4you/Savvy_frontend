@@ -3,39 +3,41 @@
     title="Wisr Car Loan"
     is-busy={isBusy}
     commissions={quoteForm.commissions}
-    messages={messageObj}
-  >
+    messages={messageObj}>
     <!-- Logo -->
     <img
       src={logoUrl}
       slot="logo"
       class="c-lender-logo"
       title="WISR"
-    />
+      />
 
     <!-- Buttons -->
     <lightning-button
       label="Calculate"
       slot="actions"
-      onclick={handleCalculate}
-    ></lightning-button>
+      onclick={handleCalculate}></lightning-button>
     <lightning-button
       label="Reset"
       slot="actions"
-      onclick={handleReset}
-    ></lightning-button>
-    <lightning-button label="Save Quoting" slot="actions" value="none" disabled={disableAction} onclick={handleSave}>
+      onclick={handleReset}></lightning-button>
+    <lightning-button label="Save Quoting" slot="actions" value="none"
+      disabled={disableAction} onclick={handleSave}>
     </lightning-button>
-    <lightning-button label="Save Pre-approval" value="pre_approval" slot="actions" disabled={disableAction}
+    <lightning-button label="Save Pre-approval" value="pre_approval"
+      slot="actions" disabled={disableAction}
       onclick={handleSave}>
     </lightning-button>
-    <lightning-button label="Save Amendment" value="pre_approval_amendment" slot="actions" disabled={disableAction}
+    <lightning-button label="Save Amendment" value="pre_approval_amendment"
+      slot="actions" disabled={disableAction}
       onclick={handleSave}>
     </lightning-button>
-    <lightning-button label="Save Formal Approval" value="formal_approval" slot="actions" disabled={disableAction}
+    <lightning-button label="Save Formal Approval" value="formal_approval"
+      slot="actions" disabled={disableAction}
       onclick={handleSave}>
     </lightning-button>
-    <lightning-button label="Send Quote" slot="actions" disabled={disableAction} onclick={handleSendQuote}>
+    <lightning-button label="Send Quote" slot="actions" disabled={disableAction}
+      onclick={handleSendQuote}>
     </lightning-button>
     <!-- Finance Details -->
     <!-- Loan Type -->
@@ -54,8 +56,7 @@
           onchange={handleFieldChange}
           class="slds-form__item"
           variant="label-hidden"
-          required
-        ></lightning-combobox>
+          required></lightning-combobox>
       </div>
     </div>
     <!-- Loan Product -->
@@ -73,9 +74,7 @@
           options={loanProductOptions}
           onchange={handleFieldChange}
           class="slds-form__item"
-          variant="label-hidden"
-          read-only="true"
-        >
+          variant="label-hidden">
         </lightning-combobox>
       </div>
     </div>
@@ -97,8 +96,7 @@
           class="slds-form__item"
           variant="label-hidden"
           onchange={handleFieldChange}
-          required
-        ></lightning-input>
+          required></lightning-input>
       </div>
     </div>
     <!-- Deposit -->
@@ -119,8 +117,7 @@
           class="slds-form__item"
           variant="label-hidden"
           onchange={handleFieldChange}
-          required
-        ></lightning-input>
+          required></lightning-input>
       </div>
     </div>
     <!-- Trade In -->
@@ -141,8 +138,7 @@
           class="slds-form__item"
           variant="label-hidden"
           onchange={handleFieldChange}
-          required
-        ></lightning-input>
+          required></lightning-input>
       </div>
     </div>
     <!-- Payout On Trade In -->
@@ -163,28 +159,26 @@
           class="slds-form__item"
           variant="label-hidden"
           onchange={handleFieldChange}
-          required
-        ></lightning-input>
+          required></lightning-input>
       </div>
     </div>
     <!-- Net Deposit -->
     <div class="c-row-details">
       <div class="c-detail-labels">
-          <span class="c-label">Net Deposit</span>
+        <span class="c-label">Net Deposit</span>
       </div>
       <div class="c-detail-fields">
         <lightning-formatted-number
           value={netDeposit}
           format-style="currency"
           currency-code="AUD"
-          class="c-read-only-field"
-        ></lightning-formatted-number>
+          class="c-read-only-field"></lightning-formatted-number>
       </div>
     </div>
     <!-- Application Fee -->
     <div class="c-row-details">
       <div class="c-detail-labels">
-        <span class="c-label">Application Fee</span>
+        <span class="c-label">Application Fee ({isApplicationFeeInputed})</span>
       </div>
       <div class="c-detail-fields">
         <lightning-input
@@ -199,8 +193,7 @@
           class="slds-form__item field-x-small-width"
           variant="label-hidden"
           onchange={handleFieldChange}
-          required
-        >
+          required>
         </lightning-input>
         <span class="c-max-details">
           Max.
@@ -208,14 +201,13 @@
             value={quoteForm.maxApplicationFee}
             format-style="currency"
             currency-code="AUD"
-            class="c-read-only-field"
-          ></lightning-formatted-number>
+            class="c-read-only-field"></lightning-formatted-number>
         </span>
       </div>
     </div>
     <!-- DOF -->
     <div class="c-row-details">
-      <div class="c-detail-labels"><span class="c-label">DOF</span></div>
+      <div class="c-detail-labels"><span class="c-label">DOF ({isDofInputed})</span></div>
       <div class="c-detail-fields">
         <lightning-input
           type="number"
@@ -229,31 +221,28 @@
           class="slds-form__item field-x-small-width"
           variant="label-hidden"
           onchange={handleFieldChange}
-          required
-        ></lightning-input>
+          required></lightning-input>
         <span class="c-max-details">
           Max.
           <lightning-formatted-number
             value={quoteForm.maxDof}
             format-style="currency"
             currency-code="AUD"
-            class="c-read-only-field"
-          ></lightning-formatted-number>
+            class="c-read-only-field"></lightning-formatted-number>
         </span>
       </div>
     </div>
     <!-- Private Sale Fee -->
     <div class="c-row-details">
       <div class="c-detail-labels">
-          <span class="c-label">Private Sale Fee</span>
+        <span class="c-label">Private Sale Fee</span>
       </div>
       <div class="c-detail-fields">
         <lightning-formatted-number
           value={quoteForm.privateSaleFee}
           format-style="currency"
           currency-code="AUD"
-          class="c-read-only-field"
-        ></lightning-formatted-number>
+          class="c-read-only-field"></lightning-formatted-number>
       </div>
     </div>
     <!-- PPSR -->
@@ -273,8 +262,7 @@
           placeholder="$"
           class="slds-form__item"
           variant="label-hidden"
-          onchange={handleFieldChange}
-        ></lightning-input>
+          onchange={handleFieldChange}></lightning-input>
       </div>
     </div>
     <!-- Monthly Fee -->
@@ -294,8 +282,7 @@
           placeholder="$"
           class="slds-form__item field-x-small-width"
           variant="label-hidden"
-          onchange={handleFieldChange}
-        ></lightning-input>
+          onchange={handleFieldChange}></lightning-input>
       </div>
     </div>
     <!-- Loan Details -->
@@ -318,8 +305,7 @@
           onchange={handleFieldChange}
           class="slds-form__item"
           variant="label-hidden"
-          required
-        ></lightning-combobox>
+          required></lightning-combobox>
       </div>
     </div>
     <!-- Credit Score -->
@@ -338,8 +324,7 @@
           placeholder=""
           class="slds-form__item"
           variant="label-hidden"
-          onchange={handleFieldChange}
-        ></lightning-input>
+          onchange={handleFieldChange}></lightning-input>
       </div>
     </div>
     <!-- Profile -->
@@ -358,8 +343,7 @@
           onchange={handleFieldChange}
           class="slds-form__item"
           variant="label-hidden"
-          required
-        ></lightning-combobox>
+          required></lightning-combobox>
       </div>
     </div>
     <!-- Vehicle Year -->
@@ -378,8 +362,7 @@
           onchange={handleFieldChange}
           class="slds-form__item"
           variant="label-hidden"
-          required
-        ></lightning-combobox>
+          required></lightning-combobox>
       </div>
     </div>
     <!-- LVR -->
@@ -400,8 +383,7 @@
           class="slds-form__item field-x-small-width"
           variant="label-hidden"
           onchange={handleFieldChange}
-          required
-        >
+          required>
         </lightning-input>
       </div>
     </div>
@@ -421,8 +403,7 @@
           onchange={handleFieldChange}
           class="slds-form__item"
           variant="label-hidden"
-          required
-        ></lightning-combobox>
+          required></lightning-combobox>
       </div>
     </div>
     <!-- Private Sales -->
@@ -441,8 +422,7 @@
           onchange={handleFieldChange}
           class="slds-form__item"
           variant="label-hidden"
-          required
-        ></lightning-combobox>
+          required></lightning-combobox>
       </div>
     </div>
     <!-- Rates -->
@@ -456,8 +436,7 @@
           value={quoteForm.maxRate}
           format-style="percent-fixed"
           minimum-fraction-digits="2"
-          class="c-read-only-field"
-        ></lightning-formatted-number>
+          class="c-read-only-field"></lightning-formatted-number>
         <template if:true={isBaseRateBusy}>
           <span class="c-status-icon">
             <lightning-dynamic-icon
@@ -479,15 +458,13 @@
           value={quoteForm.baseRate}
           format-style="percent-fixed"
           minimum-fraction-digits="2"
-          class="c-read-only-field"
-        ></lightning-formatted-number>
+          class="c-read-only-field"></lightning-formatted-number>
         <template if:true={isBaseRateBusy}>
           <span class="c-status-icon">
             <lightning-dynamic-icon
               type="eq"
               option="play"
-              alternative-text="Recording in progress"
-            >
+              alternative-text="Recording in progress">
             </lightning-dynamic-icon>
           </span>
         </template>
@@ -509,8 +486,7 @@
           onchange={handleFieldChange}
           class="slds-form__item"
           variant="label-hidden"
-          required
-        ></lightning-combobox>
+          required></lightning-combobox>
       </div>
     </div>
     <!-- NAF -->
@@ -523,13 +499,22 @@
           value={netRealtimeNaf}
           format-style="currency"
           currency-code="AUD"
-          class="c-read-only-field c-naf-field"
-        ></lightning-formatted-number>
+          class="c-read-only-field c-naf-field"></lightning-formatted-number>
       </div>
     </div>
     <!-- end -->
     <!-- Insurances -->
-    <!-- <c-quote-insurance-form slot="insurances"></c-quote-insurance-form> -->
+    <c-quote-insurance-form
+      slot="insurances"
+      onhandleinsurancemessage={handleInsuranceMessage}
+      oninsurancechanged={handleInsuranceChange}
+      onhandlepresentation={handleInsurancePresentation}
+      onhandledisablebutton={handleDisableButton}
+      onhandleloadinsurance={handleInsuranceLoad}
+      record-id={recordId}
+      quote-form={quoteForm}></c-quote-insurance-form>
+    <!-- insurance-income={insuranceIncome} -->
+
     <!-- Additional Content -->
     <div slot="more">
 
@@ -547,8 +532,7 @@
           key-field="Id"
           data={tableRates}
           columns={tableRatesCols}
-          hide-checkbox-column
-        >
+          hide-checkbox-column>
         </lightning-datatable>
       </div>
     </div>

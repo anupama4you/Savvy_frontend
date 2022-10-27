@@ -73,10 +73,6 @@ const getBaseAmountPmtCalc = (param, per) => {
     return r;
 };
 
-const assignSetting = (quote) => {
-
-};
-
 const calculate = (quote) =>
     new Promise((resolve, reject) => {
         console.log(`Calculating repayments...`, JSON.stringify(quote, null, 2));
@@ -95,7 +91,8 @@ const calculate = (quote) =>
                 lender: LENDER_QUOTING,
                 goodsType: quote.assetType,
                 totalAmount: totalAmountWithPpsr(quote),
-                totalInsurance: QuoteCommons.calcTotalInsuranceType(quote),
+                // totalInsurance: QuoteCommons.calcTotalInsuranceType(quote),
+                totalInsuranceIncome: QuoteCommons.calcTotalInsuranceIncome(quote),
                 clientRate: quote.clientRate,
                 paymentType: quote.paymentType,
                 term: quote.term,
@@ -142,8 +139,9 @@ const calcOptions = {
 };
 
 // Reset
-const reset = () => {
+const reset = (recordId) => {
     let r = {
+        oppId: recordId,
         loanType: calcOptions.loanTypes[0].value,
         loanProduct: calcOptions.loanProducts[0].value,
         price: null,
@@ -187,7 +185,7 @@ const loadData = (recordId) =>
                 // Mapping Quote's fields
                 let data = QuoteCommons.mapSObjectToLwc({
                     calcName: LENDER_QUOTING,
-                    defaultData: reset(),
+                    defaultData: reset(recordId),
                     quoteData: quoteData,
                     settingFields: SETTING_FIELDS,
                     quotingFields: QUOTING_FIELDS
