@@ -16,7 +16,7 @@ let lenderSettings = {};
 // API Responses
 let apiResponses = {};
 
-const LENDER_QUOTING = "Money3";
+const LENDER_QUOTING = "Money3 PL";
 
 const QUOTING_FIELDS = new Map([
   ["loanType", "Loan_Type__c"],
@@ -166,8 +166,8 @@ const calcOptions = {
   terms: CommonOptions.terms(24, 72),
   customerProfiles: [
     { label: "-- None --", value: null },
-    { label: "Asset Finance", value: "Asset Finance" },
-    { label: "Micro Motor", value: "Micro Motor" }
+    { label: "Unsecured", value: "Unsecured" },
+    { label: "Secured", value: "Secured" }
   ],
   vehicleConditions: [
     { label: "New", value: "new" },
@@ -403,7 +403,7 @@ const getMoney3RiskFee = (quote) => {
     const rfBase = calcRiskFeeBase(quote);
     if (
       quote != null && 
-      quote.customerProfile !== "Micro Motor" &&
+      quote.customerProfile !== "Secured" &&
       rfBase > 12000
     ) {
       let rfRate = 0.0;
@@ -454,7 +454,7 @@ const renderTerms = (quote) => {
     ) {
       terms = getTerms(12, 24, 12);
     }
-    if (quote.customerGrading === "Micro Motor") {
+    if (quote.customerGrading === "Secured") {
       terms = getTerms(24, 36, 12);
     }
     return terms;

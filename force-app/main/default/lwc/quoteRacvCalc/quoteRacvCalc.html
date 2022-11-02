@@ -489,150 +489,189 @@
                         </lightning-dynamic-icon>
                     </span>
                 </template>
-<span class="c-max-rate">
+                <span class="c-max-rate">
                     Max.
                     <lightning-formatted-number value={quoteForm.maxRate}
                         format-style="percent-fixed" minimum-fraction-digits="2"
                         class="c-read-only-field"></lightning-formatted-number>
                 </span>
-</div>
-</div>
-<!-- Client Rate -->
-<div class="c-row-details">
-    <div class="c-detail-labels">
-        <span class="c-label">Client Rate</span>
-    </div>
-    <div class="c-detail-fields">
-        <lightning-input type="number" formatter="percent-fixed" step="0.01" name="clientRate" data-id="clientRate-field" value={quoteForm.clientRate} label="Client Rate" placeholder="0.00%" class="slds-form__item" variant="label-hidden" onchange={handleFieldChange}
-            required>
-        </lightning-input>
-    </div>
-</div>
-<!-- NAF -->
-<div class="c-row-details">
-    <div class="c-detail-labels"><span class="c-label">NAF</span></div>
-    <div class="c-detail-fields c-naf-division">
-        <lightning-formatted-number value={netRealtimeNaf} format-style="currency" currency-code="AUD" class="c-read-only-field c-naf-field"></lightning-formatted-number>
-    </div>
-</div>
-<!-- end -->
+            </div>
+        </div>
+        <!-- Client Rate -->
+        <div class="c-row-details">
+            <div class="c-detail-labels">
+                <span class="c-label">Client Rate</span>
+            </div>
+            <div class="c-detail-fields">
+                <lightning-input type="number" formatter="percent-fixed"
+                    step="0.01" name="clientRate" data-id="clientRate-field"
+                    value={quoteForm.clientRate} label="Client Rate"
+                    placeholder="0.00%" class="slds-form__item"
+                    variant="label-hidden" onchange={handleFieldChange}
+                    required>
+                </lightning-input>
+            </div>
+        </div>
+        <!-- NAF -->
+        <div class="c-row-details">
+            <div class="c-detail-labels"><span class="c-label">NAF</span></div>
+            <div class="c-detail-fields c-naf-division">
+                <lightning-formatted-number value={netRealtimeNaf}
+                    format-style="currency" currency-code="AUD"
+                    class="c-read-only-field c-naf-field"></lightning-formatted-number>
+            </div>
+        </div>
+        <!-- end -->
 
-<!-- Insurances -->
-<c-quote-insurance-form slot="insurances"></c-quote-insurance-form>
+        <!-- Insurances -->
+        <c-quote-insurance-form
+            slot="insurances"
+            onhandleinsurancemessage={handleInsuranceMessage}
+            oninsurancechanged={handleInsuranceChange}
+            onhandlepresentation={handleInsurancePresentation}
+            onhandledisablebutton={handleDisableButton}
+            onhandleloadinsurance={handleInsuranceLoad}
+            record-id={recordId}
+            quote-form={quoteForm}></c-quote-insurance-form>
+        <!-- insurance-income={insuranceIncome} -->
 
-<!-- Verbatim Text -->
-<div slot="more">
-    <div class="slds-p-around_small">
-        <table class="slds-table slds-table_bordered slds-table_fixed-layout slds-table_resizable-cols">
-            <tr>
-                <td>&nbsp;</td>
-                <td colspan="3" class="slds-cell-wrap slds-border_left"><div>Indicative Lending Criteria</div><div>(Refer applications out of parameters to your RACV representative)</div></td>
-            </tr>
-            <tr>
-                <td rowspan="7" class="slds-cell-wrap">Characteristics</td>
-                <td class="slds-cell-wrap slds-border_left">Borrower Type 1</td>
-                <td class="slds-cell-wrap slds-border_left">Borrower Type 2</td>
-                <td class="slds-cell-wrap slds-border_left">Borrower Type 3</td>
-            </tr>
-            <tr>
-                <td class="slds-cell-wrap slds-border_left">Home Buyers (strong equity position)</td>
-                <td class="slds-cell-wrap slds-border_left">Home Buyers (low equity)/Renters with agency rental reference</td>
-                <td class="slds-cell-wrap slds-border_left">Lacks stability in Residence &amp; Employment</td>
-            </tr>
-            <tr>
-                <td class="slds-cell-wrap slds-border_left">Stable verifiable employment history</td>
-                <td class="slds-cell-wrap slds-border_left">Verifiable employment history</td>
-                <td class="slds-cell-wrap slds-border_left">Limited/no fallback position</td>
-            </tr>
-            <tr>
-                <td class="slds-cell-wrap slds-border_left">Accured assets, good credit history, strong capacity position</td>
-                <td class="slds-cell-wrap slds-border_left">Clear dated Equifax File, comfortable capacity position</td>
-                <td class="slds-cell-wrap slds-border_left">Tight capacity</td>
-            </tr>
-            <tr>
-                <td class="slds-cell-wrap slds-border_left">Controlled use of credit, clear dated Equifax File</td>
-                <td class="slds-cell-wrap slds-border_left">Some asset accrual/reasonable fallback position, some savings</td>
-                <td class="slds-cell-wrap slds-border_left">Higher $ exposure on security</td>
-            </tr>
-            <tr>
-                <td class="slds-cell-wrap slds-border_left">Strong fallback position</td>
-                <td class="slds-cell-wrap slds-border_left">Spread of credit &amp; and debt, some credit history</td>
-                <td class="slds-cell-wrap slds-border_left">&nbsp;</td>
-            </tr>
-        </table>
-    </div>
-</div>
+        <!-- Verbatim Text -->
+        <div slot="more">
+            <div class="slds-p-around_small">
+                <table class="slds-table slds-table_bordered
+                    slds-table_fixed-layout slds-table_resizable-cols">
+                    <tr>
+                        <td>&nbsp;</td>
+                        <td colspan="3" class="slds-cell-wrap slds-border_left"><div>Indicative
+                                Lending Criteria</div><div>(Refer applications
+                                out of parameters to your RACV representative)</div></td>
+                    </tr>
+                    <tr>
+                        <td rowspan="7" class="slds-cell-wrap">Characteristics</td>
+                        <td class="slds-cell-wrap slds-border_left">Borrower
+                            Type 1</td>
+                        <td class="slds-cell-wrap slds-border_left">Borrower
+                            Type 2</td>
+                        <td class="slds-cell-wrap slds-border_left">Borrower
+                            Type 3</td>
+                    </tr>
+                    <tr>
+                        <td class="slds-cell-wrap slds-border_left">Home Buyers
+                            (strong equity position)</td>
+                        <td class="slds-cell-wrap slds-border_left">Home Buyers
+                            (low equity)/Renters with agency rental reference</td>
+                        <td class="slds-cell-wrap slds-border_left">Lacks
+                            stability in Residence &amp; Employment</td>
+                    </tr>
+                    <tr>
+                        <td class="slds-cell-wrap slds-border_left">Stable
+                            verifiable employment history</td>
+                        <td class="slds-cell-wrap slds-border_left">Verifiable
+                            employment history</td>
+                        <td class="slds-cell-wrap slds-border_left">Limited/no
+                            fallback position</td>
+                    </tr>
+                    <tr>
+                        <td class="slds-cell-wrap slds-border_left">Accured
+                            assets, good credit history, strong capacity
+                            position</td>
+                        <td class="slds-cell-wrap slds-border_left">Clear dated
+                            Equifax File, comfortable capacity position</td>
+                        <td class="slds-cell-wrap slds-border_left">Tight
+                            capacity</td>
+                    </tr>
+                    <tr>
+                        <td class="slds-cell-wrap slds-border_left">Controlled
+                            use of credit, clear dated Equifax File</td>
+                        <td class="slds-cell-wrap slds-border_left">Some asset
+                            accrual/reasonable fallback position, some savings</td>
+                        <td class="slds-cell-wrap slds-border_left">Higher $
+                            exposure on security</td>
+                    </tr>
+                    <tr>
+                        <td class="slds-cell-wrap slds-border_left">Strong
+                            fallback position</td>
+                        <td class="slds-cell-wrap slds-border_left">Spread of
+                            credit &amp; and debt, some credit history</td>
+                        <td class="slds-cell-wrap slds-border_left">&nbsp;</td>
+                    </tr>
+                </table>
+            </div>
+        </div>
 
-<!-- Latitude Personal Rate Table -->
-<div slot="table-rates">
-    <div class="c-rates-section-title">Latitude Personal Rate Table&nbsp;
-        <template if:true={category}>
+        <!-- Latitude Personal Rate Table -->
+        <div slot="table-rates">
+            <div class="c-rates-section-title">Latitude Personal Rate
+                Table&nbsp;
+                <template if:true={category}>
                     for {category}
                 </template>
-        <template if:false={category}>
+                <template if:false={category}>
                     [Please select a category]
                 </template>
-    </div>
-    <div class="slds-grid slds-gutters">
+            </div>
+            <div class="slds-grid slds-gutters">
 
-        <template if:true={tableRates}>
-                    
-                            <table>
-                                <tr>
-                                    <th class="ratesTh">Credit Score</th>
-                                    <th class="ratesTh">Loan Amount</th>
-                                    <th class="ratesTh">Rate 1</th>
-                                    <th class="ratesTh">Rate 2</th>
-                                    <th class="ratesTh">Rate 3</th>
-                                    <th class="ratesTh">Rate 4</th>
-                                </tr>
-                                <template for:each={tableRates} for:item="r">
-                                    <tr key={r}>
-                                        <td align="center">
-                                            {r.Min_Credit_Score__c} - {r.Max_Credit_Score__c}
-                                        </td>
-                                        <td align="center">
-                                            {r.Min_Loan_Amount__c} - {r.Max_Loan_Amount__c}
-                                        </td>
-                                        <td align="center">
-                                            <lightning-formatted-number
-                                                value={r.Rate_1__c}
-                                                format-style="decimal"
-                                                minimum-fraction-digits="1"></lightning-formatted-number>
-                                        </td>
-                                        <td align="center">
-                                            <lightning-formatted-number
-                                                value={r.Rate_2__c}
-                                                format-style="decimal"
-                                                minimum-fraction-digits="1"></lightning-formatted-number>
-                                        </td>
-                                        <td align="center">
-                                            <lightning-formatted-number
-                                                value={r.Rate_3__c}
-                                                format-style="decimal"
-                                                minimum-fraction-digits="1"></lightning-formatted-number>
-                                        </td>
-                                        <td align="center">
-                                            <lightning-formatted-number
-                                                value={r.Rate_4__c}
-                                                format-style="decimal"
-                                                minimum-fraction-digits="1"></lightning-formatted-number>
-                                        </td>
-                                    </tr>
-                                </template>
-        </table>
+                <template if:true={tableRates}>
 
-        <!-- <lightning-datatable
+                    <table>
+                        <tr>
+                            <th class="ratesTh">Credit Score</th>
+                            <th class="ratesTh">Loan Amount</th>
+                            <th class="ratesTh">Rate 1</th>
+                            <th class="ratesTh">Rate 2</th>
+                            <th class="ratesTh">Rate 3</th>
+                            <th class="ratesTh">Rate 4</th>
+                        </tr>
+                        <template for:each={tableRates} for:item="r">
+                            <tr key={r}>
+                                <td align="center">
+                                    {r.Min_Credit_Score__c} -
+                                    {r.Max_Credit_Score__c}
+                                </td>
+                                <td align="center">
+                                    {r.Min_Loan_Amount__c} -
+                                    {r.Max_Loan_Amount__c}
+                                </td>
+                                <td align="center">
+                                    <lightning-formatted-number
+                                        value={r.Rate_1__c}
+                                        format-style="decimal"
+                                        minimum-fraction-digits="1"></lightning-formatted-number>
+                                </td>
+                                <td align="center">
+                                    <lightning-formatted-number
+                                        value={r.Rate_2__c}
+                                        format-style="decimal"
+                                        minimum-fraction-digits="1"></lightning-formatted-number>
+                                </td>
+                                <td align="center">
+                                    <lightning-formatted-number
+                                        value={r.Rate_3__c}
+                                        format-style="decimal"
+                                        minimum-fraction-digits="1"></lightning-formatted-number>
+                                </td>
+                                <td align="center">
+                                    <lightning-formatted-number
+                                        value={r.Rate_4__c}
+                                        format-style="decimal"
+                                        minimum-fraction-digits="1"></lightning-formatted-number>
+                                </td>
+                            </tr>
+                        </template>
+                    </table>
+
+                    <!-- <lightning-datatable
                                 key-field="Id"
                                 data={d.data}
                                 columns={tableRatesCols}
                                 hide-checkbox-column>
                             </lightning-datatable> -->
-    </template>
+                </template>
 
-</div>
-</div>
+            </div>
+        </div>
 
-</c-quote-container>
+    </c-quote-container>
 
 </template>

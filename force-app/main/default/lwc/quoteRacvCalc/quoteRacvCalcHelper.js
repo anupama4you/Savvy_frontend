@@ -1,6 +1,6 @@
 import getQuotingData from "@salesforce/apex/quoteRacvCalcController.getQuotingData";
 import getBaseRates from "@salesforce/apex/QuoteController.getBaseRates";
-import calculateRepayments from "@salesforce/apex/QuoteController.calculateRepayments";
+import calculateRepayments from "@salesforce/apex/QuoteController.calculateAllRepayments";
 import save from "@salesforce/apex/quoteRacvCalcController.save";
 import sendQuote from "@salesforce/apex/QuoteController.sendQuote";
 import {
@@ -58,6 +58,8 @@ const QUOTING_FIELDS = new Map([
     ["applicationId", "Application__c"],
     ["netDeposit", "Net_Deposit__c"],
     ["baseRate", "Base_Rate__c"],
+    ["propertyOwner", "Client_Tier__c"],
+    ["creditScore", "Credit_Score__c"],
 ]);
 
 // - TODO: need to map more fields
@@ -80,8 +82,7 @@ const BASE_RATE_FIELDS = [
     "vehicleType",
     "propertyOwner",
     "creditScore",
-    "carAge",
-    "vehCon"
+    "carAge"
 ];
 
 const DOF_CALC_FIELDS = [
@@ -106,7 +107,7 @@ const calculate = (quote) =>
             reject(res);
         } else {
             console.log('quote::', quote)
-                // Prepare params
+            // Prepare params
             const profile = quote.securedUnsecured === "Secured" ? "Secured" : "Unsecured";
             // new total calculated amount
             const totalAmount = calcNetRealtimeNaf(quote);
@@ -135,13 +136,18 @@ const calculate = (quote) =>
             // Calculate
             console.log(`@@param:`, JSON.stringify(p, null, 2));
             calculateRepayments({
-                    param: p
-                })
+                param: p,
+                insuranceParam: quote.insurance
+            })
                 .then((data) => {
                     console.log(`@@SF:`, JSON.stringify(data, null, 2));
 
                     // Mapping
-                    res.commissions = QuoteCommons.mapCommissionSObjectToLwc(data);
+                    res.commissions = QuoteCommons.mapCommissionSObjectToLwc(
+                        data.commissions,
+                        quote.insurance,
+                        data.calResults
+                    );
                     console.log(JSON.stringify(res.commissions, null, 2));
                     // Validate the result of commissions
                     res.messages = Validations.validatePostCalculation(res.commissions, res.messages);
@@ -252,7 +258,8 @@ const reset = (recordId) => {
         paymentType: calcOptions.paymentTypes[0].value,
         loanTypeDetail: calcOptions.classes[0].value,
         commissions: QuoteCommons.resetResults(),
-        registrationFee: 3.40
+        registrationFee: 3.40,
+        insurance: { integrity: {} }
     };
     r = QuoteCommons.mapDataToLwc(r, lenderSettings, SETTING_FIELDS);
     return r;
@@ -264,17 +271,18 @@ const loadData = (recordId) =>
         //  const fields = Array.from(QUOTING_FIELDS.values());
         const fields = [
             ...QUOTING_FIELDS.values(),
-            ...QuoteCommons.COMMISSION_FIELDS.values()
+            ...QuoteCommons.COMMISSION_FIELDS.values(),
+            ...QuoteCommons.INSURANCE_FIELDS.values()
         ];
         console.log(`@@fields:`, JSON.stringify(fields, null, 2));
         getQuotingData({
-                param: {
-                    oppId: recordId,
-                    fields: fields,
-                    calcName: LENDER_QUOTING,
-                    rateSettings: RATE_SETTING_NAMES
-                }
-            })
+            param: {
+                oppId: recordId,
+                fields: fields,
+                calcName: LENDER_QUOTING,
+                rateSettings: RATE_SETTING_NAMES
+            }
+        })
             .then((quoteData) => {
                 console.log('@@SF:', JSON.stringify(quoteData, null, 2));
                 // Mapping Quote's fields
@@ -321,14 +329,14 @@ const getMyBaseRates = (quote) =>
             creditScore: quote.creditScore,
             hasMaxRate: true,
             carAge: quote.carAge,
-            totalAmount: quote.totalAmount,
+            totalAmount: calcNetRealtimeNaf(quote),
             condition: quote.vehCon,
             assetType: quote.vehicleType
         };
         console.log('getMyBaseRates...', JSON.stringify(p, null, 2));
         getBaseRates({
-                param: p
-            })
+            param: p
+        })
             .then((rates) => {
                 console.log(`@@SF:`, JSON.stringify(rates, null, 2));
                 resolve(rates);
@@ -424,9 +432,7 @@ const getAllTableData = (category) => {
 
 // custom calculations for NAF generations
 const calcNetRealtimeNaf = (quote) => {
-    console.log('variables', quote.price, quote.applicationFee, quote.dof, quote.ppsr, quote.registrationFee)
     let netRealtimeNaf = QuoteCommons.calcNetRealtimeNaf(quote);
-    console.log('variables', netRealtimeNaf);
     let r = quote.registrationFee + netRealtimeNaf;
     return r;
 }
@@ -461,14 +467,14 @@ const saveQuote = (approvalType, param, recordId) =>
     new Promise((resolve, reject) => {
         if (approvalType && param && recordId) {
             save({
-                    param: QuoteCommons.mapLWCToSObject(
-                        param,
-                        recordId,
-                        LENDER_QUOTING,
-                        FIELDS_MAPPING_FOR_APEX
-                    ),
-                    approvalType: approvalType
-                })
+                param: QuoteCommons.mapLWCToSObject(
+                    param,
+                    recordId,
+                    LENDER_QUOTING,
+                    FIELDS_MAPPING_FOR_APEX
+                ),
+                approvalType: approvalType
+            })
                 .then((data) => {
                     resolve(data);
                 })
@@ -479,10 +485,10 @@ const saveQuote = (approvalType, param, recordId) =>
             reject(
                 new Error(
                     `Something Wrong, appType: ${approvalType}, param: ${JSON.stringify(
-            param,
-            null,
-            2
-          )}, param: ${recordId}`
+                        param,
+                        null,
+                        2
+                    )}, param: ${recordId}`
                 )
             );
         }
@@ -499,13 +505,13 @@ const sendEmail = (param, recordId) =>
         if (param) {
             console.log(`@@param in sendEmail ${JSON.stringify(param, null, 2)}`);
             sendQuote({
-                    param: QuoteCommons.mapLWCToSObject(
-                        param,
-                        recordId,
-                        LENDER_QUOTING,
-                        FIELDS_MAPPING_FOR_APEX
-                    )
-                })
+                param: QuoteCommons.mapLWCToSObject(
+                    param,
+                    recordId,
+                    LENDER_QUOTING,
+                    FIELDS_MAPPING_FOR_APEX
+                )
+            })
                 .then((data) => {
                     resolve(data);
                 })

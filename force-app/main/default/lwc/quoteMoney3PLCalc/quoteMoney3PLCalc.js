@@ -1,7 +1,7 @@
 import { LightningElement, api, track, wire } from "lwc";
 import { displayToast } from "c/partnerJsUtils";
 import { QuoteCommons } from "c/quoteCommons";
-import { CalHelper } from "./quoteMoney3CalcHelper";
+import { CalHelper } from "./quoteMoney3PLCalcHelper";
 import LENDER_LOGO from "@salesforce/resourceUrl/Money3Logo";
 import FNAME_FIELD from "@salesforce/schema/Custom_Opportunity__c.Account_First_Name__c";
 import LNAME_FIELD from "@salesforce/schema/Custom_Opportunity__c.Account_Last_Name__c";
@@ -9,7 +9,7 @@ import OPPNAME_FIELD from "@salesforce/schema/Custom_Opportunity__c.Name";
 import { getRecord } from "lightning/uiRecordApi";
 
 const fields = [FNAME_FIELD, LNAME_FIELD, OPPNAME_FIELD];
-export default class QuoteMoney3Calc extends LightningElement {
+export default class QuoteMoney3PLCalc extends LightningElement {
   tableRatesCols = CalHelper.tableRateDataColumns;
   isBusy;
   isBaseRateBusy;
@@ -119,7 +119,7 @@ export default class QuoteMoney3Calc extends LightningElement {
       if (fldName === "customerProfile" || fldName === "customerGrading") {
         this.customerGradings;
         if (
-          this.quoteForm["customerProfile"] === "Asset Finance" &&
+          this.quoteForm["customerProfile"] === "Unsecured" &&
           this.quoteForm["customerGrading"]
         ) {
           this.quoteForm.maxDof = this.quoteForm.dof = this.lenderSettingDof;
@@ -162,23 +162,6 @@ export default class QuoteMoney3Calc extends LightningElement {
   // Reset
   reset() {
     this.quoteForm = CalHelper.reset(this.recordId);
-  }
-
-  // Base Rate
-  baseRateCalc() {
-    this.isBaseRateBusy = true;
-    CalHelper.baseRates(this.quoteForm)
-      .then((data) => {
-        this.quoteForm.baseRate = data.baseRate;
-        this.quoteForm.clientRate = data.baseRate;
-      })
-      .catch((error) => {
-        console.error(error);
-        displayToast(this, "Base Rate...", error, "error");
-      })
-      .finally(() => {
-        this.isBaseRateBusy = false;
-      });
   }
 
   calculateParams(skipClientRate, notSkipDof) {
