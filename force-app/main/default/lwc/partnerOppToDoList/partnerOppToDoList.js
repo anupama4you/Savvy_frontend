@@ -127,10 +127,8 @@ export default class PartnerOppToDoList extends NavigationMixin(LightningElement
     let r = "Quote - Select Lender";
     if (this.lenderSettings && this.lenderSettings.Label__c) {
       r = `Quote - ${this.lenderSettings.Label__c}`;
-      console.log('label@', JSON.stringify(this.lenderSettings, null, 2))
     } else if (this.quoting) {
       r = `Quote - ${this.quoting.Name}`;
-      console.log('label1@', this.quoting.Name)
     }
     this.loadQuotingUrl();
     return r;

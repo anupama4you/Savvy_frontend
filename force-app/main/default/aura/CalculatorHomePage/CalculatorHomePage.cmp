@@ -417,6 +417,19 @@
                         </a>
                       </div>
                     </lightning:layoutItem>
+                    <lightning:layoutItem size="6" padding="around-medium">
+                      <div style="text-align: center">
+                        <a href="{!v.redirectUrlWrapper.Gedda}" target="_parent">
+                          <strong>Gedda</strong>
+                          <br />
+                          <img
+                            src="{!$Resource.GeddaLogo}"
+                            onclick="{!c.handleClick}"
+                            style="max-width: 80%"
+                            />
+                        </a>
+                      </div>
+                    </lightning:layoutItem>
                     <lightning:layoutItem
                       size="6"
                       smallDeviceSize="6"
@@ -875,6 +888,44 @@
                         </a>
                       </div>
                     </lightning:layoutItem>
+                    <lightning:layoutItem
+                      size="6"
+                      smallDeviceSize="6"
+                      largeDeviceSize="6"
+                      mediumDeviceSize="6"
+                      padding="around-medium">
+                      <div style="text-align: center">
+                        <a href="{!v.redirectUrlWrapper.resimac}"
+                          target="_parent">
+                          <strong>Resimac</strong>
+                          <br />
+                          <img
+                          src="{!$Resource.Resimac}"
+                            onclick="{!c.handleClick}"
+                            />
+                        </a>
+                      </div>
+                    </lightning:layoutItem>
+
+                    <lightning:layoutItem
+                      size="6"
+                      smallDeviceSize="6"
+                      largeDeviceSize="6"
+                      mediumDeviceSize="6"
+                      padding="around-medium">
+                      <div style="text-align: center">
+                        <a href="{!v.redirectUrlWrapper.AzoraCommercial}"
+                          target="_parent">
+                          <strong>Azora Commercial</strong>
+                          <br />
+                          <img
+                          src="{!$Resource.AzoraLogo}"
+                            onclick="{!c.handleClick}"
+                            />
+                        </a>
+                      </div>
+                    </lightning:layoutItem>
+
                   </lightning:layout>
                 </lightning:layoutItem>
 
@@ -1006,6 +1057,33 @@
                         </a>
                       </div>
                     </lightning:layoutItem>
+                    <lightning:layoutItem size="6" padding="around-medium">
+                      <div style="text-align: center">
+                        <a href="{!v.redirectUrlWrapper.Money3_PL}"
+                          target="_parent">
+                          <strong>Money3 PL</strong>
+                          <br />
+                          <img
+                            src="{!$Resource.Money3Logo}"
+                            onclick="{!c.handleClick}"
+                            style="max-width: 80%"
+                            />
+                        </a>
+                      </div>
+                    </lightning:layoutItem>
+                    <lightning:layoutItem size="6" padding="around-medium">
+                      <div style="text-align: center">
+                        <a href="{!v.redirectUrlWrapper.Gedda}" target="_parent">
+                          <strong>Gedda</strong>
+                          <br />
+                          <img
+                            src="{!$Resource.GeddaLogo}"
+                            onclick="{!c.handleClick}"
+                            style="max-width: 80%"
+                            />
+                        </a>
+                      </div>
+                    </lightning:layoutItem>
                   </lightning:layout>
                 </lightning:layoutItem>
 
@@ -1061,6 +1139,34 @@
                           <br />
                           <img
                             src="{!$Resource.ShiftLogo}"
+                            onclick="{!c.handleClick}"
+                            style="max-width: 80%"
+                            />
+                        </a>
+                      </div>
+                    </lightning:layoutItem>
+                    <lightning:layoutItem size="6" padding="around-medium">
+                      <div style="text-align: center">
+                        <a href="{!v.redirectUrlWrapper.Bizcap}"
+                          target="_parent">
+                          <strong>Bizcap</strong>
+                          <br />
+                          <img
+                            src="{!$Resource.BizcapLogo}"
+                            onclick="{!c.handleClick}"
+                            style="max-width: 80%"
+                            />
+                        </a>
+                      </div>
+                    </lightning:layoutItem>
+                    <lightning:layoutItem size="6" padding="around-medium">
+                      <div style="text-align: center">
+                        <a href="{!v.redirectUrlWrapper.ScotPac}"
+                          target="_parent">
+                          <strong>ScotPac</strong>
+                          <br />
+                          <img
+                            src="{!$Resource.ScotPacLogo}"
                             onclick="{!c.handleClick}"
                             style="max-width: 80%"
                             />

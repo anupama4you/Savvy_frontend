@@ -1,9 +1,8 @@
-import getQuotingData from "@salesforce/apex/QuoteMoney3PLController.getQuotingData";
-import profileOnChangeAction from "@salesforce/apex/QuoteMoney3PLController.profileOnChangeAction";
+import getQuotingData from "@salesforce/apex/QuoteGeddaCalcController.getQuotingData";
 import getBaseRates from "@salesforce/apex/QuoteController.getBaseRates";
 import calculateRepayments from "@salesforce/apex/QuoteController.calculateAllRepayments";
 import sendQuote from "@salesforce/apex/QuoteController.sendQuote";
-import save from "@salesforce/apex/QuoteMoney3PLController.save";
+import save from "@salesforce/apex/QuoteGeddaCalcController.save";
 import {
   QuoteCommons,
   CommonOptions,
@@ -16,7 +15,7 @@ let lenderSettings = {};
 // API Responses
 let apiResponses = {};
 
-const LENDER_QUOTING = "Money3 PL";
+const LENDER_QUOTING = "Gedda";
 
 const QUOTING_FIELDS = new Map([
   ["loanType", "Loan_Type__c"],
@@ -39,8 +38,7 @@ const QUOTING_FIELDS = new Map([
   ["clientTier", "Client_Tier__c"],
   ["customerProfile", "Customer_Profile__c"],
   ["customerGrading", "Category_Type__c"],
-  ["riskFee", "Risk_Fee__c"],
-  ["loanPurpose", "Loan_Purpose__c"]
+  ["loanPurpose", "Loan_Purpose__c"],
 ]);
 
 const FIELDS_MAPPING_FOR_APEX = new Map([
@@ -51,7 +49,7 @@ const FIELDS_MAPPING_FOR_APEX = new Map([
   ["maxRate", "Manual_Max_Rate__c"]
 ]);
 
-const RATE_SETTING_NAMES = ["Money3PL"];
+const RATE_SETTING_NAMES = ["Money3"];
 
 const SETTING_FIELDS = new Map([
   ["monthlyFee", "Monthly_Fee__c"],
@@ -62,24 +60,18 @@ const SETTING_FIELDS = new Map([
   ["maxDof", "Max_DOF__c"]
 ]);
 
-const BASE_RATE_FIELDS = ["customerGrading"];
-
-const CALC_FEES_FIELDS = [
-  "price",
-  "deposit",
-  "tradeIn",
-  "payoutOn",
+const BASE_RATE_FIELDS = [
   "customerProfile",
   "customerGrading"
 ];
 
-const calculateCommission = (quote) => {
-  let commRate = 0.0;
-  if(quote.customerProfile === "Secured" && quote.customerGrading !== "Bronze"){
-    commRate += 2.0;
-  }
-  return commRate;
-}
+const DOF_CALC_FIELDS = [
+  "customerProfile",
+  "price",
+  "deposit",
+  "tradeIn",
+  "payoutOn"
+];
 
 const calculate = (quote) =>
   new Promise((resolve, reject) => {
@@ -106,7 +98,7 @@ const calculate = (quote) =>
       const p = {
         lender: LENDER_QUOTING,
         // totalAmount: calculateRealTimeNaf(quote),
-        totalAmount: calculateTotalAmount(quote),
+        totalAmount: QuoteCommons.calcTotalAmount(quote),
         // totalInsurance: QuoteCommons.calcTotalInsuranceType(quote),
         totalInsuranceIncome: QuoteCommons.calcTotalInsuranceIncome(quote),
         clientRate: quote.clientRate,
@@ -117,7 +109,7 @@ const calculate = (quote) =>
         residualValue: quote.residual,
         customerProfile: quote.customerProfile,
         riskGrade: quote.customerGrading,
-        amountBaseComm: calculateCommission(quote)
+        amountBaseComm: quote.price - QuoteCommons.calcNetDeposit(quote)
       };
       // Calculate
       console.log(`Calculating repayments...`, JSON.stringify(quote, null, 2));
@@ -171,11 +163,13 @@ const calcOptions = {
     { label: "Car", value: "Car" },
     { label: "Caravan", value: "Caravan" }
   ],
-  terms: CommonOptions.terms(24, 60),
+  terms1: CommonOptions.terms(24, 72),
+  terms2: CommonOptions.terms(36, 40),
   customerProfiles: [
-    { label: "-- None --", value: null },
-    { label: "Unsecured", value: "Unsecured" },
-    { label: "Secured", value: "Secured" }
+    { label: "-- None --", value: "" },
+    { label: "Asset Finance", value: "Asset Finance" },
+    { label: "Mini Moto", value: "Mini Moto" },
+    { label: "Mini Moto +", value: "Mini Moto Plus" },
   ],
   vehicleConditions: [
     { label: "New", value: "new" },
@@ -187,13 +181,12 @@ const calcOptions = {
   leaseAgreements: CommonOptions.yesNo,
   privateSales: CommonOptions.yesNo,
   customerGradings: [
-    { label: "-- None --", value: null },
-    { label: "Platinum 600+", value: "Platinum" },
-    { label: "Gold 550+", value: "Gold" },
-    { label: "Silver 500+", value: "Silver" },
-    { label: "Bronze 100-499", value: "Bronze" }
+    { label: "-- None --", value: "" },
+    { label: "Mid Prime", value: "Mid Prime" },
+    { label: "Flex", value: "Flex" },
+    { label: "Specialist", value: "Specialist" }
   ],
-  noneOption: [{ label: "-- None --", value: null }]
+  noneOption: [{ label: "-- None --", value: "" }]
 };
 
 const reset = (recordId) => {
@@ -213,9 +206,10 @@ const reset = (recordId) => {
     maxDof: 0.0,
     ppsr: null,
     residual: 0.0,
-    monthlyFee: null,
+    monthlyFee: 15,
     term: 60,
-    customerProfile: null,
+    customerProfile: "",
+    customerGrading: "",
     clientTier: null,
     vehicleCondition: null,
     greenCar: null,
@@ -228,8 +222,6 @@ const reset = (recordId) => {
     clientRate: null,
     commissions: QuoteCommons.resetResults(),
     // brokerage: 5,
-    riskFee: null,
-    riskFeeTotal: 0.0,
     customerGrading: calcOptions.customerGradings[0].value,
     loanPurpose: "",
     // include insurance object if the calculator has the part
@@ -280,51 +272,94 @@ const loadData = (recordId) =>
       .catch((error) => reject(error));
   });
 
-// // Get Base Rates
-// const getMyBaseRates = (quote) =>
-//   new Promise((resolve, reject) => {
-//     const p = {
-//       lender: LENDER_QUOTING,
-//       riskGrade: quote.customerGrading,
-//       customerProfile: quote.customerProfile
-//     };
-//     getBaseRates({
-//       param: p
-//     })
-//       .then((rates) => {
-//         console.log("rates >> ", JSON.stringify(rates));
-//         resolve(rates);
-//       })
-//       .catch((error) => reject(error));
-//   });
-
-  const getApiResponses = () => {
-    return apiResponses;
-  };
-
-const calculateParams = (quote, recordId) =>
+// Get Base Rates
+const getMyBaseRates = (quote) =>
   new Promise((resolve, reject) => {
-    const params = QuoteCommons.mapLWCToSObject(
-      quote,
-      recordId,
-      LENDER_QUOTING,
-      FIELDS_MAPPING_FOR_APEX
-    );
-    params.data.NAF__c = calculateRealTimeNaf(quote);
-    console.log("@params >> " + JSON.stringify(params, null, 2));
-    profileOnChangeAction({
-      quote: params,
-      riskFeeBase: calcRiskFeeBase(quote) // riskFeeBase = getLoanAmount
+    const p = {
+      lender: LENDER_QUOTING,
+      riskGrade: quote.customerGrading,
+      customerProfile: quote.customerProfile
+    };
+    getBaseRates({
+      param: p
     })
-      .then((data) => {
-        console.log("calculate params >> " + JSON.stringify(data, null, 2));
-        resolve(data);
+      .then((rates) => {
+        console.log("rates >> ", JSON.stringify(rates));
+        resolve(rates);
       })
-      .catch((error) => {
-        console.error(error);
-        reject(error);
-      });
+      .catch((error) => reject(error));
   });
+
+const getApiResponses = () => {
+  return apiResponses;
+};
+
+const calculateApplicationFee = (quote) => {
+  let appFee = 0.0;
+  const NAF = calculateRealTimeNaf(quote) - quote.applicationFee;
+  console.log('NAF@', NAF)
+  if (quote.customerProfile === "Asset Finance") {
+    if (NAF <= 15000) {
+      appFee = 725;
+    } else if (NAF > 15000) {
+      if (quote.customerGrading === "Mid Prime") {
+        appFee = 1295;
+      } else if (quote.customerGrading === "Flex") {
+        appFee = 1395;
+      } else if (quote.customerGrading === "Specialist") {
+        appFee = 1495;
+      }
+    }
+  } else if (quote.customerProfile === "Mini Moto" || quote.customerProfile === "Mini Moto Plus") {
+    appFee = 995;
+  }
+  return appFee;
+}
+
+const calculateDOF = (quote) => {
+  let dof = 0.0;
+  const naf = calculateRealTimeNaf(quote) - quote.dof;
+  console.log('NAF@@', naf)
+  if (quote.customerProfile === "Asset Finance") {
+    if(naf <= 15000) {
+      dof = 990;
+    } else if (naf > 15000) {
+      dof = 1210;
+    }
+  } else if (quote.customerProfile === "Mini Moto") {
+    if(naf >= 2000 && naf <= 2999) {
+      dof = 220;
+    } else if (naf >= 3000 && naf <= 4999) {
+      dof = 330;
+    } else if (naf >= 5000 && naf <= 5999) {
+      dof = 440;
+    } else if (naf >= 6000 && naf <= 6999) {
+      dof = 550;
+    } else if (naf >= 7000 && naf <= 7999) {
+      dof = 660;
+    }
+  } else if (quote.customerProfile === "Mini Moto Plus") {
+    if (naf >= 8000 && naf <= 8999) {
+      dof = 770;
+    } else if (naf >= 9000 && naf <= 9999) {
+      dof = 880;
+    }
+  }
+  return dof;
+}
+
+const calculateBrokerage = (quote) => {
+  let brokerage = 0.0;
+  const naf = calculateRealTimeNaf(quote);
+  if (quote.customerProfile === "Asset Finance") {
+    brokerage = naf + (naf * 3) / 100;
+  } else if (quote.customerProfile === "Mini Moto") {
+    brokerage = 110;
+  } else if (quote.customerProfile === "Mini Moto Plus") {
+    brokerage = naf + 165;
+  }
+  return brokerage;
+}
 
 /**
  * -- Lee
@@ -387,53 +422,9 @@ const sendEmail = (param, recordId) =>
 
 // re-write calculate total amount
 const calculateRealTimeNaf = (quote) => {
-  // const naf =
-  //   QuoteCommons.calcNetRealtimeNaf(quote) +
-  //   (quote.riskFee ? parseFloat(quote.riskFee) : 0);
-  // console.log("naf >> " + naf);
   return (
-    QuoteCommons.calcNetRealtimeNaf(quote) +
-    (quote.riskFee ? parseFloat(quote.riskFee) : 0)
+    QuoteCommons.calcNetRealtimeNaf(quote)
   );
-};
-
-const calculateTotalAmount = (quote) => {
-  return (
-    QuoteCommons.calcTotalAmount(quote) +
-    (quote.riskFee ? parseFloat(quote.riskFee) : 0)
-  );
-};
-
-// calculate money 3 risk fee
-const getMoney3RiskFee = (quote) => {
-  try {
-    let r = 0.0;
-    const rfBase = calcRiskFeeBase(quote);
-    console.log('Base::', rfBase)
-    if (
-      quote != null && 
-      quote.customerProfile !== "Unsecured" &&
-      rfBase > 12000
-    ) {
-      let rfRate = 0.0;
-      if ("Platinum" === quote.customerGrading) {
-        rfRate = 2.0;
-      } else if ("Gold" === quote.customerGrading) {
-        rfRate = 3.0;
-      } else if ("Silver" === quote.customerGrading) {
-        rfRate = 4.0;
-      } else if ("Bronze" === quote.customerGrading) {
-        rfRate = 4.5;
-      }
-      r = (rfBase * rfRate) / 100.0;
-      r = (r > 995.0)? 995.0 : r;
-      console.log('RiskFee@@', r)
-    }
-    console.log('RiskFee@@', r)
-    return Number(r.toFixed(2));
-  } catch (error) {
-    console.error(error);
-  }
 };
 
 const calcRiskFeeBase = (quote) => {
@@ -441,34 +432,28 @@ const calcRiskFeeBase = (quote) => {
     let r = 0.0;
     r +=
       (quote.price ? quote.price : 0) -
-      (quote.customerProfile === "Unsecured" ? 0 : quote.netDeposit);
+      (quote.customerProfile === "Personal Finance" ? 0 : quote.netDeposit);
     return r;
   } catch (error) {
     console.error(error);
   }
 };
 
-const monthlyFeeCalc = (quote) => {
-  return quote && quote.term >= 36? lenderSettings.Monthly_Fee__c : 0.0;
-}
-
 const renderTerms = (quote) => {
   try {
-    let terms = getTerms(24, 60, 12);
+    let terms = getTerms(36, 60, 12);
     if (!quote) return terms;
-    if (quote.customerProfile === "Unsecured") {
+    if (quote.customerProfile === "Personal Finance") {
       terms = getTerms(24, 36, 12);
     }
     if (
       quote.customerGrading === "Mini PL" &&
-      quote.customerProfile === "Unsecured"
+      quote.customerProfile === "Personal Finance"
     ) {
       terms = getTerms(12, 24, 12);
     }
-    if (quote.customerProfile === "Secured") {
-      if (quote.customerGrading === "Bronze"){
-        terms = getTerms(24, 48, 12);
-      }
+    if (quote.customerGrading === "Micro Motor") {
+      terms = getTerms(24, 36, 12);
     }
     return terms;
   } catch (error) {
@@ -481,16 +466,17 @@ export const CalHelper = {
   calculate: calculate,
   load: loadData,
   reset: reset,
-  calculateParams: calculateParams,
+  baseRates: getMyBaseRates,
   BASE_RATE_FIELDS: BASE_RATE_FIELDS,
-  CALC_FEES_FIELDS: CALC_FEES_FIELDS,
+  DOF_CALC_FIELDS: DOF_CALC_FIELDS,
+  APPLICATION_FEE_CALC_FIELDS: DOF_CALC_FIELDS,
   lenderSettings: lenderSettings,
   calculateRealTimeNaf: calculateRealTimeNaf,
   getNetDeposit: QuoteCommons.calcNetDeposit,
-  getMoney3RiskFee: getMoney3RiskFee,
   saveQuote: saveQuote,
   sendEmail: sendEmail,
   renderTerms: renderTerms,
   getApiResponses: getApiResponses,
-  monthlyFeeCalc: monthlyFeeCalc
+  calculateApplicationFee: calculateApplicationFee,
+  calculateDOF: calculateDOF
 };

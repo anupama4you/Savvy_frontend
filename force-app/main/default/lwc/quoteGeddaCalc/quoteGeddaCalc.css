@@ -1,0 +1,23 @@
+/* Calculators styles */
+@import "c/quoteCommonsStyles";
+
+td,
+caption {
+  text-align: center;
+}
+
+table {
+  font-size: 12px;
+}
+
+.c-money3-grading-rates {
+  width: 40rem;
+}
+
+.c-money3-big-table {
+  width: 60rem;
+}
+
+.c-table-rates {
+  width: 640px;
+}

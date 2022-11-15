@@ -247,6 +247,30 @@ public class CalculaterHomePageController {
         ? Page.GeneralCalculator.getUrl() + '?id=' + opportunityId
         : '/partner/s/sales-tools/quoting-tools/branded-commercial?recordId='+opportunityId+'&oppName='+opp.Name;
 
+        wrap.resimac = !wrap.IsBrokerPartnerUser
+        ? Page.GeneralCalculator.getUrl() + '?id=' + opportunityId
+        : '/partner/s/sales-tools/quoting-tools/resimac?recordId='+opportunityId+'&oppName='+opp.Name;
+
+        wrap.Money3_PL = !wrap.IsBrokerPartnerUser
+        ? Page.GeneralCalculator.getUrl() + '?id=' + opportunityId
+        : '/partner/s/sales-tools/quoting-tools/money3-pl?recordId='+opportunityId+'&oppName='+opp.Name;
+
+        wrap.Bizcap = !wrap.IsBrokerPartnerUser
+        ? Page.GeneralCalculator.getUrl() + '?id=' + opportunityId
+        : '/partner/s/sales-tools/quoting-tools/bizcap?recordId='+opportunityId+'&oppName='+opp.Name;
+
+        wrap.ScotPac = !wrap.IsBrokerPartnerUser
+        ? Page.GeneralCalculator.getUrl() + '?id=' + opportunityId
+        : '/partner/s/sales-tools/quoting-tools/scotpac?recordId='+opportunityId+'&oppName='+opp.Name;
+
+        wrap.AzoraCommercial = !wrap.IsBrokerPartnerUser
+        ? Page.GeneralCalculator.getUrl() + '?id=' + opportunityId
+        : '/partner/s/sales-tools/quoting-tools/azora-commercial?recordId='+opportunityId+'&oppName='+opp.Name;
+
+        wrap.Gedda = !wrap.IsBrokerPartnerUser
+        ? Page.GeneralCalculator.getUrl() + '?id=' + opportunityId
+        : '/partner/s/sales-tools/quoting-tools/gedda?recordId='+opportunityId+'&oppName='+opp.Name;
+
         wrap.oppName = opp.Name;
 
 
@@ -314,6 +338,8 @@ public class CalculaterHomePageController {
         @AuraEnabled public string Krisp;//Page.KrispCalculator;
         @AuraEnabled public string BrandedConsumer;//Page.BrandedConsumer;
         @AuraEnabled public string BrandedCommercial;//Page.BrandedCommercial;
+        @AuraEnabled public string resimac;//Page.Resimac;
+        @AuraEnabled public string AzoraCommercial;//Page.Resimac;
 
         @AuraEnabled public string GrowBusiness;
         @AuraEnabled public string ShiftODR;
@@ -335,6 +361,10 @@ public class CalculaterHomePageController {
         @AuraEnabled public string apf;
 
         @AuraEnabled public string racv;
+        @AuraEnabled public string Money3_PL;
+        @AuraEnabled public string Bizcap;
+        @AuraEnabled public string ScotPac;
+        @AuraEnabled public string Gedda;
     }
     
 

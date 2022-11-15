@@ -147,7 +147,19 @@ const getQuotingPageName = (calcName) => {
       pageName = "PARTNER_QT_branded_commercial__c";
     } else if (calcName === "Racv") {
       pageName = "PARTNER_QT_Racv__c";
-    } 
+    } else if (calcName === "Money3 PL") {
+      pageName = "PARTNER_QT_Money3_PL__c";
+    } else if (calcName === "Resimac") {
+      pageName = "PARTNER_QT_Resimac__c";
+    } else if (calcName === "Bizcap") {
+      pageName = "PARTNER_QT_Bizcap__c";
+    } else if (calcName === "ScotPac") {
+      pageName = "PARTNER_QT_ScotPac__c";
+    } else if (calcName === "AzoraCommercial") {
+      pageName = "PARTNER_QT_Azora_Commercial__c";
+    } else if (calcName === "Gedda") {
+      pageName = "PARTNER_QT_Gedda__c";
+    }
   }
 
   return pageName;
