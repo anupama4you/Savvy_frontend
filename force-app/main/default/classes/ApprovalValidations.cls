@@ -693,7 +693,9 @@ public class ApprovalValidations {
       // }
 
       docs.add('Final Signed Documents');
-      docs.add('Tax Invoice/COS/ Rego Papers');
+      if (!'Personal'.equals(app.Type_of_Asset__c)) {
+        docs.add('Tax Invoice/COS/ Rego Papers');
+      }
       // TODO: autogenerate Broker Invoice document
       // docs.add('Lender Settlement Confirmation');
     }

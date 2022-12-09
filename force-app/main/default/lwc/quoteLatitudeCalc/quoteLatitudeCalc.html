@@ -432,6 +432,23 @@
                     required></lightning-combobox>
             </div>
         </div>
+        <!-- Rate Option -->
+        <div class="c-row-details">
+            <div class="c-detail-labels"><span class="c-label">Rate Option</span></div>
+            <div class="c-detail-fields">
+                <lightning-combobox
+                    name="rateOption"
+                    label="rateOption"
+                    data-id="rateOption-field"
+                    value={quoteForm.rateOption}
+                    placeholder="Select a value"
+                    options={rateOptions}
+                    onchange={handleFieldChange}
+                    class="slds-form__item"
+                    variant="label-hidden"
+                    required></lightning-combobox>
+            </div>
+        </div>
 
         <!-- Rates -->
         <!-- Base Rate -->
@@ -491,8 +508,21 @@
         </div>
         <!-- end -->
 
+        <!-- API Details -->
+        <c-quote-api-details slot="lender-api" responses={apiDetails} hide-message></c-quote-api-details>
+        <!-- end -->
+
         <!-- Insurances -->
-        <c-quote-insurance-form slot="insurances"></c-quote-insurance-form>
+        <c-quote-insurance-form
+            slot="insurances"
+            onhandleinsurancemessage={handleInsuranceMessage}
+            oninsurancechanged={handleInsuranceChange}
+            onhandlepresentation={handleInsurancePresentation}
+            onhandledisablebutton={handleDisableButton}
+            onhandleloadinsurance={handleInsuanceLoad}
+            record-id={recordId}
+            quote-form={quoteForm}></c-quote-insurance-form>
+        <!-- insurance-income={insuranceIncome} -->
 
         <!-- Verbatim Text -->
         <div slot="more">
@@ -520,6 +550,7 @@
                 <template if:false={category}>
                     [Plsease select a category]
                 </template>
+                - [{selectedRateOption}]
             </div>
             <div class="slds-grid slds-gutters">
 

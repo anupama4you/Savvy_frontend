@@ -3,7 +3,18 @@ public without sharing class QuoteMoneyPlaceController {
     @AuraEnabled
     public static Application_Quoting__c save(QuoteController.AppQuotingWraper param, String approvalType){
        try {
-            QuoteController.saveQuoting(param);
+            
+            // ------------------------------------------------------------
+            // Skip save option for Previewing if a quotation is presenting
+            Boolean notSave = false;
+            if ('PREVIEW'.equals(approvalType) && param.data != null) {        
+              notSave = QuoteController.isQuotePresenting(param.data.Id);
+            }
+            if (!notSave) {
+              QuoteController.saveQuoting(param);
+            }
+            // ------------------------------------------------------------
+
             Product__c p = null;
             if (!'NONE'.equals(approvalType)) {
                 // save pdf

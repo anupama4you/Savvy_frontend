@@ -318,7 +318,7 @@ public class RateSetterCalculatorExtension extends QuotingExtension {
         //-
         
         updateProduct.Loan_Purpose__c = 'Personal Use';
-        updateProduct.Lender__c = LENDER_QUOTING;
+        updateProduct.Lender__c = 'Plenti';
         updateProduct.Quoting_Source__c = LENDER_QUOTING;
         updateProduct.Repayment_Regularity__c = 'Monthly';
         

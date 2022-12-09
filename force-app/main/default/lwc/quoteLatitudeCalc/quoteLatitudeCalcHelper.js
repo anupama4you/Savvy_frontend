@@ -1,7 +1,7 @@
-import getQuotingData from "@salesforce/apex/quoteLatitudeCalcController.getQuotingData";
+import getQuotingData from "@salesforce/apex/QuoteLatitudeCalcController.getQuotingData";
 import getBaseRates from "@salesforce/apex/QuoteController.getBaseRates";
-import calculateRepayments from "@salesforce/apex/QuoteController.calculateRepayments";
-import save from "@salesforce/apex/quoteLatitudeCalcController.save";
+import calculateRepayments from "@salesforce/apex/QuoteController.calculateAllRepayments";
+import save from "@salesforce/apex/QuoteLatitudeCalcController.save";
 import sendQuote from "@salesforce/apex/QuoteController.sendQuote";
 import {
   QuoteCommons,
@@ -12,12 +12,16 @@ import { Validations } from "./quoteValidations";
 
 // Default settings
 let lenderSettings = {};
+// API Responses
+let apiResponses = {};
+// Rates
 let tableRatesData = [];
 let allTableRatesData = { 'Diamond Plus': null, 'Diamond': null, 'Sapphire': null, 'Ruby': null, 'Emerald': null };
 let rates3List = [];
 let riskGradeOptionsData = [];
 // all table types defined
 let formattedTableData = [];
+const FIXED_RATE_FACTOR = 1.5;
 
 const TABLE_DATA_COLUMNS = [
   { label: "0 - 3 years", fieldName: "comm1" },
@@ -58,6 +62,7 @@ const QUOTING_FIELDS = new Map([
   ["applicationId", "Application__c"],
   ["netDeposit", "Net_Deposit__c"],
   ["baseRate", "Base_Rate__c"],
+  ["rateOption", "Rate_Options__c"],
 ]);
 
 // - TODO: need to map more fields
@@ -76,7 +81,8 @@ const BASE_RATE_FIELDS = [
   "customerProfile",
   "loanTypeDetail",
   "carAge",
-  "vehicleType"
+  "vehicleType",
+  "rateOption"
 ];
 
 const DOF_CALC_FIELDS = [
@@ -103,17 +109,16 @@ const calculate = (quote) =>
       console.log('quote::', quote)
       // Prepare params
       const profile = quote.securedUnsecured === "Secured" ? "Secured" : "Unsecured";
-      // new total calculated amount
-      const totalAmount = calcNetRealtimeNaf(quote);
-      // commRate is constant for eastimated Commission
+      // commRate is constant for estimated Commission
       const commR = 2.25;
       const p = {
         lender: LENDER_QUOTING,
         productLoanType: quote.loanProduct,
         customerProfile: profile,
         privateSales: quote.privateSales,
-        totalAmount: totalAmount,
-        totalInsurance: QuoteCommons.calcTotalInsuranceType(quote),
+        totalAmount: calcTotalAmount(quote),
+        // totalInsurance: QuoteCommons.calcTotalInsuranceType(quote),
+        // totalInsuranceIncome: QuoteCommons.calcTotalInsuranceIncome(quote),
         clientRate: quote.clientRate,
         baseRate: quote.baseRate,
         paymentType: quote.paymentType,
@@ -130,13 +135,18 @@ const calculate = (quote) =>
       // Calculate
       console.log(`@@param:`, JSON.stringify(p, null, 2));
       calculateRepayments({
-        param: p
+        param: p,
+        insuranceParam: quote.insurance
       })
         .then((data) => {
           console.log(`@@SF:`, JSON.stringify(data, null, 2));
 
           // Mapping
-          res.commissions = QuoteCommons.mapCommissionSObjectToLwc(data);
+          res.commissions = QuoteCommons.mapCommissionSObjectToLwc(
+            data.commissions,
+            quote.insurance,
+            data.calResults
+          );
           console.log(JSON.stringify(res.commissions, null, 2));
           // Validate the result of commissions
           res.messages = Validations.validatePostCalculation(res.commissions, res.messages);
@@ -202,6 +212,10 @@ const calcOptions = {
     { label: "Demo", value: "DEMO" },
     { label: "Used", value: "USED" }
   ],
+  rateOptions: [
+    { label: "Fixed", value: "Fixed" },
+    { label: "Variable", value: "Variable" }
+  ],
   terms: CommonOptions.terms(12, 84)
 };
 
@@ -231,12 +245,15 @@ const reset = (recordId) => {
     dof: null,
     maxDof: null,
     residual: null,
-    term: calcOptions.terms[0].value,
+    term: 60,
     privateSales: calcOptions.privateSales[1].value,
     paymentType: calcOptions.paymentTypes[0].value,
     loanTypeDetail: calcOptions.classes[0].value,
     commissions: QuoteCommons.resetResults(),
-    registrationFee: 3.40
+    rateOption: calcOptions.rateOptions[0].value,
+    registrationFee: 3.40,
+    commissions: QuoteCommons.resetResults(),
+    insurance: { integrity: {} }
   };
   r = QuoteCommons.mapDataToLwc(r, lenderSettings, SETTING_FIELDS);
   return r;
@@ -248,7 +265,8 @@ const loadData = (recordId) =>
     //  const fields = Array.from(QUOTING_FIELDS.values());
     const fields = [
       ...QUOTING_FIELDS.values(),
-      ...QuoteCommons.COMMISSION_FIELDS.values()
+      ...QuoteCommons.COMMISSION_FIELDS.values(),
+      ...QuoteCommons.INSURANCE_FIELDS.values()
     ];
     console.log(`@@fields:`, JSON.stringify(fields, null, 2));
     getQuotingData({
@@ -273,14 +291,19 @@ const loadData = (recordId) =>
         // Settings
         lenderSettings = quoteData.settings;
 
-        console.log('lenderSettings:::', JSON.stringify(lenderSettings, null, 2))
+        // API  responses
+        apiResponses = quoteData.apiResponses;
+
+        console.log(
+          "lenderSettings:::",
+          JSON.stringify(lenderSettings, null, 2)
+        );
 
         // Rate Settings
         if (quoteData.rateSettings) {
           tableRatesData = quoteData.rateSettings[`${RATE_SETTING_NAMES[0]}`];
 
           // console.log(`@@tableData:`, JSON.stringify(tableRatesData, null, 2));
-
         }
         console.log(`@@data:`, JSON.stringify(data, null, 2));
         resolve(data);
@@ -299,6 +322,7 @@ const getMyBaseRates = (quote) =>
       loanTypeDetail: quote.loanTypeDetail,
       goodsType: quote.category,
       carAge: quote.carAge,
+      interestType: quote.rateOption,
       hasMaxRate: true
     };
     console.log(`getMyBaseRates...`, JSON.stringify(p, null, 2));
@@ -325,7 +349,7 @@ const getQuoteFees = (quote) => {
 }
 
 // Get Single table out using #category and #class
-const getSingleTable = (category, class_) => {
+const getSingleTable = (quote, category, class_) => {
 
   let fieldsList = { "comm1": [], "comm2": [], "comm3": [], "rate1": [], "rate2": [], "rate3": [] }
 
@@ -351,18 +375,16 @@ const getSingleTable = (category, class_) => {
       }
     });
 
-    console.log(`fieldsList...`, JSON.stringify(fieldsList, null, 2));
-
     const singleTable = [];
 
     for (let j = 0; j < 9; j++) {
 
       const row = {
-        "comm1": Object.values(fieldsList)[0][j],
+        "comm1": Object.values(fieldsList)[0][j] > 0 && quote.rateOption === 'Fixed' ? Object.values(fieldsList)[0][j] : Object.values(fieldsList)[0][j] - FIXED_RATE_FACTOR,
         "comm2": Object.values(fieldsList)[1][j],
-        "comm3": Object.values(fieldsList)[2][j],
+        "comm3": Object.values(fieldsList)[2][j] > 0 && quote.rateOption === 'Fixed' ? Object.values(fieldsList)[2][j] : Object.values(fieldsList)[2][j] - FIXED_RATE_FACTOR,
         "rate1": Object.values(fieldsList)[3][j],
-        "rate2": Object.values(fieldsList)[4][j],
+        "rate2": Object.values(fieldsList)[4][j] > 0 && quote.rateOption === 'Fixed' ? Object.values(fieldsList)[4][j] : Object.values(fieldsList)[4][j] - FIXED_RATE_FACTOR,
         "rate3": Object.values(fieldsList)[5][j],
       }
       singleTable.push(row);
@@ -374,36 +396,44 @@ const getSingleTable = (category, class_) => {
 };
 
 // Get all tables data
-const getAllTableData = (category) => {
+const getAllTableData = (category, quote) => {
   // empty the array
   formattedTableData.splice(0, formattedTableData.length);
   // diamond plus
-  formattedTableData.push({ data: getSingleTable(category, calcOptions.classes[0].value), colName: calcOptions.classes[0].value });
+  formattedTableData.push({ data: getSingleTable(quote, category, calcOptions.classes[0].value), colName: calcOptions.classes[0].value });
   // diamond 
-  formattedTableData.push({ data: getSingleTable(category, calcOptions.classes[1].value), colName: calcOptions.classes[1].value });
+  formattedTableData.push({ data: getSingleTable(quote, category, calcOptions.classes[1].value), colName: calcOptions.classes[1].value });
   // Sapphire
-  formattedTableData.push({ data: getSingleTable(category, calcOptions.classes[2].value), colName: calcOptions.classes[2].value });
+  formattedTableData.push({ data: getSingleTable(quote, category, calcOptions.classes[2].value), colName: calcOptions.classes[2].value });
   // Ruby
-  formattedTableData.push({ data: getSingleTable(category, calcOptions.classes[3].value), colName: calcOptions.classes[3].value });
+  formattedTableData.push({ data: getSingleTable(quote, category, calcOptions.classes[3].value), colName: calcOptions.classes[3].value });
   // Emerald
-  formattedTableData.push({ data: getSingleTable(category, calcOptions.classes[4].value), colName: calcOptions.classes[4].value });
+  formattedTableData.push({ data: getSingleTable(quote, category, calcOptions.classes[4].value), colName: calcOptions.classes[4].value });
   return formattedTableData;
+};
+
+const getApiResponses = () => {
+  return apiResponses;
 };
 
 // custom calculations for NAF generations
 const calcNetRealtimeNaf = (quote) => {
-  console.log('variables', quote.price, quote.applicationFee, quote.dof, quote.ppsr, quote.registrationFee)
-  let netRealtimeNaf = QuoteCommons.calcNetRealtimeNaf(quote);
-  console.log('variables', netRealtimeNaf);
-  let r = quote.registrationFee + netRealtimeNaf;
+  let r = calcTotalAmount(quote);
+  r += QuoteCommons.calcTotalInsuranceType(quote);
   return r;
 }
 
+// custom calculations for NAF generations
+const calcTotalAmount = (quote) => {
+  let r = QuoteCommons.calcTotalAmount(quote);
+  // console.log('variables', netRealtimeNaf);
+  r += quote.registrationFee > 0 ? quote.registrationFee : 0.0;
+  return r;
+};
+
 const calcDOF = (quote) => {
-  quote.dof = 0;
-  let naf = QuoteCommons.calcNetRealtimeNaf(quote);
-  console.log('CalcDOF::', QuoteCommons.calcNetRealtimeNaf(quote), quote.dof )
-  let r = quote.registrationFee + naf;
+  let r = calcNetRealtimeNaf(quote) - quote.dof;
+  console.log('CalcDOF::', QuoteCommons.calcNetRealtimeNaf(quote), quote.dof)
   console.log('calcDOF', r)
   if (r > 20000) {
     r = 1650.00;
@@ -416,7 +446,7 @@ const calcDOF = (quote) => {
     r = 0;
   }
   console.log('calcNetRealtimeDOF', r)
-  return r;
+  return Number((Math.round(r * 100) / 100).toFixed(2));
 }
 
 /**
@@ -503,5 +533,6 @@ export const CalHelper = {
   DOF_CALC_FIELDS: DOF_CALC_FIELDS,
   getAllTableData: getAllTableData,
   saveQuote: saveQuote,
-  sendEmail: sendEmail
+  sendEmail: sendEmail,
+  getApiResponses: getApiResponses
 };

@@ -361,7 +361,7 @@
     
     <c:sidebarV2 oppId="{!o.Id}" appId="{!o.Application__c}" showLenders="true" rendered="{!NOT(isBrokerPartnerUser)}" />
     <div id="mainContent" class="{!IF(NOT(isBrokerPartnerUser),'main-content','')}">
-        <apex:form id="EsandaConsumerForm">
+        <apex:form id="calcFormData">
             <apex:pageMessages id="pageMessage" />
             <!-- NWC -->
             <apex:actionFunction action="{!nationalWarrantyCalc}" name="nationalWarrantyCalc" reRender="realtimeNaf, netDeposit, pnlInsProd, pageMessage"
@@ -388,12 +388,12 @@
                                 <apex:actionStatus startText="(Saving...)" id="stsSend1" />
                                 <apex:actionStatus startText="(Sending...)" id="stsSend2" />&nbsp;&nbsp;&nbsp;
                                 
-                                <apex:commandButton styleClass="calculateButtons" value="Calculate" action="{!calculate}" status="stsprocess" reRender="EsandaConsumerForm"/>
-                                <apex:commandButton styleClass="calculateButtons" value="Reset" action="{!reset}" status="stsprocess" reRender="EsandaConsumerForm"/>
-                                <apex:commandButton styleClass="calculateButtons" value="Save Quoting" action="{!saveQuoting}" status="stsprocess" reRender="EsandaConsumerForm"/>
-                                <apex:commandButton styleClass="calculateButtons" value="Save Pre-approval" action="{!savePreApproval}" status="stsprocess" reRender="EsandaConsumerForm"/>
-                                <apex:commandButton styleClass="calculateButtons" value="Save Amendment" action="{!saveAmendment}" status="stsprocess" reRender="EsandaConsumerForm"/>
-                                <apex:commandButton styleClass="calculateButtons" value="Save Formal Approval" action="{!saveFormalApproval}" status="stsprocess" reRender="EsandaConsumerForm"/>
+                                <apex:commandButton styleClass="calculateButtons" value="Calculate" action="{!calculate}" status="stsprocess" reRender="calcFormData"/>
+                                <apex:commandButton styleClass="calculateButtons" value="Reset" action="{!reset}" status="stsprocess" reRender="calcFormData"/>
+                                <apex:commandButton styleClass="calculateButtons" value="Save Quoting" action="{!saveQuoting}" status="stsprocess" reRender="calcFormData"/>
+                                <apex:commandButton styleClass="calculateButtons" value="Save Pre-approval" action="{!savePreApproval}" status="stsprocess" reRender="calcFormData"/>
+                                <apex:commandButton styleClass="calculateButtons" value="Save Amendment" action="{!saveAmendment}" status="stsprocess" reRender="calcFormData"/>
+                                <apex:commandButton styleClass="calculateButtons" value="Save Formal Approval" action="{!saveFormalApproval}" status="stsprocess" reRender="calcFormData"/>
                                 
                                 <input name="DoAction" type="button" value="Send Quote" class="btn calculateButtons"
                                        onclick="sendCustomerEmail1();return false;"/>   

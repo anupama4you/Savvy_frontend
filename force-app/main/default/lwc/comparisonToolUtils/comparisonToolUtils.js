@@ -1,3 +1,5 @@
+import { getQuotingPageName } from "c/partnerJsUtils";
+
 import LOGO_AFFORDABLE from "@salesforce/resourceUrl/ACLLogo";
 import LOGO_AFS from "@salesforce/resourceUrl/AFSLogo";
 import LOGO_AMMF from "@salesforce/resourceUrl/YamahaLogo";
@@ -122,4 +124,25 @@ const lenderLogo = (lender) => {
   return undefined;
 };
 
-export { convertNumbers, lenderLogo };
+const getQuotingPage = (recordId, oppName, calcName, params) => {
+  console.log(`getQuotingPage...`, recordId, oppName, calcName, params);
+  let pageName = getQuotingPageName(calcName);
+
+  // console.log(`Quoting tool page => ${r}`);
+  let myState = {
+    recordId: recordId,
+    oppName: oppName
+  };
+  if (params) {
+    myState = Object.assign(myState, params);
+  }
+  return {
+    type: "comm__namedPage",
+    attributes: {
+      name: pageName
+    },
+    state: myState
+  };
+};
+
+export { convertNumbers, lenderLogo, getQuotingPage };

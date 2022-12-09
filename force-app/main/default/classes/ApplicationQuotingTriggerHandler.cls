@@ -2,6 +2,7 @@ public class ApplicationQuotingTriggerHandler extends TriggerOrderHandler{
     
 	public override void onAfterInsert(List<sObject> newRecords, Map<ID, sObject> newRecordsMap) {
 		System.debug('ApplicationQuotingTriggerHandler.onAfterInsert... ');
+    ApplicationQuotingService.removeOlderQuotings((List<Application_Quoting__c>) newRecords);
 	}
 	
 	public override void onAfterUpdate(List<SObject> oldRecords, List<SObject> newRecords, Map<ID, SObject> oldRecordsMap, Map<ID, SObject> newRecordsMap) {

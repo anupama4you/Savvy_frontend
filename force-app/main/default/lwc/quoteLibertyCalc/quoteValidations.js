@@ -74,7 +74,7 @@ const validate = (quote, settings, messages, isApproval) => {
   }
 
   if (quote.dof === null || quote.dof < settings.DOF__c) {
-    errorList.push({
+    warningList.push({
       field: "applicationFee",
       message: `DOF is less than maximum $${settings.DOF__c.toFixed(2)}`
     });
@@ -89,13 +89,19 @@ const validate = (quote, settings, messages, isApproval) => {
       field: "term",
       message: `Please choose an appropriate term.`
     });
-  } else if (quote.term > 84 && ('AAA' === quote.riskGrade) || 'AA' === quote.riskGrade) {
-    errorList.push({
+  } else if (
+    quote.term > 84 && 
+    ('AAA' === quote.riskGrade || 'AA' === quote.riskGrade)
+  ) {
+    warningList.push({
       field: "riskGrade",
       message: `Maximum term is 84 months (7 years) for ${quote.riskGrade} tier - refer to Liberty`
     });
-  } else if (quote.term > 60 && ('AAA' === quote.riskGrade) || 'AA' === quote.riskGrade) {
-    errorList.push({
+  } else if (
+    quote.term > 60 && 
+    !('AAA' === quote.riskGrade || 'AA' === quote.riskGrade)
+  ) {
+    warningList.push({
       field: "riskGrade",
       message: `Maximum term is 60 months (5 years) for ${quote.riskGrade} tier - refer to Liberty`
     });
@@ -117,7 +123,11 @@ const validate = (quote, settings, messages, isApproval) => {
         message: "Credit Score should be an integer number."
       });
     }
-    if (!quote.enquiries) {
+    if (
+      quote.enquiries === undefined ||
+      quote.enquiries === null ||
+      quote.enquiries.length === 0
+    ) {
       errorList.push({
         field: "enquiries",
         message: "# of enquiries is required."
@@ -190,7 +200,10 @@ const validate = (quote, settings, messages, isApproval) => {
     quote.riskGrade, quote.residualValue, quote.netDeposit
   );
 
-  if (!('AAA' === quote.riskGrade) || ('AA' === quote.riskGrade) && (quote.residualValue != null && quote.residualValue > 0)) {
+  if (
+    !('AAA' === quote.riskGrade || 'AA' === quote.riskGrade) && 
+    (quote.residualValue !== null && quote.residualValue > 0)
+  ) {
     warningList.push({
       field: "residualValue",
       message: "Residuals are not available for risk grades A,B,C. Refer to your bdm"

@@ -1,5 +1,5 @@
 /* Styles */
-@import 'c/quoteCommonsStyles';
+@import "c/quoteCommonsStyles";
 
 .c-result-data {
   padding-right: 25px;
@@ -9,4 +9,8 @@
 .c-total-field {
   font-weight: 600;
   font-size: 0.8rem;
+}
+
+.c-comprehensive-title {
+  font-weight: bold;
 }

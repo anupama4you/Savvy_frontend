@@ -14,6 +14,14 @@ public with sharing class PepperPLExtension {
     
     private Lenders__c lenderSettings {set;get;}
 
+    // TODO: remove code
+    public Boolean isEquifaxActive {set;get;}
+    public LenderAPIResponse__c equifaxRequest {set;get;}
+    public String equifaxResponse {set;get;}
+    public String equifaxDocType {set;get;}
+    public String equifaxRequestBody {set;get;}
+    // --
+
     public PepperPLExtension(ApexPages.StandardController controller) {
         try {
             controller.addFields(new List<String>{'Application__c'});
@@ -32,7 +40,14 @@ public with sharing class PepperPLExtension {
         reset();
 
         preLoadQuotingValues();
-                
+        
+        
+        String param = System.currentPageReference().getParameters().get('EQUIFAX');
+        this.isEquifaxActive = String.isNotBlank(param);
+        if (this.isEquifaxActive) {
+          this.loadEquifaxData();
+        }
+        param = System.currentPageReference().getParameters().get('EQUIFAX');
     }
     
     private void preLoadQuotingValues() {
@@ -302,7 +317,7 @@ public with sharing class PepperPLExtension {
         //-
         
         updateProduct.Loan_Purpose__c = 'Personal Use';
-        updateProduct.Lender__c = LENDER_QUOTING;
+        updateProduct.Lender__c = 'Pepper';
         updateProduct.Quoting_Source__c = LENDER_QUOTING;
         updateProduct.Repayment_Regularity__c = 'Monthly';
         
@@ -669,5 +684,97 @@ public with sharing class PepperPLExtension {
     public Boolean getIsBrokerPartnerUser() {
       return SOQLSingletonQueries.recs().isBrokerPartnerUser;
     }
- 
+    
+    // TODO: remove below code
+    // Lelo
+    public void loadEquifaxData() {
+      List<LenderAPIResponse__c> d = [
+        SELECT Id, Response__c
+        FROM LenderAPIResponse__c
+        WHERE Opportunity__c = :this.opp.Id
+        AND Name like 'Equifax (req#1)%'
+        ORDER BY LastModifiedDate DESC
+        LIMIT 1
+      ];
+      this.equifaxRequest = d.isEmpty()? new LenderAPIResponse__c() : d.get(0);
+    }
+
+    public void getEquifaxReport() {
+      this.equifaxResponse = null;
+      System.debug('@@equifaxDocType: ' + equifaxDocType);
+      if (this.equifaxRequest != null && String.isNotBlank(this.equifaxRequest.Response__c)) {
+        String x = this.equifaxRequest.Response__c;
+        x = x.remove('"').remove('{').remove('}');
+        String[] y = x.split(':');
+        this.getEquifaxResponse(y.size() > 1? y[1] : null);
+      } else {
+        ApexPages.addMessage(new ApexPages.Message(ApexPages.Severity.ERROR,'Equifax response not found'));
+      }
+    }
+
+    public void getEquifaxResponse(String enquiryId) {
+      if (String.isBlank(enquiryId)) {
+        ApexPages.addMessage(new ApexPages.Message(ApexPages.Severity.ERROR,'enquiryId not found'));
+      }
+
+      String usernameVal = APIServiceManager.getParameterService(VedaEnquiryExtension.PARAM_USERNAME);
+      String passwordVal = APIServiceManager.getParameterService(VedaEnquiryExtension.PARAM_PASSWORD);
+
+      String reqStr2 = '<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/">';
+      reqStr2 += '<soapenv:Header xmlns:wsa="http://www.w3.org/2005/08/addressing">';
+      reqStr2 += '<wsse:Security xmlns:wsse="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd">';
+      reqStr2 += '<wsse:UsernameToken><wsse:Username>' + usernameVal + '</wsse:Username>';
+      reqStr2 += '<wsse:Password>' + passwordVal + '</wsse:Password></wsse:UsernameToken>';
+      reqStr2 += '</wsse:Security><wsa:Action>http://vedaxml.com/previousEnquiry/ServiceRequest</wsa:Action></soapenv:Header>';
+      reqStr2 += '<env:Body xmlns:wsa="http://www.w3.org/2005/08/addressing" xmlns:env="http://schemas.xmlsoap.org/soap/envelope/">';
+      reqStr2 += '<prev:request xmlns:prev="http://vedaxml.com/vxml2/previous-enquiry-v1-0.xsd">';
+      reqStr2 += '<prev:enquiryId>' + enquiryId + '</prev:enquiryId>';
+      if (String.isNotBlank(this.equifaxDocType)) {
+        reqStr2 += this.equifaxDocType;
+        // reqStr2 += '<prev:contentType>application/pdf</prev:contentType>';
+      }
+      // reqStr2 += '<prev:contentType>text/xml</prev:contentType>';
+      reqStr2 += '</prev:request></env:Body></soapenv:Envelope>';
+
+      this.invokeEquifaxService(reqStr2);
+      
+    }
+
+    public void getEquifaxRequest() {
+      this.equifaxResponse = null;
+      // this.invokeEquifaxService(this.equifaxRequestBody);
+
+      Dom.Document doc = new DOM.Document();
+      doc.load(this.equifaxRequestBody);
+      Dom.XmlNode node = doc.getRootElement();
+      // node = node.getChildElement('Body','http://schemas.xmlsoap.org/soap/envelope/');
+      // node = node.getChildElements().get(0);
+
+      Integer score = EquifaxAPIService.getCreditScore(node);
+      this.equifaxResponse = '{ creditScore: ' + score + '}';
+      EquifaxAPIService.updateCreditScore(this.opp.Id, score);
+    }
+
+    public void invokeEquifaxService(String request) {
+      if (String.isBlank(request)) {
+        ApexPages.addMessage(new ApexPages.Message(ApexPages.Severity.ERROR,'request body not found'));
+      }
+
+      String repEndpointVal = APIServiceManager.getParameterService(VedaEnquiryExtension.PARAM_REPORT_ENDPOINT);
+      String usernameVal = APIServiceManager.getParameterService(VedaEnquiryExtension.PARAM_USERNAME);
+      String passwordVal = APIServiceManager.getParameterService(VedaEnquiryExtension.PARAM_PASSWORD);
+
+      HttpRequest req2 = new HttpRequest();
+      Http http2 = new Http();
+      req2.setEndpoint(repEndpointVal);
+      req2.setBody(request);
+      req2.setMethod('POST');
+      req2.setHeader('content-type', 'text/xml');
+      req2.setTimeout(60000);
+      HttpResponse res2 = Test.isRunningTest()? new HttpResponse() : http2.send(req2);
+      this.equifaxResponse = res2.getBody();
+      ApexPages.addMessage(new ApexPages.Message(ApexPages.Severity.INFO,'Service executed!'));
+      
+    }
+
 }

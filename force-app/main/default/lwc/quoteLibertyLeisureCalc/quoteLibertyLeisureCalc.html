@@ -503,15 +503,31 @@
         </div>
         <!-- end -->
 
+        <!-- API Details -->
+        <c-quote-api-details 
+          slot="lender-api" responses={apiDetails} hide-message
+        ></c-quote-api-details>
+        <!-- end -->
+        
         <!-- Insurances -->
-        <c-quote-insurance-form slot="insurances"></c-quote-insurance-form>
+        <c-quote-insurance-form
+            slot="insurances"
+            onhandleinsurancemessage={handleInsuranceMessage}
+            oninsurancechanged={handleInsuranceChange}
+            onhandlepresentation={handleInsurancePresentation}
+            onhandledisablebutton={handleDisableButton}
+            onhandleloadinsurance={handleInsuanceLoad}
+            record-id={recordId}
+            quote-form={quoteForm}></c-quote-insurance-form>
+        <!-- insurance-income={insuranceIncome} -->
 
-         <!-- Latitude Personal Rate Table -->
-         <div slot="table-rates">
+        <!-- Latitude Personal Rate Table -->
+        <div slot="table-rates">
             <div class="c-rates-section-title">Liberty Max. Table Rate</div>
             <div class="slds-grid slds-gutters">
                 <div class="slds-col slds-size_8-of-12">
-                    <p class="c-sub-title slds-align_absolute-center">Consumer [Caravan]</p>
+                    <p class="c-sub-title slds-align_absolute-center">Consumer
+                        [Caravan]</p>
                     <lightning-datatable
                         key-field="Id"
                         data={tableRates}

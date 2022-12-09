@@ -1,6 +1,6 @@
 <template>
     <c-quote-container
-      title="WISR"
+      title="WISR PL"
       is-busy={isBusy}
       commissions={quoteForm.commissions}
       messages={messageObj}
@@ -10,7 +10,7 @@
         src={logoUrl}
         slot="logo"
         class="c-lender-logo"
-        title="WISR"
+        title="WISR PL"
       />
   
       <!-- Buttons -->
@@ -24,31 +24,19 @@
         slot="actions"
         onclick={handleReset}
       ></lightning-button>
-      <lightning-button
-        label="Save Quoting"
-        slot="actions"
-        disabled={disableAction}
-      ></lightning-button>
-      <lightning-button
-        label="Save Pre-approval"
-        slot="actions"
-        disabled={disableAction}
-      ></lightning-button>
-      <lightning-button
-        label="Save Amendment"
-        slot="actions"
-        disabled={disableAction}
-      ></lightning-button>
-      <lightning-button
-        label="Save Formal Approval"
-        slot="actions"
-        disabled={disableAction}
-      ></lightning-button>
-      <lightning-button
-        label="Send quote"
-        slot="actions"
-        disabled={disableAction}
-      ></lightning-button>
+      <lightning-button label="Save Quoting" slot="actions" value="none" disabled={disableAction} onclick={handleSave}>
+      </lightning-button>
+      <lightning-button label="Save Pre-approval" value="pre_approval" slot="actions" disabled={disableAction}
+        onclick={handleSave}>
+      </lightning-button>
+      <lightning-button label="Save Amendment" value="pre_approval_amendment" slot="actions" disabled={disableAction}
+        onclick={handleSave}>
+      </lightning-button>
+      <lightning-button label="Save Formal Approval" value="formal_approval" slot="actions" disabled={disableAction}
+        onclick={handleSave}>
+      </lightning-button>
+      <lightning-button label="Send Quote" slot="actions" disabled={disableAction} onclick={handleSendQuote}>
+      </lightning-button>
       <!-- Finance Details -->
       <!-- Loan Type -->
       <div class="c-row-details">
@@ -84,7 +72,6 @@
             onchange={handleFieldChange}
             class="slds-form__item"
             variant="label-hidden"
-            read-only="true"
           >
           </lightning-combobox>
         </div>

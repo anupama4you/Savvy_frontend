@@ -181,9 +181,9 @@ public class Money3CalculatorExtension extends QuotingExtension {
         }
         
         if (loanAmountA > 0 && (this.getLoanAmount() < loanAmountA || this.getLoanAmount() > loanAmountB)) {
-            ApexPages.addMessage(new ApexPages.Message(ApexPages.Severity.ERROR,
+            ApexPages.addMessage(new ApexPages.Message(ApexPages.Severity.WARNING,
                     'Car Price/Loan Amount should be $' + loanAmountA.format() + ' to $' + loanAmountB.format() + ' for ' + this.profile + ' / ' + this.grading));
-            r = false;
+            // r = false;
         }
 
         
@@ -611,7 +611,7 @@ public class Money3CalculatorExtension extends QuotingExtension {
     param.amountBaseComm = this.getLoanAmount();
     // System.debug(param);
     // System.debug(quotingType + '|' + param.totalAmount + '|' + param.totalInsurance + '|' + param.totalInsuranceIncome);
-
+    System.debug('param >>>  ' + JSON.serialize(param));
     Application_Quoting_Result__c r = QuotingCalculation.calculate(param);
     if (r != null) {
       estimatedCommission = r.Estimated_Commission__c;

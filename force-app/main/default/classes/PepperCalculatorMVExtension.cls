@@ -699,7 +699,7 @@ public class PepperCalculatorMVExtension extends QuotingExtension {
       '|' +
       param.totalInsuranceIncome
     );
-
+    System.debug('param old >>> ' + JSON.serialize(param));
     Application_Quoting_Result__c r = QuotingCalculation.calculate(param);
     if (r != null) {
       estimatedCommission = r.Estimated_Commission__c;
@@ -756,6 +756,7 @@ public class PepperCalculatorMVExtension extends QuotingExtension {
       for (String key : calcTypes) {
         param.totalInsurance = this.getTotalInsuranceType(key);
         param.totalInsuranceIncome = this.getTotalInsuranceIncomeType(key);
+        System.debug('param.totalInsurance >>'+param.totalInsurance+' , param.totalInsuranceIncome >> ' + param.totalInsuranceIncome);
         r = QuotingCalculation.calculate(param);
         if (r != null) {
           r.Result_Type__c = key;

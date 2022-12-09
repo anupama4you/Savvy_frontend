@@ -187,6 +187,9 @@ public class CalculatorPdfExtension {
     public String abnLength {set; get;}
     public String gstLength {set; get;}
     public String assetAge {set; get;}
+    public String assetCategory {set; get;}
+    public String equifaxScore {set; get;}
+    public String manualBaseRate {set; get;}
     
     public Custom_Opportunity__c opp;
 
@@ -383,7 +386,8 @@ public class CalculatorPdfExtension {
         System.debug('residualValue >> ' + residualValue + ' | highlightResidualValue >> ' + highlightResidualValue);
         if (String.isNotBlank(residualValue)) {
             try {
-                Decimal v = Decimal.valueOf(residualValue);
+                String t = residualValue.remove(',');
+                Decimal v = Decimal.valueOf(t);
                 if (v > 0.0) {
                     highlightResidualValue = true;
                 }
@@ -607,6 +611,8 @@ public class CalculatorPdfExtension {
         abnLength = System.currentPageReference().getParameters().get('abnLength');
         gstLength = System.currentPageReference().getParameters().get('gstLength');
         assetAge = System.currentPageReference().getParameters().get('assetAge');
+        equifaxScore = System.currentPageReference().getParameters().get('equifaxScore');
+        assetCategory = System.currentPageReference().getParameters().get('assetCategory');
     } // finish the constructor
     
     
@@ -650,6 +656,22 @@ public class CalculatorPdfExtension {
         return r;
     }
 
+    public Boolean getIsKrisp() {
+        Boolean r = false;
+        if (!String.isBlank(lender) && lender.containsIgnoreCase('Krisp')) {
+            r = true;
+        }
+        return r;
+    }
+
+    public Boolean getIsRacv() {
+        Boolean r = false;
+        if (!String.isBlank(lender) && lender.containsIgnoreCase('Racv')) {
+            r = true;
+        }
+        return r;
+    }
+    
     public Boolean getIsAPF() {
         Boolean r = false;
         if (!String.isBlank(lender) && lender.containsIgnoreCase('APF')) {
@@ -660,7 +682,7 @@ public class CalculatorPdfExtension {
 
     public Boolean getIsUMELoans() {
         Boolean r = false;
-        if (!String.isBlank(lender) && lender.containsIgnoreCase('UME')) {
+        if (!String.isBlank(lender) && lender.containsIgnoreCase('UME LOANS')) {
             r = true;
         }
         return r;
@@ -955,13 +977,110 @@ public class CalculatorPdfExtension {
 
     public Boolean getIsGrowAssetCar() {
         Boolean r = false;
-        if (!String.isBlank(lender) && lender.containsIgnoreCase('GROW')) {
+        if (!String.isBlank(lender) && lender.containsIgnoreCase('GROW') && !lender.equalsIgnoreCase('Grow Business Loan CALCULATION')) {
             r = true;
         }
         return r;
     }
     
-  public Account getAccountVar() {
-    return SOQLSingletonQueries.getPartnerAccount(this.opp.OwnerId);
-  } 
+    public Account getAccountVar() {
+        return SOQLSingletonQueries.getPartnerAccount(this.opp.OwnerId);
+    } 
+
+  public Boolean getIsGrowBusiLoan() {
+    Boolean r = false;
+    if (!String.isBlank(lender) && lender.containsIgnoreCase('Grow Business Loan CALCULATION')) {
+        r = true;
+    }
+    return r;
+}
+
+    public Boolean getIsMultipli() {
+        Boolean r = false;
+        if (!String.isBlank(lender) && lender.containsIgnoreCase('MULTIPLI')) {
+            r = true;
+        }
+        return r;
+    }
+
+    public Boolean getIsEarlyPay() {
+        Boolean r = false;
+        if (!String.isBlank(lender) && lender.containsIgnoreCase('EARLY PAY CALCULATION')) {
+            r = true;
+        }
+        return r;
+    }
+    
+    public Boolean getIsAzoraCommercial() {
+        Boolean r = false;
+        if (!String.isBlank(lender) && lender.containsIgnoreCase('AZORA COMMERCIAL CALCULATION')) {
+            r = true;
+        }
+        return r;
+    }
+
+    public Boolean getIsMoney3PL() {
+        Boolean r = false;
+        if (!String.isBlank(lender) && lender.containsIgnoreCase('MONEY3 PL')) {
+            r = true;
+        }
+        return r;
+     }
+    
+      public Boolean getIsGedda() {
+        Boolean r = false;
+        if (!String.isBlank(lender) && lender.containsIgnoreCase('GEDDA CALCULATION')) {
+            r = true;
+        }
+        return r;
+     }
+    
+    public Boolean getIsResimac() {
+        Boolean r = false;
+        if (!String.isBlank(lender) && lender.containsIgnoreCase('RESIMAC CALCULATION')) {
+            r = true;
+        }
+        return r;
+    }
+
+    public Boolean getIsBranded() {
+        Boolean r = false;
+        if (!String.isBlank(lender) && lender.containsIgnoreCase('BRANDED CONSUMER CALCULATION')) {
+            r = true;
+        }
+        return r;
+    }
+
+    public Boolean getIsBrandedComm() {
+        Boolean r = false;
+        if (!String.isBlank(lender) && lender.containsIgnoreCase('BRANDED COMMERCIAL CALCULATION')) {
+            r = true;
+        }
+        return r;
+    }
+
+    public Boolean getIsScotpacAsset() {
+        Boolean r = false;
+        if (!String.isBlank(lender) && lender.containsIgnoreCase('SCOTPAC ASSET CALCULATION')) {
+            r = true;
+        }
+        return r;
+    }
+
+    public Boolean getIsThorn() {
+        Boolean r = false;
+        if (!String.isBlank(lender) && lender.containsIgnoreCase('THORN CALCULATION')) {
+            r = true;
+        }
+        return r;
+    }
+
+    public Boolean getIsC1Finance() {
+        Boolean r = false;
+        if (!String.isBlank(lender) && lender.containsIgnoreCase('C1 FINANCE CALCULATION')) {
+            r = true;
+        }
+        return r;
+    }
+
 }

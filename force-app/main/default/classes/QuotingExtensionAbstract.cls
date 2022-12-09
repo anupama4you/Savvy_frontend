@@ -1726,16 +1726,19 @@ public abstract class QuotingExtensionAbstract {
   }
 
   public Product__c buildInsProduct(String insurer, String insType, Decimal premium, Decimal comm, String payType) {
-    Id insRecTypeId = SOQLSingletonQueries.recs().recordTypes.get('Insurance');
-    Product__c r = new Product__c();
-    r.Opportunity_Name__c = this.Opp.Id;
-    r.RecordTypeId = insRecTypeId;
-    r.Insurance_Type__c = insType;
-    r.Insurance_Policy_Amount__c = premium;
-    r.Insurance_Commission__c = comm;
-    r.Insurer__c = insurer;
-    r.PayType__c = payType;
-    return r;
+    return QuotingToolHelper.buildInsProduct(
+      this.Opp.Id, insurer, insType, premium, comm, payType
+    );
+    // Id insRecTypeId = SOQLSingletonQueries.recs().recordTypes.get('Insurance');
+    // Product__c r = new Product__c();
+    // r.Opportunity_Name__c = this.Opp.Id;
+    // r.RecordTypeId = insRecTypeId;
+    // r.Insurance_Type__c = insType;
+    // r.Insurance_Policy_Amount__c = premium;
+    // r.Insurance_Commission__c = comm;
+    // r.Insurer__c = insurer;
+    // r.PayType__c = payType;
+    // return r;
   }
 
   public void saveInsuranceProducts() {
@@ -1767,8 +1770,11 @@ public abstract class QuotingExtensionAbstract {
 
     // MV Insurance
     if ('A'.equals(this.mvAcceptance)) {
+      String insurer = InsuranceQuoteUtils.INS_PROD_MV_SUNCORP.equals(
+        this.quoting.Insurance_MV_Options__c
+      ) ? InsuranceQuoteUtils.INS_PROD_MV_SUNCORP : 'Comprehensive';
       Product__c p = buildInsProduct(
-        'Comprehensive', 'Full Comprehensive', this.mv, this.mvIncome, 'PBM');
+        insurer, 'Full Comprehensive', this.mv, this.mvIncome, 'PBM');
       productList.add(p);
     }
     //Lelo      Insurnce        2018-02-26
@@ -1856,6 +1862,7 @@ public abstract class QuotingExtensionAbstract {
     
     // Send the email
     try {
+      // Customer Email
       EmailSender.sendCustomerInsurancePresentation(
         this.Opp,
         InsuranceQuoteUtils.getPresentationUrlCode(this.Opp.Application__c),
@@ -1871,8 +1878,31 @@ public abstract class QuotingExtensionAbstract {
           'Customer Insurance Presentation has just been sent.'
         )
       );
+      QuotingExtensionAbstract.sendLibertyNotification(this.opp.Id);
     } catch (EmailException e) {
       ApexPages.addMessage(new ApexPages.Message(ApexPages.Severity.ERROR,e.getMessage()));
+    }
+  }
+
+  @future(callout=true)
+  public static void sendLibertyNotification(Id oppId) {
+    List<AggregateResult> d = [
+      SELECT WhatId
+      FROM Task
+      WHERE
+        Subject = 'Email: Pre-approved loan - Savvy'
+        AND WhatId = :oppId
+        AND CreatedDate = LAST_N_DAYS:30
+      GROUP BY WhatId
+      HAVING COUNT(Subject) > 1
+    ];
+    Set<Id> oppEmail = new Set<Id>();
+    for (AggregateResult o : d) {
+      oppEmail.add((Id) o.get('WhatId'));
+    }
+    if (!oppEmail.contains(oppId)) {
+      // Liberty Email
+      EmailSender.sendEmailOpportunityPreApprovedLiberty(oppId, false); 
     }
   }
 
@@ -1994,7 +2024,8 @@ public abstract class QuotingExtensionAbstract {
     rpt.getParameters().put('mvIncome', String.valueOf(0.00));
     rpt.getParameters().put('mvPayType', null);
     if ('A'.equals(this.mvAcceptance)) {
-      rpt.getParameters().put('mvLevel', mvLevel);
+      String level = this.mvLevel + ' [ ' + this.quoting.Insurance_MV_Options__c + ' ] ';
+      rpt.getParameters().put('mvLevel', level);
       rpt.getParameters().put('mv', String.valueOf(mv));
       rpt.getParameters().put('mvIncome', String.valueOf(mvIncome));
       rpt.getParameters().put('mvPayType', 'PBM');

@@ -126,6 +126,13 @@ private class TestQuotingCalculation {
 		param.paymentType = 'Advance';
 		qr = QuotingCalculation.calculate(param);
 
+    //Krisp
+		param = getGenericParam('Krisp');
+		qr = QuotingCalculation.calculate(param);
+		param.paymentType = 'Advance';
+		qr = QuotingCalculation.calculate(param);
+
+
 		//Metro Calculation
 		param = getGenericParam('Metro');
 		param.brokeragePer = 4;
@@ -266,7 +273,10 @@ private class TestQuotingCalculation {
       'Capital Finance',
       'Fleet Partners',
       'Commercial Equity Group',
-      'Group and General'
+      'Group and General',
+      'Branded Consumer',
+      'Branded Commercial',
+      'Racv'
     };
     for (String len : lenderList) {
       param = new QuotingCalculation.CalcParam(len);
@@ -851,10 +861,12 @@ private class TestQuotingCalculation {
     param = new QuotingCalculation.CalcParam('AFS Commercial');
     param.clientTier = '0-7 years';
     param.clientRate = 25;
+    QuotingCalculation.getBaseRate(param);
     QuotingCalculation.getAfsCommercialMinBaseRate(param);
     QuotingCalculation.getAfsCommercialMaxBaseRate(param);
     QuotingCalculation.getAfsCommercialCommission(param);
     param.clientTier = '8 years +';
+    QuotingCalculation.getBaseRate(param);
     QuotingCalculation.getAfsCommercialMinBaseRate(param);
     QuotingCalculation.getAfsCommercialMaxBaseRate(param);
     QuotingCalculation.getAfsCommercialCommission(param);
@@ -1125,7 +1137,77 @@ private class TestQuotingCalculation {
     param.assetAge = '> 6 years';
     QuotingCalculation.getBaseRate(param);
 
+    // Society One
+    param = new QuotingCalculation.CalcParam('Society One');
+    param.customerProfile = 'Secured';
+    param.clientTier = 'Tier 1';
+    param.term = 60;
+    QuotingCalculation.getBaseRate(param);
 
+    //Krisp
+		param = new QuotingCalculation.CalcParam('Krisp');
+		List<String> clientTiers = new List<String>{'Platinum','Gold','Silver','Bronze','Micro Motor','Mini PL','Fake Grade'};
+		for (String rg: clientTiers) {
+			param.riskGrade = rg;
+			QuotingCalculation.getBaseRate(param);
+		}
+
+    // Branded Consumer
+    param = new QuotingCalculation.CalcParam('Branded Consumer');
+    param.vedascore = 750;
+    param.customerProfile = 'Asset Backed';
+    param.condition = 'New';
+    QuotingCalculation.getBaseRate(param);
+    QuotingCalculation.getMaximunBaseRate(param);
+    param.vedascore = 650;
+    param.customerProfile = 'Non Asset Backed';
+    param.condition = 'Used';
+    QuotingCalculation.getBaseRate(param);
+    QuotingCalculation.getMaximunBaseRate(param);
+
+    // Branded Commercial
+    param = new QuotingCalculation.CalcParam('Branded Commercial');
+    param.vedascore = 750;
+    param.customerProfile = 'Asset Backed';
+    param.condition = 'New';
+    param.commRate = 6;
+    QuotingCalculation.getBaseRate(param);
+    QuotingCalculation.getMaximunBaseRate(param);
+    param.customerProfile = 'Non Asset Backed';
+    param.condition = 'Used';
+    QuotingCalculation.getBaseRate(param);
+    QuotingCalculation.getMaximunBaseRate(param);
+
+    // Racv
+    param = new QuotingCalculation.CalcParam('Racv');
+    clientTiers = new List<String>{
+      'Borrower Type 1','Borrower Type 2','Borrower Type 3'
+    };
+    List<String> assetTypes = new List<String>{
+      'CAR','MOTORBIKE','BOAT','CARAVAN'
+    };
+    
+    param.totalAmount = 20000;
+    for (String asset : assetTypes) {
+      param.assetType = asset;
+      for (String ct : clientTiers) {
+        param.creditScore = '750';
+        param.loanTypeDetail = ct;
+        param.condition = 'NEW';
+        param.propertyOwner = 'Yes';
+        param.carAge = 0;
+        QuotingCalculation.getBaseRate(param);
+        QuotingCalculation.getMaximunBaseRate(param);
+
+        param.creditScore = '550';
+        param.condition = 'USED';
+        param.propertyOwner = 'No';
+        param.carAge = 5;
+        QuotingCalculation.getBaseRate(param);
+        QuotingCalculation.getMaximunBaseRate(param);
+      }
+    }
+    
 
   }
 
@@ -1239,6 +1321,18 @@ private class TestQuotingCalculation {
 		param.productLoanType = 'Commercial';
 		param.clientTier = 'AA';
 		QuotingCalculation.getLibertyCommission(param);
+
+    // afs
+    param = new QuotingCalculation.CalcParam('AFS Commercial');
+    param.productLoanType = 'Gold Club - Non-Property';
+    QuotingCalculation.getAFSRateCommission(param);
+    param.productLoanType = null;
+    param.condition = 'New/Demo';
+    param.vehiclePrice = 36000;
+    param.assetType = 'Motor Vehicle';
+    param.residency = 'Non-Property Owner - Renter';
+    QuotingCalculation.getAFSRateCommission(param);
+
 	}
 
 	@isTest static void testDOFCalculations() {
@@ -1380,6 +1474,47 @@ private class TestQuotingCalculation {
 		// Risk fees
 		r.riskFeeBase = 25000;
 		System.assert(QuotingCalculation.getMoney3RiskFee(r)>0);
+	}
+
+  @isTest static void testKrisp() {
+		QuotingCalculation.CalcParam r = new QuotingCalculation.CalcParam('Krisp');
+		r.customerProfile = 'Asset Finance';
+		r.riskGrade = 'Micro Motor';
+		List<Decimal> nafs = new List<Decimal>{2000.0,3000.0,6000.0,7000.0};
+		for (Decimal a: nafs) {
+			r.totalAmount = a;
+			System.assert(QuotingCalculation.getKrispMaxDof(r)>0);
+		}
+		r.riskGrade = 'No Micro Motor';
+		nafs = new List<Decimal>{8000.0,9000.0,10000.0,11000.0,12000.0,16000.0,8000.0,12000.0};
+		for (Decimal a: nafs) {
+			r.totalAmount = a;
+			System.assert(QuotingCalculation.getKrispMaxDof(r)>0);
+		}
+		r.customerProfile = 'Personal Finance';
+		r.riskGrade = 'Mini PL';
+		nafs = new List<Decimal>{2000.0,3000.0,5000.0};
+		for (Decimal a: nafs) {
+			r.totalAmount = a;
+			System.assert(QuotingCalculation.getKrispMaxDof(r)>0);
+		}
+		r.riskGrade = 'No Mini PL';
+		nafs = new List<Decimal>{5000.0,6000.0,7000.0,8100.0,9000.0,10000.0,11000.0,12000.0};
+		for (Decimal a: nafs) {
+			r.totalAmount = a;
+			System.assert(QuotingCalculation.getKrispMaxDof(r)>0);
+		}
+		// Commissions
+		r.customerProfile = 'Asset Finance';
+		r.amountBaseComm = 15000;
+		List<String> rgs = new List<String>{'Platinum','Gold','Silver'};
+		for (String rg: rgs) {
+			r.riskGrade = rg;
+			System.assert(QuotingCalculation.getKrispCommPercentage(r)>0);
+		}
+		// Risk fees
+		r.riskFeeBase = 25000;
+		System.assert(QuotingCalculation.getKrispRiskFee(r)>0);
 	}
 	
     @isTest

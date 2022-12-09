@@ -28,7 +28,7 @@
                             </tr>
                             <tr>
                                 <th>Goods Type: {!productGoodsType}</th>
-                                <th>Loand Product: {!productLoanType}</th>
+                                <th>Loan Product: {!productLoanType}</th>
                             </tr>
                         </table>
                     </p>
@@ -409,6 +409,97 @@
             </tr>
         </table>
         </apex:outputPanel>
+        <apex:outputPanel layout="block" style="width:100%" rendered="{!isResimac}" >
+        <table width="100%">
+            <tr width="100%">
+                <td width="25%">Asset age</td>
+                <td width="25%">{!assetAge}</td>
+                <td width="25%">Private Sales</td>
+                <td width="25%">{!privateSales}</td>
+            </tr>
+            <tr width="100%">
+                <td>Asset type</td>
+                <td>{!assetType}</td>
+                <td>Brokerage (%)</td>
+                <td>{!brokeragePercentage}
+                </td>
+            </tr>
+            <tr width="100%">
+                <td>ABN &amp; GST</td>
+                <td>{!abn}</td>
+                <td>Property Owner</td>
+                <td>{!customerProfile}</td>
+            </tr>
+            <tr width="100%">
+                <td>Asset Category</td>
+                <td>{!assetCategory}</td>
+                <td colspan="2">&nbsp;</td>
+            </tr>
+        </table>
+        </apex:outputPanel>
+        <!-- Multipli -->
+        <apex:outputPanel layout="block" style="width:100%" rendered="{!isMultipli}" >
+        <table width="100%">
+            <tr width="100%">
+                <td width="25%">Asset age</td>
+                <td width="25%">{!assetAge}</td>
+                <td width="25%">Private Sales</td>
+                <td width="25%">{!privateSales}</td>
+            </tr>
+            <tr width="100%">
+                <td>Asset type</td>
+                <td>{!assetType}</td>
+                <td>Brokerage (%)</td>
+                <td>{!brokeragePercentage}
+                </td>
+            </tr>
+            <tr width="100%">
+                <td>Company Score</td>
+                <td>{!companyScore}</td>
+                <td>Property Owner</td>
+                <td>{!customerProfile}</td>
+            </tr>
+            <tr width="100%">
+                <td>Condition</td>
+                <td>{!condition}</td>
+                <td colspan="2">&nbsp;</td>
+            </tr>
+        </table>
+        </apex:outputPanel>
+        <!-- EarlyPay -->
+        <apex:outputPanel layout="block" style="width:100%" rendered="{!isEarlyPay}" >
+        <table width="100%">
+            <tr width="100%">
+                <td>Asset age</td>
+                <td>{!assetAge}</td>
+                <td>Asset type</td>
+                <td>{!assetType}</td>
+                <!-- <td width="25%">Asset age</td>
+                <td width="25%">{!assetAge}</td>
+                <td width="25%">Asset type</td>
+                <td width="25%">{!assetType}</td> -->
+            </tr>
+            <tr width="100%">
+                <td>ABN/GST</td>
+                <td>{!abn}</td>
+                <td>ATO Debt</td>
+                <td>{!condition}</td>
+            </tr>
+            <tr width="100%">
+                <td>Brokerage (%)</td>
+                <td>{!brokeragePercentage}</td>
+                <td>Director/Sole Trader Score</td>
+                <td>{!directorSoleTraderScore}</td>
+            </tr>
+            <tr width="100%">
+                <td width="25%">Property Owner</td>
+                <td width="15%">{!customerProfile}</td>
+                <td width="25%">Adverse Credit File</td>
+                <td width="35%">{!extraLabel2}</td>
+            </tr>
+        </table>
+        </apex:outputPanel>
+        <!-- Westpac -->
         <apex:outputPanel layout="block" style="width:100%" rendered="{!isWestpac}" >
         <table width="100%">
             <tr width="100%">
@@ -560,7 +651,7 @@
         </table>
         </apex:outputPanel>
         <!-- Liberty Options -->
-        <apex:outputPanel layout="block" style="width:100%" rendered="{!IF(rateOption = null,false,true)}" >
+        <!-- <apex:outputPanel layout="block" style="width:100%" rendered="{!IF(rateOption = null,false,true)}" >
         <table width="100%">
             <tr width="100%">
                 <td width="25%">
@@ -591,7 +682,7 @@
                 </td>
             </tr>
         </table>
-        </apex:outputPanel>
+        </apex:outputPanel> -->
         <!-- Finance One -->
         <apex:outputPanel layout="block" style="width:100%" rendered="{!isFinanceOne}" >
         <table width="100%">
@@ -613,10 +704,40 @@
             </tr>
             <tr width="100%">
                 <td width="25%">Brokerage (%)</td>
-                <td colspan="3">{!brokeragePercentage}</td>
+                <td width="25%">{!brokeragePercentage}</td>
+                <td width="25%">Propery Owner</td>
+                <td width="25%">{!propertyOwner}</td>
+            </tr> 
+            <tr width="100%">
+                <td width="25%">Rate Add ON's</td>
+                <td width="25%">{!rateOption}</td>
+                <td colspan="2">&nbsp;</td>
+            </tr>
+        </table>
+        </apex:outputPanel>
+        <apex:outputPanel layout="block" style="width:100%" rendered="{!isAzoraCommercial}" >
+        <table width="100%">
+            <tr width="100%">
+                <td width="25%">Loan Type (Detail)</td>
+                <td width="25%">{!loanTypeDetail}</td> 
+                <td width="25%">Private Sales</td>
+                <td width="25%">{!privateSales}</td> 
+            </tr>
+            <tr width="100%">
+                <td width="25%">ABN</td>
+                <td width="25%">{!abn}</td>
+                <td width="25%">GST</td>
+                <td width="25%">{!GST}</td>
+            </tr> 
+            <tr width="100%">
+                <td width="25%">Brokerage (%)</td>
+                <td width="25%">{!brokeragePercentage}</td>
+                <td width="25%">Rate Add ON's (%)</td>
+                <td width="25%">{!rateOption}</td>
             </tr> 
         </table>
         </apex:outputPanel>
+
         <apex:outputPanel layout="block" style="width:100%" rendered="{!isAzora}" >
         <table width="100%">
             <tr width="100%">
@@ -695,6 +816,53 @@
                 <td>{!loanPurpose}</td>
             </tr>
         </table>
+        </apex:outputPanel>
+        <!-- Krisp -->
+        <apex:outputPanel layout="block" style="width:100%" rendered="{!isKrisp}" >
+        <table width="100%">
+            <tr width="100%">
+                <td width="25%">Profile</td>
+                <td width="25%">{!customerProfile}</td>
+                <td width="25%">Customer Grading</td>
+                <td width="25%">{!rateType}</td>
+            </tr>
+            <tr>
+                <td>Risk Fee</td>
+                <td>{!riskFee}</td>
+                <td colspan="2">&nbsp;</td>
+            </tr>
+            <tr with="100%">
+                <td>Loan Purpose</td>
+                <td colspan="3">{!loanPurpose}</td>
+            </tr>
+        </table>
+        </apex:outputPanel>
+        <!-- RACV -->
+        <apex:outputPanel layout="block" style="width:100%" rendered="{!isRacv}">
+          <table width="100%">
+            <tr>
+              <td>Category</td>
+              <td colspan="3">{!vehiclesProfile}</td>
+            </tr>
+            <tr width="100%">
+              <td width="20%">Class</td>
+              <td width="30%">{!loanTypeDetail}</td>
+              <td width="30%">Vehicle Type</td>
+              <td width="20%">{!goodsType}</td>
+            </tr>
+            <tr>
+              <td>Car Age</td>
+              <td>{!carAge}</td>
+              <td>Private Sales</td>
+              <td>{!privateSales}</td>
+            </tr>
+            <tr>
+              <td>Vehicle Condition</td>
+              <td>{!vehCon}</td>
+              <td>Credit Score</td>
+              <td>{!creditScore}</td>
+            </tr>
+          </table>
         </apex:outputPanel>
         <!-- Yamaha -->
         <apex:outputPanel layout="block" style="width:100%" rendered="{!isYamahaMoto}" >
@@ -785,7 +953,9 @@
             </tr>
             <tr>
               <td>Vehicle Condition</td>
-              <td colspan="3">{!vehCon}</td>
+              <td>{!vehCon}</td>
+              <td>Rate Option</td>
+              <td>{!rateOption}</td>
             </tr>
         </table>
         </apex:outputPanel>
@@ -1210,6 +1380,154 @@
                   <td width="25%">{!repayment}</td>
                 </tr>
             </table>
+        </apex:outputPanel>
+        <!-- Money3 PL -->
+        <apex:outputPanel layout="block" style="width:100%" rendered="{!isMoney3PL}" >
+        <table width="100%">
+            <tr width="100%">
+                <td width="25%">Profile</td>
+                <td width="25%">{!customerProfile}</td>
+                <td width="25%">Customer Grading</td>
+                <td width="25%">{!rateType}</td>
+            </tr>
+            <tr>
+                <td>Risk Fee</td>
+                <td>{!riskFee}</td>
+                <td colspan="2">&nbsp;</td>
+            </tr>
+            <tr with="100%">
+                <td>Loan Purpose</td>
+                <td colspan="3">{!loanPurpose}</td>
+            </tr>
+        </table>
+        </apex:outputPanel>
+        <!-- Gedda -->
+        <apex:outputPanel layout="block" style="width:100%" rendered="{!isGedda}" >
+        <table width="100%">
+            <tr width="100%">
+                <td width="25%">Profile</td>
+                <td width="25%">{!customerProfile}</td>
+                <td width="25%">Customer Grading</td>
+                <td width="25%">{!rateType}</td>
+            </tr>
+        </table>
+        </apex:outputPanel>
+        <!-- Branded Consumer -->
+        <apex:outputPanel layout="block" style="width:100%" rendered="{!isBranded}">
+        <table width="100%">
+            <tr width="100%">
+                <td width="25%">Car Age</td>
+                <td width="25%">{!carAge}</td>
+                <td width="25%">Private Sales</td>
+                <td width="25%">{!privateSales}</td>
+            </tr>
+            <tr width="100%">
+                <td>Credit Score</td>
+                <td>{!creditScore}</td>
+                <td>Property Owner</td>
+                <td>{!propertyOwner}</td>
+            </tr>
+            <tr width="100%">
+                <td>Asset Condition</td>
+                <td colspan="3">{!vehicleCondition}</td>
+            </tr>
+        </table>
+        </apex:outputPanel>
+        <!-- Scotpac Asset -->
+        <apex:outputPanel layout="block" style="width:100%" rendered="{!isScotpacAsset}" >
+        <table width="100%">
+            <tr width="100%">
+                <td width="25%">Asset age</td>
+                <td width="25%">{!assetAge}</td>
+                <td width="25%">Private Sales</td>
+                <td width="25%">{!privateSales}</td>
+            </tr>
+            <tr width="100%">
+                <td>Asset type</td>
+                <td>{!assetType}</td>
+                <td>Brokerage (%)</td>
+                <td>{!brokeragePercentage}
+                </td>
+            </tr>
+            <tr width="100%">
+                <td>Company Score</td>
+                <td>{!companyScore}</td>
+                <td>Property Owner</td>
+                <td>{!customerProfile}</td>
+            </tr>
+            <tr width="100%">
+                <td>Director/Sole Trader Score</td>
+                <td>{!directorSoleTraderScore}</td>
+                <td>GST Length</td>
+                <td>{!gstLength}</td>
+            </tr>
+            <tr width="100%">
+                <td>Condition</td>
+                <td>{!condition}</td>
+                <td>ABN length</td>
+                <td>{!abnLength}</td>
+            </tr>
+            <tr width="100%">
+                <td>Rate Add ON's</td>
+                <td colspan="3">{!rateOption}</td>
+            </tr>
+        </table>
+        </apex:outputPanel>
+        <!-- Thorn -->
+        <apex:outputPanel layout="block" style="width:100%" rendered="{!isThorn}" >
+        <table width="100%">
+            <tr width="100%">
+                <td width="25%">Asset age</td>
+                <td width="25%">{!assetAge}</td>
+                <td>Brokerage (%)</td>
+                <td>{!brokeragePercentage}</td>
+            </tr>
+            <tr width="100%">
+                <td>Asset type</td>
+                <td>{!assetType}</td>
+                <td>Manual Base Rate</td>
+                <td>{!recommendedRate}</td>
+            </tr>
+            <tr width="100%">
+                <td>Director/Sole Trader Score</td>
+                <td>{!directorSoleTraderScore}</td>
+                <td>Rate Loading</td>
+                <td>{!rateOption}</td>
+            </tr>
+            <tr width="100%">
+                <td>ABN/GST</td>
+                <td>{!abnLength}</td>
+                <td>Effective Base Rate</td>
+                <td>{!baseRate}</td>
+            </tr>
+            <tr width="100%">
+                <td>Property Owner</td>
+                <td colspan="3">{!customerProfile}</td>
+            </tr>
+        </table>
+        </apex:outputPanel>
+        <!-- C1 Finance -->
+        <apex:outputPanel layout="block" style="width:100%" rendered="{!isC1Finance}" >
+        <table width="100%">
+            <tr width="100%">
+                <td width="25%">Asset age</td>
+                <td width="25%">{!assetAge}</td>
+                <td>Goods type</td>
+                <td>{!assetType}</td>
+            </tr>
+            <tr width="100%">
+                <td>Loan Type (Detail)</td>
+                <td>{!loanTypeDetail}</td>
+                <td>Risk Fee</td>
+                <td>{!riskFee}</td>
+            </tr>
+            <tr width="100%">
+                <td>Property Owner</td>
+                <td>{!customerProfile}</td>
+                <td>Private Sales</td>
+                <td>{!privateSales}</td>
+            </tr>
+        </table>
         </apex:outputPanel>
                 
         <h3>Commission</h3>

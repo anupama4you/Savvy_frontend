@@ -588,7 +588,7 @@ public class LeadService {
 		}
     if (!isSalesUser && !SOQLSingletonQueries.recs().isBrokerPartnerUser) {
       for (Lead__c a : newList) {
-        if ('New Lead'.equals(a.Status__c) && !'Small Loans'.equals(a.Bucket_Type__c) && !'BCCL'.equals(a.UTM_Campaign__c)) {
+        if ('New Lead'.equals(a.Status__c) && !'Small Loans'.equals(a.Bucket_Type__c)) {
           if ('Unemployed'.equals(a.Employment_Status__c) || 'Centrelink - Newstart only'.equals(a.Employment_Status__c)) {
             // UNEMPLOYED
             a.Bucket_Type__c = 'Unemployed';
@@ -905,9 +905,9 @@ public class LeadService {
     Map<Id, External_Lead_Setting__c> monthlyAccounts = new Map<Id, External_Lead_Setting__c>();
     Set<Id> limitedBcAccounts = new Set<Id>();
     for (External_Lead_Setting__c a: d) {
-      if ('Monthly'.equals(a.Limit_Rotation__c)) {
+      // if ('Monthly'.equals(a.Limit_Rotation__c)) {
         monthlyAccounts.put(a.Account__c, a);
-      }
+      // }
       if (a.Bad_Credit_Limit__c > 0.00) {
         List<String> vals = a.Credit_History_Leads__c.split(';');
         if (
@@ -989,8 +989,11 @@ public class LeadService {
       // load current totals      
       for (AggregateResult a: totalList) {
         monthlyBCExtLeadsMap.put((Id)a.get('Partner_Owner__c'), (Decimal)a.get('total'));
+        System.debug('@@ partner_owner > ' + a.get('Partner_Owner__c') + ': ' + a.get('total'));
       }
     }
+    System.debug('@@sql bcl-query: '  + q);
+    System.debug('@@sql bcl-query 2: '  + startingTime);
     System.debug('Total monthlyBCExtLeadsMap: ' + monthlyBCExtLeadsMap.size());
     // Check limits
     List<Distributor> disList = new List<Distributor>();
@@ -1166,8 +1169,12 @@ public class LeadService {
 
     public Boolean isBcOver() {
       Decimal x = this.countMonthly > 0? (this.countBcMonthly/this.countMonthly)*100 : 0;
+      System.debug('@@account: ' + this.accountId + '|' + this.setting.Bad_Credit_Limit__c + '|' + x + '|' + this.countBcMonthly + '|' +this.countMonthly);
       return (
-        this.checkBadCredit && this.setting != null && this.setting.Bad_Credit_Limit__c > 0.00 && x >= this.setting.Bad_Credit_Limit__c
+        this.checkBadCredit && 
+        this.setting != null && 
+        this.setting.Bad_Credit_Limit__c > 0.00 && 
+        x > this.setting.Bad_Credit_Limit__c
       );
     }
 

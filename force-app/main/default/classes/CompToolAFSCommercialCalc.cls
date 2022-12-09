@@ -8,18 +8,18 @@ public class CompToolAFSCommercialCalc extends CompToolLenderCalcAbstract {
 
     // ---------------
     // Find base rates
-    this.quoteParam.gstLength = 'Registered';
+    this.quoteParam.gstLength = (
+      String.isNotBlank(this.param.gstRegistered) &&
+      !'N'.equals(this.param.gstRegistered)
+    ) ? 'Registered' : 'Not Registered';
+    
     this.quoteParam.residency = 'Property Owner'.equals(param.residentialStatus)
       ? 'Home Buyer' : 'Non-Home Buyer';
     
-
-    this.quoteParam.ltv = '100';
-    this.quoteParam.productLoanType = 'Consumer Loan';
+    this.quoteParam.productLoanType = 'Chattel Mortgage-Full-Doc';
 
     // - Prepare parameters
-    this.quoteParam.assetType = param.assetType;
-    
-    this.quoteParam.assetAge = param.assetAge <= 3
+    this.quoteParam.assetAge = param.assetAge <= 6
       ? 'New - 6 years old' : 'Used 7 years+';
     
     // Custom Value 1

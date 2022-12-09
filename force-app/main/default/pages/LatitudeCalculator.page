@@ -631,6 +631,18 @@
                             </td>
                         </tr>
                         <tr>
+                          <td class="financeColumn">
+                            <apex:outputLabel styleClass="calcLabel" value="Rate Option" for="rateOption" />
+                          </td>
+                          <td class="financeColumn">
+                            <apex:selectList value="{!rateOption}" multiselect="false" size="1" styleClass="selectList" id="rateOption">
+                              <apex:actionSupport event="onchange" action="{!baseRateCacl}" reRender="baseRate, maxRate, referenceForm" status="stsBR" />
+                              <apex:selectOption itemLabel="Fixed" itemValue="Fixed" />
+                              <apex:selectOption itemLabel="Variable" itemValue="Variable" />
+                            </apex:selectList>
+                          </td>
+                        </tr>
+                        <tr>
                             <td class="financeColumn">
                                 <apex:outputLabel styleClass="calcLabel" value="Max Rate" for="maxRate" />
                             </td>
@@ -716,7 +728,7 @@
         <apex:form id="referenceForm">
             <apex:outputPanel layout="block" styleClass="referenceTable">
                 <div class="referenceTitle">
-                    <h1>Latitude Rate Table for {!IF(ISBLANK(category),'[Plsease select a category]',category)}</h1>
+                    <h1>Latitude Rate Table for {!IF(ISBLANK(category),'[Plsease select a category]',category)} - [{!rateoption}]</h1>
                 </div>
                 <table width="100%">
                     <tr>
@@ -738,29 +750,33 @@
                                     <td class="ratesTh">% NAF</td>
                                 </tr>
                                 <apex:repeat value="{!diamondPlusRates}" var="r">
-                                    <tr>
-                                        <td align="center">
-                                            <apex:outputText value="{!r.rate1}" />
-                                        </td>
-                                        <td align="center">
-                                            <apex:outputText value="{!r.comm1}" />
-                                        </td>
-                                        <td align="center">
-                                            <apex:outputText value="{!r.rate2}" />
-                                        </td>
-                                        <td align="center">
-                                            <apex:outputText value="{!r.comm2}" />
-                                        </td>
-                                        <td align="center">
-                                            <apex:outputText value="{!r.rate3}" />
-                                        </td>
-                                        <td align="center">
-                                            <apex:outputText value="{!r.comm3}" />
-                                        </td>
-                                        <td align="center">
-                                            <apex:outputText value="{!r.rate4}" />
-                                        </td>
-                                    </tr>
+                                  <tr>
+                                    <td align="center">
+                                      <apex:outputText value="{!r.rate1}" rendered="{!isFixedRate}" />
+                                      <apex:outputText value="{!r.varRate1}" rendered="{!NOT(isFixedRate)}" />
+                                    </td>
+                                    <td align="center">
+                                      <apex:outputText value="{!r.comm1}" />
+                                    </td>
+                                    <td align="center">
+                                      <apex:outputText value="{!r.rate2}" rendered="{!isFixedRate}" />
+                                      <apex:outputText value="{!r.varRate2}" rendered="{!NOT(isFixedRate)}" />
+                                    </td>
+                                    <td align="center">
+                                        <apex:outputText value="{!r.comm2}" />
+                                    </td>
+                                    <td align="center">
+                                      <apex:outputText value="{!r.rate3}" rendered="{!isFixedRate}" />
+                                      <apex:outputText value="{!r.varRate3}" rendered="{!NOT(isFixedRate)}" />
+                                    </td>
+                                    <td align="center">
+                                        <apex:outputText value="{!r.comm3}" />
+                                    </td>
+                                    <td align="center">
+                                      <apex:outputText value="{!r.rate4}" rendered="{!isFixedRate}" />
+                                      <apex:outputText value="{!r.varRate4}" rendered="{!NOT(isFixedRate)}" />
+                                    </td>
+                                  </tr>
                                 </apex:repeat>
                             </table>
                         </td>
@@ -775,29 +791,33 @@
                                     <td class="ratesTh ratesThSolid">% NAF</td>
                                 </tr>
                                 <apex:repeat value="{!diamondRates}" var="r">
-                                    <tr>
-                                        <td align="center">
-                                            <apex:outputText value="{!r.rate1}" />
-                                        </td>
-                                        <td align="center">
-                                            <apex:outputText value="{!r.comm1}" />
-                                        </td>
-                                        <td align="center">
-                                            <apex:outputText value="{!r.rate2}" />
-                                        </td>
-                                        <td align="center">
-                                            <apex:outputText value="{!r.comm2}" />
-                                        </td>
-                                        <td align="center">
-                                            <apex:outputText value="{!r.rate3}" />
-                                        </td>
-                                        <td align="center">
-                                            <apex:outputText value="{!r.comm3}" />
-                                        </td>
-                                        <td align="center">
-                                            <apex:outputText value="{!r.rate4}" />
-                                        </td>
-                                    </tr>
+                                  <tr>
+                                    <td align="center">
+                                      <apex:outputText value="{!r.rate1}" rendered="{!isFixedRate}" />
+                                      <apex:outputText value="{!r.varRate1}" rendered="{!NOT(isFixedRate)}" />
+                                    </td>
+                                    <td align="center">
+                                      <apex:outputText value="{!r.comm1}" />
+                                    </td>
+                                    <td align="center">
+                                      <apex:outputText value="{!r.rate2}" rendered="{!isFixedRate}" />
+                                      <apex:outputText value="{!r.varRate2}" rendered="{!NOT(isFixedRate)}" />
+                                    </td>
+                                    <td align="center">
+                                      <apex:outputText value="{!r.comm2}" />
+                                    </td>
+                                    <td align="center">
+                                      <apex:outputText value="{!r.rate3}" rendered="{!isFixedRate}" />
+                                      <apex:outputText value="{!r.varRate3}" rendered="{!NOT(isFixedRate)}" />
+                                    </td>
+                                    <td align="center">
+                                      <apex:outputText value="{!r.comm3}" />
+                                    </td>
+                                    <td align="center">
+                                      <apex:outputText value="{!r.rate4}" rendered="{!isFixedRate}" />
+                                      <apex:outputText value="{!r.varRate4}" rendered="{!NOT(isFixedRate)}" />
+                                    </td>
+                                  </tr>
                                 </apex:repeat>
                             </table>
                         </td>
@@ -812,29 +832,33 @@
                                     <td class="ratesTh">% NAF</td>
                                 </tr>
                                 <apex:repeat value="{!sapphireRates}" var="r">
-                                    <tr>
-                                        <td align="center">
-                                            <apex:outputText value="{!r.rate1}" />
-                                        </td>
-                                        <td align="center">
-                                            <apex:outputText value="{!r.comm1}" />
-                                        </td>
-                                        <td align="center">
-                                            <apex:outputText value="{!r.rate2}" />
-                                        </td>
-                                        <td align="center">
-                                            <apex:outputText value="{!r.comm2}" />
-                                        </td>
-                                        <td align="center">
-                                            <apex:outputText value="{!r.rate3}" />
-                                        </td>
-                                        <td align="center">
-                                            <apex:outputText value="{!r.comm3}" />
-                                        </td>
-                                        <td align="center">
-                                            <apex:outputText value="{!r.rate4}" />
-                                        </td>
-                                    </tr>
+                                  <tr>
+                                    <td align="center">
+                                      <apex:outputText value="{!r.rate1}" rendered="{!isFixedRate}" />
+                                      <apex:outputText value="{!r.varRate1}" rendered="{!NOT(isFixedRate)}" />
+                                    </td>
+                                    <td align="center">
+                                      <apex:outputText value="{!r.comm1}" />
+                                    </td>
+                                    <td align="center">
+                                      <apex:outputText value="{!r.rate2}" rendered="{!isFixedRate}" />
+                                      <apex:outputText value="{!r.varRate2}" rendered="{!NOT(isFixedRate)}" />
+                                    </td>
+                                    <td align="center">
+                                      <apex:outputText value="{!r.comm2}" />
+                                    </td>
+                                    <td align="center">
+                                      <apex:outputText value="{!r.rate3}" rendered="{!isFixedRate}" />
+                                      <apex:outputText value="{!r.varRate3}" rendered="{!NOT(isFixedRate)}" />
+                                    </td>
+                                    <td align="center">
+                                      <apex:outputText value="{!r.comm3}" />
+                                    </td>
+                                    <td align="center">
+                                      <apex:outputText value="{!r.rate4}" rendered="{!isFixedRate}" />
+                                      <apex:outputText value="{!r.varRate4}" rendered="{!NOT(isFixedRate)}" />
+                                    </td>
+                                  </tr>
                                 </apex:repeat>
                             </table>
                         </td>
@@ -849,29 +873,33 @@
                                     <td class="ratesTh ratesThSolid">% NAF</td>
                                 </tr>
                                 <apex:repeat value="{!rubyRates}" var="r">
-                                    <tr>
-                                        <td align="center">
-                                            <apex:outputText value="{!r.rate1}" />
-                                        </td>
-                                        <td align="center">
-                                            <apex:outputText value="{!r.comm1}" />
-                                        </td>
-                                        <td align="center">
-                                            <apex:outputText value="{!r.rate2}" />
-                                        </td>
-                                        <td align="center">
-                                            <apex:outputText value="{!r.comm2}" />
-                                        </td>
-                                        <td align="center">
-                                            <apex:outputText value="{!r.rate3}" />
-                                        </td>
-                                        <td align="center">
-                                            <apex:outputText value="{!r.comm3}" />
-                                        </td>
-                                        <td align="center">
-                                            <apex:outputText value="{!r.rate4}" />
-                                        </td>
-                                    </tr>
+                                  <tr>
+                                    <td align="center">
+                                      <apex:outputText value="{!r.rate1}" rendered="{!isFixedRate}" />
+                                      <apex:outputText value="{!r.varRate1}" rendered="{!NOT(isFixedRate)}" />
+                                    </td>
+                                    <td align="center">
+                                      <apex:outputText value="{!r.comm1}" />
+                                    </td>
+                                    <td align="center">
+                                      <apex:outputText value="{!r.rate2}" rendered="{!isFixedRate}" />
+                                      <apex:outputText value="{!r.varRate2}" rendered="{!NOT(isFixedRate)}" />
+                                    </td>
+                                    <td align="center">
+                                      <apex:outputText value="{!r.comm2}" />
+                                    </td>
+                                    <td align="center">
+                                      <apex:outputText value="{!r.rate3}" rendered="{!isFixedRate}" />
+                                      <apex:outputText value="{!r.varRate3}" rendered="{!NOT(isFixedRate)}" />
+                                    </td>
+                                    <td align="center">
+                                      <apex:outputText value="{!r.comm3}" />
+                                    </td>
+                                    <td align="center">
+                                      <apex:outputText value="{!r.rate4}" rendered="{!isFixedRate}" />
+                                      <apex:outputText value="{!r.varRate4}" rendered="{!NOT(isFixedRate)}" />
+                                    </td>
+                                  </tr>
                                 </apex:repeat>
                             </table>
                         </td>
@@ -886,29 +914,33 @@
                                     <td class="ratesTh">% NAF</td>
                                 </tr>
                                 <apex:repeat value="{!EmeraldRates}" var="r">
-                                    <tr>
-                                        <td align="center">
-                                            <apex:outputText value="{!r.rate1}" />
-                                        </td>
-                                        <td align="center">
-                                            <apex:outputText value="{!r.comm1}" />
-                                        </td>
-                                        <td align="center">
-                                            <apex:outputText value="{!r.rate2}" />
-                                        </td>
-                                        <td align="center">
-                                            <apex:outputText value="{!r.comm2}" />
-                                        </td>
-                                        <td align="center">
-                                            <apex:outputText value="{!r.rate3}" />
-                                        </td>
-                                        <td align="center">
-                                            <apex:outputText value="{!r.comm3}" />
-                                        </td>
-                                        <td align="center">
-                                            <apex:outputText value="{!r.rate4}" />
-                                        </td>
-                                    </tr>
+                                  <tr>
+                                    <td align="center">
+                                      <apex:outputText value="{!r.rate1}" rendered="{!isFixedRate}" />
+                                      <apex:outputText value="{!r.varRate1}" rendered="{!NOT(isFixedRate)}" />
+                                    </td>
+                                    <td align="center">
+                                      <apex:outputText value="{!r.comm1}" />
+                                    </td>
+                                    <td align="center">
+                                      <apex:outputText value="{!r.rate2}" rendered="{!isFixedRate}" />
+                                      <apex:outputText value="{!r.varRate2}" rendered="{!NOT(isFixedRate)}" />
+                                    </td>
+                                    <td align="center">
+                                      <apex:outputText value="{!r.comm2}" />
+                                    </td>
+                                    <td align="center">
+                                      <apex:outputText value="{!r.rate3}" rendered="{!isFixedRate}" />
+                                      <apex:outputText value="{!r.varRate3}" rendered="{!NOT(isFixedRate)}" />
+                                    </td>
+                                    <td align="center">
+                                      <apex:outputText value="{!r.comm3}" />
+                                    </td>
+                                    <td align="center">
+                                      <apex:outputText value="{!r.rate4}" rendered="{!isFixedRate}" />
+                                      <apex:outputText value="{!r.varRate4}" rendered="{!NOT(isFixedRate)}" />
+                                    </td>
+                                  </tr>
                                 </apex:repeat>
                             </table>
                         </td>

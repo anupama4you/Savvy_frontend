@@ -1,6 +1,6 @@
 import getQuotingData from "@salesforce/apex/QuoteAmmfCalcController.getQuotingData";
 import getBaseRates from "@salesforce/apex/QuoteController.getBaseRates";
-import calculateRepayments from "@salesforce/apex/QuoteController.calculateRepayments";
+import calculateRepayments from "@salesforce/apex/QuoteController.calculateAllRepayments";
 import save from "@salesforce/apex/QuoteAmmfCalcController.save";
 import sendQuote from "@salesforce/apex/QuoteController.sendQuote";
 import {
@@ -98,7 +98,7 @@ const calculate = (quote) =>
     } else {
       console.log('quote::', quote)
       // new total calculated amount
-      const totalAmount = calcNetRealtimeNaf(quote);
+      const totalAmount = QuoteCommons.calcTotalAmount(quote);
       // commRate is constant for eastimated Commission
       const commR = getYamahaCommission(quote);
       const p = {
@@ -107,7 +107,7 @@ const calculate = (quote) =>
         customerProfile: quote.assetAge,
         privateSales: quote.privateSales,
         totalAmount: totalAmount,
-        totalInsurance: QuoteCommons.calcTotalInsuranceType(quote),
+        totalInsurance: QuoteCommons.calcTotalInsuranceIncome(quote),
         clientRate: quote.clientRate,
         baseRate: quote.baseRate,
         maxRate: quote.maxRate,
@@ -125,13 +125,18 @@ const calculate = (quote) =>
       // Calculate
       console.log(`@@param:`, JSON.stringify(p, null, 2));
       calculateRepayments({
-        param: p
+        param: p,
+        insuranceParam: quote.insurance
       })
         .then((data) => {
           console.log(`@@SF:`, JSON.stringify(data, null, 2));
 
           // Mapping
-          res.commissions = QuoteCommons.mapCommissionSObjectToLwc(data);
+          res.commissions = QuoteCommons.mapCommissionSObjectToLwc(
+            data.commissions,
+            quote.insurance,
+            data.calResults
+          );
           console.log(JSON.stringify(res.commissions, null, 2));
           // Validate the result of commissions
           res.messages = Validations.validatePostCalculation(res.commissions, res.messages);
@@ -204,6 +209,7 @@ const reset = (recordId) => {
     paymentType: calcOptions.paymentTypes[0].value,
     loanTypeDetail: calcOptions.loanTypeDetails1[0].value,
     commissions: QuoteCommons.resetResults(),
+    insurance: { integrity: {} },
     registrationFee: 3.40
   };
   r = QuoteCommons.mapDataToLwc(r, lenderSettings, SETTING_FIELDS);
@@ -216,7 +222,8 @@ const loadData = (recordId) =>
     //  const fields = Array.from(QUOTING_FIELDS.values());
     const fields = [
       ...QUOTING_FIELDS.values(),
-      ...QuoteCommons.COMMISSION_FIELDS.values()
+      ...QuoteCommons.COMMISSION_FIELDS.values(),
+      ...QuoteCommons.INSURANCE_FIELDS.values()
     ];
     console.log(`@@fields:`, JSON.stringify(fields, null, 2));
     getQuotingData({

@@ -1,6 +1,6 @@
 import getQuotingData from "@salesforce/apex/QuoteLibertyCalcController.getQuotingData";
 import getBaseRates from "@salesforce/apex/QuoteController.getBaseRates";
-import calculateRepayments from "@salesforce/apex/QuoteController.calculateRepayments";
+import calculateRepayments from "@salesforce/apex/QuoteController.calculateAllRepayments";
 import save from "@salesforce/apex/QuoteLibertyCalcController.save";
 import sendQuote from "@salesforce/apex/QuoteController.sendQuote";
 import {
@@ -13,6 +13,8 @@ import { Validations } from "./quoteValidations";
 // Default settings
 let applicationFee = 0.0;
 let lenderSettings = {};
+// API Responses
+let apiResponses = {};
 let riskGradeOptionsData = [];
 let tableRateDataColumns = [
   { label: "Risk Grade", fieldName: "Risk_Grade__c" },
@@ -66,7 +68,7 @@ const FIELDS_MAPPING_FOR_APEX = new Map([...QUOTING_FIELDS, ["Id", "Id"]]);
 const RATE_SETTING_NAMES = ["LibertyDrive__c"];
 
 const SETTING_FIELDS = new Map([
-  ["applicationFee", "Application_Fee__c"],
+  // ["applicationFee", "Application_Fee__c"],
   ["maxApplicationFee", "Application_Fee__c"],
   ["dof", "DOF__c"],
   ["maxDof", "DOF__c"],
@@ -107,7 +109,8 @@ const calculate = (quote) =>
       // Prepare params
       const profile = quote.securedUnsecured === "Secured" ? "Secured" : "Unsecured";
       // new total calculated amount
-      const totalAmount = calcNetRealtimeNaf(quote);
+      const totalAmount = calcTotalAmount(quote);
+      // totalAmount += calculateEQFee(quote, false);
       // commRate is constant for eastimated Commission
       const commR = 2.25;
       const p = {
@@ -115,7 +118,7 @@ const calculate = (quote) =>
         productLoanType: quote.loanProduct,
         customerProfile: profile,
         totalAmount: totalAmount,
-        totalInsurance: QuoteCommons.calcTotalInsuranceType(quote),
+        // totalInsurance: QuoteCommons.calcTotalInsuranceType(quote),
         clientRate: quote.clientRate,
         baseRate: quote.baseRate,
         paymentType: quote.paymentType,
@@ -133,13 +136,18 @@ const calculate = (quote) =>
       // Calculate
       console.log(`@@param:`, JSON.stringify(p, null, 2));
       calculateRepayments({
-        param: p
+        param: p,
+        insuranceParam: quote.insurance
       })
         .then((data) => {
           console.log(`@@SF:`, JSON.stringify(data, null, 2));
 
           // Mapping
-          res.commissions = QuoteCommons.mapCommissionSObjectToLwc(data);
+          res.commissions = QuoteCommons.mapCommissionSObjectToLwc(
+            data.commissions,
+            quote.insurance,
+            data.calResults
+          );
           console.log(JSON.stringify(res.commissions, null, 2));
           // Validate the result of commissions
           res.messages = Validations.validatePostCalculation(res.commissions, res.messages);
@@ -175,11 +183,7 @@ const calcOptions = {
   vehicleTypes: [
     { label: "--None--", value: "" },
     { label: "Car", value: "Car" },
-    { label: "Motorbike", value: "Motorbike" },
-    { label: "Boat", value: "Boat" },
-    { label: "Caravan", value: "Caravan" },
-    { label: "Truck", value: "Truck" },
-    { label: "Equipment", value: "Equipment" }
+    { label: "Truck", value: "Truck" }
   ],
   securedUnsecured: [
     { label: "Secured", value: "Secured" },
@@ -193,6 +197,7 @@ const reset = (recordId, appQuoteId = null) => {
   let r = {
     oppId: recordId,
     Id: appQuoteId,
+    name: LENDER_QUOTING,
     loanType: calcOptions.loanTypes[0].value,
     loanProduct: calcOptions.loanProducts[0].value,
     assetType: calcOptions.vehicleTypes[0].value,
@@ -223,10 +228,13 @@ const reset = (recordId, appQuoteId = null) => {
     registrationFee: 3.40,
     loanTypeDetail: "AAA",
     securedUnsecured: "Secured",
-    netDepsoit: 0.0,
-    realtimeNaf: 0.0
+    netDeposit: 0.0,
+    realtimeNaf: 0.0,
+    commissions: QuoteCommons.resetResults(),
+    insurance: { integrity: {} }
   };
   r = QuoteCommons.mapDataToLwc(r, lenderSettings, SETTING_FIELDS);
+  r.maxApplicationFee ;
   r.applicationFee = r.maxApplicationFee = applicationFee;
   return r;
 };
@@ -237,7 +245,8 @@ const loadData = (recordId) =>
     //  const fields = Array.from(QUOTING_FIELDS.values());
     const fields = [
       ...QUOTING_FIELDS.values(),
-      ...QuoteCommons.COMMISSION_FIELDS.values()
+      ...QuoteCommons.COMMISSION_FIELDS.values(),
+      ...QuoteCommons.INSURANCE_FIELDS.values()
     ];
     console.log(`@@fields:`, JSON.stringify(fields, null, 2));
     getQuotingData({
@@ -250,24 +259,33 @@ const loadData = (recordId) =>
     })
       .then((quoteData) => {
         console.log(`@@SF:`, JSON.stringify(quoteData, null, 2));
+        // Settings
+        lenderSettings = quoteData.settings;
+        applicationFee =
+          lenderSettings.Application_Fee__c + lenderSettings.DOF__c;
+        let qd = reset(recordId);
+        qd.applicationFee = applicationFee;
+        console.log(`@@appFee:`, qd.applicationFee);
+
         // Mapping Quote's fields
         let data = QuoteCommons.mapSObjectToLwc({
           calcName: LENDER_QUOTING,
-          defaultData: reset(recordId),
+          defaultData: qd,
           quoteData: quoteData,
           settingFields: SETTING_FIELDS,
           quotingFields: QUOTING_FIELDS
         });
 
-        // Settings
-        lenderSettings = quoteData.settings;
+        // API  responses
+        apiResponses = quoteData.apiResponses;
 
-        console.log('lenderSettings:::', JSON.stringify(lenderSettings, null, 2))
+        console.log(
+          "lenderSettings:::",
+          JSON.stringify(lenderSettings, null, 2)
+        );
 
         console.log(`@@data:`, JSON.stringify(data, null, 2));
         data["lenderApplicationFee"] = lenderSettings.Application_Fee__c;
-        applicationFee =
-          lenderSettings.Application_Fee__c + lenderSettings.DOF__c;
         data["maxApplicationFee"] = applicationFee;
         if (!data.Id) data["applicationFee"] = applicationFee;
 
@@ -299,23 +317,39 @@ const getMyBaseRates = (quote) =>
       .catch((error) => reject(error));
   });
 
-// custom calculations for NAF generations
-const calcNetRealtimeNaf = (quote) => {
-  let netRealtimeNaf = QuoteCommons.calcNetRealtimeNaf(quote) - quote.dof;
-  let eqFee = calculateEQFee(quote, false);
-  return netRealtimeNaf + eqFee;
-}
+  const getApiResponses = () => {
+    return apiResponses;
+  };
 
-const calculateEQFee = (quote, excInsurances) => {
+  const calcTotalAmount = (quote) => {
+    let r = 0.0;
+    if (quote) {
+      r += quote.price > 0 ? quote.price : 0.0;
+      r -= QuoteCommons.calcNetDeposit(quote);
+      r += quote.applicationFee > 0 ? quote.applicationFee : 0.0;
+      r += quote.ppsr > 0 ? quote.ppsr : 0.0;
+    }
+    let eqFee = calculateEQFee(quote, false);
+    return r + eqFee;
+  }
+
+  // custom calculations for NAF generations
+  const calcNetRealtimeNaf = (quote) => {
+    let r = calcTotalAmount(quote);
+    r += QuoteCommons.calcTotalInsuranceType(quote);
+    return r;
+  }
+
+const calculateEQFee = (quote, excInsurances = false) => {
   let r = 0.0;
   let baseEqFee = getTotalAmountExcFees(quote);
-  if (!excInsurances) {
-    // TODO: pending implmentation 
-    // if ('A'.equals(warrantyAcceptance)) {
-    //   if (warranty != null) baseEqFee += warranty;
-    // } else if ('A'.equals(nwcAcceptance)) {
-    //   if (nwc != null) baseEqFee += nwc;
-    // }
+  if (
+    excInsurances !== true &&
+    quote.insurance &&
+    quote.insurance.iswarrantyAccept === true &&
+    quote.insurance.warrantyRetailPrice > 0
+  ) {
+    baseEqFee += quote.insurance.warrantyRetailPrice;
   }
   if ('A+' === quote.riskGrade) {
     r = baseEqFee * 0.01;
@@ -332,13 +366,8 @@ const calculateEQFee = (quote, excInsurances) => {
 }
 
 const getTotalAmountExcFees = (quote) => {
-  let r = 0.0;
-
-  const netdeposit = QuoteCommons.calcNetDeposit(quote);
-
-  if (quote.price != null) r += quote.price;
-  if (netdeposit != null) r -= netdeposit;
-
+  let r = quote.price > 0? quote.price : 0.0;
+  r -= QuoteCommons.calcNetDeposit(quote);
   return r;
 }
 
@@ -415,6 +444,15 @@ const sendEmail = (param, recordId) =>
     }
   });
 
+  const calcMonthlyFee = (quote) => {
+    let r = lenderSettings.Monthly_Fee__c;
+    // console.log(`@@quote.riskGrade:`, quote.riskGrade);
+    if (quote.riskGrade !== "AAA") {
+      const naf = calcNetRealtimeNaf(quote);
+      r = naf < 10000 ? 15 : 10;
+    }
+    return r;
+  }
 
 export const CalHelper = {
   options: calcOptions,
@@ -431,5 +469,7 @@ export const CalHelper = {
   getRealtimeEqFee: calculateEQFee,
   DOF_CALC_FIELDS: DOF_CALC_FIELDS,
   saveQuote: saveQuote,
-  sendEmail: sendEmail
+  sendEmail: sendEmail,
+  getApiResponses: getApiResponses,
+  calcMonthlyFee: calcMonthlyFee
 };

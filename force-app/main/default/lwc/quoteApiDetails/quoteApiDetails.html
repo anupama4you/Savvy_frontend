@@ -1,0 +1,36 @@
+<template>
+  <span></span>
+  <lightning-card>
+    <div class="slds-grid slds-wrap slds-gutters c-result-data">
+      <div class="slds-col c-title-section">
+        <span class="c-title">API Details</span>
+      </div>
+    </div>
+    <div class="slds-grid slds-wrap slds-gutters c-result-data">
+      <!-- Application ID -->
+      <div class="slds-col slds-size_3-of-12">{idLabel}</div>
+      <div class="slds-col slds-size_3-of-12">
+        {response.Application_ID__c}
+      </div>
+      <!-- Created Date -->
+      <div class="slds-col slds-size_3-of-12">Date</div>
+      <div class="slds-col slds-size_3-of-12">
+        <lightning-formatted-date-time 
+          value={response.CreatedDate} 
+          year="numeric" 
+          day="2-digit" 
+          month="2-digit" 
+          hour="2-digit"
+          minute="2-digit">
+        </lightning-formatted-date-time>
+      </div>
+      <!-- Message -->
+      <template if:true={displayMessage}>
+        <div class="slds-col slds-size_3-of-12">Message</div>
+        <div class="slds-col slds-size_3-of-12">
+          {response.Message__c}
+        </div>
+      </template>
+    </div>
+  </lightning-card>
+</template>

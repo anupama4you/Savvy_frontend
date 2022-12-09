@@ -1,2 +1,7 @@
 .THIS {
+    background-color : white;
+}
+
+.THIS .text-align {
+    text-align: center;
 }

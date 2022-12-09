@@ -1,5 +1,5 @@
 /* Calculators styles */
-@import 'c/quoteCommonsStyles';
+@import "c/quoteCommonsStyles";
 
 .c-products {
   padding-right: 25px;
@@ -10,11 +10,14 @@
   font-weight: bold;
   font-size: small;
   padding: 10px;
+  align-content: center;
+  text-align: center;
 }
 
 .inTableText {
   font-size: smaller;
-  padding: 10px;
+  padding: 5px;
+  text-align: center;
 }
 
 .titleTableTab {
@@ -31,18 +34,52 @@
   font-weight: bold;
 }
 
-.presentationButton {
-  font-weight: bold;
-  /* --slds-c-button-brand-text-color: #f4f7f9; */
-  /* --slds-c-button-brand-color-background: var(--lwc-palettePurple50); */
-}
-
 tr {
-  border-collapse: collapse;
-  border-bottom:1px solid #ddd;
+  /* border-collapse: collapse; */
+  /* border-bottom: 1px solid #ddd; */
 }
 
 .c-card-body {
   padding-right: 25px;
   padding-left: 15px;
+}
+
+.accept {
+  color: green;
+  font-weight: bold;
+  text-align: center;
+}
+
+.decline {
+  color: rgb(121, 17, 17);
+  text-decoration: line-through;
+  text-align: center;
+  font-weight: bold;
+}
+
+.integrityTitle {
+  color: black;
+  font-weight: bold;
+  font-size: x-small;
+}
+
+.field-small-width {
+  max-width: 120px;
+  min-width: 100px;
+  padding: 0px 5px 0px 0px;
+}
+
+.field-x-small-width {
+  max-width: 100px;
+  min-width: 80px;
+  padding: 0px 0px 0px 5px;
+}
+
+.field-manual-price-check {
+  padding-left: 12px;
+  margin-top: 5px;
+}
+
+.field-x-small-width-cbx {
+  max-width: 100px;
 }

@@ -74,7 +74,7 @@ const validate = (quote, settings, messages, isApproval) => {
   }
 
   if (quote.dof === null || quote.dof < settings.DOF__c) {
-    errorList.push({
+    warningList.push({
       field: "applicationFee",
       message: `DOF is less than maximum $${settings.DOF__c.toFixed(2)}`
     });
@@ -89,12 +89,19 @@ const validate = (quote, settings, messages, isApproval) => {
       field: "term",
       message: `Please choose an appropriate term.`
     });
-  } else if (quote.term > 84 && ('AAA' === quote.riskGrade) || 'AA' === quote.riskGrade) {
+  } else if (
+    quote.term > 84 && 
+    ('AAA' === quote.riskGrade || 'AA' === quote.riskGrade)
+  ) {
     errorList.push({
       field: "riskGrade",
       message: `Maximum term is 84 months (7 years) for ${quote.riskGrade} tier - refer to Liberty`
     });
-  } else if (quote.term > 60 && ('AAA' === quote.riskGrade) || 'AA' === quote.riskGrade) {
+  } else if (
+    quote.term > 60 && 
+    'AAA' == quote.riskGrade && 
+    'AA' !== quote.riskGrade
+  ) {
     errorList.push({
       field: "riskGrade",
       message: `Maximum term is 60 months (5 years) for ${quote.riskGrade} tier - refer to Liberty`
@@ -108,7 +115,7 @@ const validate = (quote, settings, messages, isApproval) => {
   if ('AAA' === quote.riskGrade) {
     if (!quote.creditScore) {
       errorList.push({
-        field: "riskGrade",
+        field: "creditScore",
         message: "Credit Score value is required."
       });
     } else if (!Number.isInteger(quote.creditScore)) {
@@ -191,16 +198,22 @@ const validate = (quote, settings, messages, isApproval) => {
       quote.riskGrade, quote.residualValue, quote.netDeposit
     );
 
-    if (!('AAA' === quote.riskGrade) || ('AA' === quote.riskGrade) && (quote.residualValue != null && quote.residualValue > 0)) {
+    if (
+      !("AAA" !== quote.riskGrade) &&
+      quote.residualValue !== null &&
+      quote.residualValue > 0
+    ) {
       warningList.push({
         field: "residualValue",
-        message: "Residuals are not available for risk grades A,B,C. Refer to your bdm"
+        message:
+          "Residuals are not available for risk grades A,B,C. Refer to your bdm"
       });
       // r = false;
     } else if (quote.residualValue != null) {
       const vp = quote.price - quote.netDeposit;
       if (vp > 0) {
-        percentageResidual = (quote.residualValue / (quote.price - quote.netDeposit)) * 100.0;
+        percentageResidual =
+          (quote.residualValue / (quote.price - quote.netDeposit)) * 100.0;
         percentageResidual = percentageResidual.toFixed(2);
       }
     }

@@ -4,11 +4,13 @@ import { ShowToastEvent } from "lightning/platformShowToastEvent";
 import getOppTodoListStatuses from "@salesforce/apex/PartnerCommunityController.getOppTodoListStatuses";
 import getLenderSettings from "@salesforce/apex/PartnerCommunityApprovals.getLenderSettings";
 // import getOppQuoting from "@salesforce/apex/PartnerCommunityController.getOppQuoting";
+import { getQuotingPageName } from "c/partnerJsUtils";
 
 export default class PartnerOppToDoList extends NavigationMixin(LightningElement) {
   @api recordId;
   @api quoting;
   @track displayComp = false;
+  @api isExternal = false;
   appFormUrl;
   compToolUrl;
   quotingToolUrl;
@@ -123,10 +125,10 @@ export default class PartnerOppToDoList extends NavigationMixin(LightningElement
 
   get quotingLabel() {
     let r = "Quote - Select Lender";
-    if (this.lenderSettings) {
+    if (this.lenderSettings && this.lenderSettings.Label__c) {
       r = `Quote - ${this.lenderSettings.Label__c}`;
     } else if (this.quoting) {
-      r = `Quote - ${this.quoting.Name}`;      
+      r = `Quote - ${this.quoting.Name}`;
     }
     this.loadQuotingUrl();
     return r;
@@ -198,118 +200,9 @@ export default class PartnerOppToDoList extends NavigationMixin(LightningElement
   }
 
   findQuotingPage() {
-    let r = "Quoting_Tools__c";
-    if (this.quoting) {
-      // console.log(`Quoting Name => ${this.quoting.Name}`);
-      if (this.quoting.Name === "Affordable") {
-        r = "PARTNER_QT_Affordable__c";
-      } else if (this.quoting.Name === "AFS Commercial") {
-        r = "PARTNER_QT_AFS_Commercial__c";
-      } else if (this.quoting.Name === "AFS Consumer") {
-        r = "PARTNER_QT_AFS_Consumer__c";
-      } else if (this.quoting.Name === "Yamaha Marine") {
-        r = "PARTNER_QT_AMMF__c";
-      } else if (this.quoting.Name === "ANZ Commercial") {
-        r = "PARTNER_QT_ANZ_Comm__c";
-      } else if (this.quoting.Name === "ANZ Others") {
-        r = "PARTNER_QT_ANZ_Others__c";
-      } else if (this.quoting.Name === "APF") {
-        r = "PARTNER_QT_APF__c";
-      } else if (this.quoting.Name === "Azora Consumer") {
-        r = "PARTNER_QT_Azora__c";
-      } else if (this.quoting.Name === "BOQ") {
-        r = "PARTNER_QT_BOQ__c";
-      } else if (this.quoting.Name === "Finance One") {
-        r = "PARTNER_QT_Finance1__c";
-      } else if (this.quoting.Name === "Finance One Commercial") {
-        r = "PARTNER_QT_Finance1_Comm__c";
-      } else if (this.quoting.Name === "Finance One PL") {
-        r = "PARTNER_QT_Finance1_PL__c";
-      } else if (this.quoting.Name === "Firstmac") {
-        r = "PARTNER_QT_Firstmac__c";
-      } else if (this.quoting.Name === "General") {
-        r = "PARTNER_QT_General__c";
-      } else if (this.quoting.Name === "Green Light") {
-        r = "PARTNER_QT_Green_Light__c";
-      } else if (this.quoting.Name === "Latitude") {
-        r = "PARTNER_QT_Latitude__c";
-      } else if (this.quoting.Name === "Latitude Personal Loan") {
-        r = "PARTNER_QT_Latitude_PL__c";
-      } else if (this.quoting.Name === "Liberty Drive") {
-        r = "PARTNER_QT_Liberty__c";
-      } else if (this.quoting.Name === "Liberty Leisure") {
-        r = "PARTNER_QT_Liberty_Leisure__c";
-      } else if (this.quoting.Name === "Liberty Commercial") {
-        r = "PARTNER_QT_Liberty_Comm__c";
-      } else if (this.quoting.Name === "Macquarie Commercial") {
-        r = "PARTNER_QT_Macquarie_Commercial__c";
-      } else if (this.quoting.Name === "Macquarie Consumer") {
-        r = "PARTNER_QT_Macquarie_Consumer__c";
-      } else if (this.quoting.Name === "Metro") {
-        r = "PARTNER_QT_Metro__c";
-      } else if (this.quoting.Name === "Money Place") {
-        r = "PARTNER_QT_Money_Place__c";
-      } else if (this.quoting.Name === "Money3") {
-        r = "PARTNER_QT_Money3__c";
-      } else if (this.quoting.Name === "Now Finance") {
-        r = "PARTNER_QT_Now_Finance__c";
-      } else if (this.quoting.Name === "Pepper Leisure") {
-        r = "PARTNER_QT_Pepper_Leisure__c";
-      } else if (this.quoting.Name === "Pepper MV") {
-        r = "PARTNER_QT_Pepper_MV__c";
-      } else if (this.quoting.Name === "Pepper PL") {
-        r = "PARTNER_QT_Pepper_PL__c";
-      } else if (this.quoting.Name === "Pepper Commercial") {
-        r = "PARTNER_QT_Pepper_Comm__c";
-      } else if (this.quoting.Name === "RateSetter") {
-        r = "PARTNER_QT_Plenti__c";
-      } else if (this.quoting.Name === "Plenti Commercial") {
-        r = "PARTNER_QT_Plenti_Comm__c";
-      } else if (this.quoting.Name === "RateSetter PL") {
-        r = "PARTNER_QT_Plenti_PL__c";
-      } else if (this.quoting.Name === "Prospa") {
-        r = "PARTNER_QT_Prospa__c";
-      } else if (this.quoting.Name === "Society One") {
-        r = "PARTNER_QT_Society_One__c";
-      } else if (this.quoting.Name === "UME Loans") {
-        r = "PARTNER_QT_UME_Loans__c";
-      } else if (this.quoting.Name === "Wisr VL") {
-        r = "PARTNER_QT_Wisr__c";
-      } else if (this.quoting.Name === "Westpac") {
-        r = "PARTNER_QT_Westpac__c";
-      } else if (this.quoting.Name === "Wisr") {
-        r = "PARTNER_QT_Wisr_PL__c";
-      } else if (this.quoting.Name === "Azora") {
-        r = "PARTNER_QT_Azora__c";
-      } else if (this.quoting.Name === "Shift Asset") {
-        r = "PARTNER_QT_Shift_Asset__c";
-      } else if (this.quoting.Name === "Shift ODR") {
-        r = "PARTNER_QT_Shift_ODR__c";
-      } else if (this.quoting.Name === "Grow Asset") {
-        r = "PARTNER_QT_Grow_Asset__c";
-      } else if (this.quoting.Name === "Grow Business Loan") {
-        r = "PARTNER_QT_Grow_Business__c";
-      } else if (this.quoting.Name === "Angle Finance") {
-        r = "PARTNER_QT_Angle_Finance__c";
-      } else if (this.quoting.Name === "Morris") {
-        r = "PARTNER_QT_Morris__c";
-      } else if (this.quoting.Name === "Selfco") {
-        r = "PARTNER_QT_Selfco__c";
-      } else if (this.quoting.Name === "Silver Chef") {
-        r = "PARTNER_QT_Silver_Chef__c";
-      } else if (this.quoting.Name === "Capital Finance") {
-        r = "PARTNER_QT_Capital_Finance__c";
-      } else if (this.quoting.Name === "Fleet Partners") {
-        r = "PARTNER_QT_Fleet_Partners__c";
-      } else if (this.quoting.Name === "Group and General") {
-        r = "PARTNER_QT_Group_General__c";
-      } else if (this.quoting.Name === "Commercial Equity Group") {
-        r = "PARTNER_QT_Commercial_Equity_Group__c";
-      }
-      
-    }
-    // console.log(`Quoting tool page => ${r}`);
-    return r;
+    return getQuotingPageName(
+      this.quoting ? this.quoting.Name : undefined
+    );
   }
 
   loadQuotingUrl() {

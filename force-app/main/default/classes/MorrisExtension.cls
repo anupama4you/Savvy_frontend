@@ -862,7 +862,7 @@ public class MorrisExtension {
         this.term = 0;
         this.propertyOwner = 'N';
         this.ltv = null;
-        this.brokeragePercentage = 6;
+        this.brokeragePercentage = lenderSettings.Brokerage_Base__c;
         // this.carAge = 0;
         //this.motorCycles = 'N';
         //this.caravanCampervans = 'N';

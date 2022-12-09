@@ -648,6 +648,18 @@
                             </td>
                         </tr>
                         <tr>
+                          <td class="financeColumn">
+                            <apex:outputLabel styleClass="calcLabel" value="Rate Add ON's" for="rateAddOn" />
+                          </td>
+                          <td class="financeColumn">
+                            <apex:selectList value="{!rateOption}" multiselect="false" size="1" styleClass="selectList" id="rateAddOn"
+                              onchange="baseRateRefresh()">
+                              <apex:selectOption itemLabel="No" itemValue="N" />
+                              <apex:selectOption itemLabel="Yes" itemValue="Y" />
+                            </apex:selectList>
+                          </td>
+                        </tr>
+                        <tr>
                             <td class="financeColumn">
                                 <apex:outputLabel styleClass="calcLabel" value="Client Rate" for="clientRate" />
                             </td>
@@ -729,7 +741,7 @@
             </div>
         </apex:form>
         <apex:form id="referenceForm" >
-            <div class="referenceTable">
+          <div class="referenceTable">
             <div class="referenceTitle">
                 <h1>Rate Table Finance One Commercial</h1>
             </div>
@@ -745,7 +757,30 @@
                     <apex:column value="{!r.Maximun_Amount__c}" />
                 </apex:pageBlockTable>
             </apex:pageBlock>
-            </div>
+          </div>
+          <div class="referenceTable">
+            <table width="300px">
+              <tr>
+                <th colspan="2">ADD ON's</th>
+              </tr>
+              <tr>
+                <td>Retail advance less than $10k</td>
+                <td align="center">2%</td>
+              </tr>
+              <tr>
+                <td>Primary Assets > 25 years end of term</td>
+                <td align="center">2%</td>
+              </tr>
+              <tr>
+                <td>Secondary Assets</td>
+                <td align="center">2%</td>
+              </tr>
+              <tr>
+                <td>Sale and Buy Back</td>
+                <td align="center">2%</td>
+              </tr>
+            </table>
+          </div>
         </apex:form>
     </div>
     <apex:outputField value="{!o.Application__r.Application_Quoting__c}" rendered="false" />

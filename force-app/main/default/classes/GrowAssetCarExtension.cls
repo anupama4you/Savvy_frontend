@@ -382,10 +382,10 @@ privateSalesOptions = QuotingToolAssistant.getprivateSalesOptions(LENDER_QUOTING
         param.term = term;
         param.privateSales = privateSales;
         param.totalAmount = financeAmount;
-        param.goodsType = productGoodsType;
-        param.vehicleYear = manufactureYear;
+        // param.goodsType = productGoodsType;
+        // param.vehicleYear = manufactureYear;
         param.brokeragePer = brokeragePercentage;
-        param.productLoanType = productLoanType;
+        // param.productLoanType = productLoanType;
         param.loanType = loanType;
         param.assetType = assetType;
         param.equifaxScore = equifaxScore;
@@ -2983,7 +2983,7 @@ return null;
         
         
         System.debug(quotingType + '|' + param.amountBasePmt + '|' + param.amountBaseComm + '|' + param.getNaf());
-        
+        System.debug( '@@params: ' + JSON.serializePretty(param));
         Application_Quoting_Result__c r = QuotingCalculation.calculate(param);
         if (r != null) {
             estimatedCommission = r.Estimated_Commission__c;

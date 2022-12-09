@@ -8,12 +8,13 @@ public class CompToolAnzOthersCalc extends CompToolLenderCalcAbstract {
 
     // ---------------
     // Find base rates
-    this.quoteParam.goodsType = 'Truck'.equals(this.param.assetType) 
+    this.quoteParam.goodsType = 'Trucks'.equals(this.param.assetType) 
       ? 'chattel' : 'equipment';
     Integer years = 'chattel'.equals(this.quoteParam.goodsType)
       ? 3 : 1;
     this.quoteParam.vehiclesProfile = this.param.assetAge <= years
       ? 'New' : 'Used';
+    this.quoteParam.paymentType = 'Advance';
     
     this.quoteParam.brokeragePer = 0.00;
     if (this.lenderSettings != null && this.lenderSettings.Brokerage_Base__c > 0.00) {

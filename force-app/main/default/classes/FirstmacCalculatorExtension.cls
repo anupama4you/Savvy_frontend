@@ -20,8 +20,9 @@ public class FirstmacCalculatorExtension extends QuotingExtension {
 
   public static List<String> LOAN_TYPE_OPTIONS = new List<String>{
     'New Green Car',
-    'Prime Special Rate',
-    'New and used < 5 years',
+    'New / Demo',
+    'Used < 3 years',
+    'Used 4-5 years',
     'Used 6-7 years',
     'Used 8-12 years'
   };
@@ -266,8 +267,7 @@ public class FirstmacCalculatorExtension extends QuotingExtension {
 
       if (
         'New Green Car'.equals(this.loanTypeDetail) ||
-        'Prime Special Rate'.equals(this.loanTypeDetail) ||
-        ('New and used < 5 years'.equals(this.loanTypeDetail) && isNewUsed)
+        'New / Demo'.equals(this.loanTypeDetail)
       ) {
         //if ('New/Demo'.equals(this.loanTypeDetail) || 'New - 2yrs'.equals(this.loanTypeDetail)) {
         if (this.term == 36) {
@@ -277,8 +277,12 @@ public class FirstmacCalculatorExtension extends QuotingExtension {
         } else {
           comp = 30.0;
         }
-      } else if ('New and used < 5 years'.equals(this.loanTypeDetail) 
-        && Date.today().year() - vy <= 4
+      } else if (
+        (
+          'Used < 3 years'.equals(this.loanTypeDetail) ||
+          'Used 4 - 5 years'.equals(this.loanTypeDetail)
+        ) &&
+        Date.today().year() - vy <= 4
       ) {
         if (this.term == 36) {
           comp = 40.0;
@@ -380,7 +384,7 @@ public class FirstmacCalculatorExtension extends QuotingExtension {
     }
 
     if (('New Green Car'.equals(this.loanTypeDetail) || 
-    'Prime Special Rate'.equals(this.loanTypeDetail)) && va >= 1) {
+    'New / Demo'.equals(this.loanTypeDetail)) && va >= 1) {
       ApexPages.addMessage(
         new ApexPages.Message(
           ApexPages.Severity.ERROR,
@@ -394,15 +398,28 @@ public class FirstmacCalculatorExtension extends QuotingExtension {
       );
       r = false;
     } else if (
-      'New and used < 5 years'.equals(this.loanTypeDetail) &&
-      va > 5
+      'Used < 3 years'.equals(this.loanTypeDetail) &&
+      va > 3
     ) {
       ApexPages.addMessage(
         new ApexPages.Message(
           ApexPages.Severity.ERROR,
           'Vehicle Year for ' +
           this.loanTypeDetail +
-          ' should be between ' + (cy-5) + ' and ' + cy
+          ' should be between ' + (cy-3) + ' and ' + cy
+        )
+      );
+      r = false;
+    } else if (
+      'Used 4-5 years'.equals(this.loanTypeDetail) &&
+      (va < 4 || va > 5)
+    ) {
+      ApexPages.addMessage(
+        new ApexPages.Message(
+          ApexPages.Severity.ERROR,
+          'Vehicle Year for ' +
+          this.loanTypeDetail +
+          ' should be between ' + (cy-5) + ' and ' + (cy-4)
         )
       );
       r = false;
@@ -670,9 +687,9 @@ public class FirstmacCalculatorExtension extends QuotingExtension {
         //Loan Details
         this.paymentType = d.Payment__c;
         this.loanTypeDetail = d.Loan_Facility_Type__c;
-        if ('Private Sale'.equals(d.Loan_Facility_Type__c)) {
-          this.loanTypeDetail = 'Refinance';
-        }
+        // if ('Private Sale'.equals(d.Loan_Facility_Type__c)) {
+        //   this.loanTypeDetail = 'Refinance';
+        // }
         if (
           String.isNotBlank(d.Vehicle_Age__c) && 
           d.Vehicle_Age__c.isNumeric() &&

@@ -1,0 +1,7 @@
+/* Calculators styles */
+@import 'c/quoteCommonsStyles';
+
+.c-rates-section-table {
+    margin: 20px 0px;
+    padding-left: 15px;
+  }

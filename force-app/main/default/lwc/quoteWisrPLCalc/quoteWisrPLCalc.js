@@ -32,12 +32,13 @@ export default class QuoteWisrPLCalc extends LightningElement {
         this.reset();
         CalHelper.load(this.recordId)
         .then((data) => {
-            console.log(`CalHelper: Data loaded!`, data);
-            this.quoteForm = data;
-            this.tableRates = CalHelper.getTableRatesData();
-            console.log('@@tableRates', JSON.stringify(this.tableRates));
-            this.tableFees = CalHelper.getTableFeesData();
-            console.log('@@tableFees', JSON.stringify(this.tableFees));
+          console.log(`CalHelper: Data loaded!`, JSON.stringify(data, null, 2));
+          this.quoteForm = data;
+          // this.quoteForm.term = this.quoteForm.term? this.quoteForm.term.toString() : "36";
+          this.tableRates = CalHelper.getTableRatesData();
+          // console.log('@@tableRates', JSON.stringify(this.tableRates));
+          this.tableFees = CalHelper.getTableFeesData();
+          // console.log('@@tableFees', JSON.stringify(this.tableFees));
         })
         .catch((error) => {
             console.error(JSON.stringify(error, null, 2));
@@ -102,7 +103,9 @@ export default class QuoteWisrPLCalc extends LightningElement {
         if (fld && fld.type === "number") {
             v = Number(v);
         }
-        this.quoteForm[fldName] = v;
+        fldName === "term"
+          ? (this.quoteForm[fldName] = parseInt(v))
+          : (this.quoteForm[fldName] = v);
         console.log(`this.quoteForm:`, JSON.stringify(this.quoteForm, null, 2));
         // --------------
         // Trigger events
@@ -164,6 +167,12 @@ export default class QuoteWisrPLCalc extends LightningElement {
         let maxValues = CalHelper.maxFees(this.quoteForm);
         this.quoteForm.maxDof = maxValues.maxDof;
         this.quoteForm.maxApplicationFee = maxValues.maxApplicationFee;
+        if(this.quoteForm.dof === "" || this.quoteForm.dof === null || this.quoteForm.dof > this.quoteForm.maxDof) {
+            this.quoteForm.dof = this.quoteForm.maxDof;
+        }
+        if(this.quoteForm.applicationFee === "" || this.quoteForm.applicationFee === null || this.quoteForm.applicationFee > this.quoteForm.maxApplicationFee) {
+            this.quoteForm.applicationFee = this.quoteForm.maxApplicationFee;
+        }
     }
 
     // -------------
@@ -206,5 +215,76 @@ export default class QuoteWisrPLCalc extends LightningElement {
         JSON.stringify(this.quoteForm, null, 2)
         );
         this.baseRateCalc();
+    }
+
+    // all Save Buttons actions
+    handleSave(event) {
+        console.log(`event detail : ${event.target.value.toUpperCase()}`);
+        const isNONE = event.target.value.toUpperCase() === "NONE";
+        this.isBusy = true;
+        const loanType = event.target.value.toUpperCase();
+        if (!this.messageObj.errors.length > 0) {
+            this.messageObj = QuoteCommons.resetMessage();
+            let creditScore = this.quoteForm.creditScore;
+            this.quoteForm.creditScore = creditScore.toString();
+            CalHelper.saveQuote(loanType, this.quoteForm, this.recordId)
+            .then((data) => {
+            console.log("@@data in handleSave:", JSON.stringify(data, null, 2));
+            !isNONE
+                ? this.messageObj.confirms.push(
+                    {
+                        field: "confirms",
+                        message: "Calculation saved successfully."
+                    },
+                    {
+                        fields: "confirms",
+                        message: "Product updated successfully."
+                    }
+                )
+                : this.messageObj.confirms.push({
+                    field: "confirms",
+                    message: "Calculation saved successfully."
+                });
+                // passing data to update quoteform
+                this.quoteForm["Id"] = data["Id"];
+            })
+            .catch((error) => {
+                console.error("handleSave : ", error);
+            })
+            .finally(() => {
+                this.isBusy = false;
+            });
+        } else {
+            QuoteCommons.fieldErrorHandler(this, this.messageObj.errors);
+            this.isCalculated = true;
+        }
+    }
+
+    // Send Email
+    handleSendQuote() {
+        this.isBusy = true;
+        if (!this.messageObj.errors.length > 0) {
+            this.messageObj = QuoteCommons.resetMessage();
+            CalHelper.sendEmail(this.quoteForm, this.recordId)
+                .then((data) => {
+                    console.log(
+                        "@@data in handle send quote :",
+                        JSON.stringify(data, null, 2)
+                    );
+                    this.messageObj.infos.push({
+                        field: "infos",
+                        message: "Email has been sent to customer."
+                    });
+                })
+                .catch((error) => {
+                    console.error("handleSendQuote: ", error);
+                })
+                .finally(() => {
+                    this.isBusy = false;
+                });
+        } else {
+            QuoteCommons.fieldErrorHandler(this, this.messageObj.errors);
+            this.isCalculated = true;
+        }
     }
 }

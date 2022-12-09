@@ -221,11 +221,15 @@ public class GreenLightCalculatorExtension extends QuotingExtension {
             if (g.Minimum_Deposit__c > 0 && this.getNetDepositVal() < g.Minimum_Deposit__c) {
                 ApexPages.addMessage(new ApexPages.Message(ApexPages.Severity.WARNING,'The minimum deposit is $' + g.Minimum_Deposit__c.format() + ' for ' + g.Tier__c + ' tier'));
             }
-            if (this.getNafValidation(QuotingCalculation.CALC_QUOTING, false) < g.Min_Loan_Value__c) {
+            Decimal currentNaf = this.getNafValidation(QuotingCalculation.CALC_QUOTING, false);
+            if ('Budget Loan'.equals(g.Tier__c) && term >= 48 && currentNaf > g.Min_Loan_Value__c) {
+              if (currentNaf < 10000) {
+                ApexPages.addMessage(new ApexPages.Message(ApexPages.Severity.WARNING, g.Tier__c + ', 4 year only available for loan value > $10K'));
+              }
+            } else {
+              if (currentNaf < g.Min_Loan_Value__c) {
                 ApexPages.addMessage(new ApexPages.Message(ApexPages.Severity.WARNING,'The minimum NAF (excluding fees & charges) is $' + g.Min_Loan_Value__c.format() + ' for ' + g.Tier__c + ' tier'));   
-            }
-            if (this.getNafValidation(QuotingCalculation.CALC_QUOTING, false) > g.Max_Loan_Value__c) {
-                ApexPages.addMessage(new ApexPages.Message(ApexPages.Severity.WARNING,'The maximum NAF (excluding fees & charges) is $' + g.Max_Loan_Value__c.format() + ' for ' + g.Tier__c + ' tier'));   
+              }
             }
             if (this.getTermYears() > g.Max_Loan_Term__c) {
                 ApexPages.addMessage(new ApexPages.Message(ApexPages.Severity.WARNING,'The maximum Loan Term is ' + g.Max_Loan_Term__c.format() + ' years for ' + g.Tier__c + ' tier'));
@@ -329,12 +333,12 @@ public class GreenLightCalculatorExtension extends QuotingExtension {
         this.paymentType = 'Arrears';
         this.lvrSel = null;
         if (r != null) {
-          this.dof = r.DOF_Max__c;
+          // this.dof = r.DOF_Max__c;
           this.brokeragePercentage = r.Brokerage_Max__c;
         }
         
         this.resetInsuranceProducts(false);
-        
+        this.calcFees();
         baseRateCalc();
         
         this.resetCalculationResult(); //Lelo       2017-07-25
@@ -746,14 +750,6 @@ public class GreenLightCalculatorExtension extends QuotingExtension {
         }
         return r;
     }
-    
-  public void resetLenderFee(GreenLightRates__c r){
-    this.monthlyFee = 10.0;
-    this.ppsr = 50;
-    this.applicationFee = 495.0;
-    this.dof = r.DOF_Max__c;
-    this.baseRate = r.Base_Rate__c;
-  }
   
   public void calcFees() {
     calcFees(false);

@@ -960,6 +960,10 @@ public class EmailSender {
 
     @future(callout=true)
     public static void sendEmailOpportunityPreApprovedLiberty(Id oppId) {
+      sendEmailOpportunityPreApprovedLiberty(oppId, true);
+    }
+
+    public static void sendEmailOpportunityPreApprovedLiberty(Id oppId, Boolean noReply) {
       
       Custom_Opportunity__c opp =[
           SELECT 
@@ -968,10 +972,10 @@ public class EmailSender {
             Partner_Is_External__c 
           FROM Custom_Opportunity__c where Id =: oppId
       ];
-      sendEmailOpportunityPreApprovedLiberty(opp);
+      sendEmailOpportunityPreApprovedLiberty(opp, noReply);
     }
 
-    public static void sendEmailOpportunityPreApprovedLiberty(Custom_Opportunity__c o) {    
+    public static void sendEmailOpportunityPreApprovedLiberty(Custom_Opportunity__c o, Boolean noReply) {    
       Parameters_Service__c param =  Parameters_Service__c.getInstance('OppPreApprovedLenderEmail');
 
       if (o == null || param == null || !'ON'.equals(param.value__c) || o.Partner_Is_External__c) {
@@ -1030,7 +1034,7 @@ public class EmailSender {
         files.add(a);
 
         List<Cloud_Documents__c> preApprovalFiles = [
-          SELECT Bucket_Name__c, Folder_Id__c, CreatedDate, File_Name__c 
+          SELECT Bucket_Name__c, Folder_Id__c, CreatedDate, File_Name__c, Document_Type__c 
           FROM Cloud_Documents__c 
           WHERE Custom_Opportunity__c =:o.Id and Document_Type__c = 'Quoting Calculation (Pre-approval)'
           ORDER BY CreatedDate DESC
@@ -1051,9 +1055,11 @@ public class EmailSender {
         // Messaging.SendEmailResult [] r = Messaging.sendEmail(new Messaging.SingleEmailMessage [] {email});     //original line
         Messaging.SendEmailResult [] r = null;
         try {
-          OrgWideEmailAddress owea = getNoReplyEmail();
-          if (owea != null) {
-            email.setOrgWideEmailAddressId(owea.Id);
+          if (noReply) {
+            OrgWideEmailAddress owea = getNoReplyEmail();
+            if (owea != null) {
+              email.setOrgWideEmailAddressId(owea.Id);
+            }
           }
           r = Messaging.sendEmail(new Messaging.SingleEmailMessage [] {email});
         } catch (EmailException e) {

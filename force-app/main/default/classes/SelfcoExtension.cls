@@ -1189,7 +1189,7 @@ public class SelfcoExtension {
         //-
             
         updateProduct.Loan_Purpose__c = 'Business Use';
-        updateProduct.Lender__c = 'Seldco';
+        updateProduct.Lender__c = LENDER_QUOTING;
         updateProduct.Quoting_Source__c = LENDER_QUOTING;
         updateProduct.Repayment_Regularity__c = 'Monthly';
 

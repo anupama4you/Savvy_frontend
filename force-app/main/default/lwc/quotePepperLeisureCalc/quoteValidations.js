@@ -8,6 +8,7 @@ import { CalHelper } from "./quotePepperLeisureCalcHelper";
  * @returns
  */
 const validate = (quote, messages) => {
+  
   const r =
     typeof messages == "undefined" || messages == null
       ? QuoteCommons.resetMessage()
@@ -18,10 +19,6 @@ const validate = (quote, messages) => {
   const baseRate = quote["baseRate"];
   const maxRate = quote["maxRate"];
 
-  console.log(
-    "🚀 ~ file: quoteValidations.js ~ line 21 ~ validate ~ quote.clientRate",
-    quote.clientRate
-  );
   if (quote.clientRate === null || !(quote.clientRate > 0.0)) {
     errorList.push({
       field: "clientRate",
@@ -39,10 +36,6 @@ const validate = (quote, messages) => {
     });
   }
 
-  console.log(
-    "🚀 ~ file: quoteValidations.js ~ line 42 ~ validate ~ quote.term",
-    quote.term
-  );
   if (quote.term === null || quote.term === 0) {
     errorList.push({
       field: "term",
@@ -50,10 +43,6 @@ const validate = (quote, messages) => {
     });
   }
 
-  console.log(
-    "🚀 ~ file: quoteValidations.js ~ line 53 ~ validate ~ quote.clientTier",
-    quote.clientTier
-  );
   if (quote.clientTier === null || quote.clientTier.length === 0) {
     errorList.push({
       field: "clientTier",
@@ -61,10 +50,6 @@ const validate = (quote, messages) => {
     });
   }
 
-  console.log(
-    "🚀 ~ file: quoteValidations.js ~ line 64 ~ validate ~ quote.assetSubtype",
-    quote.assetSubtype
-  );
   if (quote.assetType === 'Motorbike' && quote.assetSubtype === '--N/A--') {
     errorList.push({
       field: "assetSubtype",
@@ -72,10 +57,6 @@ const validate = (quote, messages) => {
     });
   }
 
-  console.log(
-    "🚀 ~ file: quoteValidations.js ~ line 75 ~ validate ~ quote.residual",
-    quote.residual
-  );
   if (quote.residual > 0 && quote.term > 60) {
     errorList.push({
       field: "residual",
@@ -83,13 +64,9 @@ const validate = (quote, messages) => {
     });
   }
 
-  // TODO: PepperCalculatorLeisureExtension.cls => Line:300
   const NAF = CalHelper.getNetRealtimeNaf(quote);
   let maxNaf = 50000;
-  console.log(
-    "🚀 ~ file: quoteValidations.js ~ line 91 ~ validate ~ NAF",
-    NAF
-  );
+  
   if (quote.clientTier !== 'C') {
     maxNaf = 100000;
   }
@@ -100,10 +77,6 @@ const validate = (quote, messages) => {
     });
   }
 
-  console.log(
-    "🚀 ~ file: quoteValidations.js ~ line 104 ~ validate ~ assetType, clientTier ",
-    quote.assetType, quote.clientTier
-  );
   if (
     (quote.assetType === 'Boat'
       || (quote.assetType === 'Motorbike' && (quote.assetSubtype === 'Off-Road' || (quote.assetSubtype === 'ATV')))
@@ -115,10 +88,6 @@ const validate = (quote, messages) => {
     });
   }
 
-  console.log(
-    "🚀 ~ file: quoteValidations.js ~ line 119 ~ validate ~ privateSales ",
-    quote.privateSales
-  );
   if (quote.privateSales === 'Y' && NAF > maxNaf) {
     warningList.push({
       field: "privateSales",
@@ -126,6 +95,17 @@ const validate = (quote, messages) => {
     });
   }
 
+  if (
+    quote.clientTier === "C" && 
+    quote.opp &&
+    quote.opp.ApplicationServicing__r &&
+    quote.opp.ApplicationServicing__r.Is_Splitting_Expenses__c === true
+  ) {
+    warningList.push({
+      field: "clientTier",
+      message: `Pepper cannot split expenses with Tier C`
+    });
+  }
 
   r.warnings = [].concat(QuoteCommons.uniqueArray(warningList));
   r.errors = [].concat(QuoteCommons.uniqueArray(errorList));

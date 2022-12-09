@@ -134,6 +134,7 @@ private class TestUniversalCalculator {
     calcPdf.getParameters().put('bankrupt', '');
     calcPdf.getParameters().put('residency', '');
     calcPdf.getParameters().put('rateType', '');
+    calcPdf.getParameters().put('ltv', '99');
 
     Test.setCurrentPageReference(calcPdf);
     ApexPages.StandardController sc = new ApexPages.StandardController(
@@ -303,6 +304,14 @@ private class TestUniversalCalculator {
     System.assert(ctr.getIsAPF());
     ctr.lender = 'GROW ASSET CAR CALCULATION';
     System.assert(ctr.getIsGrowAssetCar());
+    ctr.lender = 'Grow Business Loan CALCULATION';
+    System.assert(ctr.getIsGrowBusiLoan());
+
+    ctr.lender = 'KRISP';
+    System.assert(ctr.getIsKrisp());
+
+    ctr.lender = 'RACV';
+    System.assert(ctr.getIsRacv());
 
     ctr.extraLabel1 = 'extraLabel1';
     ctr.extraLabel2 = 'extraLabel2';

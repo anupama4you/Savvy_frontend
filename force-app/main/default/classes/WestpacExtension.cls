@@ -82,9 +82,10 @@ public class WestpacExtension extends QuotingExtension {
     }
     
     public override void realtimeNafCalc() {
-        netDepositCalc();
-        realtimeNaf = this.getRealtimeNaf(QuotingCalculation.CALC_QUOTING);
-	} //end of funcion
+      netDepositCalc();
+      realtimeNaf = this.getRealtimeNaf(QuotingCalculation.CALC_QUOTING);
+      this.calculateLPI();
+	  } //end of funcion
     
     //Lelo              2017-07-26
     public Decimal getRealtimeNaf(String calcType) {
@@ -101,7 +102,7 @@ public class WestpacExtension extends QuotingExtension {
           }
         }
         r += (this.applicationFee != null)? this.applicationFee : 0;
-        r += (this.dof != null)? this.dof : 0;
+        // r += (this.dof != null)? this.dof : 0;
         r += (this.ppsr != null)? this.ppsr : 0;
         r -= this.netDeposit;
         r += this.getTotalInsuranceType(calcType);
@@ -159,6 +160,11 @@ public class WestpacExtension extends QuotingExtension {
 
         if (applicationFee > lenderSettings.Application_Fee__c) {
           ApexPages.addMessage(new ApexPages.Message(ApexPages.Severity.ERROR,'Max Application Fee exceed.'));
+          r = false;
+        }
+
+        if (applicationFee < dof) {
+          ApexPages.addMessage(new ApexPages.Message(ApexPages.Severity.ERROR,'Application Fee should not be below the DOF'));
           r = false;
         }
 
@@ -296,7 +302,7 @@ public class WestpacExtension extends QuotingExtension {
         updateProduct.Deposit__c = this.netDeposit;
         updateProduct.DOF__c = dof > 0? dof : 0.00;
         updateProduct.Brokerage__c = this.estimatedCommission > 0? this.estimatedCommission : 0.00;
-        updateProduct.Lender_App_Fee__c = this.applicationFee > 0? this.applicationFee : 0.00;
+        updateProduct.Lender_App_Fee__c = this.applicationFee > 0? this.applicationFee - updateProduct.DOF__c: 0.00;
         updateProduct.Equalisation_Fee_PPSR__c = this.ppsr > 0? this.ppsr : 0.00;
         
         //Lelo                      2018-02-20
@@ -685,5 +691,10 @@ public class WestpacExtension extends QuotingExtension {
     param.paymentType = paymentType;
     param.residualValue = this.residualValue;
     clientRate = QuotingCalculation.getClientRateCalculation(param);
+  }
+
+  override public Decimal getTotalAmount(String quotingType) {
+    Decimal r = super.getTotalAmount(quotingType);
+    return r - (this.dof > 0? this.dof : 0.0);
   }
 }

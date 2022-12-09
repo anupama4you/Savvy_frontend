@@ -4,40 +4,86 @@
       <template if:true={hasRecords}>
         <!-- Form -->
         <lightning-card>
-          <!-- <lightning-slider
-              label="Client Rate"
-              step="0.01"
-              min="0.00"
-              max="2.00"
-              size="x-small"
-              value={formData.clientRate}
-              onchange={handleChange}
-              class="c-slider"
-          >
-          </lightning-slider> -->
+          <div class="slds-grid slds-gutters slds-grid_align-end c-form">
+            <div class="slds-col"></div>
+            <div class="slds-col">
+              <lightning-combobox
+                name="sortBy"
+                label="Sort By"
+                value={formData.sortBy}
+                placeholder="Select a value"
+                options={sortByOptions}
+                onchange={handleChangeSortBy}
+                class="c-field"
+                variant="label-stacked"
+              ></lightning-combobox>
+            </div>
+            <div class="slds-col">
+              <lightning-radio-group 
+                name="radioGroup"
+                label="Payment"
+                options={frequencyOptions}
+                value={formData.frequency}
+                type="button"
+                onchange={handleChangeFrequency}
+              ></lightning-radio-group>
+            </div>
+            <template if:true={displayClientRate}>
+              <div class="slds-col slds-size_1-of-4">
+                <lightning-slider
+                  label="Client Rate"
+                  step="0.01"
+                  min="0.00"
+                  max="2.00"
+                  value={formData.clientRate}
+                  onchange={handleChange}
+                  class="c-slider"
+                ></lightning-slider>
+              </div>
+              <div class="slds-col c-actions">
+                <lightning-button
+                  label="Re-calculate"
+                  onclick={handleRecalculate}
+                  size="x-small"
+                  variant="brand-outline"
+                ></lightning-button>
+              </div>
+            </template>
+          </div>
         </lightning-card>
         <!-- Table Header -->
         <lightning-card>
           <div class="slds-grid slds-gutters c-header">
-            <div class="slds-col slds-size_2-of-12"><span>Lender</span></div>
-            <div class="slds-grid slds-size_10-of-12">
-              <div class="slds-col slds-size_2-of-12">Details</div>
-              <div class="slds-col slds-size_1-of-12">Monthly Payment	</div>
-              <div class="slds-col slds-size_1-of-12">Client Rate</div>
-              <div class="slds-col slds-size_1-of-12">Base Rate</div>
-              <div class="slds-col slds-size_1-of-12">*Estimated Commission</div>
-              <div class="slds-col slds-size_1-of-12">DOF</div>
-              <div class="slds-col slds-size_1-of-12">*Total Commission</div>
-              <div class="slds-col slds-size_1-of-12">Monthly Fee</div>
-              <div class="slds-col slds-size_1-of-12">Weekly Payment</div>
-              <div class="slds-col slds-size_2-of-12">Actions</div>
+            <div class="slds-grid slds-size_3-of-12">
+              <div class="slds-col slds-size_1-of-2"><span>Lender</span></div>
+              <div class="slds-col slds-size_1-of-2">Details</div>
+            </div>
+            <div class="slds-grid slds-size_9-of-12">
+              <div class="slds-col slds-size_1-of-12 c-center">Payment/{formData.frequency}</div>
+              <div class="slds-col slds-size_1-of-12 c-center">Base Rate</div>
+              <div class="slds-col slds-size_1-of-12 c-center">Client Rate</div>
+              <div class="slds-col slds-size_1-of-12 c-center">Commission</div>
+              <div class="slds-col slds-size_1-of-12 c-center">DOF</div>
+              <div class="slds-col slds-size_1-of-12 c-center">T/Comms</div>
+              <div class="slds-col slds-size_2-of-12 c-center">Lender Fees</div>
+              <div class="slds-col slds-size_1-of-12 c-center">NAF</div>
+              <div class="slds-col slds-size_1-of-12 c-center">Break Cost</div>
+              <div class="slds-col slds-size_1-of-12 c-center">Info</div>
+              <div class="slds-col slds-size_1-of-12 c-center">Proceed</div>
             </div>
           </div>
         </lightning-card>
         <!-- Table Body -->
         <lightning-card class="c-result-body">
-          <template for:each={records} for:item="rec">
-            <c-comparison-tool-record key={rec.Id} record={rec} params={params}></c-comparison-tool-record>
+          <template for:each={recordData} for:item="rec">
+            <c-comparison-tool-record 
+              key={rec.Id} 
+              record={rec} 
+              record-id={recordId}
+              params={params} 
+              options={formData}
+              oncompleted={handleCompletedCalculation}
+            ></c-comparison-tool-record>
           </template>
         </lightning-card>
       </template>

@@ -70,7 +70,7 @@ const validate = (quote, messages) => {
         if (element == "" || element === null || element.length === 0) {
           warningList.push({
             field: "loanPurpose",
-            message: "The Loan Purpose is neccessary for any approval"
+            message: "The Loan Purpose is necessary for any approval"
           });
         }
         break;

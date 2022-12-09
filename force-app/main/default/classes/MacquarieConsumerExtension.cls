@@ -219,6 +219,11 @@ public class MacquarieConsumerExtension extends QuotingExtension {
         if (brkrage != null && brkrage != 0) {
                r += (getBaseAmountPmtCalc(calcType) * brkrage/100);
         }
+        system.debug('getBaseAmountPmtInclBrokerageCalc***');
+        system.debug(getRealtimeNaf(calcType));
+        system.debug(brkrage);
+        system.debug(getBaseAmountPmtCalc(calcType));
+        system.debug(r);
         return r;
     }
     

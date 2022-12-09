@@ -15,7 +15,7 @@ public class CompToolLatitudePLCalc extends CompToolLenderCalcAbstract {
       this.quoteParam.loanTypeDetail = 'AAA';
       this.quoteParam.customerProfile = 'Secured';
     } else if (
-      'Renting Real Estate'.equals(this.param.residentialStatus) && 
+      'Renting'.equals(this.param.residentialStatus) && 
       'Good'.equals(param.creditHistory)
     ) {
       this.quoteParam.loanTypeDetail = 'AA';
@@ -31,6 +31,11 @@ public class CompToolLatitudePLCalc extends CompToolLenderCalcAbstract {
       this.quoteParam.customerProfile = 'Unsecured';
     }
     
+    // Custom Value 1
+    // if (String.isNotBlank(this.param.customValue1)) {
+    //   this.quoteParam.clientTier = this.param.customValue1;
+    // }
+
     // - get base rates
     this.baseRateCalc(null);
 
@@ -42,6 +47,14 @@ public class CompToolLatitudePLCalc extends CompToolLenderCalcAbstract {
     // Calculation    
     CompToolLenderResult r = this.calculateRepayments();
     r.details = this.quoteParam.loanTypeDetail + ' / ' + this.quoteParam.customerProfile;
+
+    // Custom Options
+    // r.customValue1 = this.quoteParam.clientTier;
+    // r.customLabel1 = 'Tier';
+    // r.customValue1Options = new List<String>{
+    //   'A', 'B', 'C'
+    // };
+
     return r;
   }
   

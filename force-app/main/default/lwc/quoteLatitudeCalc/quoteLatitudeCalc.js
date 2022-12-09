@@ -27,6 +27,7 @@ export default class QuoteLatitudeCalc extends LightningElement {
             .then((data) => {
                 console.log(`Data loaded!`);
                 this.quoteForm = data;
+                this.apiDetails = CalHelper.getApiResponses();
                 console.log(`Data loaded!`, JSON.stringify(this.quoteForm));
             })
             .catch((error) => {
@@ -37,7 +38,7 @@ export default class QuoteLatitudeCalc extends LightningElement {
                 this.isBusy = false;
                 this.vehicleCategory();
                 this.baseRateCalc();
-                this.dofCalc();
+                this.dofCalc(true);
             });
 
         console.log('recordID::', this.recordId)
@@ -70,9 +71,11 @@ export default class QuoteLatitudeCalc extends LightningElement {
     }
 
     // DOF calculation
-    dofCalc() {
-        this.quoteForm.dof = CalHelper.getDOF(this.quoteForm);
-        this.quoteForm.maxDof = this.quoteForm.dof;
+    dofCalc(onlyMax) {
+      console.log(`@@DOF calculated 1:`, onlyMax, this.quoteForm.maxDof, this.quoteForm.dof);
+      this.quoteForm.maxDof = CalHelper.getDOF(this.quoteForm);
+      this.quoteForm.dof = onlyMax ? this.quoteForm.dof : this.quoteForm.maxDof;
+      console.log(`@@DOF calculated 2:`, onlyMax, this.quoteForm.maxDof, this.quoteForm.dof);
     }
 
     // Category generation
@@ -88,7 +91,7 @@ export default class QuoteLatitudeCalc extends LightningElement {
             this.category = '';
         }
         this.quoteForm.goodsType = this.category;
-        this.tableRates = CalHelper.getAllTableData(this.category);
+        this.tableRates = CalHelper.getAllTableData(this.category, this.quoteForm);
     }
 
     // Quote Fee calculation
@@ -140,8 +143,16 @@ export default class QuoteLatitudeCalc extends LightningElement {
         return CalHelper.options.vehicleConditions;
     }
 
+    get rateOptions() {
+        return CalHelper.options.rateOptions;
+    }
+
     get tableHeadings() {
         return CalHelper.options.classes;
+    }
+
+    get selectedRateOption() {
+        return this.quoteForm.rateOption;
     }
 
     get logoUrl() {
@@ -168,37 +179,37 @@ export default class QuoteLatitudeCalc extends LightningElement {
     // -------------
 
     // Calculate
-    handleCalculate(event) {
+    handleCalculate(type) {
         this.isBusy = true;
+        this.messageObj = QuoteCommons.resetMessage();
         CalHelper.calculate(this.quoteForm)
             .then((data) => {
                 console.log("@@data:", JSON.stringify(data, null, 2));
                 this.quoteForm.commissions = data.commissions;
-                // displayToast(this, "Calculate", "Done!", "info");
                 this.messageObj = data.messages;
                 QuoteCommons.handleHasErrorClassClear(this);
-                if (this.quoteForm.commissions) this.isCalculated = true;
+                // --- insurance ---
+                if (this.quoteForm.commissions && type != "load") {
+                    this.isCalculated = true;
+                    this.template.querySelector(
+                        "c-quote-insurance-form"
+                    ).isQuoteCalculated = true;
+                }
+                // --- insurance: end ---
             })
             .catch((error) => {
-                console.error(
-                    "quoteLatitudePLCalc.js: get errors -- ",
-                    JSON.stringify(error.messages.errors, null, 2)
-                );
-                this.messageObj = error.messages;
-                QuoteCommons.fieldErrorHandler(this, this.messageObj.errors);
-                console.error(
-                    "quoteLatitudePLCalc.js: get errors -- ",
-                    JSON.stringify(error.messages.errors, null, 2)
-                );
+                if (type !== "load") {
+                    this.messageObj = error.messages;
+                    QuoteCommons.fieldErrorHandler(this, this.messageObj.errors);
+                    console.error(
+                        "quotePepperMVCalc.js: get errors -- ",
+                        JSON.stringify(error.messages.errors, null, 2)
+                    );
+                }
             })
             .finally(() => {
                 this.isBusy = false;
             });
-
-        if (results && Array.isArray(results) && results.length > 0) {
-            // this.quoteResult = results[0];
-        }
-        this.baseRateCalc();
     }
 
     // Reset
@@ -222,6 +233,9 @@ export default class QuoteLatitudeCalc extends LightningElement {
         );
         this.baseRateCalc();
         this.vehicleCategory();
+        // --- insurance ---
+        this.template.querySelector("c-quote-insurance-form").resetPressed();
+        // --- insurance: end ---
     }
 
     // Events
@@ -248,6 +262,11 @@ export default class QuoteLatitudeCalc extends LightningElement {
             this.vehicleCategory();
         }
 
+        // Vehicle category generation
+        if (fldName === 'rateOption') {
+            this.tableRates = CalHelper.getAllTableData(this.category, this.quoteForm);
+        }
+
         // Base Rate Calculation
         if (CalHelper.BASE_RATE_FIELDS.includes(fldName)) {
             this.baseRateCalc();
@@ -255,57 +274,67 @@ export default class QuoteLatitudeCalc extends LightningElement {
 
         // DOF calculation
         if (CalHelper.DOF_CALC_FIELDS.includes(fldName)) {
-            this.dofCalc();
+            this.dofCalc(false);
         }
+
+        // Insurances
+        QuoteCommons.calculateInsurances(this, fldName);
+        // --------------
 
         // --------------
     }
 
     // all Save Buttons actions
-    handleSave(event) {
-        console.log(`event detail : ${event.target.value.toUpperCase()}`);
-        const isNONE = event.target.value.toUpperCase() === "NONE";
+    handleSave(event, saveType) {
+        let isNONE;
+        let loanType;
+        if (event) {
+            console.log(`event detail : ${event.target.value.toUpperCase()}`);
+            isNONE = event.target.value.toUpperCase() === "NONE";
+            loanType = event.target.value.toUpperCase();
+        } else {
+            // --- insurance ---
+            loanType = saveType.toUpperCase();
+            // --- insurance: end ---
+        }
+        console.log("save type => ", loanType);
         this.isBusy = true;
-        const loanType = event.target.value.toUpperCase();
-        try {
-            if (!this.messageObj.errors.length > 0) {
-                this.messageObj = QuoteCommons.resetMessage();
-                CalHelper.saveQuote(loanType, this.quoteForm, this.recordId)
-                    .then((data) => {
-                        console.log(
-                            "@@data in handle save quote:",
-                            JSON.stringify(data, null, 2)
-                        );
-                        !isNONE
-                            ? this.messageObj.confirms.push(
-                                {
-                                    field: "confirms",
-                                    message: "Calculation saved successfully."
-                                },
-                                {
-                                    fields: "confirms",
-                                    message: "Product updated successfully."
-                                }
-                            )
-                            : this.messageObj.confirms.push({
+        if (!this.messageObj.errors.length > 0 || this.isErrorInsuranceOnly()) {
+            this.messageObj = QuoteCommons.resetMessage();
+            CalHelper.saveQuote(loanType, this.quoteForm, this.recordId)
+                .then((data) => {
+                    console.log("@@data in handleSave:", JSON.stringify(data, null, 2));
+                    !isNONE
+                        ? this.messageObj.confirms.push(
+                            {
                                 field: "confirms",
                                 message: "Calculation saved successfully."
-                            });
-                        // passing data to update quoteform
-                        this.quoteForm["Id"] = data["Id"];
-                    })
-                    .catch((error) => {
-                        console.error("handlePreApproval : ", error);
-                    })
-                    .finally(() => {
-                        this.isBusy = false;
-                    });
-            } else {
-                QuoteCommons.fieldErrorHandler(this, this.messageObj.errors);
-                this.isCalculated = true;
-            }
-        } catch (error) {
-            console.error(error);
+                            },
+                            {
+                                fields: "confirms",
+                                message: "Product updated successfully."
+                            }
+                        )
+                        : this.messageObj.confirms.push({
+                            field: "confirms",
+                            message: "Calculation saved successfully."
+                        });
+                    // passing data to update quoteform
+                    this.quoteForm["Id"] = data["Id"];
+                })
+                .catch((error) => {
+                    console.error("handleSave : ", error);
+                })
+                .finally(() => {
+                    this.isBusy = false;
+                    // --- insurance ---
+                    this.quoteForm.commissions.insurance =
+                        loanType === "Send" ? 0.0 : this.quoteForm.commissions.insurance;
+                    // --- insurance: end ---
+                });
+        } else {
+            QuoteCommons.fieldErrorHandler(this, this.messageObj.errors);
+            this.isCalculated = true;
         }
     }
 
@@ -336,4 +365,84 @@ export default class QuoteLatitudeCalc extends LightningElement {
             this.isCalculated = true;
         }
     }
+
+    // --- insurance ---
+    handleInsuranceMessage(event) {
+        try {
+            this.messageObj = QuoteCommons.resetMessage();
+            this.messageObj.errors = [
+                ...this.messageObj.errors,
+                ...event.detail.errors
+            ];
+            console.log(
+                "event.detail >> " + JSON.stringify(this.messageObj.errors, null, 2)
+            );
+        } catch (error) {
+            console.error(error);
+        }
+    }
+
+    isErrorInsuranceOnly() {
+        let result = true;
+        try {
+            if (this.messageObj.errors && this.messageObj.errors.length > 0) {
+                for (const error of this.messageObj.errors) {
+                    if (error.field !== "insurance") {
+                        return false;
+                    }
+                }
+            }
+            return result;
+        } catch (error) {
+            console.error(error);
+        }
+    }
+
+    handleInsuranceChange(event) {
+        this.quoteForm.insurance = event.detail;
+        this.isCalculated = this.template.querySelector(
+            "c-quote-insurance-form"
+        ).isQuoteCalculated = false;
+
+        // comprehensive
+        const cms = QuoteCommons.handleComprehensive(this.quoteForm);
+        this.quoteForm.commissions = { ...cms };
+        // end - comprehensive
+        console.log(
+            "handle insurance change >>  " + JSON.stringify(this.quoteForm, null, 2)
+        );
+    }
+
+    handleInsurancePresentation(event) {
+        console.log(event.detail);
+        this.handleSave(null, event.detail);
+    }
+
+    handleInsuanceLoad(event) {
+        this.handleInsuranceChange(event);
+        // check if there is no acceptance
+        if (
+            this.quoteForm.insurance.ismvAccept ||
+            this.quoteForm.insurance.isshortfallAccept ||
+            this.quoteForm.insurance.iswarrantyAccept ||
+            this.quoteForm.insurance.isLPIAccept ||
+            this.quoteForm.insurance.isIntegrityAccept
+        ) {
+            this.handleCalculate("load");
+        } else {
+            this.quoteForm.commissions = {
+                ...this.quoteForm.commissions,
+                insurances: null
+            };
+        }
+        this.console.log(
+            "handleInsuanceLoad>>",
+            JSON.stringify(this.quoteForm, null, 2)
+        );
+    }
+
+    handleDisableButton(event) {
+        this.isCalculated = event.detail;
+    }
+    // --- insurance: end ---
 }

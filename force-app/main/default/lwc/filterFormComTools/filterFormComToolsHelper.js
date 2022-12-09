@@ -15,6 +15,24 @@ const jobsAmount = () => {
   return v;
 }
 
+const getCreditScoreValue = (score) => {
+  let v = undefined;
+  if (score > 0) {
+    if (score >= 853) {
+      v = "853 - 1200";
+    } else if (score >= 735) {
+      v = "735 - 852";
+    } else if (score >= 661) {
+      v = "661 - 734";
+    } else if (score >= 500) {
+      v = "500 - 660";
+    } else {
+      v = "0 - 499";
+    }
+  }  
+  return v;
+};
+
 export const ComparisonOptions = {
   assetTypes: [
     { label: "Car", value: "Car" },
@@ -35,7 +53,7 @@ export const ComparisonOptions = {
     { label: "Permanent Part-Time", value: "Permanent Part-Time" },
     { label: "Casual > 12 months", value: "Casual > 12 months" },
     { label: "Casual < 12 months", value: "Casual < 12 months" },
-    { label: "Casual < 6 months", value: "Casual < 6 months" },
+    { label: "Casual < 6 months", value: "Casual < 6 months" }
   ],
 
   purchaseTypes: [
@@ -97,7 +115,55 @@ export const ComparisonOptions = {
     { label: "No", value: "No" }
   ],
 
+  businessAssetTypes: [
+    { label: "Cars & Utes - P", value: "Cars" },
+    { label: "Buses - P", value: "Buses" },
+    { label: "Caravans - P", value: "Caravans" },
+    { label: "Trucks & Trailers - P", value: "Trucks" },
+    { label: "Vans - P", value: "Vans" },
+    { label: "Yellow Goods - P", value: "Yellow Goods" },
+    {
+      label: "Industrial/Manufacturing Plant & Equipment - S",
+      value: "Equipment"
+    },
+    { label: "Medical - S", value: "Medical" },
+    { label: "Printing - S", value: "Printing" },
+    { label: "Gym Equipment - T", value: "Gym Equipment" },
+    { label: "Information IT - T", value: "Information IT" },
+    { label: "Office Furniture & Equipment - T", value: "Office Furniture" },
+    { label: "Software - T", value: "Software" },
+    { label: "Solar - T", value: "Solar" },
+    { label: "Telephony - T", value: "Telephony" }
+  ],
+
+  businessEmploymentTypes: [{ label: "Self-Employed", value: "Self-Employed" }],
+
+  abnLengths: [
+    { label: "0 - 1 years", value: "0" },
+    { label: "1 - 2 years", value: "1" },
+    { label: "2 - 3 years", value: "2" },
+    { label: "3+  years", value: "3" }
+  ],
+
+  gstRegisteredOptions: [
+    { label: "No", value: "N" },
+    { label: "0 - 1  years", value: "0" },
+    { label: "1 - 2  years", value: "1" },
+    { label: "2+  years", value: "2" }
+  ],
+
   assetAge: assetAgeValues(),
 
-  jobs: jobsAmount()
+  jobs: jobsAmount(),
+
+  getCreditScoreValue: getCreditScoreValue,
+
+  paydays: [
+    { label: "0", value: "0" },
+    { label: "1", value: "1" },
+    { label: "2", value: "2" },
+    { label: "3", value: "3" },
+    { label: "4", value: "4" },
+    { label: "5+", value: "5" }
+  ]
 };

@@ -1,12 +1,10 @@
 import getQuotingData from "@salesforce/apex/QuoteWisrPLCalcController.getQuotingData";
 import getBaseRates from "@salesforce/apex/QuoteController.getBaseRates";
 import calculateRepayments from "@salesforce/apex/QuoteController.calculateRepayments";
-import {
-  QuoteCommons,
-  CommonOptions,
-  FinancialUtilities as fu
-} from "c/quoteCommons";
+import { QuoteCommons, CommonOptions } from "c/quoteCommons";
 import { Validations } from "./quoteValidations";
+import sendQuote from "@salesforce/apex/QuoteController.sendQuote";
+import save from "@salesforce/apex/QuoteWisrPLCalcController.save";
 
 // Default settings
 let lenderSettings = {};
@@ -34,23 +32,28 @@ const QUOTING_FIELDS = new Map([
   ["loanProduct", "Loan_Product__c"],
   ["price", "Vehicle_Price__c"],
   ["applicationFee", "Application_Fee__c"],
-  ["maxApplicationFee", "Application_Fee__c"],
   ["dof", "DOF__c"],
   ["residual", "Residual_Value__c"],
   ["monthlyFee", "Monthly_Fee__c"],
   ["term", "Term__c"],
   ["creditScore", "Vedascore__c"],
   ["paymentType", "Payment__c"],
-  ["loanPurpose", "Loan_Purpose__c"]
+  ["loanPurpose", "Loan_Purpose__c"],
+  ["clientRate", "Client_Rate__c"],
+]);
+
+// - TODO: need to map more fields
+const FIELDS_MAPPING_FOR_APEX = new Map([
+  ...QUOTING_FIELDS,
+  ["Id", "Id"],
 ]);
 
 const RATE_SETTING_NAMES = ["Rate Table", "Fee Table"];
 
 const SETTING_FIELDS = new Map([
-  ["dof", "DOF__c"],
   ["maxDof", "Max_DOF__c"],
-  ["residual", "Residual_Value__c"],
   ["monthlyFee", "Monthly_Fee__c"],
+  ["maxApplicationFee", "Application_Fee__c"]
 ]);
 
 const BASE_RATE_FIELDS = [
@@ -123,17 +126,17 @@ const calcOptions = {
   loanProducts: CommonOptions.fullLoanProducts,
   privateSales: CommonOptions.yesNo,
   terms: [
-    { label: "36", value: "36" },
-    { label: "60", value: "60" },
-    { label: "84", value: "84" }
+    { label: "36", value: 36 },
+    { label: "60", value: 60 },
+    { label: "84", value: 84 }
   ]
 };
 
 // Reset
 const reset = (recordId) => {
   let r = {
-    oppId : recordId,
-    quoteName : LENDER_QUOTING,
+    oppId: recordId,
+    quoteName: LENDER_QUOTING,
     loanType: calcOptions.loanTypes[0].value,
     loanProduct: calcOptions.loanProducts[0].value,
     price: null,
@@ -143,13 +146,15 @@ const reset = (recordId) => {
     maxDof: null,
     residual: null,
     monthlyFee: null,
-    term: "60",
+    myField: 60,
+    term: 60,
     creditScore: 0,
     baseRate: 0.0,
     maxRate: 0.0,
     clientRate: 0,
     paymentType: "Arrears",
-    loanPurpose: ''
+    loanPurpose: "",
+    commissions: QuoteCommons.resetResults()
   };
   console.log('Helper reset...');
   console.log('obj:::', r, 'lenderSettings:::', lenderSettings, 'SETTING_FIELDS:::', SETTING_FIELDS);
@@ -180,14 +185,18 @@ const loadData = (recordId) =>
     })
       .then((quoteData) => {
         console.log(`@@SF:`, JSON.stringify(quoteData, null, 2));
+        let resetQuote = reset(recordId);
+        console.log(`@@resetQuote:`, JSON.stringify(resetQuote, null, 2));
         // Mapping Quote's fields
         let data = QuoteCommons.mapSObjectToLwc({
           calcName: LENDER_QUOTING,
-          defaultData: reset(recordId),
+          defaultData: resetQuote,
           quoteData: quoteData,
           settingFields: SETTING_FIELDS,
           quotingFields: QUOTING_FIELDS
         });
+
+        console.log(`@@data:`, JSON.stringify(data, null, 2));
 
         // Settings
         lenderSettings = quoteData.settings;
@@ -197,8 +206,9 @@ const loadData = (recordId) =>
           tableRatesData = quoteData.rateSettings[`${RATE_SETTING_NAMES[0]}`];
           tableFeesData = quoteData.rateSettings[`${RATE_SETTING_NAMES[1]}`];
         }
-        console.log(`@@table rates data:`, tableRatesData);
-        console.log(`@@table fees data:`, tableFeesData);
+
+        // console.log(`@@table rates data:`, tableRatesData);
+        // console.log(`@@table fees data:`, tableFeesData);
         resolve(data);
       })
       .catch((error) => reject(error));
@@ -264,6 +274,65 @@ const getTableFeesData = () => {
   return tableFeesData;
 };
 
+/**
+ * -- Lee
+ * @param {String} approvalType - type of approval
+ * @param {Object} quote - quoting form
+ * @param {Id} recordId - recordId
+ * @returns
+ */
+const saveQuote = (approvalType, param, recordId) =>
+  new Promise((resolve, reject) => {
+    if (approvalType && param && recordId) {
+      save({
+        param: QuoteCommons.mapLWCToSObject(
+          param,
+          recordId,
+          LENDER_QUOTING,
+          FIELDS_MAPPING_FOR_APEX
+        ),
+        approvalType: approvalType
+      })
+        .then((data) => {
+          resolve(data);
+        })
+        .catch((error) => {
+          reject(error);
+        });
+    } else {
+      reject(new Error("QUOTE OR RECORDID EMPTY in SaveQuoting function"));
+    }
+});
+
+/**
+*  -- Lee
+* @param {Object} param - quote form
+* @param {Id}  recordId - record id
+* @returns
+*/
+const sendEmail = (param, recordId) =>
+  new Promise((resolve, reject) => {
+    if (param) {
+      console.log(`@@param in sendEmail ${JSON.stringify(param, null, 2)}`);
+      sendQuote({
+        param: QuoteCommons.mapLWCToSObject(
+          param,
+          recordId,
+          LENDER_QUOTING,
+          FIELDS_MAPPING_FOR_APEX
+        )
+      })
+        .then((data) => {
+          resolve(data);
+        })
+        .catch((error) => {
+          reject(error);
+        });
+    } else {
+      reject(new Error(`Something wrong in sendEmail : param: ${param}`));
+    }
+});
+
 export const CalHelper = {
   options: calcOptions,
   calculate: calculate,
@@ -279,5 +348,7 @@ export const CalHelper = {
   tableRateDataColumns: tableRateDataColumns,
   tableFeeDataColumns: tableFeeDataColumns,
   getNetRealtimeNaf: QuoteCommons.calcNetRealtimeNaf,
-  getNetDeposit: QuoteCommons.calcNetDeposit
+  getNetDeposit: QuoteCommons.calcNetDeposit,
+  saveQuote: saveQuote,
+  sendEmail: sendEmail
 };

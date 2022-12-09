@@ -98,7 +98,7 @@ public class MetroCalculatorExtension extends QuotingExtension {
             fv = this.residualValue;
         }
         Decimal amuntPmt = this.getBaseAmountPmtInclBrokerageCalc(calcType);
-        //system.debug('amuntPmt >> ' + amuntPmt);
+        System.debug('amuntPmt >> ' + amuntPmt);
         //system.debug('ratePmt  >> ' + (this.baseRate/100/12));
         //system.debug('term     >> ' + this.term);
         //system.debug('fv-resid >> ' + fv);
@@ -109,10 +109,10 @@ public class MetroCalculatorExtension extends QuotingExtension {
             if ('Advance'.equals(this.paymentType))
                 type = 1;
             Decimal pmt = FinancialUtilities.pmt2((this.baseRate/100/12), this.term, (amuntPmt * -1), fv, type);
-            //system.debug('pmt      >> ' + pmt);
+            System.debug('pmt      >> ' + pmt);
             //system.debug('totalAmount >> ' + totalAmount);
             r = FinancialUtilities.rate2(this.term, (pmt * -1.0), this.realtimeNaf, (fv * -1), type) * 12 * 100;
-            //system.debug('clientRate      >> ' + r);
+            System.debug('clientRate      >> ' + r);
         }
         return r;
     }

@@ -14,17 +14,18 @@ const validate = (quote, messages) => {
   let errorList = r.errors;
   let warningList = r.warnings;
 
-  const baseRate = quote["baseRate"];
-
   console.log(
-    "🚀 ~ file: quoteValidations.js ~ line 21 ~ validate ~ quote", quote);
+    "🚀 ~ file: quoteValidations.js ~ line 21 ~ validate ~ quote", JSON.stringify(quote, null, 2));
 
   if (quote.price === null || !(quote.price > 0.0)) {
     errorList.push({
       field: "price",
       message: "Loan Amount should not be Zero."
     });
+  } else {
+    // TODO: Pending top amount validation
   }
+
   if (quote.applicationFee === null || !(quote.applicationFee > 0.0)) {
     errorList.push({
       field: "applicationFee",
@@ -58,16 +59,30 @@ const validate = (quote, messages) => {
       field: "clientRate",
       message: "Client Rate should not be zero."
     });
-  } else if (quote.clientRate < baseRate) {
+  } else if (quote.clientRate < quote.baseRate) {
     warningList.push({
       field: "clientRate",
       message: `Client Rate should not be below base rate.`
     });
   }
   if (quote.baseRate === 0.00) {
-    warningList.push({
+    errorList.push({
       field: "baseRate",
       message: "Base Rate cannot be Zero."
+    });
+  }
+
+  if (quote.term === null || quote.term === 0) {
+    errorList.push({
+      field: "term",
+      message: "Please select an appropriate term."
+    });
+  }
+
+  if (quote.residualValue > 0 || Number(quote.term) > 60) {
+    errorList.push({
+      field: "residualValue",
+      message: "You cannot have a balloon or residual payment when the loan term is > 5 years."
     });
   }
   if (quote.loanPurpose === null || quote.loanPurpose === '') {

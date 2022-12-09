@@ -1,0 +1,9 @@
+/* Calculators styles */
+@import 'c/quoteCommonsStyles';
+
+.c-rates-section-title {
+    font-size: 0.8rem;
+    font-weight: 600;
+    margin-left: 5px;
+    margin-top: 15px;
+  }

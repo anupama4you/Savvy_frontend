@@ -31,6 +31,7 @@ public without sharing class InsuranceQuoteUtils {
   public static final String INS_PROD_LPI_LIBE = 'Liberty LFI';
   public static final String INS_PROD_WARR_ERIC = 'Eric Warranty';
   public static final String INS_PROD_WARR_INTE = 'Integrity';
+  public static final String INS_PROD_MV_SUNCORP= 'Suncorp';
 
   public static final String INS_ONLYPAYBYTHEMONTH = 'OnlyPayByTheMonth';
 
@@ -1465,7 +1466,7 @@ public without sharing class InsuranceQuoteUtils {
  			SELECT Name, Application__r.Entity_Name__c, Application_AssetDetail__r.Type__c, Application__r.Type_of_Asset__c, 
  			       Application__r.Application_Type__c, Application_AssetDetail__r.Rego__c, Application_AssetDetail__r.Rego_State__c,
  			       Application_AssetDetail__r.Engine_No__c, Application_AssetDetail__r.VIN__c, Application__r.Mode_of_Employment_1__c,
-             OwnerId
+             OwnerId, Application__c
  			FROM Custom_Opportunity__c WHERE Id = :oppId
  		];
  		if (!r.isEmpty()) {
@@ -1870,7 +1871,12 @@ public without sharing class InsuranceQuoteUtils {
 		Set<String> r = new Set<String>();
 		// MV
 		if (displayMVProduct(quoting)) {
-			r.add(PDS_Eric_MVI);
+      if (INS_PROD_MV_ERIC.equals(quoting.Insurance_MV_Options__c)) {
+        r.add(PDS_Eric_MVI);
+      } else if (INS_PROD_MV_SUNCORP.equals(quoting.Insurance_MV_Options__c)) {
+        // r.add(PDS_Suncorp_DD);
+        r.add(PDS_Suncorp_Car);
+      }			
 		}
 		// if ('Bike'.equals(assetType)) {
 		// 	r.add(PDS_Eric_BIKES);
@@ -2123,6 +2129,8 @@ public without sharing class InsuranceQuoteUtils {
     } else if (INS_PROD_WARR_ERIC.equals(prodType)) {
       options = System.Label.EricWarrantyOptions;
     } else if (INS_PROD_MV_ERIC.equals(prodType)) {
+      options = System.Label.EricMVOptions;
+    } else if (INS_PROD_MV_SUNCORP.equals(prodType)) {
       options = System.Label.EricMVOptions;
     }
     if (String.isNotBlank(options)) {

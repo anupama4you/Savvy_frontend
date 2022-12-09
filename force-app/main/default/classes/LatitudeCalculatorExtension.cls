@@ -1,5 +1,7 @@
 public class LatitudeCalculatorExtension extends QuotingExtension {
     
+    public static final Decimal FIXED_RATE_FACTOR = 1.5;
+
     //Lelo					2016-09-02
     private String fileGlobalPrefix = 'Latitude';
     public QuotingToolHelper qh {set;get;}
@@ -18,6 +20,7 @@ public class LatitudeCalculatorExtension extends QuotingExtension {
     public String vehicleType {get;set;}
     public String vehCon {get;set;}
     public Decimal registrationFee {get;set;}
+    public String rateOption {get;set;}
     
     public LatitudeCalculatorExtension(ApexPages.StandardController controller) {
      super(controller);
@@ -182,6 +185,7 @@ public class LatitudeCalculatorExtension extends QuotingExtension {
       this.clientRate = 0.0;
       this.term = 60;
       this.paymentType = 'Arrears';
+      this.rateOption = 'Fixed';
       this.privateSales = 'N';
       this.resetInsuranceProducts(false);
       //latitude accept integrity
@@ -206,6 +210,7 @@ public class LatitudeCalculatorExtension extends QuotingExtension {
       calcPdf.getParameters().put('privateSales', String.valueOf(this.privateSales));
       calcPdf.getParameters().put('goodsType', this.vehicleType);
       calcPdf.getParameters().put('vehiclesProfile', this.category);
+      calcPdf.getParameters().put('rateOption', this.rateOption);
 
       savePdfInCloud(calcPdf, prefixName);
       return null;
@@ -379,6 +384,10 @@ public class LatitudeCalculatorExtension extends QuotingExtension {
               if (String.isNotBlank(d.Private_Sales__c)) {
                   this.privateSales = d.Private_Sales__c;
               }
+
+              if (String.isNotBlank(d.Rate_Options__c)) {
+                  this.rateOption = d.Rate_Options__c;
+              }
             }
         }
         if (sameQuoting) {
@@ -423,6 +432,7 @@ public class LatitudeCalculatorExtension extends QuotingExtension {
       d.Vehicle_Condition__c = this.vehCon;
       d.Private_Sales__c = this.privateSales;
       d.Payment__c = this.paymentType;
+      d.Rate_Options__c = this.rateOption;
       
       //Save the record
       QuotingToolHelper.saveApplicationQuoting(d);
@@ -500,6 +510,7 @@ public class LatitudeCalculatorExtension extends QuotingExtension {
         param.carAge = this.carAge;
         param.loanTypeDetail = this.loanTypeDetail;
         param.goodsType = this.category;
+
         param.commRate = QuotingCalculation.getLatitudeRateCommission(param);
         
         System.debug(quotingType + '|' + param.totalAmount + '|' + param.totalInsurance + '|' + param.totalInsuranceIncome + '|' + param.commRate);
@@ -606,14 +617,35 @@ public class LatitudeCalculatorExtension extends QuotingExtension {
     }
     
     public class TRow {
-        public Decimal rate1 {set;get;}
-        public Decimal comm1 {set;get;}
-        public Decimal rate2 {set;get;}
-        public Decimal comm2 {set;get;}
-        public Decimal rate3 {set;get;}
-        public Decimal comm3 {set;get;}
-        public Decimal rate4 {set;get;}
-        public Decimal comm4 {set;get;}
+      public Decimal rate1 {set;get;}
+      public Decimal comm1 {set;get;}
+      public Decimal rate2 {set;get;}
+      public Decimal comm2 {set;get;}
+      public Decimal rate3 {set;get;}
+      public Decimal comm3 {set;get;}
+      public Decimal rate4 {set;get;}
+      public Decimal comm4 {set;get;}
+
+      public Decimal getVarRate1() {
+        return this.getVarRate(this.rate1);
+      }
+
+      public Decimal getVarRate2() {
+        return this.getVarRate(this.rate2);
+      }
+
+      public Decimal getVarRate3() {
+        return this.getVarRate(this.rate3);
+      }
+
+      public Decimal getVarRate4() {
+        return this.getVarRate(this.rate4);
+      }
+
+      private Decimal getVarRate(Decimal rate) {
+        return rate > 0? rate - FIXED_RATE_FACTOR : 0.00;
+      }
+
     }
     
     public List<TRow> getDiamondPlusRates() {
@@ -678,6 +710,7 @@ public class LatitudeCalculatorExtension extends QuotingExtension {
         param.goodsType = this.category;
         param.loanTypeDetail = this.loanTypeDetail;
         param.carAge = this.carAge;
+        param.interestType = this.rateOption;
         this.baseRate = QuotingCalculation.getBaseRate(param);
         this.maxRate = QuotingCalculation.getMaximunBaseRate(param);
     }
@@ -836,6 +869,10 @@ public class LatitudeCalculatorExtension extends QuotingExtension {
   public override void storeQuotingData() {
     System.debug(this.quotingName + ' overriding storeQuotingData...');
     this.saveQuotingParameters();
+  }
+
+  public Boolean getIsFixedRate() {
+    return 'Fixed'.equals(this.rateOption);
   }
 
 }

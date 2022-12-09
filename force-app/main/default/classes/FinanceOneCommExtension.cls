@@ -6,6 +6,7 @@ public class FinanceOneCommExtension extends QuotingExtension {
     public Decimal riskFeeTotal {get;set;}
     public String loanTypeDetail {get;set;}
     public String propertyOwner {get;set;}
+    public String rateOption {set; get;}
 
     // rates references
     public List <FinanceOneRates__c> financeOneRates {get;set;}
@@ -205,6 +206,7 @@ public class FinanceOneCommExtension extends QuotingExtension {
         System.debug(param);
         param.productLoanType = this.productLoanType;
         param.loanTypeDetail = this.loanTypeDetail;
+        param.interestType = this.rateOption;
         this.baseRate = QuotingCalculation.getBaseRate(param);
         this.maxRate = QuotingCalculation.getMaximunBaseRate(param);
         
@@ -447,6 +449,7 @@ public class FinanceOneCommExtension extends QuotingExtension {
       
       this.loanTypeDetail = 'Gold';
       this.propertyOwner = null;
+      this.rateOption = 'N';
 
       this.resetInsuranceProducts(false);
 
@@ -467,6 +470,8 @@ public class FinanceOneCommExtension extends QuotingExtension {
         calcPdf.getParameters().put('isFinanceOne', 'true');
         calcPdf.getParameters().put('productGoodsType', productGoodsType);
         calcPdf.getParameters().put('brokeragePercentage', String.valueOf(brokeragePercentage));
+        calcPdf.getParameters().put('propertyOwner', propertyOwner);
+        calcPdf.getParameters().put('rateOption', rateOption);
         savePdfInCloud(calcPdf, prefixName);
         return null;
     } // end of function
@@ -653,6 +658,9 @@ public class FinanceOneCommExtension extends QuotingExtension {
                 }
                 
                 riskFee = d.Risk_Fee__c;
+
+                rateOption = 'Y'.equals(d.Rate_Options__c)? 'Y' : 'N';
+
                 riskFeeCalc();
                 baseRateCalc();
 
@@ -697,6 +705,7 @@ public class FinanceOneCommExtension extends QuotingExtension {
       d.Payment__c = paymentType;
       d.Risk_Fee__c = riskFee;
       d.Customer_Profile__c = propertyOwner;
+      d.Rate_Options__c = rateOption;
 
       //Save the record
       QuotingToolHelper.saveApplicationQuoting(d);

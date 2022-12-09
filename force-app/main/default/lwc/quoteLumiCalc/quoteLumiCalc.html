@@ -1,0 +1,37 @@
+<template>
+    <c-quote-container title="Lumi" is-busy={isBusy} messages={messageObj}>
+  
+      <div slot="results"></div>
+      <!-- Logo  -->
+      <img src={logoUrl} slot="logo" class="c-lender-logo" title="Lumi" />
+      <lightning-button label="Save" slot="actions" value="none" onclick={handleSave}>
+      </lightning-button>
+      <!-- NAF -->
+      <div class="c-row-details">
+        <div class="c-detail-labels"><span class="c-label">NAF</span></div>
+        <div class="c-detail-fields">
+          <lightning-input type="number" formatter="currency" step="0.01" name="naf" data-id="naf-field"
+            value={quoteForm.naf} label="Naf" placeholder="$" class="slds-form__item" variant="label-hidden"
+            onchange={handleFieldChange} required></lightning-input>
+        </div>
+      </div>
+      <!-- Commission (GST Inc) -->
+      <div class="c-row-details">
+        <div class="c-detail-labels"><span class="c-label">Commission (GST Inc)</span></div>
+        <div class="c-detail-fields">
+          <lightning-input type="number" formatter="currency" step="0.01" name="brokerageInc" data-id="brokerageInc-field"
+            value={quoteForm.brokerageInc} placeholder="$" class="slds-form__item" variant="label-hidden"
+            onchange={handleFieldChange} required></lightning-input>
+        </div>
+      </div>
+      <!-- Commission (GST Exc) -->
+      <div class="c-row-details">
+        <div class="c-detail-labels"><span class="c-label">Commission (GST Exc)</span></div>
+        <div class="c-detail-fields">
+          <lightning-formatted-number value={commWithoutGST} format-style="currency" minimum-fraction-digits="2"
+            class="c-read-only-field">
+          </lightning-formatted-number>
+        </div>
+      </div>
+    </c-quote-container>
+  </template>

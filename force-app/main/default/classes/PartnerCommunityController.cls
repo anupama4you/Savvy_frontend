@@ -118,15 +118,16 @@ public with sharing class PartnerCommunityController {
   }
 
   private static Cloud_Documents__c insertOppDocument(Id oppId, String s3FileObject, String fileName, String documentType) {
+    String fn = S3Utils.renameS3Filename(fileName, false, 80);
     Cloud_Documents__c c = new Cloud_Documents__c();
-    c.Name = fileName;
+    c.Name = fn;
     c.Bucket_Name__c = BUCKET;
     c.Custom_Opportunity__c = oppId;
     c.Access_Level__c = 'private';
     c.File_Name__c = fileName;
     c.Folder_Id__c = s3FileObject;
     insert c;
-    System.debug('Inserted cloud document =====>' + c);
+    System.debug('Inserted cloud document =====>' + JSON.serializePretty(c));
     return c;
   }
 
@@ -236,7 +237,7 @@ public with sharing class PartnerCommunityController {
     // Load lead data
     Lead__c lead = [
       Select 
-        Id, Status__c, Application__c
+        Id, Status__c, Application__c, OwnerType__c
       From Lead__c Where Id = :leadId];
 
     System.debug(JSON.serializePretty(lead));
@@ -259,15 +260,21 @@ public with sharing class PartnerCommunityController {
     // Validate data
     insert data;
 
-    // Upload Opportunity documents
-    // OpportunityService.uploadS3ApplicationDocs(
-    //   new List<Custom_Opportunity__c>{data}, null
-    // );
-
     // Update Laed
     lead.Status__c = 'Become Opportunity';
     lead.Account__c = data.Account__c;
+    if ('Queue'.equals(lead.OwnerType__c)) {
+      // Ownership adjustment
+      lead.OwnerId = UserInfo.getUserId();
+    }
     update lead;
+
+    if (String.isNotBlank(lead.Application__c)) {
+      // Upload Opportunity documents
+      OpportunityService.uploadS3ApplicationDocs(
+        new List<Custom_Opportunity__c>{data}, null
+      );
+    }
 
     return data;
   }

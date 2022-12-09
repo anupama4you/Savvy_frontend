@@ -32,17 +32,6 @@ const validate = (quote, messages, isApproval) => {
   }
 
   console.log(
-    "🚀 ~ file: quoteValidations.js ~ line 19 ~ validate ~ quote.applicationFee",
-    quote.applicationFee
-  );
-  if (quote.applicationFee === null || quote.applicationFee === 0) {
-    errorList.push({
-      field: "applicationFee",
-      message: "Application Fee should not be Zero."
-    });
-  }
-
-  console.log(
     "🚀 ~ file: quoteValidations.js ~ line 20 ~ validate ~ quote.dof",
     quote.dof
   );
@@ -63,9 +52,9 @@ const validate = (quote, messages, isApproval) => {
     quote.ppsr
   );
   if (quote.ppsr === null) {
-    errorList.push({
+    warningList.push({
       field: "ppsr",
-      message: "PPSR should not be null."
+      message: "PPSR should not be zero."
     });
   }
 
@@ -74,9 +63,9 @@ const validate = (quote, messages, isApproval) => {
     quote.registrationFee
   );
   if (quote.registrationFee === null || quote.registrationFee === 0 ) {
-    errorList.push({
+    warningList.push({
       field: "registrationFee",
-      message: "Registration Fee should not be null."
+      message: "Registration/Research Fee should not be zero."
     });
   }
 
@@ -113,7 +102,7 @@ const validate = (quote, messages, isApproval) => {
   );
   if (!quote.loanPurpose) {
     const msg = isApproval ? 'The Loan Purpose needs to be inserted into the quoting tool' 
-    : 'The Loan Purpose is neccessary for any approval';
+    : 'The Loan Purpose is necessary for any approval';
     warningList.push({
       field: "loanPurpose",
       message: msg

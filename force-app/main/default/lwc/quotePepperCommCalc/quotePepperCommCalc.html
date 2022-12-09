@@ -1,5 +1,5 @@
 <template>
-  <c-quote-container title="Pepper Commercia" is-busy={isBusy} commissions={quoteForm.commissions}
+  <c-quote-container title="Pepper Commercial" is-busy={isBusy} commissions={quoteForm.commissions}
     messages={messageObj}>
 
     <!-- Logo -->
@@ -7,12 +7,19 @@
     <!-- Buttons -->
     <lightning-button label="Calculate" slot="actions" onclick={handleCalculate}></lightning-button>
     <lightning-button label="Reset" slot="actions" onclick={handleReset}></lightning-button>
-    <lightning-button label="Save Quoting" slot="actions" disabled={disableAction}></lightning-button>
-    <lightning-button label="Save Pre-approval" slot="actions" disabled={disableAction}></lightning-button>
-    <lightning-button label="Save Amendment" slot="actions" disabled={disableAction}></lightning-button>
-    <lightning-button label="Save Formal Approval" slot="actions" disabled={disableAction}></lightning-button>
-    <lightning-button label="Send quote" slot="actions" disabled={disableAction}></lightning-button>
-
+    <lightning-button label="Save Quoting" slot="actions" value="none" disabled={disableAction} onclick={handleSave}>
+    </lightning-button>
+    <lightning-button label="Save Pre-approval" slot="actions" value="pre_approval" disabled={disableAction}
+      onclick={handleSave}>
+    </lightning-button>
+    <lightning-button label="Save Amendment" slot="actions" value="pre_approval_amendment" disabled={disableAction}
+      onclick={handleSave}>
+    </lightning-button>
+    <lightning-button label="Save Formal Approval" value="formal_approval" slot="actions" disabled={disableAction}
+      onclick={handleSave}>
+    </lightning-button>
+    <lightning-button label="Send quote" slot="actions" disabled={disableAction} onclick={handleSendQuote}>
+    </lightning-button>
     <!-- Finance Details -->
     <!-- Loan Type -->
     <div class="c-row-details">
@@ -255,9 +262,14 @@
     </div>
     <!-- end -->
 
-
     <!-- Insurances -->
-    <c-quote-insurance-form slot="insurances"></c-quote-insurance-form>
+    <c-quote-insurance-form slot="insurances" onhandleinsurancemessage={handleInsuranceMessage}
+      oninsurancechanged={handleInsuranceChange} onhandlepresentation={handleInsurancePresentation}
+      onhandledisablebutton={handleDisableButton} onhandleloadinsurance={handleInsuanceLoad} record-id={recordId}
+      quote-form={quoteForm}>
+    </c-quote-insurance-form>
+    <!-- insurance-income={insuranceIncome} -->
+
 
     <!-- Additional Content -->
     <div slot="more">Additional content here!</div>
@@ -282,7 +294,7 @@
           <div class="c-rates-section-title">Other-Primary Assets - Table Rates</div>
           <div class="slds-grid slds-gutters">
             <div class="slds-col slds-size_11-of-12">
-              <lightning-datatable key-field="Id" data={tableRates} columns={tableRatesCols2} hide-checkbox-column>
+              <lightning-datatable key-field="Id" data={tableRates2} columns={tableRatesCols2} hide-checkbox-column>
               </lightning-datatable>
             </div>
           </div>
@@ -291,7 +303,7 @@
           <div class="c-rates-section-title">Other-Secondary and Tertiary Assets - Table Rates</div>
           <div class="slds-grid slds-gutters">
             <div class="slds-col slds-size_11-of-12">
-              <lightning-datatable key-field="Id" data={tableRates} columns={tableRatesCols3} hide-checkbox-column>
+              <lightning-datatable key-field="Id" data={tableRates3} columns={tableRatesCols3} hide-checkbox-column>
               </lightning-datatable>
             </div>
           </div>
@@ -302,54 +314,12 @@
           <div class="c-rates-section-title">Residual Guidelines</div>
           <div class="slds-grid slds-gutters">
             <div class="slds-col slds-size_11-of-12">
-              <lightning-datatable key-field="Id" data={tableRates} columns={tableRatesCols} hide-checkbox-column>
-              </lightning-datatable>
+              <img src={residualGuideLines} alt="Pepper Commercial Residual Guidelines">
             </div>
           </div>
         </div>
       </div>
     </div>
-
-    <!-- Table Rates4 -->
-    <!-- <div slot="table-rates">
-      <div class="c-rates-section-title">Pepper Commercial Table Rates</div>
-      <div class="c-rates-section-title">Residual Guidelines</div>
-      <div class="slds-grid slds-gutters">
-        <div class="slds-col slds-size_11-of-12">
-          <lightning-datatable key-field="Id" data={tableRates} columns={tableRatesCols} hide-checkbox-column>
-          </lightning-datatable>
-        </div>
-      </div>
-    </div> -->
-
-    <!-- </div> -->
-
-    <!-- Table Rates2 -->
-    <!-- <div slot="table-rates">
-      <div class="c-rates-section-title">Other-Primary Assets - Table Rates</div>
-      <div class="slds-grid slds-gutters">
-        <div class="slds-col slds-size_11-of-12">
-          <lightning-datatable key-field="Id" data={tableRates} columns={tableRatesCols2} hide-checkbox-column>
-          </lightning-datatable>
-        </div>
-      </div>
-    </div> -->
-
-
-    <!-- Table Rates3 -->
-    <!-- <div slot="table-rates">
-      <div class="c-rates-section-title">Other-Secondary and Tertiary Assets - Table Rates</div>
-      <div class="slds-grid slds-gutters">
-        <div class="slds-col slds-size_11-of-12">
-          <lightning-datatable key-field="Id" data={tableRates} columns={tableRatesCols3} hide-checkbox-column>
-          </lightning-datatable>
-        </div>
-      </div>
-
-    </div> -->
-
-
-
   </c-quote-container>
 
 </template>

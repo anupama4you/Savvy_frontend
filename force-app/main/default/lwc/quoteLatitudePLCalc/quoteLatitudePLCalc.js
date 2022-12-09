@@ -2,9 +2,7 @@ import { api, LightningElement, track, wire } from 'lwc';
 import LENDER_LOGO from "@salesforce/resourceUrl/LatitudeLogo3";
 import { QuoteCommons } from "c/quoteCommons";
 import { CalHelper } from "./quoteLatitudePLCalcHelper";
-import { getRecord } from 'lightning/uiRecordApi';
 import { displayToast } from "c/partnerJsUtils";
-
 
 export default class QuoteLatitudePLCalc extends LightningElement {
     tableRatesCols = CalHelper.tableRateDataColumns;
@@ -210,6 +208,9 @@ export default class QuoteLatitudePLCalc extends LightningElement {
         fldName === "term"
             ? (this.quoteForm[fldName] = parseInt(v))
             : (this.quoteForm[fldName] = v);
+        if (fldName === "registrationFee") {
+          this.quoteForm[fldName] = Number(v);
+        }
         console.log(`this.quoteForm:`, JSON.stringify(this.quoteForm, null, 2));
         // --------------
         // Trigger events

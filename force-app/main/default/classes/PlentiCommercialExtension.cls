@@ -438,7 +438,7 @@ public class PlentiCommercialExtension extends QuotingExtension {
         //-
         
         updateProduct.Loan_Purpose__c = 'Personal Use';
-        updateProduct.Lender__c = LENDER_QUOTING;
+        updateProduct.Lender__c = 'Plenti';
         updateProduct.Quoting_Source__c = LENDER_QUOTING;
         updateProduct.Repayment_Regularity__c = 'Monthly';
         
@@ -681,8 +681,8 @@ public class PlentiCommercialExtension extends QuotingExtension {
         param.totalAmount = this.getTotalAmount(quotingType);
         param.totalInsurance = this.getTotalInsuranceType(quotingType);
         param.totalInsuranceIncome = this.getTotalInsuranceIncomeType(quotingType);
-        param.baseRate = this.baseRate;
-        //param.clientRate = this.clientRate;
+        param.baseRate = this.manualRate > 0? this.manualRate : this.baseRate;
+        param.clientRate = this.clientRate;
         param.paymentType = this.paymentType;
         param.term = this.term;
         param.dof = this.dof;

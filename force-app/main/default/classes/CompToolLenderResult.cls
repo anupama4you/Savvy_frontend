@@ -12,6 +12,8 @@ public class CompToolLenderResult {
   public Decimal monthlyFee {set;get;}
   @AuraEnabled
   public Decimal surplus {set;get;}
+  @AuraEnabled
+  public Decimal lenderFees {set;get;}
 
   @AuraEnabled 
   public String customLabel1 {set;get;}
@@ -36,7 +38,7 @@ public class CompToolLenderResult {
   @AuraEnabled
   public Decimal dof {
     get {
-      return this.quote != null? this.quote.DOF__c : 0.00;
+      return this.quote != null && this.quote.DOF__c > 0? this.quote.DOF__c * 1.1 : 0.00;
     }
   }
   @AuraEnabled
@@ -90,6 +92,7 @@ public class CompToolLenderResult {
     this.clientRate = 0.00;
     this.monthlyFee = 0.00;
     this.surplus = 0.00;
+    this.lenderFees = 0.00;
     // Quoting result
     this.quote = new Application_Quoting_Result__c();
     this.quote.Estimated_Commission__c = 0.00;

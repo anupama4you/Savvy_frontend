@@ -383,7 +383,7 @@
             <apex:actionFunction action="{!sendCustomerEmail1}" name="sendCustomerEmail1" reRender="pageMessage" status="stsSend1" oncomplete="sendCustomerEmail2();"/>
             <apex:actionFunction action="{!sendCustomerEmail2}" name="sendCustomerEmail2" status="stsSend2" reRender="pageMessage"/>
             <!-- End -->
-            <apex:actionFunction action="{!realtimeNafCalc}" name="nafRefresh" reRender="realtimeNaf, netDeposit, residualValue, pageMessage" status="stsQuote"/>
+            <apex:actionFunction action="{!realtimeNafCalc}" name="nafRefresh" reRender="realtimeNaf, netDeposit, residualValue, pageMessage, pnlInsProd" status="stsQuote"/>
             <apex:actionFunction action="{!changeLoanProduct}" name="changeLoanProduct" reRender="productGoodsType, productGoodsSubType, loanFrequency" oncomplete="" />
             <apex:actionFunction action="{!resetResidualValues}" name="changeTypeValue" reRender="residualValue, residualValuePercentage" oncomplete="" />
             <apex:actionFunction action="{!baseRateCalc}" name="baseRateRefresh" reRender="clientRate, netDeposit, pageMessage" status="stsQuote" />
@@ -524,11 +524,13 @@
                                 </td>
                                 <td class="financeColumn">
                                   <apex:outputPanel id="dof" layout="block">
-                                    <apex:input type="number" html-step="0.01" value="{!dof}" html-placeholder="$" styleClass="calcInput2" onchange="nafRefresh();" />
-                                    &nbsp;&nbsp;&nbsp;
-                                    <apex:outputText value="Max. {0, number, $##,###,##0.00}">
-                                      <apex:param value="{!lenderSettings.DOF__c}"/>
-                                    </apex:outputText>
+                                    <!-- <apex:input type="number" html-step="0.01" value="{!dof}" html-placeholder="$" styleClass="calcInput2" onchange="nafRefresh();" /> -->
+                                    &nbsp;&nbsp;
+                                    <strong><i>
+                                    <apex:outputText value="{0, number, $##,###,##0.00}">
+                                      <apex:param value="{!dof}"/>
+                                    </apex:outputText></i>
+                                    </strong>
                                   </apex:outputPanel>
                                 </td>
                               </tr>

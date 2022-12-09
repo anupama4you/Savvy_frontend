@@ -1,0 +1,11 @@
+/* Calculators styles */
+@import 'c/quoteCommonsStyles';
+
+.c-ppsr-label {
+    padding: 2px;
+    width: 33%;
+}
+
+.c-same-line {
+    display: inline;
+}
