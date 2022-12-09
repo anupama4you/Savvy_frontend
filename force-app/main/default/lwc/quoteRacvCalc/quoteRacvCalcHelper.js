@@ -134,6 +134,8 @@ const calculate = (quote) =>
                 commRate: commR
             };
 
+            console.log(`@@insurance:`, JSON.stringify(quote.insurance, null, 2));
+
             // Calculate
             console.log(`@@param:`, JSON.stringify(p, null, 2));
             calculateRepayments({

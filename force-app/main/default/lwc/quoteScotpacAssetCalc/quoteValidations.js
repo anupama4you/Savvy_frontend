@@ -155,13 +155,13 @@ const validate = (quote, messages) => {
     }
   }
  
-  if ("" === quote.creditScore) {
+  if (quote.loanType === "Fast Doc" && "" === quote.creditScore) {
     errorList.push({
       field: "creditScore",
       message: "Please choose a Company Score option."
     });
   }
-  if ("" === quote.directorSoleTraderScore) {
+  if (quote.loanType === "Fast Doc" && "" === quote.directorSoleTraderScore) {
     errorList.push({
       field: "directorSoleTraderScore",
       message: "Please choose a Director/Sole Trader Score option."

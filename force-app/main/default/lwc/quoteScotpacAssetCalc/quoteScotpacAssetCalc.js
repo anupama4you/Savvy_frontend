@@ -121,6 +121,10 @@ export default class QuoteScotpacCalc extends LightningElement {
         return CalHelper.options.rateOptions;
     }
 
+    get isRequired() {
+        return this.quoteForm.loanType === "Full Doc" ? false : true;
+    }
+
     // Events
     handleFieldChange(event) {
         console.log(`Changing value for: ${event.target.name}...`);
@@ -146,17 +150,9 @@ export default class QuoteScotpacCalc extends LightningElement {
             this.isCreditScoreDisabled = this.quoteForm.loanType === "Full Doc" ? true : false;
         }
 
-        if (fldName === "privateSales") {
-            if ("Y" === v) {
-                this.quoteForm.applicationFee = this.quoteForm.applicationFeePrivate;
-            } else {
-                this.quoteForm.applicationFee = this.applicationFee;
-            }
-        }
         console.log(`this.quoteForm:`, JSON.stringify(this.quoteForm, null, 2));
 
         // Residual Value Calculation
-
         if (CalHelper.RESIDUAL_VALUE_FIELDS.includes(fldName)) {
             this.residualCalc();
         }
@@ -212,7 +208,6 @@ export default class QuoteScotpacCalc extends LightningElement {
     }
 
     residualCalc() {
-        console.log('residualCalc', this.typeValue);
         if (this.typeValue === "Value") {
             this.disableResidualValue = false;
             this.disableResidualPercentage = true;
@@ -225,7 +220,6 @@ export default class QuoteScotpacCalc extends LightningElement {
             if (this.quoteForm.residualValuePercentage > 0) {
                 this.quoteForm.residualValue = CalHelper.getResidualValue(this.quoteForm);
             }
-
         }
     }
 

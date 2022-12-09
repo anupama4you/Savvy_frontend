@@ -86,12 +86,7 @@ const validate = (quote, messages, isApproval) => {
             field: "clientRate",
             message: "Client Rate should not be zero."
         });
-    } else if (quote.baseRate > quote.clientRate || quote.clientRate > quote.maxRate) {
-        errorList.push({
-            field: "clientRate",
-            message: `Client Rate should be between ${quote.baseRate}% and ${quote.maxRate}%`
-        });
-    }
+    } 
 
     console.log(
         "🚀 ~ file: quoteValidations.js ~ line 100 ~ validate ~ quote.term",
@@ -140,6 +135,50 @@ const validate = (quote, messages, isApproval) => {
         });
     }
 
+    // loan amount
+    const purchasePrice = quote.price - quote.netDeposit;
+    // Borrower Type
+    if (quote.loanTypeDetail === "Borrower Type 3") {
+        if (purchasePrice > 40000) {
+            warningList.push({
+                field: "price",
+                message: " Maximum loan $40,000."
+            });
+        }
+        warningList.push({
+            field: "",
+            message: "Cannot split Living expenses or Fixed liabilities"
+        });
+        warningList.push({
+            field: "",
+            message: "maximum 50% of annual income for first time lends"
+        });
+        warningList.push({
+            field: "",
+            message: "Bank statements required upfront"
+        });
+    } else if (quote.loanTypeDetail === "Borrower Type 2") {
+        if (purchasePrice > 80000) {
+            warningList.push({
+                field: "price",
+                message: "Maximum loan $80,000"
+            });
+        }
+        warningList.push({
+            field: "",
+            message: "LVR guide around 110%"
+        });
+        warningList.push({
+            field: "",
+            message: " maximum 50% of annual income for first time lends"
+        });
+    } else if (quote.loanTypeDetail === "Borrower Type 1") {
+        warningList.push({
+            field: "",
+            message: "LVR guide around 120%"
+        });
+    }
+   
     r.warnings = [].concat(QuoteCommons.uniqueArray(warningList));
     r.errors = [].concat(QuoteCommons.uniqueArray(errorList));
     return r;
