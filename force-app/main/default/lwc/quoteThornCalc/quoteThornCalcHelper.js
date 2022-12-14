@@ -111,7 +111,6 @@ const BASE_RATE_FIELDS = [
 const getBaseAmountPmtInclBrokerageCalc = (quote) => {
   let naf = QuoteCommons.calcNetRealtimeNaf(quote);
   let brokerage = quote.brokeragePercentage > 0? quote.brokeragePercentage : 0;
-  console.log('get PMT...', naf + naf*brokerage/100);
   return naf + (naf*brokerage)/100;
 }
 
@@ -366,7 +365,6 @@ const getResidualPercentage = (quote) => {
 
 // Get Base Rates
 const getMyBaseRates = (quote) => {
-  console.log('getMyBaseRates::', quote.brokeragePercentage)
   let baseRate = 0.0;
   baseRate += quote.manualBaseRate ? parseFloat(quote.manualBaseRate) : 0.0;
   baseRate += quote.rateOption ? parseFloat(quote.rateOption) : 0.0;
@@ -376,7 +374,6 @@ const getMyBaseRates = (quote) => {
   } else if (quote.price > 50000 && quote.brokeragePercentage > 4) {
     baseRate += 0.5 * (quote.brokeragePercentage - 4)
   }
-  console.log('baseRate@@', baseRate)
   return baseRate;
 }
 

@@ -210,7 +210,6 @@ export default class QuoteThornCalc extends LightningElement {
     baseRateCalc() {
         this.isBaseRateBusy = true;
         this.quoteForm.baseRate = CalHelper.baseRates(this.quoteForm);
-        console.log('baseRate@@', this.quoteForm.baseRate, '**|**')
         this.isBaseRateBusy = false;
     }
 
