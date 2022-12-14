@@ -99,7 +99,6 @@ const validate = (quote, messages, isApproval) => {
                 message: `Motorbikes max. term is 5 years.`
             });
         }
-
     }
 
     console.log(
@@ -176,6 +175,22 @@ const validate = (quote, messages, isApproval) => {
         warningList.push({
             field: "",
             message: "LVR guide around 120%"
+        });
+    }
+
+    // Insurance validations
+    // warranty type in insurance
+    if (quote.insurance.iswarrantyAccept === true && quote.insurance.warrantyType) {
+        errorList.push({
+            field: "",
+            message: "Warranty product is no longer allowed by RACV"
+        });
+    }
+
+    if (quote.insurance.isLPIAccept === true && quote.insurance.LPIPBM != "PBM") {
+        errorList.push({
+            field: "",
+            message: "LFI Loan protection should be paid by month only"
         });
     }
    

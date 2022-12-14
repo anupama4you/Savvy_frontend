@@ -49,17 +49,12 @@ const validate = (quote, messages) => {
   }
 
   // Brokerage
-  if (quote.price >= 10000 && quote.price <= 50000 && quote.brokeragePercentage > 8) {
-    warningList.push({
+  if (quote.brokeragePercentage > quote.maxBrokeragePercentage) {
+    errorList.push({
       field: "brokeragePercentage",
-      message: "Maximum 8% for loans $10,000- $50,000"
+      message: `Maximum Brokerage ${quote.maxBrokeragePercentage}% for loans $10,000- $50,000`
     });
-  } else if (quote.price >= 50001 && quote.price <= 1000000 && quote.brokeragePercentage > 6) {
-    warningList.push({
-      field: "brokeragePercentage",
-      message: "Maximum 6% for loans $50,001- $1,000,000"
-    });
-  }
+  } 
 
   if (quote.baseRate === null || !(quote.baseRate > 0.0)) {
     errorList.push({

@@ -94,6 +94,25 @@ const DOF_CALC_FIELDS = [
     "payoutOn"
 ];
 
+const commissionRateCalc = (quote) => {
+    const loanAmount = quote.price - quote.netDeposit;
+    let comm = 0.0;
+    if (loanAmount > 30000) {
+        comm = 1300;
+    } else if (loanAmount > 25000) {
+        comm = 1100;
+    } else if (loanAmount > 20000) {
+        comm = 900;
+    } else if (loanAmount > 15000) {
+        comm = 800;
+    } else if (loanAmount > 10000) {
+        comm = 600;
+    } else if (loanAmount > 5000) {
+        comm = 400;
+    }
+    return comm;
+}
+
 const calculate = (quote) =>
     new Promise((resolve, reject) => {
         console.log(`Calculating repayments...`, JSON.stringify(quote, null, 2));
@@ -114,7 +133,6 @@ const calculate = (quote) =>
             // new total calculated amount
             const totalAmount = QuoteCommons.calcTotalAmount(quote);
             // commRate is constant for estimated Commission
-            const commR = 2.25;
             const p = {
                 lender: LENDER_QUOTING,
                 productLoanType: quote.loanProduct,
@@ -131,7 +149,7 @@ const calculate = (quote) =>
                 residualValue: quote.residual,
                 loanTypeDetail: quote.loanTypeDetail,
                 carPrice: quote.price,
-                commRate: commR
+                commPayable: commissionRateCalc(quote)
             };
 
             console.log(`@@insurance:`, JSON.stringify(quote.insurance, null, 2));
@@ -419,22 +437,6 @@ const getAllTableData = (category) => {
     return formattedTableData;
 };
 
-const calcDOF = (quote) => {
-  let r = QuoteCommons.calcNetRealtimeNaf(quote);
-  r -= quote.dof > 0? quote.dof : 0;
-  if (r > 20000) {
-    r = 1650.00;
-  } else if (r > 0) {
-    r = r * 0.15;
-    if (r >= 990) {
-      r = 990.0;
-    }
-  } else {
-    r = 0;
-  }
-  return r;
-}
-
 /**
  * -- Lee
  * @param {String} approvalType - string and what type of the button
@@ -443,6 +445,8 @@ const calcDOF = (quote) => {
  */
 const saveQuote = (approvalType, param, recordId) =>
     new Promise((resolve, reject) => {
+        // rate option to String
+        param.addOnRate = param.addOnRate.toString();
         if (approvalType && param && recordId) {
             save({
                 param: QuoteCommons.mapLWCToSObject(
@@ -457,7 +461,8 @@ const saveQuote = (approvalType, param, recordId) =>
                     resolve(data);
                 })
                 .catch((error) => {
-                    reject(`error in saveApproval ${approvalType}: `, error.messages);
+                    console.log('resolve@@', error)
+                    reject(`error in saveApproval ${approvalType}: `, error.body.message);
                 });
         } else {
             reject(
@@ -514,7 +519,6 @@ export const CalHelper = {
   getNetRealtimeNaf: QuoteCommons.calcNetRealtimeNaf,
   getNetDeposit: QuoteCommons.calcNetDeposit,
   getQuoteFees: getQuoteFees,
-  getDOF: calcDOF,
   DOF_CALC_FIELDS: DOF_CALC_FIELDS,
   getAllTableData: getAllTableData,
   saveQuote: saveQuote,

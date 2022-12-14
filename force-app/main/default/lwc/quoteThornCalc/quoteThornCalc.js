@@ -58,6 +58,7 @@ export default class QuoteThornCalc extends LightningElement {
                 console.log('is busy line 56', this.isBusy, this.tableRates4);
                 this.quoteForm.assetAge = this.quoteForm.assetAge ? this.quoteForm.assetAge : 1;
                 this.baseRateCalc();
+                this.maxBrokeragePercentageCalc();
             });
     }
 
@@ -161,9 +162,6 @@ export default class QuoteThornCalc extends LightningElement {
                 this.quoteForm.applicationFee = this.applicationFee;
             }
         }
-        if (fldName === "rateOption") {
-            
-        }
         console.log(`this.quoteForm:`, JSON.stringify(this.quoteForm, null, 2));
 
         // Residual Value Calculation
@@ -173,6 +171,7 @@ export default class QuoteThornCalc extends LightningElement {
         // Base Rate Calculation
         if (CalHelper.BASE_RATE_FIELDS.includes(fldName)) {
             this.baseRateCalc();
+            this.maxBrokeragePercentageCalc();
         }
         // Client Rate Calculation
         if (CalHelper.CLIENT_RATE_FIELDS.includes(fldName)) {
@@ -220,6 +219,10 @@ export default class QuoteThornCalc extends LightningElement {
         this.isBaseRateBusy = true;
         this.quoteForm.clientRate = CalHelper.getClientRateCalc(this.quoteForm);
         this.isBaseRateBusy = false;
+    }
+
+    maxBrokeragePercentageCalc() {
+        this.quoteForm.maxBrokeragePercentage = CalHelper.getMaxBrokerage(this.quoteForm);
     }
 
     residualCalc() {

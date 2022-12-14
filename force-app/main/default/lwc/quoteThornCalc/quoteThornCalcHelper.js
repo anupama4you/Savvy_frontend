@@ -97,7 +97,8 @@ const CLIENT_RATE_FIELDS = [
   "price",
   "deposit",
   "tradeIn",
-  "payoutOn"
+  "payoutOn",
+  "rateOption"
 ];
 
 const BASE_RATE_FIELDS = [
@@ -365,13 +366,14 @@ const getResidualPercentage = (quote) => {
 
 // Get Base Rates
 const getMyBaseRates = (quote) => {
+  console.log('getMyBaseRates::', quote.brokeragePercentage)
   let baseRate = 0.0;
-  baseRate += quote.manualBaseRate ? quote.manualBaseRate : 0.0;
-  baseRate += quote.rateOption ? quote.rateOption : 0.0;
+  baseRate += quote.manualBaseRate ? parseFloat(quote.manualBaseRate) : 0.0;
+  baseRate += quote.rateOption ? parseFloat(quote.rateOption) : 0.0;
    
-  if (quote.price <= 50000 && quote.brokeragePercentage <= 8 && quote.brokeragePercentage > 5) {
+  if (quote.price <= 50000 && quote.brokeragePercentage > 5) {
     baseRate += 0.5 * (quote.brokeragePercentage - 5)   
-  } else if (quote.price > 50000 && quote.brokeragePercentage <= 6 && quote.brokeragePercentage > 4) {
+  } else if (quote.price > 50000 && quote.brokeragePercentage > 4) {
     baseRate += 0.5 * (quote.brokeragePercentage - 4)
   }
   console.log('baseRate@@', baseRate)
@@ -412,6 +414,17 @@ const getClientRateCalc = (param) => {
   );
   return (r * 12 * 100).toFixed(2);
 };
+
+
+// get max Brokerage
+const getMaxBrokerage = (quote) => {
+  let loanAmount = QuoteCommons.calcNetRealtimeNaf(quote);
+  if (loanAmount < 50001) {
+    return 8;
+  } else {
+    return 6;
+  }
+}
 
 /**
  * -- Lee
@@ -499,5 +512,6 @@ export const CalHelper = {
   getResidualValue: getResidualValue,
   getResidualPercentage: getResidualPercentage,
   getClientRateCalc: getClientRateCalc,
-  getBaseRateAmount: getBaseRateAmount
+  getBaseRateAmount: getBaseRateAmount,
+  getMaxBrokerage: getMaxBrokerage
 };

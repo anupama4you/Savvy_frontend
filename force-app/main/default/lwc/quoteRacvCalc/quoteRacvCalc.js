@@ -39,7 +39,6 @@ export default class QuoteLatitudeCalc extends LightningElement {
                 this.isBusy = false;
                 this.vehicleCategory();
                 this.baseRateCalc();
-                this.dofCalc();
             });
 
         console.log('recordID::', this.recordId)
@@ -65,20 +64,6 @@ export default class QuoteLatitudeCalc extends LightningElement {
             .finally(() => {
                 this.isBaseRateBusy = false;
             });
-    }
-
-    // DOF calculation
-    dofCalc() {
-      const d = CalHelper.getDOF(this.quoteForm);
-      // if (
-      //   this.quoteForm.dof === undefined ||
-      //   this.quoteForm.dof === null ||
-      //   this.quoteForm.dof.length === 0 ||
-      //   this.quoteForm.dof === 0
-      // ) {
-      //   this.quoteForm.dof = d;
-      // }
-      this.quoteForm.maxDof = d;
     }
 
     // Category generation
@@ -273,11 +258,6 @@ export default class QuoteLatitudeCalc extends LightningElement {
         // Base Rate Calculation
         if (CalHelper.BASE_RATE_FIELDS.includes(fldName)) {
             this.baseRateCalc();
-        }
-
-        // DOF calculation
-        if (CalHelper.DOF_CALC_FIELDS.includes(fldName)) {
-            this.dofCalc();
         }
 
         // Insurances

@@ -407,23 +407,18 @@
         </div>
         <!-- Brokerage -->
         <div class="c-row-details">
-            <div class="c-detail-labels">
-                <span class="c-label">Brokerage (%)</span>
+            <div class="c-detail-labels"><span class="c-label">Brokerage (%)</span></div>
+            <div class="c-detail-fields">
+                <lightning-input type="number" formatter="percent-fixed" step="0.01" name="brokeragePercentage"
+                    value={quoteForm.brokeragePercentage} data-id="brokeragePercentage-field" label="brokeragePercentage"
+                    placeholder="0.00%" class="slds-form__item field-x-small-width" variant="label-hidden" onchange={handleFieldChange}>
+                </lightning-input>
+                <span class="c-max-details">
+                    Max.
+                    <lightning-formatted-number format-style="percent-fixed" aria-placeholder="0.00%" maximum-fraction-digits="2" value={quoteForm.maxBrokeragePercentage}
+                    class="c-read-only-field"></lightning-formatted-number>
+                </span>
             </div>
-            <lightning-input
-                type="number"
-                formatter="percent-fixed"
-                step="0.01"
-                name="brokeragePercentage"
-                data-id="brokeragePercentage-field"
-                value={quoteForm.brokeragePercentage}
-                label="Brokerage"
-                placeholder="0.00%"
-                class="slds-form__item"
-                variant="label-hidden"
-                onchange={handleFieldChange}
-                required>
-            </lightning-input>
         </div>
         <!-- Rates -->
         <!-- Base Rates -->
